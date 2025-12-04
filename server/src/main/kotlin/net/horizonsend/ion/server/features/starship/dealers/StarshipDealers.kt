@@ -37,28 +37,32 @@ object StarshipDealers : IonServerComponent(false) {
 				return@async
 			}
 
-			val schematic = ship.getClipboard()
+			loadDealerShipUnchecked(player, ship)
+		}
+	}
 
-			var target = player.location
-			target.y = 216.0
-			target = resolveTarget(schematic, target)
+	fun loadDealerShipUnchecked(player: Player, ship: DealerShip, silent: Boolean = false) {
+		val schematic = ship.getClipboard()
 
-			val world = player.world
-			val targetVec3i = Vec3i(target)
+		var target = player.location
+		target.y = 216.0
+		target = resolveTarget(schematic, target)
 
-			placeSchematicEfficiently(schematic, world, targetVec3i, true) {
-				val vec3i = Vec3i(target.blockX, target.blockY, target.blockZ)
-				player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
+		val world = player.world
+		val targetVec3i = Vec3i(target)
 
-				ship.onPurchase(player)
+		placeSchematicEfficiently(schematic, world, targetVec3i, true) {
+			val vec3i = Vec3i(target.blockX, target.blockY, target.blockZ)
+			player.teleport(target.add(0.0, 1.0, 0.0).add(ship.pilotOffset.toVector()).toCenterLocation())
 
-				BlueprintCommand.tryPilot(player, vec3i, ship.starshipType, ship.displayName.serialize(restrictedMiniMessageSerializer)) { starship ->
-					ship.postPilot(player, starship)
-				}
+			ship.onPurchase(player)
 
-				player.success("Successfully bought a {0} (Cost: {1} Remaining Balance: {2})", ship.displayName, ship.price.toCreditComponent(), player.getMoneyBalance().toCreditComponent())
-				player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
+			BlueprintCommand.tryPilot(player, vec3i, ship.starshipType, ship.displayName.serialize(restrictedMiniMessageSerializer)) { starship ->
+				ship.postPilot(player, starship)
 			}
+
+			if (!silent) player.success("Successfully bought a {0} (Cost: {1} Remaining Balance: {2})", ship.displayName, ship.price.toCreditComponent(), player.getMoneyBalance().toCreditComponent())
+			player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 		}
 	}
 

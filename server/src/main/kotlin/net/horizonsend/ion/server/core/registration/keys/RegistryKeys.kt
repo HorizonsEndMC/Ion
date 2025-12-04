@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.features.sequences.Sequence
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
@@ -24,6 +26,8 @@ object RegistryKeys {
 	val CUSTOM_BLOCKS = registryId<CustomBlock>("CUSTOM_BLOCKS")
 	val ITEM_MODIFICATIONS = registryId<ItemModification>("ITEM_MODIFICATIONS")
 	val MULTIBLOCK_RECIPE = registryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
+	val SEQUENCE_PHASE = registryId<SequencePhase>("SEQUENCE_PHASE")
+	val SEQUENCE = registryId<Sequence>("SEQUENCE")
 	val TRANSPORT_NETWORK_NODE_TYPE = registryId<TransportNodeType<*>>("TRANSPORT_NETWORK_NODE_TYPE")
 	val FLUID_PROPERTY_TYPE = registryId<FluidPropertyType<*>>("FLUID_PROPERTY_TYPE")
 	val WRAPPED_LISTENER_TYPE = registryId<WrappedListenerType<*>>("WRAPPED_LISTENER_TYPE")

@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipEnterHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipPreExitHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
@@ -116,7 +117,7 @@ object Hyperspace : IonServerComponent() {
 		destinationWorld: World,
 		useFuel: Boolean
 	) {
-		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
+		val dest = Location(destinationWorld, x.toDouble(), starship.centerOfMass.y.toDouble(), z.toDouble())
 		val mass = starship.getTotalMass()
 		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
 			else calculateSpeed(3, mass)
@@ -131,8 +132,6 @@ object Hyperspace : IonServerComponent() {
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
 		check(warmupTasks.remove(warmup.ship, warmup)) { "Warmup wasn't in the map!" }
 
-		val drive: HyperdriveSubsystem? = warmup.drive
-		if (drive != null && drive.isIntact()) drive.restoreFuel()
 		warmup.ship.information("Canceled Jump Warmup")
 	}
 
@@ -189,12 +188,11 @@ object Hyperspace : IonServerComponent() {
 			return
 		}
 
-		val dest = starship.centerOfMass.toLocation(world)
-		dest.x = movement.x
-		dest.z = movement.z
+		val event = StarshipPreExitHyperspaceEvent(ship = starship, successful = false, exitLocation = Location(starship.world, movement.x, starship.centerOfMass.y.toDouble(), movement.z))
+		event.callEvent()
 
 		starship.playSound(starship.balancing.shipSounds.exitHyperspace.sound)
-		StarshipTeleportation.teleportStarship(starship, dest) {
+		StarshipTeleportation.teleportStarship(starship = starship, destination = event.exitLocation) {
 			Tasks.syncDelay(2L) {
 				// Happens after the teleport finishes
 				StarshipExitHyperspaceEvent(starship, movement).callEvent()
@@ -211,8 +209,11 @@ object Hyperspace : IonServerComponent() {
 
 		starship.subsystems.forEach { it.handleJump(movement) }
 
+		val event = StarshipPreExitHyperspaceEvent(ship = starship, successful = true, exitLocation = movement.dest)
+		event.callEvent()
+
 		starship.playSound(starship.balancing.shipSounds.exitHyperspace.sound)
-		StarshipTeleportation.teleportStarship(starship, movement.dest) {
+		StarshipTeleportation.teleportStarship(starship = starship, destination = event.exitLocation) {
 			Tasks.syncDelay(2L) {
 				// Happens after the teleport finishes
 				StarshipExitHyperspaceEvent(starship, movement).callEvent()

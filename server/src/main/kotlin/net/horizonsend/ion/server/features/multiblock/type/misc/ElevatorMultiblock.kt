@@ -5,6 +5,7 @@ import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.event.multiblock.PlayerUseTractorBeamEvent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
@@ -134,13 +135,13 @@ abstract class AbstractElevatorBeam : Multiblock(), InteractableMultiblock, Disp
 
 			for (y in originY + 1..<player.world.maxHeight) {
 				val block = getBlockIfLoaded(world, x, y, z) ?: return player.debug("Block not loaded, cancelled")
+				val blockType = block.getTypeSafe() ?: return player.debug("Block type could not be obtained, cancelled")
 
-				if (block.getTypeSafe()?.isAir == true) {
-					continue
-				}
+				if (blockType.isAir) continue
+				if (!blockType.isCollidable) continue
 
 				if (!checkMultiblock(block)) {
-					if (block.getTypeSafe()?.isAir == false) break // obstructed
+					if (!blockType.isAir && blockType.isCollidable) break // obstructed
 
 					continue
 				}
@@ -152,12 +153,14 @@ abstract class AbstractElevatorBeam : Multiblock(), InteractableMultiblock, Disp
 			}
 		}
 
-		private fun finishTeleport(player: Player, location: Location, event: Cancellable?, soundType: SoundType, verb: String) {
-			location.pitch = player.location.pitch
-			location.yaw = player.location.yaw
+		private fun finishTeleport(player: Player, destination: Location, event: Cancellable?, soundType: SoundType, verb: String) {
+			if (!PlayerUseTractorBeamEvent(player, destination).callEvent()) return
+
+			destination.pitch = player.location.pitch
+			destination.yaw = player.location.yaw
 
 			player.teleport(
-				location,
+				destination,
 				TeleportCause.PLUGIN,
 				TeleportFlag.Relative.VELOCITY_ROTATION
 			)

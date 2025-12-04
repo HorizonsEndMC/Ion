@@ -14,18 +14,26 @@ import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegist
 import net.horizonsend.ion.server.core.registration.registries.WorldGenerationFeatureRegistry
 import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
+import net.horizonsend.ion.server.features.sequences.SequenceRegistry
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = mutableListOf<Registry<*>>()
 	private val byId = Object2ObjectOpenHashMap<IonBindableResourceKey<out Registry<*>>, Registry<*>>()
 
 	override fun onEnable() {
-		allRegistries.forEach { registry ->
-			log.info("Bootstrapping ${registry.id.key}")
-			registry.boostrap()
-			registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
-			log.info("Registered ${registry.getAll().size} entries.")
-		}
+		bootstrapAll()
+	}
+
+	fun bootstrapAll() {
+		allRegistries.forEach(::bootstrap)
+	}
+
+	fun bootstrap(registry: Registry<*>) {
+		log.info("Bootstrapping ${registry.id.key}")
+		registry.boostrap()
+		registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
+		log.info("Registered ${registry.getAll().size} entries.")
 	}
 
 	val FLUID_TYPE = register(FluidTypeRegistry())
@@ -39,6 +47,9 @@ object IonRegistries : IonComponent() {
 	val WRAPPED_LISTENER_TYPE = register(WrappedListenerRegistry())
 	val WEATHER_TYPE = register(WeatherTypeRegistry())
 	val WORLD_GENERATION_FEATURES = register(WorldGenerationFeatureRegistry())
+
+	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
+	val SEQUENCE = register(SequenceRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry

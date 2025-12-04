@@ -62,7 +62,7 @@ object AISpawningManager : IonServerComponent(true) {
 	}
 
 	// The AI ship must be at least 30 minutes old
-	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)
+	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
 
 	// And not damaged within the last 7 minutes
 	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
@@ -72,7 +72,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 		if (controller !is AIController) return false
 
-		val mostRecentDamager = starship.damagers.entries.minByOrNull { it.value.lastDamaged }
+		val mostRecentDamager = starship.damagers.entries.maxByOrNull { it.value.lastDamaged }
 
 		if (mostRecentDamager != null && mostRecentDamager.value.lastDamaged > lastDamagedRequirement) return false
 

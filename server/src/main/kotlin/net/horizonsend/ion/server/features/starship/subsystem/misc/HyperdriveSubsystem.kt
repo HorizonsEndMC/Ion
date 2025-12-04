@@ -15,7 +15,7 @@ import kotlin.math.min
 
 open class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: HyperdriveMultiblock) :
 	AbstractMultiblockSubsystem<HyperdriveMultiblock>(starship, sign, multiblock) {
-	private fun getHoppers(): Set<Hopper> {
+	fun getHoppers(): Set<Hopper> {
 		return multiblock.getHoppers(starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as Sign)
 	}
 
@@ -46,10 +46,6 @@ open class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock:
 			}
 		}
 		check(remaining == 0) { "Hopper at ${hopper.location} did not have ${Hyperspace.getHyperMatterAmount(starship)} chetherite!" }
-	}
-
-	open fun restoreFuel(): Unit = getHoppers().forEach { hopper ->
-		hopper.inventory.addItem(CHETHERITE.getValue().constructItemStack().asQuantity(Hyperspace.getHyperMatterAmount(starship)))
 	}
 
 	private fun isHypermatter(item: ItemStack) = item.customItem?.key == CHETHERITE

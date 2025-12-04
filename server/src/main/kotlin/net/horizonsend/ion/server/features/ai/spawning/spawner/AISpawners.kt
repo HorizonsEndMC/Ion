@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.ai.spawning.spawner
 import com.google.common.collect.Multimap
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -26,12 +25,9 @@ import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEEP_SPAC
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.PRIVATEER_PATROL_MEDIUM
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.PRIVATEER_PATROL_SMALL
 import net.horizonsend.ion.server.features.ai.convoys.LocationContext
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.ABYSSAL
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PUMPKINS
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
@@ -55,16 +51,11 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedS
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ARBOREALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CHARM
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAYBREAK
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DREDGE
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.EMPEROR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FASHIGUN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FURIOUS
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.GRAFT
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.HIGH_PRIESTESS
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.INFLICT
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.LOUMAI
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
@@ -73,8 +64,6 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PIONEER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PROTECTOR
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PUMPKIN_DEVOURER
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PUMPKIN_KIN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RAIDER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.REAVER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RESOLUTE
@@ -1272,66 +1261,66 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(GlobalWorldSpawner(
-			"SKUTTLE_SWARM",
-			AISpawnerTicker(
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7
-			),
-			BagSpawner(
-				locationProvider = Supplier {
-					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
-					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
-				},
-				budget = VariableIntegerAmount(3, 5),
-				groupMessage = "<DARK_RED>A Skuttle swarm<${HE_MEDIUM_GRAY}> {0} has been spotted at {1}, {3}, in {4}!".miniMessage(),
-				individualSpawnMessage = null,
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { AITarget.TargetMode.MIXED },
-				fleetSupplier = { null },
-				asBagSpawned(SKELETONS.asSpawnedShip(AITemplateRegistry.SKUTTLE), 1)
-			)
-		))
-
-		registerSingleWorldSpawner("AU-0821", "Trench", "Horizon") { SingleWorldSpawner(
-			"PUMPKIN_SPAWNER",
-			it,
-			AISpawnerTicker(
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7
-			),
-			SingleSpawn(
-				RandomShipSupplier(PUMPKINS.asSpawnedShip(PUMPKIN_DEVOURER), PUMPKINS.asSpawnedShip(PUMPKIN_KIN)),
-				formatLocationSupplier(it, 1000.0, 3000.0),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { AITarget.TargetMode.MIXED },
-				fleetSupplier = { null },
-				spawnMessage = SpawnMessage.WorldMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
-			)
-		)}
-
-		registerSingleWorldSpawner("AU-0821", "Trench", "Horizon") { SingleWorldSpawner(
-			"ABYSSAL_SPAWNER",
-			it,
-			AISpawnerTicker(
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7
-			),
-			SingleSpawn(
-				RandomShipSupplier(
-					ABYSSAL.asSpawnedShip(HIGH_PRIESTESS),
-					ABYSSAL.asSpawnedShip(DREDGE),
-					ABYSSAL.asSpawnedShip(CHARM),
-					ABYSSAL.asSpawnedShip(EMPEROR),
-					ABYSSAL.asSpawnedShip(GRAFT)
-				),
-				formatLocationSupplier(it, 1000.0, 3000.0),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { AITarget.TargetMode.MIXED },
-				fleetSupplier = { null },
-				spawnMessage = SpawnMessage.WorldMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
-			)
-		)}
+//		registerGlobalSpawner(GlobalWorldSpawner(
+//			"SKUTTLE_SWARM",
+//			AISpawnerTicker(
+//				pointChance = 0.5,
+//				pointThreshold = 20 * 60 * 7
+//			),
+//			BagSpawner(
+//				locationProvider = Supplier {
+//					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
+//					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
+//				},
+//				budget = VariableIntegerAmount(3, 5),
+//				groupMessage = "<DARK_RED>A Skuttle swarm<${HE_MEDIUM_GRAY}> {0} has been spotted at {1}, {3}, in {4}!".miniMessage(),
+//				individualSpawnMessage = null,
+//				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+//				targetModeSupplier = { AITarget.TargetMode.MIXED },
+//				fleetSupplier = { null },
+//				asBagSpawned(SKELETONS.asSpawnedShip(AITemplateRegistry.SKUTTLE), 1)
+//			)
+//		))
+//
+//		registerSingleWorldSpawner("AU-0821", "Trench", "Horizon") { SingleWorldSpawner(
+//			"PUMPKIN_SPAWNER",
+//			it,
+//			AISpawnerTicker(
+//				pointChance = 0.5,
+//				pointThreshold = 20 * 60 * 7
+//			),
+//			SingleSpawn(
+//				RandomShipSupplier(PUMPKINS.asSpawnedShip(PUMPKIN_DEVOURER), PUMPKINS.asSpawnedShip(PUMPKIN_KIN)),
+//				formatLocationSupplier(it, 1000.0, 3000.0),
+//				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+//				targetModeSupplier = { AITarget.TargetMode.MIXED },
+//				fleetSupplier = { null },
+//				spawnMessage = SpawnMessage.WorldMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
+//			)
+//		)}
+//
+//		registerSingleWorldSpawner("AU-0821", "Trench", "Horizon") { SingleWorldSpawner(
+//			"ABYSSAL_SPAWNER",
+//			it,
+//			AISpawnerTicker(
+//				pointChance = 0.5,
+//				pointThreshold = 20 * 60 * 7
+//			),
+//			SingleSpawn(
+//				RandomShipSupplier(
+//					ABYSSAL.asSpawnedShip(HIGH_PRIESTESS),
+//					ABYSSAL.asSpawnedShip(DREDGE),
+//					ABYSSAL.asSpawnedShip(CHARM),
+//					ABYSSAL.asSpawnedShip(EMPEROR),
+//					ABYSSAL.asSpawnedShip(GRAFT)
+//				),
+//				formatLocationSupplier(it, 1000.0, 3000.0),
+//				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+//				targetModeSupplier = { AITarget.TargetMode.MIXED },
+//				fleetSupplier = { null },
+//				spawnMessage = SpawnMessage.WorldMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
+//			)
+//		)}
 
 		/* helper suppliers --------------------------------------------------- */
 		val localCtx: (World) -> LocationContext = { w -> LocationContext(randomLocationIn(w)) }
