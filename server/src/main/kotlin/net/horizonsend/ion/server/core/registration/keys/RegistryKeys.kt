@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNode
 import net.horizonsend.ion.server.features.world.environment.listener.WrappedListenerType
 import net.horizonsend.ion.server.features.world.environment.weather.type.WeatherType
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
+import net.horizonsend.ion.server.features.world.generation.feature.meta.wreck.WreckStructure
 
 object RegistryKeys {
 	private val keys = mutableMapOf<String, RegistryId<*>>()
@@ -33,6 +34,7 @@ object RegistryKeys {
 	val WRAPPED_LISTENER_TYPE = registryId<WrappedListenerType<*>>("WRAPPED_LISTENER_TYPE")
 	val WEATHER_TYPE = registryId<WeatherType>("WEATHER_TYPE")
 	val WORLD_GENERATION_FEATURE = registryId<GeneratedFeature<*>>("WORLD_GENERATION_FEATURE")
+	val WRECK_STRUCTURE = registryId<WreckStructure>("WRECK_STRUCTURE")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)

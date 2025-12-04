@@ -166,7 +166,7 @@ class FluidStack(
 			for ((type, property: FluidProperty) in complex.dataComponents) {
 				val serialized = type.serializeUnsafe(property, context)
 
-				fluidComponents.set(type.key.ionNapespacedKey, PersistentDataType.TAG_CONTAINER, serialized)
+				fluidComponents.set(type.key.ionNamespacedKey, PersistentDataType.TAG_CONTAINER, serialized)
 			}
 
 			pdc.set(NamespacedKeys.FLUID_PROPERTY_COMPONENTS, PersistentDataType.TAG_CONTAINER, fluidComponents)
