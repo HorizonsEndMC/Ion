@@ -104,10 +104,10 @@ data class AsteroidPlacementConfiguration(
 
 		val list = mutableListOf<Pair<Vec3i, ConfigurableAsteroidMeta>>()
 
-		repeat(count) {
-			val chunkStartX = chunk.x.shl(4)
-			val chunkStartZ = chunk.z.shl(4)
+		val chunkStartX = chunk.x.shl(4)
+		val chunkStartZ = chunk.z.shl(4)
 
+		repeat(count) {
 			val x = chunkStartX + random.nextInt(0, 15)
 			val z = chunkStartZ + random.nextInt(0, 15)
 
