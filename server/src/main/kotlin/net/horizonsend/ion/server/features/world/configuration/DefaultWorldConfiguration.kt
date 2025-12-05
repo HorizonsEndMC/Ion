@@ -113,7 +113,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(),
-				WreckPlacementConfiguration()
+				WreckPlacementConfiguration(0.06)
 			))
 		)
 	)
