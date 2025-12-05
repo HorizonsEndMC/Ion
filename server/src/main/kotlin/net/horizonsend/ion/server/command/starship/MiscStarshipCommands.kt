@@ -200,7 +200,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val selectedPlanetData = HudIcons.selectorDataMap[sender.uniqueId]
 		if (selectedPlanetData != null) {
 			// player is looking at a planet in their HUD
-			onJump(sender, HudIcons.sanitizePrefixes(selectedPlanetData.name).replace(' ', '_'), null)
+			onJump(sender, HudIcons.sanitizePrefixes(selectedPlanetData.name).replace(' ', '_'),  null)
 		} else if (getStarshipPiloting(sender).beacon != null) {
 			onUseBeacon(sender)
 		} else {
@@ -239,8 +239,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("jump")
-	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@players")
-	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, or a member of your nation/fleet")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@spaceWorlds|@onlineNationMembers")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, another system or a member of your nation")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val separated = destination.split(",")
 		if (separated.size == 2 && separated.all { runCatching { it.toInt() }.isSuccess }) {
@@ -250,9 +250,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
-		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
+		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship)
+			?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
 		val maxRange: Int = if (navComp == null)
-			// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
+		// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
 			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
@@ -265,7 +266,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			if (playerPath.isNullOrEmpty()) fail { "Route not set" }
 			if (starship.beacon != null &&
 				starship.beacon!!.name == WaypointManager.getNextWaypoint(sender)!!.replace("_", " ")
-				) {
+			) {
 				onUseBeacon(sender)
 				return
 			}
@@ -294,7 +295,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			onUseBeacon(sender)
 			return
 		} else it.spaceLocation
-		} ?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
+		} ?:Bukkit.getWorld(destination)?.let {
+			Pos(
+				it.name,
+				starship.centerOfMass.x,
+				starship.centerOfMass.y,
+				starship.centerOfMass.z
+			)
+		} ?:BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
 			// Check if the destination is a saved player bookmark
 			Pos(
 				it.worldName,
@@ -315,11 +323,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		if (destinationPos.bukkitWorld() != sender.world) {
+		if (destinationPos.bukkitWorld() != sender.world && starship.initialBlockCount <= 14000) {
 			sender.sendRichMessage(
 				"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
-						"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
-						"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
+					"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
+					"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
 			)
 			return
 		}
@@ -327,7 +335,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val x = destinationPos.x
 		val z = destinationPos.z
 
-		tryJump(starship, x, z, starship.world, maxRange, sender, hyperdriveTier)
+		if (destinationPos.bukkitWorld() != sender.world) {
+			tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
+		}
+		else tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
 	}
 
 	private fun tryJump(
@@ -351,7 +362,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val currentWorld = starship.world
-		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD) || !sender.world.ion.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) {
 			"Not a space world!"
 		}
 

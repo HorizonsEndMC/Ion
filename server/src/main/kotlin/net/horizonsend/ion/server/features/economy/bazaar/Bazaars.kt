@@ -129,7 +129,7 @@ object Bazaars : IonServerComponent() {
 		BazaarGUIs.openCityBrowse(player, city, null)
 	}
 
-	fun priceMult(remote: Boolean) = if (remote) 4 else 1
+	fun priceMult(remote: Boolean) = if (remote) 1 else 1
 
 	/**
 	 * Checks if the given string is a valid item, and not air.
