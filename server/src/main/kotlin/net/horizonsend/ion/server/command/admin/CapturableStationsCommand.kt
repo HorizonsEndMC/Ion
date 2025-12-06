@@ -81,6 +81,12 @@ object KothStationCommand : SLCommand() {
 		KingOfTheHills.forceActivateKoth(kothName)
 		sender.success("Successfully initiated $kothName")
 	}
+	@Subcommand("list")
+	fun listActiveKoths(sender: Player) {
+		val activeKoths = KingOfTheHills.getKOTHS()
+		sender.success("active Koths: $activeKoths")
+	}
+
 }
 
 @CommandAlias("graceperiodtoggle")
