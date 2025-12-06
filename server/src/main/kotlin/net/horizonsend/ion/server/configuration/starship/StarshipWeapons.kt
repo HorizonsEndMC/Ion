@@ -1232,6 +1232,7 @@ data class LightLogisticsCannonBalancing(
 	}
 }
 
+@Serializable
 data class HeavyLogisticsCannonBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
