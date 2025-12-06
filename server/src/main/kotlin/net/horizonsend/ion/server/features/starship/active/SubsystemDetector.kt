@@ -26,6 +26,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.Fa
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpBeaconMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -38,6 +40,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTank
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
@@ -189,6 +193,14 @@ object SubsystemDetector {
 			is EventShieldMultiblock -> {
 				if (starship.playerPilot?.hasPermission("ion.core.eventship") == false) return
 				starship.subsystems += EventShieldSubsystem(starship, sign)
+			}
+
+			is JumpFieldGeneratorMultiblock -> {
+				starship.subsystems += JumpFieldGeneratorSubsystem(starship,sign, multiblock)
+			}
+
+			is JumpBeaconMultiblock -> {
+				starship.subsystems += JumpBeaconSubsystem(starship, sign, multiblock)
 			}
 
 			is BoxShieldMultiblock -> {
@@ -356,6 +368,8 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.thrusters)
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
+		starship.subsystems.filterIsInstanceTo(starship.jumpBeacons)
+		starship.subsystems.filterIsInstanceTo(starship.jumpFieldGenerators)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 		starship.subsystems.filterIsInstanceTo(starship.customTurrets)

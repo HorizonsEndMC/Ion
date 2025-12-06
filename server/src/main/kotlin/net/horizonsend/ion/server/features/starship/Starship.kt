@@ -64,6 +64,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.balancing.Starship
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
@@ -212,6 +214,22 @@ class Starship(
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
+		}
+
+		if (isInterdicting) {
+			var hasIntactWell = false
+			for (gravitywell in gravityWells) {
+				if (gravitywell.isIntact()) hasIntactWell = true
+			}
+			if (!hasIntactWell) isInterdicting = false
+		}
+
+		if (isJumpBeaconOn) {
+			var hasIntactBeacon = false
+			for (beacon in jumpBeacons) {
+				if (beacon.isIntact()) hasIntactBeacon = true
+			}
+			if (!hasIntactBeacon) isJumpBeaconOn = false
 		}
 
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
@@ -470,6 +488,8 @@ class Starship(
 	val thrusters = LinkedList<ThrusterSubsystem>()
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
+	val jumpBeacons = LinkedList<JumpBeaconSubsystem>()
+	val jumpFieldGenerators = LinkedList<JumpFieldGeneratorSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
@@ -509,6 +529,7 @@ class Starship(
 	var isExploding = false
 
 	var isInterdicting = false; private set
+	var isJumpBeaconOn = false; private set
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -527,6 +548,23 @@ class Starship(
 		}
 
 		onlinePassengers.forEach { player -> player.success("Gravity well enabled") }
+	}
+
+	fun toggleJumpBeacon(value: Boolean) {
+		Tasks.checkMainThread()
+		isJumpBeaconOn = value
+
+		jumpBeacons
+			.filter { it.isIntact() }
+			.map { it.pos.toLocation(world).block.state }
+
+		if (!value) {
+			onlinePassengers.forEach { player -> player.success("Jump Beacon disabled") }
+
+			return
+		}
+
+		onlinePassengers.forEach { player -> player.success("Jump beacon Enabled") }
 	}
 
 	val disabledThrusterRatio: Double get() =

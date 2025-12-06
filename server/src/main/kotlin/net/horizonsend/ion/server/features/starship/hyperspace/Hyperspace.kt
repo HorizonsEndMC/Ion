@@ -25,6 +25,8 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -242,6 +244,14 @@ object Hyperspace : IonServerComponent() {
 	fun findNavComp(starship: ActiveStarship): NavCompSubsystem? = starship.navComps.asSequence()
 		.filter { it.isIntact() }
 		.sortedBy { it.multiblock.baseRange }
+		.lastOrNull()
+
+	fun findJumpFieldGen(starship: ActiveStarship): JumpFieldGeneratorSubsystem? = starship.jumpFieldGenerators.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
+
+	fun findJumpBeacon(starship: ActiveStarship): JumpBeaconSubsystem? = starship.jumpBeacons.asSequence()
+		.filter { it.isIntact() }
 		.lastOrNull()
 
 	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_hyperspace", ignoreCase = true)

@@ -61,9 +61,9 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -248,6 +248,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
+
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship)
@@ -258,6 +259,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
 		if (navComp == null && !starship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) sender.userError("Navigation Computer not found; jump range halved")
+
+		val jumpFieldGen: JumpFieldGeneratorSubsystem? = Hyperspace.findJumpFieldGen(starship)
 
 		if (Hyperspace.isWarmingUp(starship)) fail { "Starship is already warming up!" }
 
@@ -315,7 +318,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
 		} else if (otherPlayer != null && otherFleet != null && otherFleet == Fleets.findByMember(sender)) {
 			// Check if the destination is a fleet member
-			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
+			otherPlayer.location.let {
+				Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt())
+			}
 		} else null
 
 		if (destinationPos == null) {
@@ -323,22 +328,46 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		if (destinationPos.bukkitWorld() != sender.world && starship.initialBlockCount <= 14000) {
-			sender.sendRichMessage(
-				"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
-					"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
-					"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
-			)
-			return
+
+		if (destinationPos.bukkitWorld() != sender.world && starship.initialBlockCount <= 13500) {
+
+			//Check if the other player exists and if they have a jump beacon enabled
+			if (otherPlayer != null) {
+				val otherPlayerStarship: ActiveControlledStarship = getStarshipPiloting(otherPlayer)
+				if (!otherPlayerStarship.isJumpBeaconOn || jumpFieldGen == null) {
+					// if they dont have a beacon enabled or if the jumper has no field generators
+					sender.sendRichMessage(
+						"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
+							"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
+							"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
+					)
+					return
+				}
+			}
+			// if the person isnt jumping to another player at all then fail the jump
+			else {
+				sender.sendRichMessage(
+					"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
+						"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
+						"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
+				)
+				return
+			}
 		}
 
 		val x = destinationPos.x
 		val z = destinationPos.z
 
-		if (destinationPos.bukkitWorld() != sender.world) {
-			tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
-		}
-		else tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
+		tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
+	}
+
+	@CommandAlias("jumpbeacon")
+	@Description("Toggles your jump beacon")
+	fun onJumpBeaconToggle(sender: Player) {
+		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
+		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
+		starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
+		return
 	}
 
 	private fun tryJump(
@@ -377,6 +406,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(!destinationWorld.worldBorder.isInside(Location(destinationWorld, x.toDouble(), 128.0, z.toDouble()))) {
 			"Destination coordinates are outside the world border!"
 		}
+
 
 		val massShadows = MassShadows.find(
 			starship.world,
