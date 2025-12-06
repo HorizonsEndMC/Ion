@@ -333,7 +333,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 			//Check if the other player exists and if they have a jump beacon enabled
 			if (otherPlayer != null) {
-				val otherPlayerStarship: ActiveControlledStarship = getStarshipPiloting(otherPlayer)
+				val otherPlayerStarship = ActiveStarships.findByPilot(otherPlayer)
+				if (otherPlayerStarship == null) {
+					sender.sendRichMessage(
+						"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
+							"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
+							"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
+					)
+					return
+				}
 				if (!otherPlayerStarship.isJumpBeaconOn || jumpFieldGen == null) {
 					// if they dont have a beacon enabled or if the jumper has no field generators
 					sender.sendRichMessage(
@@ -367,6 +375,37 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
 		starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
+		return
+	}
+
+	@CommandAlias("disrupt")
+	@CommandCompletion("@players @nothing")
+	@Description("Disrupt someone's hyperdrive")
+	fun onDisruptHyperDrive(sender: Player, @Optional player: String) {
+		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
+
+		val targetPlayer = Bukkit.getPlayer(player)
+		if (sender == targetPlayer) fail{"Cannot disrupt your own hyperdrive!"}
+		if (targetPlayer == starship.disruptorTarget) fail {"Already disrupting $player!"}
+		if (starship.isInterdicting) fail {"Cannot interdict and disrupt at the same time!"}
+
+		Interdiction.findDisruptor(starship) ?: fail { "Intact Disruptor not found!" }
+
+		if (targetPlayer == null) {
+			starship.setIsDisrupting(false, null)
+			val previousVictim = starship.disruptorTarget
+			if (previousVictim != null) {
+				val previousVictimsShip= ActiveStarships.findByPilot(previousVictim)
+				previousVictimsShip?.disruptorCount -= sender
+			}
+			return
+		}
+		else {
+			val enemyStarship = ActiveStarships.findByPilot(targetPlayer)
+			starship.setIsDisrupting(true, targetPlayer)
+			enemyStarship?.disruptorCount += sender
+			starship.disruptorTarget = targetPlayer
+		}
 		return
 	}
 
@@ -405,6 +444,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		failIf(!destinationWorld.worldBorder.isInside(Location(destinationWorld, x.toDouble(), 128.0, z.toDouble()))) {
 			"Destination coordinates are outside the world border!"
+		}
+		failIf(starship.isDisrupting) {
+			"Cannot jump while disrupting!"
 		}
 
 

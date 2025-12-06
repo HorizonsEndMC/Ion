@@ -78,9 +78,15 @@ object Hyperspace : IonServerComponent() {
 			starship.centerOfMass.x.toDouble(),
 			starship.centerOfMass.z.toDouble()
 		)
-		if (massShadows != null) {
+		if (massShadows != null && starship.disruptorCount.isNotEmpty()) {
 			var combinedWellStrength = 0.0
 			massShadows.forEach { combinedWellStrength += it.wellStrength }
+			for (player in starship.disruptorCount) {
+				val enemyStarship = ActiveStarships.findByPilot(player) ?: continue
+				if (enemyStarship.centerOfMass.distanceSquared(starship.centerOfMass) < enemyStarship.balancing.interdictionRange) {
+					combinedWellStrength += 1
+				}
+			}
 			if (starship.balancing.jumpStrength <= combinedWellStrength) {
 				starship.userError("Ship is within a strong Gravity Well! Jump cancelled")
 				return
@@ -93,6 +99,7 @@ object Hyperspace : IonServerComponent() {
 			}
 			return
 		}
+
 
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }

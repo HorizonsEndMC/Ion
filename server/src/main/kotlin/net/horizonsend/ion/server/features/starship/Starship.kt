@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
@@ -179,6 +180,7 @@ class Starship(
 
 		multiblockManager.onDestroy()
 		transportManager.onDestroy()
+		disruptorTarget = null
 		subsystems.forEach { it.onDestroy() }
 	}
 
@@ -488,6 +490,7 @@ class Starship(
 	val thrusters = LinkedList<ThrusterSubsystem>()
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
+	val warpDisruptors = LinkedList<DisruptorSubsystem>()
 	val jumpBeacons = LinkedList<JumpBeaconSubsystem>()
 	val jumpFieldGenerators = LinkedList<JumpFieldGeneratorSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
@@ -530,6 +533,9 @@ class Starship(
 
 	var isInterdicting = false; private set
 	var isJumpBeaconOn = false; private set
+	var disruptorCount = mutableListOf<Player>()
+	var isDisrupting : Boolean = false; private set
+	var disruptorTarget: Player? = null
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -548,6 +554,24 @@ class Starship(
 		}
 
 		onlinePassengers.forEach { player -> player.success("Gravity well enabled") }
+	}
+
+	fun setIsDisrupting(value: Boolean, target: Player?) {
+		Tasks.checkMainThread()
+		isDisrupting = value
+
+		warpDisruptors
+			.filter { it.isIntact() }
+			.map { it.pos.toLocation(world).block.state }
+		if (!value) {
+			disruptorTarget = null
+			onlinePassengers.forEach { player -> player.success("Disruptor disabled") }
+
+			return
+		}
+
+		disruptorTarget = target
+		onlinePassengers.forEach { player -> player.success("Disruptor enabled") }
 	}
 
 	fun toggleJumpBeacon(value: Boolean) {

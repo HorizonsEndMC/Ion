@@ -58,7 +58,7 @@ object CapturableStationsCommand : SLCommand() {
 @CommandPermission("ion.core.capturablestation.create")
 object KothStationCommand : SLCommand() {
 	@Subcommand("create")
-	fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
+	fun KothStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
 		KothStation.findById(
 			KothStation.create(
 				stationName,

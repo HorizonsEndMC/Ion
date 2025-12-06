@@ -26,8 +26,7 @@ class NeutralizerProjectile(
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         val shooterStarship = shooter.starship ?: return
 		starship.shieldRegenModifier = 0.8
-		starship.cruiseData.accel *= 0.8
-		starship.userErrorAction("Ship shield regeneration and acceleration disrupted!")
+		starship.userErrorAction("Ship shield regeneration disrupted!")
 		val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world)
         shooterStarship.world.spawnParticle(
             Particle.TRAIL,

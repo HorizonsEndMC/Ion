@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -116,6 +117,10 @@ object Interdiction : IonServerComponent() {
 	}
 
 	fun findGravityWell(starship: ActiveStarship): GravityWellSubsystem? = starship.gravityWells.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
+
+	fun findDisruptor(starship: ActiveStarship): DisruptorSubsystem? = starship.warpDisruptors.asSequence()
 		.filter { it.isIntact() }
 		.lastOrNull()
 
