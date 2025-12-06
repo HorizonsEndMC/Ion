@@ -104,14 +104,16 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFacto
 import net.horizonsend.ion.server.features.multiblock.type.starship.HornMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.FauxReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.LargeReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.MediumReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.MiniReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.SmallReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.FauxReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.ShieldCommandBurstMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SkirmishCommandBurstMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.DisruptorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.InterdictionWellMultiblock
@@ -193,6 +195,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.UpwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.WebifierStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CapitalShieldCommandBurstMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CapitalSkirmishCommandBurstMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockTop
@@ -397,7 +401,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(WebifierStarshipWeaponMultiblock)
 		registerMultiblock(TopRapidMissileLauncherStarshipWeaponMultiblock)
 		registerMultiblock(BottomRapidMissileLauncherStarshipWeaponMultiblock)
-
+		registerMultiblock(SkirmishCommandBurstMultiBlock)
+		registerMultiblock(ShieldCommandBurstMultiBlock)
+		registerMultiblock(CapitalShieldCommandBurstMultiBlock)
+		registerMultiblock(CapitalSkirmishCommandBurstMultiBlock)
 
 		registerMultiblock(TopArsenalStarshipWeaponMultiblock)
 		registerMultiblock(BottomArsenalStarshipWeaponMultiblock)

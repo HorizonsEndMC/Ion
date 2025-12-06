@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.checklist
 
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.AbstractReactorCore
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.AbstractReactorCore
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
 import org.bukkit.block.Sign

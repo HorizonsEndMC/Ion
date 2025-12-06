@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.starship.checklist
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
