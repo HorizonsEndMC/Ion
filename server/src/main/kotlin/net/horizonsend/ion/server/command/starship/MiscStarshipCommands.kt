@@ -110,6 +110,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
 				.map { it.name.replace(" ", "_") }
 		}
+		manager.commandCompletions.registerCompletion("spaceWorlds") { e ->
+			Bukkit.getWorlds()
+				.filter {it.hasFlag(WorldFlag.SPACE_WORLD)}
+				.filter { it.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) }
+				.map {it.name.replace((" "), "_")
+		}
 
 		manager.commandContexts.registerContext(AutoTurretTargeting.AutoTurretTarget::class.java) { context ->
 			val target = context.popFirstArg()
