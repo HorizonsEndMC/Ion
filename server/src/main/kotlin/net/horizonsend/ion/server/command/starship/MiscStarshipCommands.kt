@@ -381,10 +381,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("disrupt")
 	@CommandCompletion("@players @nothing")
 	@Description("Disrupt someone's hyperdrive")
-	fun onDisruptHyperDrive(sender: Player, @Optional player: String) {
+	fun onDisruptHyperDrive(sender: Player, @Optional player: String?) {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
-		val targetPlayer = Bukkit.getPlayer(player)
+		val targetPlayer = player?.let { Bukkit.getPlayer(it) }
 		if (sender == targetPlayer) fail{"Cannot disrupt your own hyperdrive!"}
 		if (targetPlayer == starship.disruptorTarget) fail {"Already disrupting $player!"}
 		if (starship.isInterdicting) fail {"Cannot interdict and disrupt at the same time!"}
