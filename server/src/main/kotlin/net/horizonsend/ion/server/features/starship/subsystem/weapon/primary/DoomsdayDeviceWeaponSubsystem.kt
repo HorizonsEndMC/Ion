@@ -41,7 +41,7 @@ class DoomsdayDeviceWeaponSubsystem(
             val newFirePos = getFirePos()
 
             val data = Particle.DustTransition(
-                Color.fromARGB(255, 182, 255, 0),
+                shooter.color,
                 Color.BLACK,
                 balancing.projectile.particleThickness.toFloat()
             )

@@ -35,7 +35,7 @@ class DoomsdayDeviceProjectile(
     )
 
     private val yellowParticleData = Particle.DustTransition(
-        Color.YELLOW,
+        shooter.color,
         Color.BLACK,
         balancing.particleThickness.toFloat()
     )
