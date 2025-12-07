@@ -52,6 +52,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Aut
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.CycleTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DoomsdayDeviceWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.GaussCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.InterceptorCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.IonTurretWeaponSubsystem
@@ -65,7 +66,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Pul
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.RapidMissileLauncherStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.TestBoidWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArsenalRocketProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArtilleryProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
@@ -403,7 +403,7 @@ data class ArsenalRocketBalancing(
 		override val proximityRange: Double = 75.0,
 	) : StarshipProjectileBalancing, StarshipProximityProjectileBalancing {
 		@Transient
-		override val clazz: KClass<out Projectile> = ArsenalRocketProjectile::class
+		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
 	}
 }
 
@@ -725,7 +725,7 @@ data class GaussCannonBalancing(
 	override val projectile: GaussCannonProjectileBalancing = GaussCannonProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<GaussCannonBalancing.GaussCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = AssaultTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = GaussCannonWeaponSubsystem::class
 
 	@Serializable
 	data class GaussCannonProjectileBalancing(

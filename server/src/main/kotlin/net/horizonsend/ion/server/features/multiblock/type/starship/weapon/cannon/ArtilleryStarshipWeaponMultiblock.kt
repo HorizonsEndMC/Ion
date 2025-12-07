@@ -15,7 +15,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object ArtilleryStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ArtilleryWeaponSubsystem>(), DisplayNameMultilblock {
-	override val key: String = "plasma_cannon"
+	override val key: String = "artillery"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): ArtilleryWeaponSubsystem {
 		return ArtilleryWeaponSubsystem(starship, pos, face)
 	}
