@@ -337,7 +337,8 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker(station.name) ?: return@syncOnly addKingOfTheHill(station)
+		val marker: CircleMarker = markerSet.findCircleMarker(station.name)
+			?: return@syncOnly addKingOfTheHill(station)
 
 		val rgb = Color.WHITE.asRGB()
 		marker.setFillStyle(0.0, Color.WHITE.asRGB())
@@ -350,7 +351,7 @@ object NationsMap : IonServerComponent(true) {
 		<p><h2>${station.name}</h2></p><p>
 		${
 			"""
-			<p>Activates during $hour:00 on the $day'st day of the week (UTC)
+			<p>Activates during $hour:00 (UTC)
 			""".trimIndent()
 		}
 		</p>

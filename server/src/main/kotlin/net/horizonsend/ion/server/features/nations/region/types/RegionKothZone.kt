@@ -50,15 +50,6 @@ class RegionKothZone(station: KothStation) :
 		NationsMap.updateKingOfTheHill(this)
 	}
 
-	override fun onCreate() {
-		NationsMap.addKingOfTheHill(this)
-	}
-
-	override fun onDelete() {
-		NationsMap.removeKingOfTheHill(this)
-	}
-
-
 	override fun calculateInaccessMessage(player: Player): String? {
 		val noAccessMessage = "You cannot build in a King Of The Hill zone!".intern()
 		return noAccessMessage
