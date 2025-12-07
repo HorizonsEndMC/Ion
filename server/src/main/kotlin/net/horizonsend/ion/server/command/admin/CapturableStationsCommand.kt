@@ -80,7 +80,6 @@ object KothStationCommand : SLCommand() {
 	}
 
 	@Subcommand("inititate")
-	@CommandCompletion("@koths")
 	fun kothInitiation(sender: Player, kothName: String) {
 		KingOfTheHills.forceActivateKoth(kothName)
 		sender.success("Successfully initiated $kothName")
