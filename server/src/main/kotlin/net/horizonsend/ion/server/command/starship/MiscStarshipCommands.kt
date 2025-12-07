@@ -112,9 +112,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		manager.commandCompletions.registerCompletion("spaceWorlds") { e ->
 			Bukkit.getWorlds()
-				.filter {it.hasFlag(WorldFlag.SPACE_WORLD)}
+				.filter { it.hasFlag(WorldFlag.SPACE_WORLD) }
 				.filter { it.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) }
-				.map {it.name.replace((" "), "_")
+				.map {
+					it.name.replace((" "), "_")
+				}
 		}
 
 		manager.commandContexts.registerContext(AutoTurretTargeting.AutoTurretTarget::class.java) { context ->
