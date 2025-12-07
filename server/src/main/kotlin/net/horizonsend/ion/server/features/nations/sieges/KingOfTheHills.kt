@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -319,13 +320,17 @@ object KingOfTheHills : IonServerComponent() {
 
 	}
 
-	fun isActiveKoth(stationId: Oid<KothStation>) = activeKoths.any { it.kothId == stationId }
+	fun isActiveKoth(kothID: Oid<KothStation>) = activeKoths.any { it.kothId == kothID }
 
 	fun forceActivateKoth(desiredKoth: String) {
 		val allKoths = Regions.getAllOf<RegionKothZone>()
+		val iminentKoths = Regions.getAllOf<RegionKothZone>()
+			.filter { koth -> koth.siegeHour == currentHour()}
+			.filter { koth -> koth.siegeHour == currentHour()+1 }
 		for (koth in allKoths) {
 			if (koth.name == desiredKoth) {
-				check(isActiveKoth(koth.id)) { "Koth is already active"}
+				check(activeKoths.isEmpty()) { "A Koth is already active"}
+				check(iminentKoths.contains(koth)) {"That koth will already happen soon!"}
 				KothSiege.create(koth.id)
 				activeKoths.add(Koths(koth.id, currentTimeMillis(), kothScores, null))
 				Notify.chatAndGlobal(
