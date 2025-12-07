@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.database.schema.nations.Nation
@@ -273,28 +274,38 @@ object KingOfTheHills : IonServerComponent() {
 
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
 
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended!\n" +
-			"<gold><bold>First place: ${topThree[0]}\n" +
-			"<grey><bold>Second place: ${topThree[1]}\n" +
-			"<orange><bold>Third place: ${topThree[2]}"))
-		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The King of the Hill has ended!\n" +
-			"First place: ${topThree[0]}\n" +
-			"Second place: ${topThree[1]}\n" +
-			"Third place: ${topThree[2]}")
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill $kothName has ended!\n" +
+			if (topThree[0] != "None") {
+				"<gold><bold>First place: ${topThree[0]}\n"} else {""}+
+				if (topThree[1] != "None") {
+			"<grey><bold>Second place: ${topThree[1]}\n"} else {""} +
+				if (topThree[2] != "None") {
+			"<red><bold>Third place: ${topThree[2]}"} else {""}
+		))
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The King of the Hill $kothName has ended!\n" +
+			if (topThree[0] != "None") {
+				"First place: ${topThree[0]}\n"} else {""}+
+			if (topThree[1] != "None") {
+				"Second place: ${topThree[1]}\n"} else {""} +
+			if (topThree[2] != "None") {
+				"Third place: ${topThree[2]}"} else {""}
+		)
 	}
 
 	private fun determineWinner(koths: Koths): MutableList<String> {
-		val rawScores = kothScores[koths.kothId]
-		if (rawScores?.isEmpty() == true) {
+		val rawScores = kothScores[koths.kothId] ?: return mutableListOf("why")
+
+		if (rawScores.isEmpty()) {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended, nobody participated!"))
 			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "King of the Hill event has ended, nobody participated!")
 		}
-		val leaderboard = rawScores?.entries
-			?.sortedByDescending { it.value }
-			?.associate { it.key to it.value }
-		val firstPlace = leaderboard?.entries?.elementAt(0).toString()
-		val secondPlace = leaderboard?.entries?.elementAt(1).toString()
-		val thirdPlace = leaderboard?.entries?.elementAt(2).toString()
+		val leaderboard = rawScores.entries
+			.sortedByDescending { it.value }
+			.associate { it.key to it.value }
+		val numNationsParticipated = leaderboard.size
+		val firstPlace = if (numNationsParticipated > 0) NationCache[leaderboard.entries.elementAt(0).key].name else "None"
+		val secondPlace = if (numNationsParticipated > 1) NationCache[leaderboard.entries.elementAt(1).key].name else "None"
+		val thirdPlace = if (numNationsParticipated > 2) NationCache[leaderboard.entries.elementAt(2).key].name else "None"
 		val topThree = mutableListOf(firstPlace, secondPlace, thirdPlace)
 		return topThree
 	}
