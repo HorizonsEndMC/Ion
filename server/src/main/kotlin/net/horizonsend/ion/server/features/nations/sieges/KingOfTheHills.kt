@@ -77,64 +77,74 @@ object KingOfTheHills : IonServerComponent() {
 				val playerNation = PlayerCache[player].nationOid
 				if (playerNation == null || !isPiloting(player)) continue
 				println(memberCount)
+				//If the player's nation hasnt gotten a player in the koth this loop yet:
 				if (!memberCount.contains(playerNation)) {
 					println("we made it")
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
 					memberCount[playerNation] = 1
 					println("2nd $memberCount")
-					kothScores[kothId]?.contains(playerNation)?.let {
-						println("we made it to the second checkpoint")
-						if (!it) {
-							println("forth checkpoint")
-							println(kothScores[kothId])
-							kothScores[kothId]?.get(playerNation)?.plus(1)
-							println(kothScores[kothId])
-							log.info("New nation ${playerNation} has entered the KOTH ${kothId}")
-							Notify.chatAndGlobal(
-								MiniMessage.miniMessage()
-									.deserialize("<gold><bold>Nation ${playerNation.id} has entered the KOTH ${kothId}!")
-							)
-							Discord.sendMessage(
-								ConfigurationFiles.discordSettings().eventsChannel,
-								"<gold>Nation ${playerNation.id} has entered the KOTH!"
-							)
-						}
+					//If the player's nation hasnt gotten a player in the koth at all this siege:
+					if (!kothScores[kothId]!!.contains(playerNation)) {
+						println("3rd checkpoint ${kothScores[kothId]}")
+						kothScores[kothId]!![playerNation] = 1
+						println("4th checkpoint ${kothScores[kothId]}")
 					}
-
-				} else {
-					println("went to the else statement instead")
-					val personalNationCount = memberCount[playerNation]
+				}
+				//If the player isnt the first of his nation to be in the koth, add 1 to his nation's member count
+				else {
+					println("went to else statement instead")
+					val personalNationCount = memberCount[playerNation]!!
+					println(personalNationCount)
+					val newCount = personalNationCount.plus(1)
 					println(memberCount)
-					val newCount = personalNationCount?.plus(1)
 					memberCount[playerNation] = newCount
 					println(memberCount)
 				}
-			}
+				println("we made it to here")
+				println(nation)
 
-			val dominantNation = findDominantNation(memberCount)
-			if (dominantNation != nation && dominantNation != null) {
-				kothScores[kothId]?.get(dominantNation)?.plus(1)
-				log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
-				Notify.chatAndGlobal(
-					MiniMessage.miniMessage()
-						.deserialize("<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!")
-				)
-				Discord.sendMessage(
-					ConfigurationFiles.discordSettings().eventsChannel,
-					"<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!"
-				)
-			}
+				//if there are people in the Koth, find the nation with the most people
+				if (!memberCount.isEmpty()) {
+					//if there has been no nations in this koth, just set it to the first nation in the member count
+					if (nation == null) {nation = memberCount.keys.firstNotNullOf { it }}
+					println(nation)
+					//Find the nation with the highest member count, if nobody participated return the nation from the line above
+					val dominantNation = findDominantNation(memberCount, nation!!)
+					println(dominantNation)
+					//If the dominant nation this time isnt the same as last loop
+					if (dominantNation != nation) {
+						println("made it to here to change the dominator")
+						log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
+						Notify.chatAndGlobal(
+							MiniMessage.miniMessage()
+								.deserialize("<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!")
+						)
+						Discord.sendMessage(
+							ConfigurationFiles.discordSettings().eventsChannel,
+							"<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!"
+						)
+					}
+					//Set the nation as this loop's dominant nation for next time
+					nation = dominantNation
+				}
+				//Get the scores of this koth
+				val thisKothsScores = kothScores[kothId]
+				//if there is a dominant nation
+				if (nation != null) {
+					//give them a point
+					thisKothsScores!![nation]!!.plus(1)
+				}
 
-			nation = dominantNation
-			when {
+				when {
 
-				elapsed > kothMaxTimeMillis -> endKoth(koth)
-				else -> {
-					for (player in world.players) {
-						if (!kothRegion.contains(player.location)) continue
-						val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(kothMaxTimeMillis - elapsed) / 60.0
-						player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
-						CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
+					elapsed > kothMaxTimeMillis -> endKoth(koth)
+					else -> {
+						for (player in world.players) {
+							if (!kothRegion.contains(player.location)) continue
+							val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(kothMaxTimeMillis - elapsed) / 60.0
+							player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
+							CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
+						}
 					}
 				}
 			}
@@ -142,8 +152,8 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 
-	fun findDominantNation(numbers: MutableMap<Oid<Nation>, Int?>): Oid<Nation>? {
-		if (numbers.isEmpty()) return null
+	fun findDominantNation(numbers: MutableMap<Oid<Nation>, Int?>, nation: Oid<Nation>): Oid<Nation> {
+		if (numbers.isEmpty()) return nation
 		val orderedNation = numbers.entries
 			.sortedByDescending { it.value }
 			.associate { it.key to it.value }
@@ -196,13 +206,12 @@ object KingOfTheHills : IonServerComponent() {
 	private fun processKothKill(player: Player, killer: Player, points: Int, kothId: Oid<KothStation>) {
 		val victimNation = PlayerCache[player].nationOid
 		val killerNation = PlayerCache[killer].nationOid
-
 		kothScores[kothId]?.get(killerNation)?.plus(points)
 		log.info("Awarded $killerNation $points points for killing ${player.name}")
 		if (killerNation != null && victimNation != null) {
 			IonServer.server.sendMessage(
 				template(
-					text("{0} accrued {1} points for killing {2}."),
+					text("${killer.name} accrued ${points} points for killing ${player.name}."),
 					formatNationName(killerNation),
 					points,
 					player.name
