@@ -47,7 +47,6 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(0).ironBlock()
 			}
 			y(2) {
 				x(0).sponge()
