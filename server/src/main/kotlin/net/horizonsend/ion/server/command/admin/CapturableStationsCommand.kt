@@ -18,8 +18,6 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.lastQuarter
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.time.DayOfWeek
