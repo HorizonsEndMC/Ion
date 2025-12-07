@@ -78,7 +78,7 @@ object KingOfTheHills : IonServerComponent() {
 				if (playerNation == null || !isPiloting(player)) continue
 				if (!memberCount.contains(playerNation)) {
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
-					memberCount[playerNation]?.plus(1)
+					memberCount[playerNation] = 1
 					kothScores[kothId]?.contains(playerNation)?.let {
 						if (!it) {
 							kothScores[kothId]?.get(playerNation)?.plus(1)
