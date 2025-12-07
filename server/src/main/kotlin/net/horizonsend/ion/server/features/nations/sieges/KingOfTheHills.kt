@@ -76,12 +76,19 @@ object KingOfTheHills : IonServerComponent() {
 				if (!kothRegion.contains(player.location)) continue
 				val playerNation = PlayerCache[player].nationOid
 				if (playerNation == null || !isPiloting(player)) continue
+				println(memberCount)
 				if (!memberCount.contains(playerNation)) {
+					println("we made it")
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
 					memberCount[playerNation] = 1
+					println("2nd $memberCount")
 					kothScores[kothId]?.contains(playerNation)?.let {
+						println("we made it to the second checkpoint")
 						if (!it) {
+							println("forth checkpoint")
+							println(kothScores[kothId])
 							kothScores[kothId]?.get(playerNation)?.plus(1)
+							println(kothScores[kothId])
 							log.info("New nation ${playerNation} has entered the KOTH ${kothId}")
 							Notify.chatAndGlobal(
 								MiniMessage.miniMessage()
@@ -95,9 +102,12 @@ object KingOfTheHills : IonServerComponent() {
 					}
 
 				} else {
+					println("went to the else statement instead")
 					val personalNationCount = memberCount[playerNation]
+					println(memberCount)
 					val newCount = personalNationCount?.plus(1)
 					memberCount[playerNation] = newCount
+					println(memberCount)
 				}
 			}
 
