@@ -53,6 +53,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Cyc
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DoomsdayDeviceWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.GaussCannonWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyLogisticsCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.InterceptorCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.IonTurretWeaponSubsystem
@@ -65,6 +66,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Poi
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PulseCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.RapidMissileLauncherStarshipWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ScramblerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.TestBoidWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArtilleryProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
@@ -95,10 +97,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.H
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyNeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.PhaserWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RocketWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.SwarmMissileStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TorpedoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.WebifierWeaponSubsystem
 import net.kyori.adventure.sound.Sound
 import java.util.concurrent.TimeUnit
 import kotlin.math.PI
@@ -356,7 +360,7 @@ data class WebifierBalancing(
 	override val projectile: WebifierProjectileBalancing = WebifierProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing>, StarshipHeavyWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PhaserWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = WebifierWeaponSubsystem::class
 
 	@Serializable
 	data class WebifierProjectileBalancing(
@@ -524,7 +528,7 @@ data class RapidHeavyMissileLauncherBalancing(
 	StarshipTrackingWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
 	StarshipTurretWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>{
 	@Transient
-	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = HeavyLaserWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = RapidHeavyMissileLauncherWeaponSubsystem::class
 
 	@Serializable
 	data class RapidHeavyMissileLauncherProjectileBalancing(
@@ -925,7 +929,7 @@ data class ScramblerBalancing(
 	override val projectile: ScramblerProjectileBalancing = ScramblerProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<ScramblerBalancing.ScramblerProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PulseCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = ScramblerWeaponSubsystem::class
 
 	@Serializable
 	data class ScramblerProjectileBalancing(
@@ -1248,7 +1252,7 @@ data class HeavyLogisticsCannonBalancing(
 	override val projectile: HeavyLogisticsCannonProjectileBalancing = HeavyLogisticsCannonProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LightLogisticsCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = HeavyLogisticsCannonWeaponSubsystem::class
 
 	@Serializable
 	data class HeavyLogisticsCannonProjectileBalancing(
