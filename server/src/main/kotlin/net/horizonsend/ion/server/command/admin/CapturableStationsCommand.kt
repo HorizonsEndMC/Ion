@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.command.admin
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -11,8 +12,10 @@ import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
@@ -20,12 +23,19 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.litote.kmongo.eq
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
 
 @CommandAlias("capturablestation")
 @CommandPermission("ion.core.capturablestation.create")
 object CapturableStationsCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerAsyncCompletion("koths") {
+			return@registerAsyncCompletion KothStationCache.stations.map { it.name }
+		}
+	}
+
 	@Subcommand("create normal")
 	fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
 		CapturableStation.findById(
@@ -102,6 +112,17 @@ object KothStationCommand : SLCommand() {
 		sender.success("All Koths: $allKothNames")
 	}
 
+	@Subcommand("delete")
+	@CommandCompletion("@koths")
+	fun deleteKothStation(sender: Player, stationName: String) {
+		val station = KothStation.findOne(KothStation::name eq stationName)
+		if (station == null) {
+			sender.userError("Cannot find station $stationName")
+			return
+		}
+		KothStation.delete(station._id)
+		sender.success("Successfully deleted $stationName")
+	}
 }
 
 @CommandAlias("graceperiodtoggle")

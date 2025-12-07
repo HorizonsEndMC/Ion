@@ -6,8 +6,11 @@ import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.trx
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 
 /** Referenced on:
  *  - Nation (for the stations they own) */
@@ -51,6 +54,11 @@ data class KothStation(
                 objId()
 			col.insertOne(KothStation(id, name, world, x, z, siegeHour, siegeDays, kothPoints))
 			return id
+		}
+
+		fun delete(id: Oid<KothStation>) = trx { sess ->
+			KothSiege.col.deleteMany(sess, KothStation::_id eq id)
+			col.deleteOneById(sess, id)
 		}
 	}
 }
