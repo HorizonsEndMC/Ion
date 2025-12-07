@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.command.admin
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
@@ -13,9 +14,11 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.NationsMap
+import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.time.DayOfWeek
@@ -77,14 +80,23 @@ object KothStationCommand : SLCommand() {
 	}
 
 	@Subcommand("inititate")
+	@CommandCompletion("@koths")
 	fun kothInitiation(sender: Player, kothName: String) {
 		KingOfTheHills.forceActivateKoth(kothName)
 		sender.success("Successfully initiated $kothName")
 	}
-	@Subcommand("list")
+
+	@Subcommand("listactive")
 	fun listActiveKoths(sender: Player) {
 		val activeKoths = KingOfTheHills.getKOTHS()
-		sender.success("active Koths: $activeKoths")
+		sender.success("Active Koths: $activeKoths")
+	}
+
+	@Subcommand("listall")
+	fun listAllKoths(sender: Player) {
+		val allKoths = Regions.getAllOf<RegionKothZone>()
+		val allKothNames = allKoths.forEach { it.name }
+		sender.success("All Koths: $allKothNames")
 	}
 
 }

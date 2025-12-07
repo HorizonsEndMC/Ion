@@ -69,6 +69,16 @@ object SiegeCommand : SLCommand() {
 		tellPlayerCurrentlySiegableStations(sender)
 	}
 
+	@Subcommand("scoreboard")
+	fun tellPlayerKothScoreboard(sender: Player) {
+		val activeKoths = KingOfTheHills.getKOTHS()
+		for (koth in activeKoths) {
+			val scores = koth.kothPoints
+			val name = koth.kothId
+			sender.sendRichMessage("<gray>Current scores for $name:\n<gold> $scores")
+		}
+	}
+
 	private fun tellPlayerCurrentlySiegableStations(sender: Player) {
 		val currentKothNames = KingOfTheHills.getCurrentKoth().joinToString {
 			val stationName = it.name
