@@ -341,7 +341,7 @@ object KingOfTheHills : IonServerComponent() {
 			.filter { koth -> koth.siegeHour == currentHour()+1 }
 		for (koth in allKoths) {
 			if (koth.name == desiredKoth) {
-				if(activeKoths.isEmpty()) return
+				if(!activeKoths.isEmpty()) return
 				if (iminentKoths.contains(koth)) return
 				KothSiege.create(koth.id)
 				activeKoths.add(Koths(koth.id, currentTimeMillis(), kothScores, null))
