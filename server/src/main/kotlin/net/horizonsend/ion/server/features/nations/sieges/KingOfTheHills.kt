@@ -70,19 +70,6 @@ object KingOfTheHills : IonServerComponent() {
 			val kothRegion: RegionKothZone = Regions[kothId]
 			val elapsed = currentTimeMillis() - koth.start
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
-			val dominantNation = findDominantNation(memberCount)
-			if (dominantNation != nation) {
-				kothScores[kothId]?.get(dominantNation)?.plus(1)
-				log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
-				Notify.chatAndGlobal(
-					MiniMessage.miniMessage()
-						.deserialize("<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!")
-				)
-				Discord.sendMessage(
-					ConfigurationFiles.discordSettings().eventsChannel,
-					"<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!"
-				)
-			}
 
 			for (player in world.players) {
 				if (!kothRegion.contains(player.location)) continue
@@ -90,7 +77,7 @@ object KingOfTheHills : IonServerComponent() {
 				if (playerNation == null || !isPiloting(player)) continue
 				if (!memberCount.contains(playerNation)) {
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
-					memberCount[playerNation] = 1
+					memberCount[playerNation]?.plus(1)
 					kothScores[kothId]?.contains(playerNation)?.let {
 						if (!it) {
 							kothScores[kothId]?.get(playerNation)?.plus(1)
@@ -105,12 +92,28 @@ object KingOfTheHills : IonServerComponent() {
 							)
 						}
 					}
+
 				} else {
 					val personalNationCount = memberCount[playerNation]
 					val newCount = personalNationCount?.plus(1)
 					memberCount[playerNation] = newCount
 				}
 			}
+
+			val dominantNation = findDominantNation(memberCount)
+			if (dominantNation != nation && dominantNation != null) {
+				kothScores[kothId]?.get(dominantNation)?.plus(1)
+				log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
+				Notify.chatAndGlobal(
+					MiniMessage.miniMessage()
+						.deserialize("<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!")
+				)
+				Discord.sendMessage(
+					ConfigurationFiles.discordSettings().eventsChannel,
+					"<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!"
+				)
+			}
+
 			nation = dominantNation
 			when {
 
@@ -128,8 +131,8 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 
-	fun findDominantNation(numbers: MutableMap<Oid<Nation>, Int?>): Oid<Nation> {
-		check(!numbers.isEmpty()) { "No nations in the KOTH yet." }
+	fun findDominantNation(numbers: MutableMap<Oid<Nation>, Int?>): Oid<Nation>? {
+		if (numbers.isEmpty()) return null
 		val orderedNation = numbers.entries
 			.sortedByDescending { it.value }
 			.associate { it.key to it.value }
