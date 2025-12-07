@@ -141,6 +141,12 @@ class OrderEditorMenu(viewer: Player, private val order: Oid<BazaarOrder>) : Inv
 				return@async
 			}
 
+			val territory = BazaarOrder.findById(order)?.cityTerritory ?: return@async
+			if (!Bazaars.checkInsideCorrectTerritory(viewer, Regions[territory]).isSuccess()) {
+				withdrawStockButton.updateWith(InputResult.FailureReason(listOf(text("You are not in the city where this order was placed!", RED))))
+				return@async
+			}
+
 			Tasks.sync {
 				viewer.openInputMenu(
 					prompt = text("Select amount to withdraw."),

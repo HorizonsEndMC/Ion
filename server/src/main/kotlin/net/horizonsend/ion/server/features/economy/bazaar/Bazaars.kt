@@ -252,6 +252,17 @@ object Bazaars : IonServerComponent() {
 	}
 
 	/**
+	 * Checks if the [player] is within [territory], and returns a validator result.
+	 **/
+	fun checkInsideCorrectTerritory(player: Player, territory: RegionTerritory): ValidatorResult<RegionTerritory> {
+		val currentTerritory = Regions.findFirstOf<RegionTerritory>(player.location) ?: return ValidatorResult.FailureResult(text("You're not in a territory!", RED))
+
+		if (territory != currentTerritory) return ValidatorResult.FailureResult(text("You're not in the correct territory!", RED))
+
+		return ValidatorResult.ValidatorSuccessSingleEntry(territory)
+	}
+
+	/**
 	 * Creates a bazaar sell listing
 	 * Returns a success, or failure result with a reason.
 	 **/
@@ -600,6 +611,9 @@ object Bazaars : IonServerComponent() {
 			return InputResult.FailureReason(listOf(text("That order does have any stock to withdraw!", RED)))
 		}
 
+		val withinTerritoryResult = checkInsideCorrectTerritory(player, Regions[orderDocument.cityTerritory])
+		if (!withinTerritoryResult.isSuccess()) return withinTerritoryResult
+
 		val toRemove = minOf(limit, currentStock)
 
 		BazaarOrder.updateById(order, inc(BazaarOrder::stock, -toRemove))
@@ -633,6 +647,9 @@ object Bazaars : IonServerComponent() {
 
 		val territoryResult = checkValidTerritory(Regions[orderDocument.cityTerritory])
 		if (!territoryResult.isSuccess()) return territoryResult
+
+		val withinTerritoryResult = checkInsideCorrectTerritory(fulfiller, Regions[orderDocument.cityTerritory])
+		if (!withinTerritoryResult.isSuccess()) return withinTerritoryResult
 
 		val itemValidationResult = checkValidString(orderDocument.itemString)
 		val itemReference: ItemStack = itemValidationResult.result ?: return itemValidationResult
