@@ -302,24 +302,25 @@ object KingOfTheHills : IonServerComponent() {
 
 	fun beginKoth() = asyncLocked {
 
-		val currentKoth = getCurrentKoth().first()
+		for (currentKoth in getCurrentKoth()) {
 
-		val currentKothID = currentKoth.id
+			val currentKothID = currentKoth.id
 
 
-		KothSiege.create(currentKothID)
+			KothSiege.create(currentKothID)
 
-		activeKoths.add(Koths(currentKothID, currentTimeMillis(), kothScores, null))
+			activeKoths.add(Koths(currentKothID, currentTimeMillis(), kothScores, null))
 
-		Notify.chatAndGlobal(
-			MiniMessage.miniMessage().deserialize("<gold>King of the hill ${currentKoth.name} has begun!")
-		)
+			Notify.chatAndGlobal(
+				MiniMessage.miniMessage().deserialize("<gold>King of the hill ${currentKoth.name} has begun!")
+			)
 
-		Discord.sendMessage(
-			ConfigurationFiles.discordSettings().eventsChannel,
-			"<gold>King of the hill ${currentKoth.name} has begun!"
-		)
+			Discord.sendMessage(
+				ConfigurationFiles.discordSettings().eventsChannel,
+				"<gold>King of the hill ${currentKoth.name} has begun!"
+			)
 
+		}
 	}
 
 	fun isActiveKoth(kothID: Oid<KothStation>) = activeKoths.any { it.kothId == kothID }
