@@ -79,7 +79,7 @@ object NationsMap : IonServerComponent(true) {
 		Tasks.sync {
 			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
-			Regions.getAllOf<RegionKothZone>().forEach { ::addKingOfTheHill }
+			Regions.getAllOf<RegionKothZone>().forEach (::addKingOfTheHill)
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
@@ -93,7 +93,7 @@ object NationsMap : IonServerComponent(true) {
 
 		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
-		Regions.getAllOf<RegionKothZone>().forEach { NationsMap::updateKingOfTheHill}
+		Regions.getAllOf<RegionKothZone>().forEach(NationsMap::updateKingOfTheHill)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 	}
 
