@@ -18,10 +18,12 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.lastQuarter
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.time.DayOfWeek
+import java.time.ZonedDateTime
 
 @CommandAlias("capturablestation")
 @CommandPermission("ion.core.capturablestation.create")
@@ -88,8 +90,12 @@ object KothStationCommand : SLCommand() {
 
 	@Subcommand("listactive")
 	fun listActiveKoths(sender: Player) {
-		val activeKoths = KingOfTheHills.getKOTHS()
-		sender.success("Active Koths: $activeKoths")
+		val kothLocations = Regions.getAllOf<RegionKothZone>()
+			.filter { it.siegeHour == ZonedDateTime.now().hour }
+		for (koth in kothLocations) {
+			sender.success("Active Koth ${koth.name} at: ${koth.x}, ${koth.z}")
+		}
+		sender.success("WARNING: Above list will not include manually activated Koths! All active koth IDs: ${KingOfTheHills.getKOTHS()}")
 	}
 
 	@Subcommand("listall")
