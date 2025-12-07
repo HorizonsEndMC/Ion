@@ -288,7 +288,6 @@ object KingOfTheHills : IonServerComponent() {
 		if (rawScores?.isEmpty() == true) {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended, nobody participated!"))
 			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "King of the Hill event has ended, nobody participated!")
-			check(!rawScores.isEmpty()) {"Empty score, leaving"}
 		}
 		val leaderboard = rawScores?.entries
 			?.sortedByDescending { it.value }
@@ -319,7 +318,6 @@ object KingOfTheHills : IonServerComponent() {
 				ConfigurationFiles.discordSettings().eventsChannel,
 				"<gold>King of the hill ${currentKoth.name} has begun!"
 			)
-
 		}
 	}
 
@@ -332,8 +330,8 @@ object KingOfTheHills : IonServerComponent() {
 			.filter { koth -> koth.siegeHour == currentHour()+1 }
 		for (koth in allKoths) {
 			if (koth.name == desiredKoth) {
-				check(activeKoths.isEmpty()) { "A Koth is already active"}
-				check(iminentKoths.contains(koth)) {"That koth will already happen soon!"}
+				if(activeKoths.isEmpty()) return
+				if (iminentKoths.contains(koth)) return
 				KothSiege.create(koth.id)
 				activeKoths.add(Koths(koth.id, currentTimeMillis(), kothScores, null))
 				Notify.chatAndGlobal(
