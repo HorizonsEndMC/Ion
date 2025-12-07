@@ -276,7 +276,7 @@ data class NeutralizerBalancing(
 		override val starshipShieldDamageMultiplier: Double = 2.0,
 		override val areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val particleThickness: Double = 2.0,
+		override val particleThickness: Double = 4.0,
 		override val maxDegrees: Double = 25.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER)

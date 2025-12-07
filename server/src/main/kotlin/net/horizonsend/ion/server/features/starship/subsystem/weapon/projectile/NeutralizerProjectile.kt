@@ -31,12 +31,12 @@ class NeutralizerProjectile(
         shooterStarship.world.spawnParticle(
             Particle.TRAIL,
             impactLocation,
-            1,
+            10,
             0.0,
             0.0,
             0.0,
             0.0,
-            Particle.Trail(endLocation,Color.YELLOW,60)
+            Particle.Trail(endLocation,Color.YELLOW,80)
         )
     }
 }

@@ -254,7 +254,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 		CustomBlockKeys.MINI_REACTOR_CORE, CustomBlock(
 		key = CustomBlockKeys.MINI_REACTOR_CORE,
-		blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.WEST, BlockFace.WEST)),
+		blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST, BlockFace.WEST)),
 		drops = BlockLoot(
 			requiredTool = null,
 			drops = customItemDrop(CustomItemKeys.MINI_REACTOR_CORE)
@@ -276,7 +276,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.KOTH_BLOCK, CustomBlock(
                 key = CustomBlockKeys.KOTH_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.DOWN)),
+                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH,)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.KOTH_BLOCK)
@@ -333,7 +333,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.VANADIUM_ORE, CustomBlock(
                 key = CustomBlockKeys.VANADIUM_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.DOWN,BlockFace.WEST)),
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.UP,BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.VANADIUM)
@@ -355,7 +355,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.ZIRCON_ORE, CustomBlock(
                 key = CustomBlockKeys.ZIRCON_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.WEST, BlockFace.UP, BlockFace.NORTH)),
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.NORTH)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.ZIRCON)
