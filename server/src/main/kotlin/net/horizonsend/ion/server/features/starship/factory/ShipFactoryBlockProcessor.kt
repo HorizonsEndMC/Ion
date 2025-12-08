@@ -4,16 +4,14 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMaps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.core.registration.IonRegistries
-import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyBlockUtils.getRotatedBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
-import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.minecraft.world.level.block.Rotation
@@ -122,13 +120,6 @@ abstract class ShipFactoryBlockProcessor(
 	}
 
 	protected fun getRotatedBlockData(data: BlockData): BlockState {
-		val nms = data.nms
-		val customBlock = IonRegistries.CUSTOM_BLOCKS[nms]
-		if (customBlock != null) {
-			return CustomBlockRegistry.getRotated(customBlock, nms, getNMSRotation())
-		}
-
-		val rotation = getNMSRotation()
-		return nms.rotate(rotation)
+		return getRotatedBlockData(data, getNMSRotation())
 	}
 }
