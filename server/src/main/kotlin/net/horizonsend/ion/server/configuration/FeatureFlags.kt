@@ -16,4 +16,5 @@ data class FeatureFlags(
 	val bigUpdateMultiblocks: Boolean = false,
 	val tractorBeams: Boolean = false,
 	val boardingRamps: Boolean = false,
+	val loadSpawnerData: Boolean = true,
 )
