@@ -58,6 +58,6 @@ class WreckPlacementConfiguration(val density: Double) : FeaturePlacementConfigu
 
 	private fun generateMetaData(random: Random, world: World, x: Int, z: Int): WreckMetaData {
 		val rotation = Rotation.entries.randomEntry()
-		return WreckMetaData(random.nextLong(), WreckStructureKeys.TUTORIAL_ESCAPE_POD, rotation) //TODO
+		return WreckMetaData(random.nextLong(), WreckStructureKeys.YACHT, rotation) //TODO
 	}
 }
