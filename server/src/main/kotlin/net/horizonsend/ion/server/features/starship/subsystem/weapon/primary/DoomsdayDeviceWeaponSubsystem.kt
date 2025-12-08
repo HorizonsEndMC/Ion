@@ -30,7 +30,7 @@ class DoomsdayDeviceWeaponSubsystem(
         private const val WARM_UP_TIME_SECONDS = 3
     }
 
-    override val length: Int = 15
+    override val length: Int = 11
 
     override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
         var tick = 0

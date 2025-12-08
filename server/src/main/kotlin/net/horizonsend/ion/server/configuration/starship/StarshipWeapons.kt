@@ -1096,14 +1096,14 @@ data class InterceptorCannonBalancing(
 @Serializable
 data class DoomsdayDeviceBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10000),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 1,
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int = 1,
 	override val applyCooldownToAll: Boolean = true,
 
 	override val convergeDistance: Double = 0.0,
-	override val projectileSpawnDistance: Int = 3,
+	override val projectileSpawnDistance: Int = 4,
 	override val angleRadiansHorizontal: Double = 70.0,
 	override val angleRadiansVertical: Double = 70.0,
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(25),
