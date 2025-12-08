@@ -208,7 +208,7 @@ data class HeavyLaserBalancing(
 
 @Serializable
 data class HeavyNeutralizerBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 30_000,
 	override val isForwardOnly: Boolean = false,
@@ -250,7 +250,7 @@ data class HeavyNeutralizerBalancing(
 
 @Serializable
 data class NeutralizerBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 30_000,
 	override val isForwardOnly: Boolean = false,
@@ -337,7 +337,7 @@ data class PhaserBalancing(
 @Serializable
 data class WebifierBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
-	override val fireRestrictions: FireRestrictions = FireRestrictions(maxBlockCount = 12000, incompatibleMultiblocks = listOf(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000, incompatibleMultiblocks = listOf(
 		/*
 		IncompatibleSubsystemInfo(
 			SwarmMissileStarshipWeaponSubsystem::class.java,
@@ -654,7 +654,7 @@ data class HeavyTurretBalancing(
 
 @Serializable
 data class AutocannonBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, maxBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 2667,
 	override val isForwardOnly: Boolean = false,
@@ -686,7 +686,7 @@ data class AutocannonBalancing(
 
 @Serializable
 data class AssaultTurretBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 6500, maxBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 2667,
 	override val isForwardOnly: Boolean = false,
@@ -718,7 +718,7 @@ data class AssaultTurretBalancing(
 
 @Serializable
 data class GaussCannonBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 6500, maxBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 2667,
 	override val isForwardOnly: Boolean = false,
@@ -914,7 +914,7 @@ data class PulseCannonBalancing(
 
 @Serializable
 data class ScramblerBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 2550,
 	override val isForwardOnly: Boolean = false,
@@ -986,7 +986,7 @@ data class PlasmaCannonBalancing(
 
 @Serializable
 data class ArtilleryBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 2500,
 	override val isForwardOnly: Boolean = true,
@@ -1095,7 +1095,7 @@ data class InterceptorCannonBalancing(
 // Start Event Weapons
 @Serializable
 data class DoomsdayDeviceBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10000),
 	override val firePowerConsumption: Int = 1,
 	override val isForwardOnly: Boolean = false,
@@ -1168,7 +1168,7 @@ data class RocketBalancing(
 
 @Serializable
 data class LogisticsTurretBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override val firePowerConsumption: Int = 100,
 	override val isForwardOnly: Boolean = false,
@@ -1202,7 +1202,7 @@ data class LogisticsTurretBalancing(
 
 @Serializable
 data class LightLogisticsCannonBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override val firePowerConsumption: Int = 100,
 	override val isForwardOnly: Boolean = false,
@@ -1238,7 +1238,7 @@ data class LightLogisticsCannonBalancing(
 
 @Serializable
 data class HeavyLogisticsCannonBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override val firePowerConsumption: Int = 100,
 	override val isForwardOnly: Boolean = false,
