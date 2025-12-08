@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.configuration.util.StaticDoubleAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
+import net.horizonsend.ion.server.core.registration.keys.WreckStructureKeys
 import net.horizonsend.ion.server.features.gas.collection.ChildWeight
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.collection.HeightRamp
@@ -106,7 +107,13 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(),
-				WreckPlacementConfiguration(0.06)
+				WreckPlacementConfiguration(
+					0.06,
+					listOf(
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.YACHT, 1.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.TUTORIAL_ESCAPE_POD, 10.0),
+					)
+				)
 			))
 		)
 	)
