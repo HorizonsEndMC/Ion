@@ -704,8 +704,8 @@ enum class StarshipType(
 	LANCER_BATTLECRUISER(
 		displayName = "Lancer",
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
-		minSize = 16000,
-		maxSize = 20000,
+		minSize = 25000,
+		maxSize = 32000,
 		minLevel = 80,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
