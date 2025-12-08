@@ -30,7 +30,7 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<GaussCannonProjectileBalancing> = starship.balancingManager.getWeapon(GaussCannonWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(0, getSign() * 4, +4))
+		listOf(Vec3i(0, getSign() * 4, -3))
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {

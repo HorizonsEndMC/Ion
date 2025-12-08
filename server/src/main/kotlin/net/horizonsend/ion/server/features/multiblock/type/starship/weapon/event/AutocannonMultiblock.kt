@@ -30,7 +30,10 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<AutocannonProjectileBalancing> = starship.balancingManager.getWeapon(AutocannonWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
+		listOf(Vec3i(-1, getSign() * 4, -2),
+			Vec3i(1, getSign() * 5, -2),
+			Vec3i(-1, getSign() * 4, -2),
+			Vec3i(-1, getSign() * 5, -2))
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {

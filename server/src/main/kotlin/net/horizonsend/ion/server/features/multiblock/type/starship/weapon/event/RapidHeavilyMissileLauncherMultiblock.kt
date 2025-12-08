@@ -31,9 +31,10 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<RapidHeavyMissileLauncherProjectileBalancing> = starship.balancingManager.getWeapon(RapidHeavyMissileLauncherWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
+		Vec3i(+2, getYFactor() * 4, +3),
+		Vec3i(+1, getYFactor() * 4, +3),
 		Vec3i(-2, getYFactor() * 4, +3),
-		Vec3i(+0, getYFactor() * 4, +4),
-		Vec3i(+2, getYFactor() * 4, +3)
+		Vec3i(-1, getYFactor() * 4, +3)
 	)
 
 	override fun MultiblockShape.buildStructure() {

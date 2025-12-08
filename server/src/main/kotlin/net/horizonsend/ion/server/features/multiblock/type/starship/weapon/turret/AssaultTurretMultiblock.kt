@@ -30,7 +30,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 		starship.balancingManager.getWeapon(AssaultTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(-1, getSign() * 4, +4), Vec3i(1, getSign() * 4, +4))
+		listOf(Vec3i(-1, getSign() * 4, -3), Vec3i(1, getSign() * 4, -3))
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {
