@@ -31,6 +31,10 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.navigationco
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -38,6 +42,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.Battlecr
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
@@ -219,6 +227,22 @@ object SubsystemDetector {
 
 			is CruiserReactorMultiblock -> {
 				starship.subsystems += CruiserReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is MiniReactorMultiblock -> {
+				starship.subsystems += MiniReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is SmallReactorMultiblock -> {
+				starship.subsystems += SmallReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is MediumReactorMultiblock -> {
+				starship.subsystems += MediumReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is LargeReactorMultiblock -> {
+				starship.subsystems += LargeReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is BargeReactorMultiBlock -> {
