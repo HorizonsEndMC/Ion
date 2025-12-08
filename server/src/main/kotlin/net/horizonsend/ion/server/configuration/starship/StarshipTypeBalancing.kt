@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTank
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.kyori.adventure.key.Key
@@ -233,6 +234,12 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.5,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -252,6 +259,12 @@ data class NewStarshipBalancing(
 					1,
 					"Tech 2 starfighters require a mini reactor to pilot!"
 				)),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"This ship cannot use gravity wells!"
+				)
+			),
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -277,6 +290,12 @@ data class NewStarshipBalancing(
 					1,
 					"Tech 2 starfighters require a mini reactor to pilot!"
 				)),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"This ship cannot use gravity wells!"
+				)
+			),
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -298,6 +317,12 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 0.0,
 			shieldPowerMultiplier = 0.33,
 			cruiseSpeedMultiplier = 1.1,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
+			),
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -312,11 +337,17 @@ data class NewStarshipBalancing(
 		val gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 500,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
+			),
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
@@ -329,7 +360,7 @@ data class NewStarshipBalancing(
 		val assault_gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 500,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
@@ -381,11 +412,17 @@ data class NewStarshipBalancing(
 		val corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 650,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
+			),
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
@@ -431,7 +468,7 @@ data class NewStarshipBalancing(
 		val stasis_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 650,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
@@ -461,7 +498,7 @@ data class NewStarshipBalancing(
 		val assault_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 650,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
@@ -491,7 +528,7 @@ data class NewStarshipBalancing(
 		val logistics_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 650,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
@@ -520,11 +557,17 @@ data class NewStarshipBalancing(
 		val frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 850,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
+			),
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
@@ -537,7 +580,7 @@ data class NewStarshipBalancing(
 		val assault_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 850,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -562,7 +605,7 @@ data class NewStarshipBalancing(
 		val blackOps_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 850,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -587,7 +630,7 @@ data class NewStarshipBalancing(
 		val missile_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 10,
+			interdictionRange = 850,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -615,7 +658,7 @@ data class NewStarshipBalancing(
 		val destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 3000,
+			interdictionRange = 1000,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -632,7 +675,7 @@ data class NewStarshipBalancing(
 		val assault_destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 10,
+			interdictionRange = 1000,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.85,
@@ -681,7 +724,7 @@ data class NewStarshipBalancing(
 		val cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 3500,
+			interdictionRange = 1250,
 			jumpStrength = 2.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -692,6 +735,12 @@ data class NewStarshipBalancing(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -716,7 +765,7 @@ data class NewStarshipBalancing(
 		val logistics_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 10,
+			interdictionRange = 1250,
 			jumpStrength = 2.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -753,7 +802,7 @@ data class NewStarshipBalancing(
 		val drone_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 10,
+			interdictionRange = 1250,
 			jumpStrength = 2.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -790,7 +839,7 @@ data class NewStarshipBalancing(
 		val battlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 4500,
+			interdictionRange = 1500,
 			jumpStrength = 3.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
@@ -804,6 +853,12 @@ data class NewStarshipBalancing(
 				),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				)
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -828,7 +883,7 @@ data class NewStarshipBalancing(
 		val lancer_battlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
-			interdictionRange = 10,
+			interdictionRange = 1500,
 			jumpStrength = 5.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
@@ -948,6 +1003,7 @@ sealed interface StarshipTypeBalancing {
 	val shieldRegenMultiplier: Double
 
 	val requiredMultiblocks: List<RequiredSubsystemInfo>
+	val forbiddenMultiblocks: List<IncompatibleSubsystemInfo>
 
 	val weaponOverrides: List<StarshipWeaponBalancing<*>>
 }
@@ -971,6 +1027,7 @@ open class StanrdardStarshipTypeBalancing(
 	override val shieldRegenMultiplier: Double = 1.0,
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
+	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
 ) : StarshipTypeBalancing
@@ -994,6 +1051,7 @@ open class GroundStarshipBalancing(
 	override val shieldRegenMultiplier: Double = 1.0,
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
+	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
 ) : StarshipTypeBalancing
