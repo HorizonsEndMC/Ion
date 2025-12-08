@@ -3,25 +3,12 @@ package net.horizonsend.ion.server.command.misc
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import com.mojang.serialization.DataResult
-import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.horizonsend.ion.server.features.ores.storage.OreData
-import net.horizonsend.ion.server.features.space.data.BlockData
-import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -29,238 +16,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.NbtIo
-import net.minecraft.nbt.NbtOps
-import net.minecraft.world.level.ChunkPos
-import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.PalettedContainer
-import net.minecraft.world.level.chunk.Strategy
-import net.minecraft.world.level.chunk.storage.RegionFile
 import org.bukkit.World
 import org.bukkit.entity.Player
-import java.io.File
 
-/**
- * Command for restoring selected world data from backup sources.
- *
- * Terrain regeneration reads block-state section data from backup region files.
- * Ore regeneration reads plugin-owned ore metadata from chunk persistent data.
- *
- * Subcommands:
- * - /regenerate terrain : restore terrain blocks from backup region files
- * - /regenerate ores    : restore ores from stored ore metadata
- * - /regenerate all     : restore terrain, then ores
- */
 @CommandPermission("ion.regenerate")
 @CommandAlias("regenerate")
 object RegenerateCommand : SLCommand() {
-	/**
-	 * Root folder containing backup world data used for regeneration.
-	 *
-	 * Each child folder is expected to represent a stripped down world and contain region files
-	 * that can be read as the source of truth for terrain restoration.
-	 */
-	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
-	/**
-	 * Background coroutine scope used for region-file IO and NBT decoding.
-	 *
-	 * Heavy work is done off the server thread, while final chunk mutation is
-	 * deferred to synchronized tasks.
-	 */
-	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
-	@Subcommand("terrain")
-	fun onRegenerateTerrain(sender: Player) {
-		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
-
-		regenerateSelection(sender, selection, sender.world)
-	}
-
-	/**
-	 * Regenerates all selected terrain blocks from backup region files.
-	 *
-	 * The selection is split into chunk sections. Each section is loaded from the
-	 * matching backup region file, decoded from NBT block-state data, converted into
-	 * a {@link CompletedSection}, and then applied back to the live world.
-	 *
-	 * @return a deferred that completes when all selected sections have been placed
-	 */
-	fun regenerateSelection(sender: Audience, selection: Region, world: World): Deferred<Boolean> {
-		sender.information("Started regenerating ${world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
-		val time = System.currentTimeMillis()
-
-		val sections = mutableMapOf<Triple<Int, Int, Int>, CompletableDeferred<Pair<ChunkPos, CompletedSection>>>()
-		val sectionsHeight = IntRange(selection.minimumPoint.y().shr(4), selection.maximumPoint.y().shr(4))
-
-		// Group by string first to avoid getting the region dozens of times
-		val regionsToChunksMap = selection.chunks.groupBy {
-			val regionX = it.x().shr(5)
-			val regionZ = it.z().shr(5)
-
-			"r.$regionX.$regionZ.mca"
-		}
-
-		for (chunk in selection.chunkCubes) {
-			sections[Triple(chunk.x(), chunk.y(), chunk.z())] = CompletableDeferred()
-		}
-
-		for ((regionFile, chunks) in regionsToChunksMap) {
-			scope.launch {
-				val region = getRegion(world, regionFile) ?: return@launch sender.serverError(
-					"Region file ${chunks.first().x().shr(5)}, ${chunks.first().z().shr(5)} doesn't exist!"
-				)
-
-				for (chunk in chunks) scope.launch chunk@{
-					fun removeDeferredChunkSections() {
-						val chunkSections = sections.filterKeys { it.first == chunk.x() && it.third == chunk.z() }
-
-						for ((location, _) in chunkSections) {
-							sections.remove(location)
-						}
-					}
-
-					val chunkPos = ChunkPos(chunk.x(), chunk.z())
-
-					if (!region.doesChunkExist(chunkPos)) {
-						removeDeferredChunkSections()
-						sender.serverError("Chunk [${chunk.x()}, ${chunk.z()}] was not in Region file ${chunks.first().x().shr(5)}! Skipping.")
-						return@chunk
-					}
-
-					val chunkData = region.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) }
-
-					if (chunkData == null) {
-						sender.serverError("Chunk [${chunk.x()}, ${chunk.z()}] could not be read from Region file ${chunks.first().x().shr(5)}! Skipping.")
-						removeDeferredChunkSections()
-						return@chunk
-					}
-
-					@Suppress("UNCHECKED_CAST")
-					val sectionsList = chunkData.getListOrEmpty("sections").mapNotNull { it as? CompoundTag }
-						.associateBy { it.getByteOr("Y", 0) }
-
-					section@
-					for (sectionY in sectionsHeight) {
-						val sectionPos = Triple(chunk.x(), sectionY, chunk.z())
-						val storedSection = sectionsList[sectionY.toByte()]
-
-						if (storedSection == null) {
-							sender.serverError("Stored section for $sectionPos was not found. Skipping.")
-							sections[sectionPos]!!.complete(chunkPos to CompletedSection.empty(sectionY))
-							continue@section
-						}
-
-						val deferred = sections[sectionPos]!! // I hope not
-
-						val blockStateCodec = PalettedContainer.codecRO(
-							BlockState.CODEC,
-							Strategy.createForBlockStates(Block.BLOCK_STATE_REGISTRY),
-							Blocks.AIR.defaultBlockState()
-						)
-
-						val dataResult = blockStateCodec.parse(
-							NbtOps.INSTANCE,
-							storedSection.getCompoundOrEmpty("block_states")
-						)
-
-						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState>>).ifError {
-							sender.serverError("Error reading section blocks: $it")
-							log.warn(it.message())
-						}.getOrThrow()
-
-						regenerateSection(sender, sectionY, chunkPos, sectionBlocks, deferred, selection)
-					}
-				}
-			}
-		}
-
-		val deferred = CompletableDeferred<Boolean>()
-
-		scope.launch { complete(world, sections.values) }.invokeOnCompletion {
-			val diff = System.currentTimeMillis() - time
-
-			deferred.complete(true)
-			sender.information("Took $diff ms")
-		}
-
-		return deferred
-	}
-
-	/**
-	 * Waits for all section regeneration tasks and applies the resulting sections
-	 * to their live chunks on the main thread.
-	 */
-	private suspend fun complete(world: World, deferredSections: Collection<CompletableDeferred<Pair<ChunkPos, CompletedSection>>>) {
-		val newSections = deferredSections.toMutableSet()
-
-		val sections = newSections.awaitAll()
-
-		val chunkMap = sections.groupBy { it.first }.mapKeys { world.minecraft.getChunk(it.key.x, it.key.z) }
-
-		for ((levelChunk, groupedSections) in chunkMap) {
-			Tasks.sync {
-				for ((_, section) in groupedSections) {
-					section.place(levelChunk)
-				}
-			}
-		}
-	}
-
-	/**
-	 * Converts one decoded stored section into a CompletedSection, copying only
-	 * blocks that fall inside the selected WorldEdit region.
-	 */
-	private fun regenerateSection(
-		audience: Audience,
-		sectionY: Int,
-		chunkPos: ChunkPos,
-		palettedContainer: PalettedContainer<BlockState>,
-		deferred: CompletableDeferred<Pair<ChunkPos, CompletedSection>>,
-		selection: Region
-	) {
-		val newSection = CompletedSection.empty(sectionY)
-
-		for (x in 0..15) for (y in 0..15) for (z in 0..15) {
-			val realX = x + (chunkPos.x.shl(4))
-			val realY = y + (sectionY.shl(4))
-			val realZ = z + (chunkPos.z.shl(4))
-
-			if (!selection.contains(BlockVector3.at(realX, realY, realZ))) {
-				continue
-			}
-
-			val state: BlockState = palettedContainer.get(x, y, z)
-			val index = (y shl 8) or (z shl 4) or x
-			newSection.setBlock(index, BlockData(state, null))
-		}
-
-		log.info("Completed section ${chunkPos.x}, $sectionY, ${chunkPos.z}")
-		deferred.complete(chunkPos to newSection)
-	}
-
-	/**
-	 * Opens a backup region file for the given world and region file name.
-	 *
-	 * @return the region file, or null if the backup world folder does not exist
-	 */
-	private fun getRegion(world: World, regionFileName: String): RegionFile? {
-		val region = cleanWorldsFolder.resolve(world.name)
-
-		if (!region.exists()) return null
-
-		try {
-			val regionKey = world.minecraft.chunkSource.chunkMap.storageInfo()
-			return RegionFile(regionKey, region.resolve(regionFileName).toPath(), region.toPath(), false)
-		} catch (error: Error) {
-			throw error
-		}
-	}
-
 	@Subcommand("ores")
 	fun onRegenerateOres(sender: Player) {
 		val selection = sender.getSelection() ?: fail { "You must make a selection!" }
@@ -268,10 +30,6 @@ object RegenerateCommand : SLCommand() {
 		regenerateOresInSelection(sender, selection, sender.world)
 	}
 
-	/**
-	 * Restores ore blocks inside the selected region using ore metadata stored
-	 * in the chunk persistent data container.
-	 */
 	fun regenerateOresInSelection(feedback: Audience, region: Region, world: World) {
 		feedback.information("Regenerating ores")
 		val chunks = region.chunks
@@ -318,17 +76,6 @@ object RegenerateCommand : SLCommand() {
 				feedback.userError("Error regenerating! ${it.message}")
 				it.printStackTrace()
 			} }
-		}
-	}
-
-	@Subcommand("all")
-	fun onRegenerateAll(sender: Player) {
-		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
-
-		val isComplete = regenerateSelection(sender, selection, sender.world)
-
-		isComplete.invokeOnCompletion {
-			regenerateOresInSelection(sender, selection, sender.world)
 		}
 	}
 }
