@@ -5,9 +5,12 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
+import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import net.minecraft.nbt.CompoundTag
 import org.bukkit.block.data.BlockData
 import java.io.File
 
@@ -23,6 +26,17 @@ class WreckStructure(override val key: IonRegistryKey<WreckStructure, out WreckS
 		val baseBlock = clipboard.getFullBlock(adjusted)
 
 		return BukkitAdapter.adapt(baseBlock)
+	}
+
+	fun getNBTData(startOffsetX: Int, startOffsetY: Int, startOffsetZ: Int, realX: Int, realY: Int, realZ: Int, start: FeatureStart): CompoundTag? {
+		val adjusted = clipboard.origin.subtract(startOffsetX, startOffsetY, startOffsetZ)
+		val nbt = clipboard.getFullBlock(adjusted).nbt?.nms() as? CompoundTag ?: return null
+
+		nbt.putInt("x", realX)
+		nbt.putInt("y", realY)
+		nbt.putInt("z", realZ)
+
+		return nbt
 	}
 
 	fun isInBounds(localX: Int, localY: Int, localZ: Int): Boolean {
