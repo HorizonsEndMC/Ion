@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -289,7 +290,8 @@ object ContactsSidebar {
         val starships: List<ActiveStarship> = if (starshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
-                        it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
+					if (it.type == StarshipType.BLACK_OPS_FRIGATE) {it.centerOfMass.toVector().distanceSquared(sourceVector) <= (getContactsDistanceSq(player))/4}
+                    else{it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)} &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
                         isRelationEnabled(player, it.controller) &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR

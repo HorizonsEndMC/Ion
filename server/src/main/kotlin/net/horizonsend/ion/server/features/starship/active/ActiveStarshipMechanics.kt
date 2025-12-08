@@ -293,7 +293,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun updateDynmapVisibility(player: Player, starship: ActiveControlledStarship?) {
 		if (!getPluginManager().isPluginEnabled("dynmap")) return
 
-		val isNoStarship = starship == null
+		val isNoStarship = starship == null || starship.type == StarshipType.RECON_STARFIGHTER
 		var isInPOICheck = false
 		val isHoldingController = isHoldingController(player)
 

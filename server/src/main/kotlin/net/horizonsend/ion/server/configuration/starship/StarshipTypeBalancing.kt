@@ -4,6 +4,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
+import net.horizonsend.ion.server.configuration.starship.IncompatibleSubsystemInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
@@ -19,6 +20,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.kyori.adventure.key.Key
@@ -96,6 +99,20 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 0.0,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -109,6 +126,20 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.2,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -122,6 +153,20 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.25,
 			shieldPowerMultiplier = 1.0,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
@@ -143,6 +188,20 @@ data class NewStarshipBalancing(
 						maxBlockCount = 12000
 					),
 					firePowerConsumption = 5300,
+				)
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -238,6 +297,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -263,6 +330,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"This ship cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -321,6 +396,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -346,6 +429,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -379,6 +470,16 @@ data class NewStarshipBalancing(
 				HeavyLaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
 				),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
@@ -404,6 +505,16 @@ data class NewStarshipBalancing(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
@@ -421,6 +532,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -460,6 +579,16 @@ data class NewStarshipBalancing(
 				),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000), maxPerShot = 2)
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
@@ -489,6 +618,16 @@ data class NewStarshipBalancing(
 				),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -520,6 +659,16 @@ data class NewStarshipBalancing(
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
@@ -549,6 +698,16 @@ data class NewStarshipBalancing(
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
@@ -566,6 +725,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -597,6 +764,16 @@ data class NewStarshipBalancing(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -606,7 +783,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
-			jumpStrength = 1.0,
+			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 0.8,
@@ -621,6 +798,16 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
@@ -650,6 +837,16 @@ data class NewStarshipBalancing(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 3, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -666,6 +863,20 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
@@ -687,6 +898,16 @@ data class NewStarshipBalancing(
 					1,
 					"Tech 2 destroyers require a small reactor to pilot!"
 				)),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			weaponOverrides = listOf(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
@@ -711,6 +932,16 @@ data class NewStarshipBalancing(
 					1,
 					"Tech 2 destroyers require a small reactor to pilot!"
 				)),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			weaponOverrides = listOf(
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
@@ -740,6 +971,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -791,6 +1026,12 @@ data class NewStarshipBalancing(
 					"Tech 2 cruisers require a large reactor to pilot!"
 				)
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
 				release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
@@ -828,6 +1069,12 @@ data class NewStarshipBalancing(
 					"Tech 2 cruisers require a large reactor to pilot!"
 				)
 			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				)
+			),
 			shipSounds = StarshipSounds(
 				pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
 				release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
@@ -858,6 +1105,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Tech 1 ships cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+				"Only recon starfighters can use jump beacons!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -908,6 +1159,12 @@ data class NewStarshipBalancing(
 					FuelTankSubsystem::class.java,
 					1,
 					"Battlecruisers require fuel to pilot!"
+				)
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
 				)
 			),
 			shipSounds = StarshipSounds(
