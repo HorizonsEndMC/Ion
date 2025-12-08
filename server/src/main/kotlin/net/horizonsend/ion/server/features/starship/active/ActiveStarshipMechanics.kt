@@ -28,6 +28,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.AutoQueuedShot
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
@@ -176,6 +178,32 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		// Destroy Cruisers without intact reactors
 		ActiveStarships.all().filter { it.type == StarshipType.CRUISER && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<CruiserReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+
+		// Destroy large tech 2 ships without intact reactors
+		ActiveStarships.all().filter {
+			it.type == StarshipType.DRONE_CRUISER ||
+			it.type == StarshipType.LOGISTICS_CRUISER ||
+			it.type == StarshipType.LANCER_BATTLECRUISER &&
+			!it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<LargeReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+
+		// Destroy medium tech 2 ships without intact reactors
+		ActiveStarships.all().filter {
+			it.type == StarshipType.ASSAULT_FRIGATE ||
+			it.type == StarshipType.BLACK_OPS_FRIGATE ||
+			it.type == StarshipType.MISSILE_FRIGATE ||
+			it.type == StarshipType.ASSAULT_DESTROYER ||
+			it.type == StarshipType.INTERDICTOR_DESTROYER &&
+			!it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<MediumReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
