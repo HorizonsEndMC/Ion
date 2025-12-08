@@ -309,9 +309,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		} ?:Bukkit.getWorld(destination)?.let {
 			Pos(
 				it.name,
-				starship.centerOfMass.x,
-				starship.centerOfMass.y,
-				starship.centerOfMass.z
+				randomInt(0, 10000),
+				128,
+				randomInt(0, 10000)
 			)
 		} ?:BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
 			// Check if the destination is a saved player bookmark
