@@ -40,6 +40,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	operator fun get(namespacedKey: NamespacedKey): IonRegistryKey<T, out T>? = namespaced[namespacedKey]
 
 	fun getOrTrow(string: String): IonRegistryKey<T, out T> = keys[string] ?: throw IllegalArgumentException("Key $string not found for registry ${registryId.key}")
+	fun getOrDefault(string: String, default: IonRegistryKey<T, out T>): IonRegistryKey<T, out T> = keys[string] ?: default
 
 	fun allStrings() = keys.keys
 	fun allkeys() = allKeys

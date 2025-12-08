@@ -4,5 +4,7 @@ import net.horizonsend.ion.server.core.registration.keys.RegistryKeys.WRECK_STRU
 import net.horizonsend.ion.server.features.world.generation.feature.meta.wreck.WreckStructure
 
 object WreckStructureKeys : KeyRegistry<WreckStructure>(WRECK_STRUCTURE, WreckStructure::class) {
+	val EMPTY = registerKey("EMPTY")
 	val TUTORIAL_ESCAPE_POD = registerKey("TUTORIAL_ESCAPE_POD")
+	val YACHT = registerKey("YACHT")
 }
