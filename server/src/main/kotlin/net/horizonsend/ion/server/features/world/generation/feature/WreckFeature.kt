@@ -40,15 +40,15 @@ object WreckFeature : GeneratedFeature<WreckMetaData>(WorldGenerationFeatureKeys
 					val realZ = chunkPos.z.shl(4) + z
 					val zOffset = start.z - realZ
 
-					if (!structure.isInBounds(xOffset, yOffset, zOffset)) continue
+					if (!structure.isInBounds(xOffset, yOffset, zOffset, metaData)) continue
 
-					val blockData = structure.getBlockData(xOffset, yOffset, zOffset)
+					val blockData = structure.getBlockData(xOffset, yOffset, zOffset, metaData)
 					if (blockData.material.isAir) continue
 
 					chunkData.setBlock(x, realY, z, blockData)
 
 					if (!blockData.nms.hasBlockEntity()) continue
-					val nbt = structure.getNBTData(xOffset, yOffset, zOffset, realX, realY, realZ, start) ?: continue
+					val nbt = structure.getNBTData(xOffset, yOffset, zOffset, realX, realY, realZ, metaData) ?: continue
 
 					chunkData as CraftChunkData
 					val nms = chunkData.handle
@@ -69,7 +69,7 @@ object WreckFeature : GeneratedFeature<WreckMetaData>(WorldGenerationFeatureKeys
 	override fun getExtents(metaData: WreckMetaData): Pair<Vec3i, Vec3i> {
 		val wreckStructure =  metaData.structureId.getValue()
 
-		return Pair(wreckStructure.minPoint, wreckStructure.maxPoint)
+		return wreckStructure.getExtents(metaData)
 	}
 }
 

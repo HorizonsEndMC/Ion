@@ -1,8 +1,13 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
+import net.minecraft.world.level.block.Rotation
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.BlockData
 import java.util.concurrent.ConcurrentHashMap
 
 object LegacyBlockUtils {
@@ -74,5 +79,15 @@ object LegacyBlockUtils {
 		}
 
 		return true
+	}
+
+	fun getRotatedBlockData(data: BlockData, rotation: Rotation): BlockState {
+		val nms = data.nms
+		val customBlock = IonRegistries.CUSTOM_BLOCKS[nms]
+		if (customBlock != null) {
+			return CustomBlockRegistry.getRotated(customBlock, nms, rotation)
+		}
+
+		return nms.rotate(rotation)
 	}
 }

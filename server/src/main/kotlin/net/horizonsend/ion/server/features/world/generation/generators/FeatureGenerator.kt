@@ -26,36 +26,40 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 	}
 
 	override fun generateNoise(worldInfo: WorldInfo, random: java.util.Random, chunkX: Int, chunkZ: Int, chunkData: ChunkData) {
-		val level = Bukkit.getWorld(worldInfo.uid)!!.minecraft
-		val nmsChunk = level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_STARTS)
+		try {
+			val level = Bukkit.getWorld(worldInfo.uid)!!.minecraft
+			val nmsChunk = level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_STARTS)
 
-		val pos = ChunkPos(chunkX, chunkZ)
+			val pos = ChunkPos(chunkX, chunkZ)
 
-		// Get data for this chunk
-		val referencedStarts = mutableListOf<FeatureStart>()
+			// Get data for this chunk
+			val referencedStarts = mutableListOf<FeatureStart>()
 
-		val starts = nmsChunk.allStarts
-		for ((structure, nmsStart) in starts) {
-			if (structure !is NMSStructureIntegration.IonStructure) continue
-			referencedStarts.add(FeatureStart.fromNMS(nmsStart))
-		}
-
-		val references = nmsChunk.allReferences
-		for ((structure, chunkReferences) in references) {
-			if (structure !is NMSStructureIntegration.IonStructure) continue
-
-			for (key in chunkReferences.iterator()) {
-				val referencePos = ChunkPos(key)
-				val referencedChunk = level.getChunk(referencePos.x, referencePos.z, ChunkStatus.STRUCTURE_STARTS)
-				val nmsStart = referencedChunk.getStartForStructure(structure) ?: continue
+			val starts = nmsChunk.allStarts
+			for ((structure, nmsStart) in starts) {
+				if (structure !is NMSStructureIntegration.IonStructure) continue
 				referencedStarts.add(FeatureStart.fromNMS(nmsStart))
 			}
-		}
 
-		if (referencedStarts.isEmpty()) return
+			val references = nmsChunk.allReferences
+			for ((structure, chunkReferences) in references) {
+				if (structure !is NMSStructureIntegration.IonStructure) continue
 
-		for (start in referencedStarts) {
-			start.feature.castAndGenerateChunk(this, pos, chunkData, start)
+				for (key in chunkReferences.iterator()) {
+					val referencePos = ChunkPos(key)
+					val referencedChunk = level.getChunk(referencePos.x, referencePos.z, ChunkStatus.STRUCTURE_STARTS)
+					val nmsStart = referencedChunk.getStartForStructure(structure) ?: continue
+					referencedStarts.add(FeatureStart.fromNMS(nmsStart))
+				}
+			}
+
+			if (referencedStarts.isEmpty()) return
+
+			for (start in referencedStarts) {
+				start.feature.castAndGenerateChunk(this, pos, chunkData, start)
+			}
+		} catch (e: Throwable) {
+			e.printStackTrace()
 		}
 	}
 
