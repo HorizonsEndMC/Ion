@@ -11,6 +11,10 @@ data class FeatureFlags(
 	val combatTimers: Boolean = true,
 	val aiSpawns: Boolean = true,
 	val customTurrets: Boolean = false,
-	val miningLaserAnimation: Boolean = false,
-	val graphTransfer: Boolean = false,
+	val miningLaserAnimation: Boolean = true,
+	val graphTransfer: Boolean = true,
+	val bigUpdateMultiblocks: Boolean = false,
+	val tractorBeams: Boolean = false,
+	val boardingRamps: Boolean = false,
+	val loadSpawnerData: Boolean = true,
 )
