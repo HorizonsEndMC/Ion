@@ -129,28 +129,6 @@ fun WorldEditBlockState.toBukkitBlockData(): BlockData {
 	}
 }
 
-fun LinCompoundTag.nms(): net.minecraft.nbt.CompoundTag {
-	val base = net.minecraft.nbt.CompoundTag()
-
-	for (entry in this.value()) {
-		base.put(entry.key, entry.value.nms())
-	}
-
-	return base
-}
-
-fun LinListTag<*>.nms(): ListTag {
-	val base = ListTag()
-
-	for (tag in this.value()) {
-		val nmsTag = tag.nms()
-
-		base.add(nmsTag)
-	}
-
-	return base
-}
-
 fun LinTag<*>.nms(): net.minecraft.nbt.Tag {
 	return when (this.type()) {
 		LinTagType.endTag() -> EndTag.INSTANCE
@@ -162,8 +140,27 @@ fun LinTag<*>.nms(): net.minecraft.nbt.Tag {
 		LinTagType.doubleTag() -> DoubleTag.valueOf((this as LinDoubleTag).value())
 		LinTagType.byteArrayTag() -> ByteArrayTag((this as LinByteArrayTag).value())
 		LinTagType.stringTag() -> StringTag.valueOf((this as LinStringTag).value())
-		LinTagType.listTag<LinListTag<*>>() -> this.nms()
-		LinTagType.compoundTag() -> this.nms()
+		LinTagType.listTag<LinListTag<*>>() -> {
+			this as LinListTag<*>
+			val base = ListTag()
+
+			for (tag in this.value()) {
+				val nmsTag = tag.nms()
+
+				base.add(nmsTag)
+			}
+
+			return base
+		}
+		LinTagType.compoundTag() -> {
+			this as LinCompoundTag
+			val base = net.minecraft.nbt.CompoundTag()
+
+			for (entry in value()) {
+				base.put(entry.key, entry.value.nms())
+			}
+			return base
+		}
 		LinTagType.intArrayTag() -> IntArrayTag((this as LinIntArrayTag).value())
 		LinTagType.longArrayTag() -> LongArrayTag((this as LinLongArrayTag).value())
 		else -> throw IllegalArgumentException()
