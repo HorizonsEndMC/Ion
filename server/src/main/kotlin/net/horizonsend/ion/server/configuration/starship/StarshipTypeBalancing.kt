@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.Battlecr
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
@@ -767,9 +768,9 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.8,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
-					LargeReactorSubsystem::class.java,
+					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 frigates require a small reactor to pilot!"
+					"Tech 2 frigates require a medium reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -806,9 +807,9 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 1.25,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
-					LargeReactorSubsystem::class.java,
+					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 frigates require a small reactor to pilot!"
+					"Tech 2 frigates require a medium reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
@@ -840,9 +841,9 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.8,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
-					LargeReactorSubsystem::class.java,
+					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 frigates require a small reactor to pilot!"
+					"Tech 2 frigates require a medium reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
@@ -912,9 +913,9 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 1.25,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
-					LargeReactorSubsystem::class.java,
+					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 destroyers require a small reactor to pilot!"
+					"Tech 2 destroyers require a medium reactor to pilot!"
 				)),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -949,9 +950,9 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
-					LargeReactorSubsystem::class.java,
+					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 destroyers require a small reactor to pilot!"
+					"Tech 2 destroyers require a medium reactor to pilot!"
 				)),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
