@@ -622,7 +622,8 @@ data class NewStarshipBalancing(
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				WebifierBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
-				ArtilleryBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
+				ArtilleryBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
+				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2)
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
