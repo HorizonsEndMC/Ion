@@ -254,7 +254,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 		CustomBlockKeys.MINI_REACTOR_CORE, CustomBlock(
 		key = CustomBlockKeys.MINI_REACTOR_CORE,
-		blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP, BlockFace.EAST)),
+		blockData = redMushroomBlockData(setOf(BlockFace.EAST)),
 		drops = BlockLoot(
 			requiredTool = null,
 			drops = customItemDrop(CustomItemKeys.MINI_REACTOR_CORE)
@@ -265,7 +265,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 			CustomBlockKeys.SMALL_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.SMALL_REACTOR_CORE,
-				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP, BlockFace.EAST)),
+				blockData = redMushroomBlockData(setOf(BlockFace.WEST)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.SMALL_REACTOR_CORE)
@@ -276,7 +276,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.KOTH_BLOCK, CustomBlock(
                 key = CustomBlockKeys.KOTH_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH,)),
+                blockData = redMushroomBlockData(setOf(BlockFace.EAST, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.KOTH_BLOCK)
@@ -287,7 +287,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 			CustomBlockKeys.MEDIUM_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.MEDIUM_REACTOR_CORE,
-				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST)),
+				blockData = redMushroomBlockData(setOf(BlockFace.NORTH)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.MEDIUM_REACTOR_CORE)
@@ -298,7 +298,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 			CustomBlockKeys.LARGE_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.LARGE_REACTOR_CORE,
-				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)),
+				blockData = redMushroomBlockData(setOf(BlockFace.SOUTH)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.LARGE_REACTOR_CORE)
@@ -311,7 +311,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.SCORDITE_ORE, CustomBlock(
                 key = CustomBlockKeys.SCORDITE_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.NORTH, BlockFace.WEST,BlockFace.UP)),
+                blockData = redMushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.NORTH)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.SCORDITE)
@@ -322,7 +322,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.SCORDITE_BLOCK, CustomBlock(
                 key = CustomBlockKeys.SCORDITE_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.EAST, BlockFace.WEST,BlockFace.NORTH)),
+                blockData = redMushroomBlockData(setOf(BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.SCORDITE_BLOCK)
@@ -333,7 +333,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.VANADIUM_ORE, CustomBlock(
                 key = CustomBlockKeys.VANADIUM_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.UP,BlockFace.WEST)),
+                blockData = redMushroomBlockData(setOf(BlockFace.DOWN)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.VANADIUM)
@@ -344,7 +344,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.VANADIUM_BLOCK, CustomBlock(
                 key = CustomBlockKeys.VANADIUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,BlockFace.EAST)),
+                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK)
@@ -355,7 +355,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.ZIRCON_ORE, CustomBlock(
                 key = CustomBlockKeys.ZIRCON_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.NORTH)),
+                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.ZIRCON)
@@ -366,7 +366,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.ZIRCON_BLOCK, CustomBlock(
                 key = CustomBlockKeys.ZIRCON_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH,BlockFace.EAST)),
+                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK)
@@ -377,7 +377,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.ATAVUM_ORE, CustomBlock(
                 key = CustomBlockKeys.ATAVUM_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH,BlockFace.NORTH)),
+                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.ATAVUM)
@@ -388,7 +388,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
         register(
             CustomBlockKeys.ATAVUM_BLOCK, CustomBlock(
                 key = CustomBlockKeys.ATAVUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.SOUTH,BlockFace.NORTH)),
+                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH)),
                 drops = BlockLoot(
                     requiredTool = null,
                     drops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK)
@@ -466,6 +466,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
 			return Material.BROWN_MUSHROOM_BLOCK.createBlockData { data ->
+				for (face in (data as MultipleFacing).allowedFaces) {
+					data.setFace(face, faces.contains(face))
+				}
+			}
+		}
+
+		fun redMushroomBlockData(faces: Set<BlockFace>) : BlockData {
+			return Material.RED_MUSHROOM_BLOCK.createBlockData { data ->
 				for (face in (data as MultipleFacing).allowedFaces) {
 					data.setFace(face, faces.contains(face))
 				}

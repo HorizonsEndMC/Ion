@@ -199,14 +199,14 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler
 	fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
-		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
+		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK || it.type == Material.RED_MUSHROOM_BLOCK}) {
 			event.isCancelled = true
 		}
 	}
 
 	@EventHandler
 	fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
-		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
+		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK || it.type == Material.RED_MUSHROOM_BLOCK}) {
 			event.isCancelled = true
 		}
 	}

@@ -168,7 +168,7 @@ abstract class TurretMultiblock<T : StarshipParticleProjectileBalancing> : Multi
 			val z = z0 + sign.z
 			val block = world.getBlockAt(x, y, z)
 			val data = block.blockData
-			val newData = if (data.material != Material.BROWN_MUSHROOM_BLOCK) {
+			val newData = if (data.material != Material.BROWN_MUSHROOM_BLOCK || data.material != Material.RED_MUSHROOM_BLOCK) {
 				data.nms.rotate(nmsRotation).createCraftBlockData()
 			} else data.nms.createCraftBlockData()
 			val nx0 = (x0.toDouble() * cosFactor - z0.toDouble() * sinFactor).roundToInt()

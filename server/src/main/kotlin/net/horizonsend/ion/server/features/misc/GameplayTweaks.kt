@@ -65,7 +65,7 @@ object GameplayTweaks : IonServerComponent() {
 
 	@EventHandler
 	fun onMushroomianPhysics(event: BlockPhysicsEvent) {
-		if (event.block.type != Material.BROWN_MUSHROOM_BLOCK) {
+		if (event.block.type != Material.BROWN_MUSHROOM_BLOCK || event.block.type != Material.RED_MUSHROOM_BLOCK) {
 			return
 		}
 
@@ -115,6 +115,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.CRYING_OBSIDIAN, 8.0f)
 		setBlastResistance(Material.NETHERITE_BLOCK, 8.0f)
 		setBlastResistance(Material.BROWN_MUSHROOM_BLOCK, 6.0f)
+		setBlastResistance(Material.RED_MUSHROOM_BLOCK, 6.0f)
 		setBlastResistance(Material.LAPIS_BLOCK, 6.0f)
 		setBlastResistance(Material.FURNACE, 6.0f)
 		setBlastResistance(Material.DISPENSER, 6.0f)

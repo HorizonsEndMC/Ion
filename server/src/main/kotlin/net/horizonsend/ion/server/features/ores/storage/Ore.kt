@@ -39,6 +39,32 @@ enum class Ore(val blockData: BlockData, private val deepslateVariant: BlockData
 		it.setFace(BlockFace.SOUTH, false)
 		it.setFace(BlockFace.WEST, false)
 	}, null),
+	VANADIUM(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.UP, false)
+		it.setFace(BlockFace.EAST, false)
+		it.setFace(BlockFace.NORTH, false)
+		it.setFace(BlockFace.SOUTH, false)
+		it.setFace(BlockFace.WEST, false)
+	}, null),
+	SCORDITE(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.UP, false)
+		it.setFace(BlockFace.EAST, false)
+		it.setFace(BlockFace.DOWN, false)
+		it.setFace(BlockFace.WEST, false)
+	}, null),
+	ATAVUM(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.NORTH, false)
+		it.setFace(BlockFace.SOUTH, false)
+	}, null),
+	ZIRCON(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.NORTH, false)
+		it.setFace(BlockFace.SOUTH, false)
+		it.setFace(BlockFace.WEST, false)
+	}, null),
 	NETHERITE(Material.ANCIENT_DEBRIS.createBlockData(), null),
 	QUARTZ(Material.NETHER_QUARTZ_ORE.createBlockData(), null),
 	REDSTONE(Material.REDSTONE_ORE.createBlockData(), Material.DEEPSLATE_REDSTONE_ORE.createBlockData()),
