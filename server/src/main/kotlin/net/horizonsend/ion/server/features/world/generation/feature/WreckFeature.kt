@@ -6,7 +6,12 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.wreck.W
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.level.block.entity.BlockEntity
+import org.bukkit.craftbukkit.generator.CraftChunkData
 import org.bukkit.generator.ChunkGenerator
 
 object WreckFeature : GeneratedFeature<WreckMetaData>(WorldGenerationFeatureKeys.WRECK) {
@@ -41,6 +46,21 @@ object WreckFeature : GeneratedFeature<WreckMetaData>(WorldGenerationFeatureKeys
 					if (blockData.material.isAir) continue
 
 					chunkData.setBlock(x, realY, z, blockData)
+
+					if (!blockData.nms.hasBlockEntity()) continue
+					val nbt = structure.getNBTData(xOffset, yOffset, zOffset, realX, realY, realZ, start) ?: continue
+
+					chunkData as CraftChunkData
+					val nms = chunkData.handle
+
+					val blockEntity = BlockEntity.loadStatic(
+						BlockPos(realX, realY, realZ),
+						blockData.nms,
+						nbt,
+						generator.world.world.minecraft.registryAccess()
+					) ?: continue
+
+					nms.setBlockEntity(blockEntity)
 				}
 			}
 		}
