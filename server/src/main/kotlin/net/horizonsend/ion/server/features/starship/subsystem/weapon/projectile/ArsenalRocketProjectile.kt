@@ -17,7 +17,7 @@ import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
-
+/*
 class ArsenalRocketProjectile(
 	source: ProjectileSource,
 	name: Component,
@@ -158,4 +158,4 @@ class ArsenalRocketProjectile(
     }
      */
 }
-
+*/

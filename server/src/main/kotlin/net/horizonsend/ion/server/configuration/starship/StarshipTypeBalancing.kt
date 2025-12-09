@@ -846,7 +846,7 @@ data class NewStarshipBalancing(
 					"Tech 2 frigates require a medium reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
-				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, ),
 				RapidMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2,),
 				RapidHeavyMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),

@@ -404,8 +404,10 @@ data class ArsenalRocketBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
-		override val proximityRange: Double = 75.0,
-	) : StarshipProjectileBalancing, StarshipProximityProjectileBalancing {
+		override val maxDegrees: Double = 180.0 ,
+		override val particleThickness: Double = 0.1,
+		//override val proximityRange: Double = 75.0,
+	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
 	}
@@ -468,8 +470,8 @@ data class RapidMissileLauncherBalancing(
 		)
 		 */
 	)),
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override val firePowerConsumption: Int = 32846,
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2500),
+	override val firePowerConsumption: Int = 2500,
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int? = 1,
 	override val applyCooldownToAll: Boolean = false,

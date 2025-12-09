@@ -21,6 +21,7 @@ sealed class ArsenalRocketStarshipWeaponMultiblock : SignlessStarshipWeaponMulti
 	}
 
 	protected abstract fun upOrDown(): BlockFace
+	abstract fun getFirePointOffset(): Vec3i
 }
 
 sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeaponMultiblock() {
@@ -122,12 +123,12 @@ sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeap
 
 object TopArsenalStarshipWeaponMultiblock : VerticalArsenalStarshipWeaponMultiblock() {
 	override fun getYFactor() = 1
-
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, 7, +0)
 	override fun upOrDown(): BlockFace = BlockFace.UP
 }
 
 object BottomArsenalStarshipWeaponMultiblock : VerticalArsenalStarshipWeaponMultiblock() {
 	override fun getYFactor() = -1
-
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -7, +0)
 	override fun upOrDown(): BlockFace = BlockFace.DOWN
 }

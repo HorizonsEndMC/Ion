@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
 import net.horizonsend.ion.server.configuration.starship.RapidMissileLauncherBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomRapidMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.RapidMissileLauncherStarshipWeaponMultiblock
@@ -39,6 +40,7 @@ class RapidMissileLauncherStarshipWeaponSubsystem(
     DirectionalSubsystem,
     AmmoConsumingWeaponSubsystem {
 
+	val projectileBalancing = balancing.projectile
     override fun getName(): Component = Component.text("Rapid Missile Launcher")
 
     override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
@@ -77,7 +79,7 @@ class RapidMissileLauncherStarshipWeaponSubsystem(
             else -> face.direction
         }
 
-        for (newBoid in 0 until 9) {
+        for (newBoid in 0 until 1) {
             Tasks.syncDelay(newBoid.toLong()) {
                 val randomInitialDir = initialLaunchDirection.clone()
                     .rotateAroundX(randomDouble(-0.15, 0.15))
@@ -92,7 +94,7 @@ class RapidMissileLauncherStarshipWeaponSubsystem(
                     randomLoc.toLocation(starship.world),
                     dir,
                     randomInitialDir,
-					balancing as RapidMissileLauncherBalancing.RapidMissileLauncherProjectileBalancing,
+					projectileBalancing,
 					shooter,
                     face,
                     target,
