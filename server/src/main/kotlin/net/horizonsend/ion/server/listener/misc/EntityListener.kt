@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.listener.SLEventListener
+import org.bukkit.entity.Bat
 import org.bukkit.entity.Enderman
 import org.bukkit.entity.Ghast
 import org.bukkit.entity.Monster
@@ -14,7 +15,7 @@ import org.bukkit.event.entity.EntityTeleportEvent
 object EntityListener : SLEventListener() {
 	@EventHandler
 	fun onEntitySpawn(event: EntitySpawnEvent) {
-		if (event.entity !is Monster && event.entity !is Slime && event.entity !is Ghast) {
+		if (event.entity !is Monster && event.entity !is Slime && event.entity !is Ghast && event.entity !is Bat) {
 			return
 		}
 
