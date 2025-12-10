@@ -355,11 +355,11 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 	}
 
-	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
+	fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
 		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own ${station.name}" }
 	}
 
-	private fun requirePermission(
+	fun requirePermission(
         player: SLPlayerId,
         station: CachedSpaceStation<*, *, *>,
         permission: SpaceStationCache.SpaceStationPermission
@@ -582,7 +582,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 * @param sender the player to check
 	 * @param clazz the type of space station to check for (Any for default)
 	 */
-	private fun <T : Any> getOwnedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
+	fun <T : Any> getOwnedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
 		return SpaceStationCache.all().filter { station ->
 			station.hasOwnershipContext(sender.slPlayerId) &&
 			if (clazz != Any::class) station::class == clazz else true
