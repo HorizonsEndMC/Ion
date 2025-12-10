@@ -430,7 +430,7 @@ internal object NationCommand : SLCommand() {
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
 		val regionTerritory = Regions.getAllOf<RegionTerritory>()
-			.firstOrNull { it.name.equals(territory, ignoreCase = true) }
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
 			?: fail { "Territory $territory not found" }
 		val territoryName = regionTerritory.name
 		val territoryWorld = regionTerritory.world
