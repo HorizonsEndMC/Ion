@@ -31,8 +31,8 @@ class NavigationModule(
 	controller: AIController,
 	val targetModule: EnmityModule,
 	val difficulty: DifficultyModule,
-	val engageHyperdiveRange: Double = 1000.0,
-) : AIModule(controller) {
+	val engageHyperdiveRange: Double = 1000.0
+) : AIModule(controller, true) {
 	private val tickRate = 20 * 10
 	private var ticks = 0 + randomInt(0, tickRate) //randomly offset navigation updates
 	private val targetLocation: Location?

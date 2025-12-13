@@ -30,7 +30,7 @@ class CaravanModule(
 	val template: AIConvoyTemplate<out ConvoyContext>,
 	val source: Location,
 	val route: ConvoyRoute
-) : AIModule(controller) {
+) : AIModule(controller, true) {
 
 	var target: AITarget = GoalTarget(Vec3i(source), source.world, false)
 	var isTraveling = true
