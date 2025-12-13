@@ -17,7 +17,7 @@ class EnmityMessageModule(
 	private val prefix: Component,
 	private val messages: List<EnmityTriggerMessage>,
 	private val configSupplier: () -> AIEmities.AIEmityConfiguration
-) : AIModule(controller) {
+) : AIModule(controller, true) {
 	private val enmityModule = controller.getCoreModuleByType<EnmityModule>()!!
 	private val messaged = mutableSetOf<Pair<AITarget, String>>() // (AITarget, message ID)
 

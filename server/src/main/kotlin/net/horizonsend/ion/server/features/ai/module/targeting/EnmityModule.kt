@@ -47,7 +47,7 @@ open class EnmityModule(
 	val configSupplier: Supplier<AIEmities.AIEmityConfiguration>
 	= Supplier { ConfigurationFiles.aiEmityConfiguration().defaultAIEmityConfiguration },
 	var enmityFilter: (starship: Starship, aiTarget: AITarget, targetMode: AITarget.TargetMode) -> Boolean = fleetAwareTargetFilter(controller)
-) : AIModule(controller), AIModuleHandlePlayerDeath, AIModuleHandleShipSink {
+) : AIModule(controller, true), AIModuleHandlePlayerDeath, AIModuleHandleShipSink {
 	val config get() = configSupplier.get()
 	val enmityList: MutableList<AIOpponent> = mutableListOf()
 	var findTargetOverride: (() -> AITarget)? = null

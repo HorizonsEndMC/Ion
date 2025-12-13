@@ -164,18 +164,23 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	}
 
 	// Functionality
+
+	var isActive = true
+
 	override fun tick() {
 		val caravanPresent = getUtilModule(CaravanModule::class.java) != null
 		if (!caravanPresent && getWorld().players.none { player -> Vec3i(player.location).distanceSquared(starship.centerOfMass) <= ACTIVITY_RANGE_SQUARED })  {
 			if (ActiveStarships.isActive(starship)) StarshipCruising.stopCruising(this, starship)
-			return
+			isActive = false
+		} else {
+			isActive = true
 		}
 
-		for ((_, module) in coreModules) {
+		for ((_, module) in coreModules.filter { isActive || it.value.alwaysActive }) {
 			module.tick()
 		}
 		if (!starship.isTeleporting) movementHandler.tick()
-		for (module in utilModules) {
+		for (module in utilModules.filter { isActive || it.alwaysActive }) {
 			module.tick()
 		}
 		speedTracker.addSpeed(starship.velocity.length())
