@@ -17,6 +17,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import java.util.function.Supplier
 import kotlin.math.cbrt
+import kotlin.math.sqrt
 
 class BagSpawner(
 	locationProvider: Supplier<Location?>,
@@ -122,6 +123,7 @@ class BagSpawner(
 					}
 				}
 				cumulativeWeight = (cumulativeWeight - threshold).coerceAtLeast(0.0)
+				cumulativeWeight = sqrt(cumulativeWeight)
 				baseBudget + cumulativeWeight.toInt()
 			}
 		}

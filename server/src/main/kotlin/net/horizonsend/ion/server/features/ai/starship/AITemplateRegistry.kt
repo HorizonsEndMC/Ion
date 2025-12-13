@@ -264,7 +264,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(4, 6),
 							locationSupplier,
-							shipWeight = 0.15,
+							shipWeight = 0.3,
 							threshold = 4),
 						null,
 						null,
@@ -371,7 +371,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(5, 8),
 							locationSupplier,
-							shipWeight = 0.2,
+							shipWeight = 0.4,
 							threshold = 5),
 						null,
 						null,
@@ -380,7 +380,7 @@ object AITemplateRegistry {
 				})
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
-					activationThreshold = 0.40,
+					activationThreshold = 0.55,
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
@@ -390,7 +390,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(5, 8),
 							locationSupplier,
-							shipWeight = 0.2,
+							shipWeight = 0.4,
 							threshold = 5),
 						null,
 						null,
@@ -662,7 +662,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(5, 8),
 							locationSupplier,
-							shipWeight = 0.2,
+							shipWeight = 0.4,
 							threshold = 5,
 							superCapitalWeight = 2.0),
 						null,
@@ -1023,7 +1023,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.2,
+							shipWeight = 0.4,
 							threshold = 20),
 						text("Backup responding in {3} at {0}, {2}", PRIVATEER_MEDIUM_TEAL),
 						null,
@@ -1117,7 +1117,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.2,
+							shipWeight = 0.4,
 							threshold = 8),
 						null,
 						null,
@@ -1173,7 +1173,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.15,
+							shipWeight = 0.3,
 							threshold = 8),
 						null,
 						null,
@@ -1216,7 +1216,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.10,
+							shipWeight = 0.20,
 							threshold = 6),
 						null,
 						null,
@@ -1436,7 +1436,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.25,
+							shipWeight = 0.4,
 							threshold = 8),
 						null,
 						null,
