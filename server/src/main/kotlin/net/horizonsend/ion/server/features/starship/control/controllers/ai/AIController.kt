@@ -159,7 +159,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	}
 
 	companion object {
-		private const val ACTIVITY_RANGE = 1000
+		private const val ACTIVITY_RANGE = 5000
 		private const val ACTIVITY_RANGE_SQUARED = ACTIVITY_RANGE * ACTIVITY_RANGE
 	}
 
