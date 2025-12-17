@@ -108,10 +108,32 @@ object DefaultWorldConfiguration {
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(),
 				WreckPlacementConfiguration(
-					0.06,
+					0.08,
 					listOf(
-						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.YACHT, 1.0),
-						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.TUTORIAL_ESCAPE_POD, 10.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_HIGH, 1.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_LOW_01, 10.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_LOW_02, 10.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_MID_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_MID_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.CORVETTE_HIGH, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.CORVETTE_LOW_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.CORVETTE_LOW_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.CORVETTE_MID_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.DESTROYER_HIGH, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.DESTROYER_LOW_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.DESTROYER_LOW_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.DESTROYER_MID_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.DESTROYER_MID_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.FRIGATE_HIGH, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.FRIGATE_LOW_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.FRIGATE_LOW_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.FRIGATE_MID_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.FRIGATE_MID_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_HIGH, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_LOW_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_LOW_02, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_MID_01, 20.0),
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_MID_02, 20.0)
 					)
 				)
 			))
