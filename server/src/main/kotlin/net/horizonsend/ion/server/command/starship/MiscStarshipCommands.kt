@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -41,6 +42,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction
+import net.horizonsend.ion.server.features.starship.Interdiction.pulseGravityWell
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
@@ -68,6 +70,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.parseData
 import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
@@ -79,6 +82,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -719,6 +723,20 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		Interdiction.findGravityWell(starship) ?: fail { "Intact gravity well not found!" }
 
 		toggleGravityWell(starship)
+	}
+
+	@Suppress("unused")
+	@CommandAlias("gravpulse")
+	@Description("Invoke a gravity pulse on your starship")
+	fun onInvokeGravpulse(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+		val gravityWell = Interdiction.findGravityWell(starship) ?: fail { "Intact gravity well not found!" }
+
+		val block = starship.world.getBlockAt(gravityWell.pos.x, gravityWell.pos.y, gravityWell.pos.z)
+		if (!block.type.isWallSign) fail { "Intact gravity well not found!" }
+		val sign = block.getState(false) as Sign
+
+		pulseGravityWell(sender, starship, sign)
 	}
 
 	@Suppress("unused")
