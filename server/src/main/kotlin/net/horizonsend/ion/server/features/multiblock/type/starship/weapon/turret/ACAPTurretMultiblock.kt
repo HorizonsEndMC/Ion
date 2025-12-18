@@ -43,7 +43,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).anyConcrete()
 				x(-2).terracottaOrDoubleSlab()
@@ -54,7 +54,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(3).anyConcrete()
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).ironBlock()
@@ -63,12 +63,12 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
-			y(2) {
+			y(getSign() * 2) {
 				x(0).sponge()
 			}
 		}
 		z(0) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-4).terracottaOrDoubleSlab()
 				x(-3).anyConcrete()
 				x(-2).terracottaOrDoubleSlab()
@@ -79,7 +79,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(3).anyConcrete()
 				x(4).terracottaOrDoubleSlab()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-3).type(IRON_TRAPDOOR)
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -88,13 +88,13 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(3).type(IRON_TRAPDOOR)
 			}
-			y(2) {
+			y(getSign() * 2) {
 				x(-1).sponge()
 				x(1).sponge()
 			}
 		}
 		z(-1) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).anyConcrete()
 				x(-2).terracottaOrDoubleSlab()
@@ -105,7 +105,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(3).anyConcrete()
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-3).type(IRON_TRAPDOOR)
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
@@ -114,12 +114,12 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(3).type(IRON_TRAPDOOR)
 			}
-			y(2) {
+			y(getSign() * 2) {
 				x(0).sponge()
 			}
 		}
 		z(2) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-3).ironBlock()
 				x(-2).anyConcrete()
 				x(-1).anyConcrete()
@@ -128,7 +128,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).anyConcrete()
 				x(3).ironBlock()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).ironBlock()
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -137,7 +137,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 			}
 		}
 		z(-2) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-3).ironBlock()
 				x(-2).terracottaOrDoubleSlab()
 				x(-1).anyConcrete()
@@ -146,7 +146,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).terracottaOrDoubleSlab()
 				x(3).ironBlock()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).type(IRON_TRAPDOOR)
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
@@ -155,42 +155,42 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 			}
 		}
 		z(3) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
 				x(0).anyConcrete()
 				x(1).anyConcrete()
 				x(2).ironBlock()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 		z(-3) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
 				x(0).terracottaOrDoubleSlab()
 				x(1).anyConcrete()
 				x(2).ironBlock()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(-1).type(IRON_TRAPDOOR)
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).type(IRON_TRAPDOOR)
 			}
 		}
 		z(4) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).terracottaOrDoubleSlab()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 		z(-4) {
-			y(3) {
+			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).terracottaOrDoubleSlab()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

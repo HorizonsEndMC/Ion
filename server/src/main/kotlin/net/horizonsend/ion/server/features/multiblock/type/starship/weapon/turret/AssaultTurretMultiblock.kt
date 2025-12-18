@@ -34,7 +34,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {
-			y(3) {
+			y(getSign() *3) {
 				x(-3).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.RIGHT,
@@ -55,7 +55,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(4) {
+			y(getSign() *4) {
 				x(-2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -74,12 +74,12 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(2) {
+			y(getSign() *2) {
 				x(0).sponge()
 			}
 		}
 		z(0) {
-			y(3) {
+			y(getSign() *3) {
 				x(-3).terracottaOrDoubleSlab()
 				x(-2).anyConcrete()
 				x(-1).terracottaOrDoubleSlab()
@@ -88,7 +88,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				x(2).anyConcrete()
 				x(3).terracottaOrDoubleSlab()
 			}
-			y(4) {
+			y(getSign() *4) {
 				x(-2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -117,7 +117,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(2) {
+			y(getSign() *2) {
 				x(-1).sponge()
 				x(1).sponge()
 			}
@@ -125,7 +125,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(-1) {
-			y(3) {
+			y(getSign() *3) {
 				x(-3).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.RIGHT,
@@ -146,7 +146,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(4) {
+			y(getSign() *4) {
 				x(-2).type(IRON_TRAPDOOR)
 				x(-1).grindstone(
 					PrepackagedPreset.simpleDirectional(
@@ -169,19 +169,19 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				)
 				x(2).type(IRON_TRAPDOOR)
 			}
-			y(2) {
+			y(getSign() *2) {
 				x(0).sponge()
 			}
 		}
 		z(2) {
-			y(3) {
+			y(getSign() *3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
 				x(0).anyConcrete()
 				x(1).anyConcrete()
 				x(2).ironBlock()
 			}
-			y(4) {
+			y(getSign() *4) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -200,14 +200,14 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(-2) {
-			y(3) {
+			y(getSign() *3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleSlab()
 				x(0).anyConcrete()
 				x(1).terracottaOrDoubleSlab()
 				x(2).ironBlock()
 			}
-			y(4) {
+			y(getSign() *4) {
 				x(-1).endRod(
 					PrepackagedPreset.simpleDirectional(
 						RelativeFace.BACKWARD,
@@ -224,7 +224,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(3) {
-			y(3) {
+			y(getSign() *3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -243,7 +243,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(-3) {
-			y(3) {
+			y(getSign() *3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
