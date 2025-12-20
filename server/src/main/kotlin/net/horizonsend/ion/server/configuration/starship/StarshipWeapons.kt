@@ -679,8 +679,9 @@ data class AutocannonBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override val particleThickness: Double = 0.3
-	) : StarshipParticleProjectileBalancing {
+		override val particleThickness: Double = 0.3,
+		val delayMillis: Int = 250,
+		) : StarshipParticleProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class
 	}

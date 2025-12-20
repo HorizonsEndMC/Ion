@@ -11,12 +11,15 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ACAPTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ACAPTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.Material.IRON_TRAPDOOR
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -211,16 +214,22 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
+			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 100)
+			for (thisPoint in telegraphPoints) {
+				thisPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, thisPoint, 1,)
+			}
 
-			ACAPTurretProjectile(
-				StarshipProjectileSource(starship),
-				subSystem.getName(),
-				loc,
-				dir,
-				shooter.color,
-				shooter,
-				subSystem.balancing.projectile
-			).fire()
+			Tasks.syncDelay((20.0 * 1.5).toLong()) {
+				ACAPTurretProjectile(
+					StarshipProjectileSource(starship),
+					subSystem.getName(),
+					loc,
+					dir,
+					shooter.color,
+					shooter,
+					subSystem.balancing.projectile
+				).fire()
+			}
 		}
 	}
 }
