@@ -1,21 +1,30 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
+import net.horizonsend.ion.server.configuration.starship.GaussCannonBalancing
 import net.horizonsend.ion.server.configuration.starship.GaussCannonBalancing.GaussCannonProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.GaussCannonWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.GaussCannonProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.Material.IRON_TRAPDOOR
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.util.Vector
 
 sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalancing>() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): GaussCannonWeaponSubsystem {
@@ -117,7 +126,32 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 			}
 		}
 	}
+	override fun shoot(
+		world: World,
+		pos: Vec3i,
+		face: BlockFace,
+		dir: Vector,
+		starship: ActiveStarship,
+		shooter: Damager,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<GaussCannonBalancing.GaussCannonProjectileBalancing>, GaussCannonBalancing.GaussCannonProjectileBalancing>,
+		isAuto: Boolean
+	) {
+		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
+			if (starship.isInternallyObstructed(point, dir)) continue
 
+			val loc = point.toLocation(world).toCenterLocation()
+
+			GaussCannonProjectile(
+				StarshipProjectileSource(starship),
+				subSystem.getName(),
+				loc,
+				dir,
+				shooter.color,
+				shooter,
+				subSystem.balancing.projectile
+			).fire()
+		}
+	}
 }
 
 object TopGaussCannonMultiblock : GaussCannonMultiblock() {
