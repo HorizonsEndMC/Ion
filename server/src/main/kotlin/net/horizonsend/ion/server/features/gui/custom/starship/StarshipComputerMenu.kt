@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
-//import net.horizonsend.ion.server.features.starship.StarshipComputers.canTakeOwnership
+import net.horizonsend.ion.server.features.starship.StarshipComputers.canTakeOwnership
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipState
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -69,16 +69,16 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 	private fun formatGui(): Gui {
 		val gui = Gui.normal()
-			.setStructure("1 2 3 4 . . . . 6")
+			.setStructure("1 2 3 4 . . . 5 6")
 			.addIngredient('1', reDetectButton)
 			.addIngredient('2', changePilotsButton)
 			.addIngredient('3', changeTypeButton)
 			.addIngredient('4', toggleLockButton)
 			.addIngredient('6', renameButton)
 
-		/*if (canTakeOwnership(player, data)) {
+		if (canTakeOwnership(player, data)) {
 			gui.addIngredient('5', takeOwnershipButton)
-		}*/
+		}
 
 		if (data.captain == player.slPlayerId) {
 			gui.addIngredient('7', changeNationsButton)
@@ -156,7 +156,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 		}
 	}
 
-	/*private val takeOwnershipButton = createButton(
+	private val takeOwnershipButton = createButton(
 		ItemStack(Material.RECOVERY_COMPASS)
 			.updateDisplayName(text("Take ownership").itemName)
 			.updateLore(listOf<Component>(
@@ -167,7 +167,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	) { _, player, _ ->
 		StarshipComputers.takeOwnership(player, data)
 		player.success("Took ownership of this computer")
-	}*/
+	}
 
 	private val renameButton = RenameButton(this)
 
