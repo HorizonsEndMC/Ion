@@ -65,7 +65,7 @@ object GameplayTweaks : IonServerComponent() {
 
 	@EventHandler
 	fun onMushroomianPhysics(event: BlockPhysicsEvent) {
-		if (event.block.type != Material.BROWN_MUSHROOM_BLOCK || event.block.type != Material.RED_MUSHROOM_BLOCK) {
+		if (event.block.type != Material.BROWN_MUSHROOM_BLOCK && event.block.type != Material.RED_MUSHROOM_BLOCK) {
 			return
 		}
 
