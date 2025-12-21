@@ -165,7 +165,7 @@ object StarshipComputers : IonServerComponent() {
 			return
 		}
 
-		if (data.isPilot(player) || canTakeOwnership(player, data)) return openMenu(player, data)
+		//if (data.isPilot(player) || canTakeOwnership(player, data)) return openMenu(player, data)
 
 		Tasks.async {
 			val name: String? = SLPlayer.getName(data.captain)
@@ -193,7 +193,7 @@ object StarshipComputers : IonServerComponent() {
 		))
 	}
 
-	fun canTakeOwnership(player: Player, data: PlayerStarshipData): Boolean {
+	/*fun canTakeOwnership(player: Player, data: PlayerStarshipData): Boolean {
 		return !data.isPilot(player)
 			&& (player.hasPermission("ion.core.starship.override")
 			|| isSettlementOwner(player, data)
@@ -202,15 +202,15 @@ object StarshipComputers : IonServerComponent() {
 			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true)) // passing this implies the player has access to a station
 			|| (isInsideUnprotectedNpcStation(data)) // Starship data is inside an NPC space station
 			|| (isNearbyHyperspaceBeacon(data)) // Starship data is nearby a beacon
-	}
+	}*/
 
-	fun takeOwnership(player: Player, data: PlayerStarshipData) {
+	/*fun takeOwnership(player: Player, data: PlayerStarshipData) {
 		data.captain = player.slPlayerId
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::captain, player.slPlayerId))
 		data.pilots.clear()
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::nations, mutableSetOf()))
-	}
+	}*/
 
 	private fun getComputerTerritory(data: PlayerStarshipData): Territory? {
 		val location = Vec3i(data.blockKey).toLocation(data.bukkitWorld())
