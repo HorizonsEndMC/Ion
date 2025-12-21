@@ -1,22 +1,31 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 
-import net.horizonsend.ion.server.configuration.starship.RapidHeavyMissileLauncherBalancing
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.configuration.starship.RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.util.Vector
 
 sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMissileLauncherProjectileBalancing>() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): RapidHeavyMissileLauncherWeaponSubsystem {
@@ -27,6 +36,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 
 	override val displayName: Component get() = text("RHML (${if (getSign() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Heavy missiles, anti-capital.")
+	fun getName(): Component = Component.text("Rapid Heavy Missile Launcher")
 
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<RapidHeavyMissileLauncherProjectileBalancing> = starship.balancingManager.getWeapon(RapidHeavyMissileLauncherWeaponSubsystem::class)
 
@@ -163,6 +173,65 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+			}
+		}
+	}
+	override fun shoot(
+		world: World,
+		pos: Vec3i,
+		face: BlockFace,
+		dir: Vector,
+		starship: ActiveStarship,
+		shooter: Damager,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<RapidHeavyMissileLauncherProjectileBalancing>, RapidHeavyMissileLauncherProjectileBalancing>,
+		isAuto: Boolean
+	) {
+		val initialLaunchDirection = face.direction
+
+		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
+			if (starship.isInternallyObstructed(point, dir)) continue
+
+			for (newBoid in 0 until 1) {
+				Tasks.syncDelay(newBoid.toLong()) {
+					val randomInitialDir = initialLaunchDirection.clone()
+						.rotateAroundX(randomDouble(-0.15, 0.15))
+						.rotateAroundY(randomDouble(-0.15, 0.15))
+						.rotateAroundZ(randomDouble(-0.15, 0.15))
+					val randomLoc = dir.clone()
+						.add(randomInitialDir.clone().normalize().multiply(0.1))
+
+					TrackingMissileProjectile(
+						StarshipProjectileSource(starship),
+						getName(),
+						randomLoc.toLocation(starship.world),
+						dir,
+						randomInitialDir,
+						getBalancing(starship).projectile,
+						shooter,
+						face,
+						dir,
+						10,
+					).fire()
+
+					(0 until 10).forEach { _ ->
+						val angle = Math.PI / 12
+						val opposite = randomInitialDir.clone()
+							.rotateAroundX(randomDouble(-angle, angle))
+							.rotateAroundY(randomDouble(-angle, angle))
+							.rotateAroundZ(randomDouble(-angle, angle))
+						starship.world.spawnParticle(
+							Particle.CLOUD,
+							randomLoc.toLocation(starship.world),
+							0,
+							opposite.x,
+							opposite.y,
+							opposite.z,
+							5.0,
+							null,
+							true
+						)
+					}
+				}
 			}
 		}
 	}

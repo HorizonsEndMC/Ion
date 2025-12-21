@@ -21,7 +21,6 @@ class QuadTurretProjectile(
 ): LaserProjectile<QuadTurretBalancing.QuadTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-
 		val particle1 = Particle.GUST
 		val particle2 = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 3f)

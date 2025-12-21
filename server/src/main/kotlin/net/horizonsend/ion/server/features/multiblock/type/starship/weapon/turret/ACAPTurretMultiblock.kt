@@ -214,7 +214,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
-			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 100)
+			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 500)
 			for (thisPoint in telegraphPoints) {
 				thisPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, thisPoint, 1,)
 			}

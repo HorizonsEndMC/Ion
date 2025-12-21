@@ -42,7 +42,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 		listOf(
 			Vec3i(-1, getSign() * 4, +2),
 			Vec3i(1, getSign() * 5, +2),
-			Vec3i(-1, getSign() * 4, +2),
+			Vec3i(1, getSign() * 4, +2),
 			Vec3i(-1, getSign() * 5, +2)
 		)
 
