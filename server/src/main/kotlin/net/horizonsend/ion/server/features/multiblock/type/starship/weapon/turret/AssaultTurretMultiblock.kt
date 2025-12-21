@@ -30,10 +30,10 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 		starship.balancingManager.getWeapon(AssaultTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(-1, getSign() * 4, -3), Vec3i(1, getSign() * 4, -3))
+		listOf(Vec3i(-1, getSign() * 4, 3), Vec3i(1, getSign() * 4, 3))
 
 	override fun MultiblockShape.buildStructure() {
-		z(1) {
+		z(-1) {
 			y(getSign() *3) {
 				x(-3).anyStairs(
 					PrepackagedPreset.stairs(
@@ -124,7 +124,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			y(0) {
 			}
 		}
-		z(-1) {
+		z(1) {
 			y(getSign() *3) {
 				x(-3).anyStairs(
 					PrepackagedPreset.stairs(
@@ -173,7 +173,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				x(0).sponge()
 			}
 		}
-		z(2) {
+		z(-2) {
 			y(getSign() *3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
@@ -199,7 +199,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				)
 			}
 		}
-		z(-2) {
+		z(2) {
 			y(getSign() *3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleSlab()
@@ -223,7 +223,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				)
 			}
 		}
-		z(3) {
+		z(-3) {
 			y(getSign() *3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
@@ -242,7 +242,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				)
 			}
 		}
-		z(-3) {
+		z(3) {
 			y(getSign() *3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(

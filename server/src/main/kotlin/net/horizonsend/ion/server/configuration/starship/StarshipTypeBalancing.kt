@@ -776,7 +776,7 @@ data class NewStarshipBalancing(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				HeavyNeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true)),
-				AssaultTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 9750, ), maxPerShot = 5,),
+				AssaultTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, ), maxPerShot = 5,),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),

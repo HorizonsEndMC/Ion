@@ -39,10 +39,10 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<GaussCannonProjectileBalancing> = starship.balancingManager.getWeapon(GaussCannonWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(0, getSign() * 4, -3))
+		listOf(Vec3i(0, getSign() * 4, 3))
 
 	override fun MultiblockShape.buildStructure() {
-		z(1) {
+		z(-1) {
 			y(getSign() * 3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).anyConcrete()
@@ -83,7 +83,7 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 			y(getSign() * 0) {
 			}
 		}
-		z(-1) {
+		z(1) {
 			y(getSign() * 3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).anyConcrete()
@@ -100,7 +100,7 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(0).sponge()
 			}
 		}
-		z(2) {
+		z(-2) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
@@ -110,7 +110,7 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(0).ironBlock()
 			}
 		}
-		z(-2) {
+		z(2) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

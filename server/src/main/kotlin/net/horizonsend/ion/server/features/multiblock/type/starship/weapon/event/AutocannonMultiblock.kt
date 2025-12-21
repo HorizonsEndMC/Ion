@@ -40,14 +40,14 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(
-			Vec3i(-1, getSign() * 4, -2),
-			Vec3i(1, getSign() * 5, -2),
-			Vec3i(-1, getSign() * 4, -2),
-			Vec3i(-1, getSign() * 5, -2)
+			Vec3i(-1, getSign() * 4, 2),
+			Vec3i(1, getSign() * 5, 2),
+			Vec3i(-1, getSign() * 4, 2),
+			Vec3i(-1, getSign() * 5, 2)
 		)
 
 	override fun MultiblockShape.buildStructure() {
-		z(1) {
+		z(-1) {
 			y(getSign() * 3) {
 				x(-2).anyStairs(
 					PrepackagedPreset.stairs(
@@ -163,7 +163,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 			y(getSign() * 0) {
 			}
 		}
-		z(-1) {
+		z(1) {
 			y(getSign() * 3) {
 				x(-2).anyStairs(
 					PrepackagedPreset.stairs(
@@ -229,7 +229,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 				x(0).sponge()
 			}
 		}
-		z(2) {
+		z(-2) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
@@ -254,7 +254,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 				)
 			}
 		}
-		z(-2) {
+		z(2) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(

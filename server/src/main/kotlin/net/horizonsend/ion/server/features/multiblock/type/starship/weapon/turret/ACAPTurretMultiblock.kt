@@ -42,10 +42,10 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<ACAPTurretBalancing.ACAPTurretProjectileBalancing> = starship.balancingManager.getWeapon(ACAPTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(0, getSign() * 4, -4), Vec3i(-2, getSign() * 4, -3), Vec3i(2, getSign() * 4, -3))
+		listOf(Vec3i(0, getSign() * 4, 4), Vec3i(-2, getSign() * 4, 3), Vec3i(2, getSign() * 4, 3))
 
 	override fun MultiblockShape.buildStructure() {
-		z(1) {
+		z(-1) {
 			y(getSign() * 3) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).anyConcrete()
@@ -96,7 +96,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(1).sponge()
 			}
 		}
-		z(-1) {
+		z(1) {
 			y(getSign() * 3) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).anyConcrete()
@@ -121,7 +121,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(0).sponge()
 			}
 		}
-		z(2) {
+		z(-2) {
 			y(getSign() * 3) {
 				x(-3).ironBlock()
 				x(-2).anyConcrete()
@@ -139,7 +139,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-2) {
+		z(2) {
 			y(getSign() * 3) {
 				x(-3).ironBlock()
 				x(-2).terracottaOrDoubleSlab()
@@ -157,7 +157,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 		}
-		z(3) {
+		z(-3) {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
@@ -171,7 +171,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-3) {
+		z(3) {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
@@ -185,14 +185,14 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(1).type(IRON_TRAPDOOR)
 			}
 		}
-		z(4) {
+		z(-4) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).terracottaOrDoubleSlab()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-4) {
+		z(4) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).terracottaOrDoubleSlab()
