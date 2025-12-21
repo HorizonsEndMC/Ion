@@ -42,7 +42,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<ACAPTurretBalancing.ACAPTurretProjectileBalancing> = starship.balancingManager.getWeapon(ACAPTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(0, getSign() * 4, 4), Vec3i(-2, getSign() * 4, 3), Vec3i(2, getSign() * 4, 3))
+		listOf(Vec3i(0, getSign() * 4, +4), Vec3i(-2, getSign() * 4, +3), Vec3i(+2, getSign() * 4, +3))
 
 	override fun MultiblockShape.buildStructure() {
 		z(-1) {
