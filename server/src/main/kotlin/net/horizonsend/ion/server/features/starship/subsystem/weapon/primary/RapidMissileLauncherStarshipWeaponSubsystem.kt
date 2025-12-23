@@ -41,7 +41,7 @@ class RapidMissileLauncherStarshipWeaponSubsystem(
     AmmoConsumingWeaponSubsystem {
 
 	val projectileBalancing = balancing.projectile
-	val cooldownNanos = balancing.fireCooldownNanos
+	override val fireCooldownNanos: Long get() = balancing.fireCooldownNanos
     override fun getName(): Component = Component.text("Rapid Missile Launcher")
 
     override fun getAdjustedDir(dir: Vector, target: Vector): Vector {

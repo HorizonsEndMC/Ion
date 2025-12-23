@@ -18,7 +18,6 @@ class RapidHeavyMissileLauncherWeaponSubsystem(
 	override val multiblock: RapidHeavyMissileLauncherMultiblock
 ) : TurretWeaponSubsystem<RapidHeavyMissileLauncherBalancing, RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>(ship, pos, face, ship.balancingManager.getWeaponSupplier(RapidHeavyMissileLauncherWeaponSubsystem::class)), HeavyWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
-
 	override fun getName(): Component {
 		return Component.text("RHML")
 	}

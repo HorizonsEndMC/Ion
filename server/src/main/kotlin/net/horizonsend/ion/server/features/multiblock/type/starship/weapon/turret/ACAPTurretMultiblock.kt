@@ -216,7 +216,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 			val loc = point.toLocation(world).toCenterLocation()
 			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 500)
 			for (thisPoint in telegraphPoints) {
-				thisPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, thisPoint, 1,)
+				thisPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, thisPoint, 1)
 			}
 
 			Tasks.syncDelay((20.0 * 1.5).toLong()) {

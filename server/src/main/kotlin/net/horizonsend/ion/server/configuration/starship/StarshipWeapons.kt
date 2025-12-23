@@ -69,6 +69,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Rap
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ScramblerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.TestBoidWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArtilleryProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.AutocannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
@@ -525,7 +526,8 @@ data class RapidHeavyMissileLauncherBalancing(
 	override val angleRadiansHorizontal: Double = 180.0,
 	override val angleRadiansVertical: Double = 180.0,
 	override val projectile: RapidHeavyMissileLauncherProjectileBalancing = RapidHeavyMissileLauncherProjectileBalancing(),
-	override val inaccuracyDegrees: Double = 90.0,
+	override val inaccuracyDegrees: Double = 2.0,
+
 ) : StarshipHeavyWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
 	StarshipTrackingWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
 	StarshipTurretWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>{
@@ -683,7 +685,7 @@ data class AutocannonBalancing(
 		val delayMillis: Int = 100,
 		) : StarshipParticleProjectileBalancing {
 		@Transient
-		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class
+		override val clazz: KClass<out Projectile> = AutocannonProjectile::class
 	}
 }
 

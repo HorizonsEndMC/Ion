@@ -1,15 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.extensions.informationAction
-import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing
-import net.horizonsend.ion.server.configuration.starship.CycleTurretBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.AutocannonMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location

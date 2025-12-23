@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
@@ -36,19 +37,19 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 
 	override val displayName: Component get() = text("RHML (${if (getSign() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Heavy missiles, anti-capital.")
-	fun getName(): Component = Component.text("Rapid Heavy Missile Launcher")
+	fun getName(): Component = text("Rapid Heavy Missile Launcher")
 
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<RapidHeavyMissileLauncherProjectileBalancing> = starship.balancingManager.getWeapon(RapidHeavyMissileLauncherWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
-		Vec3i(+2, getSign() * 4, +3),
-		Vec3i(+1, getSign() * 4, +3),
-		Vec3i(-2, getSign() * 4, +3),
-		Vec3i(-1, getSign() * 4, +3)
+		Vec3i(+2, getSign() * 5, +3),
+		Vec3i(+1, getSign() * 5, +3),
+		Vec3i(-2, getSign() * 5, +3),
+		Vec3i(-1, getSign() * 5, +3)
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		z(1) {
+		z(-1) {
 			y(getSign() *3) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-2).terracottaOrDoubleSlab()
@@ -69,8 +70,6 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(-1).anyWall()
 				x(0).ironBlock()
 				x(1).anyWall()
-			}
-			y(getSign() * 0) {
 			}
 			y(getSign() * 2) {
 				x(0).sponge()
@@ -103,7 +102,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(1).ironBlock()
 			}
 		}
-		z(-1) {
+		z(1) {
 			y(getSign() * 3) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-2).terracottaOrDoubleSlab()
@@ -129,7 +128,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(0).sponge()
 			}
 		}
-		z(2) {
+		z(-2) {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleSlab()
@@ -145,7 +144,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(2).type(Material.POLISHED_BASALT)
 			}
 		}
-		z(-2) {
+		z(2) {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleSlab()
@@ -161,14 +160,14 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(2).dispenser()
 			}
 		}
-		z(3) {
+		z(-3) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-3) {
+		z(3) {
 			y(getSign() * 3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -187,9 +186,11 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		isAuto: Boolean
 	) {
 		val initialLaunchDirection = face.direction
+		val projectileBalancing = subSystem.balancing.projectile
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
+			val target: Vector = StarshipWeaponry.getTarget(point.toLocation(starship.world), dir, starship)
 
 			for (newBoid in 0 until 1) {
 				Tasks.syncDelay(newBoid.toLong()) {
@@ -197,7 +198,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 						.rotateAroundX(randomDouble(-0.15, 0.15))
 						.rotateAroundY(randomDouble(-0.15, 0.15))
 						.rotateAroundZ(randomDouble(-0.15, 0.15))
-					val randomLoc = dir.clone()
+					val randomLoc = point.toCenterVector().clone()
 						.add(randomInitialDir.clone().normalize().multiply(0.1))
 
 					TrackingMissileProjectile(
@@ -206,10 +207,10 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 						randomLoc.toLocation(starship.world),
 						dir,
 						randomInitialDir,
-						getBalancing(starship).projectile,
+						projectileBalancing,
 						shooter,
 						face,
-						dir,
+						target,
 						10,
 					).fire()
 
