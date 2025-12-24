@@ -11,6 +11,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
+import kotlin.math.roundToInt
 
 class GaussCannonProjectile(
 	source: ProjectileSource,
@@ -22,19 +23,38 @@ class GaussCannonProjectile(
 	override val balancing: GaussCannonBalancing.GaussCannonProjectileBalancing
 ): LaserProjectile<GaussCannonBalancing.GaussCannonProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
-	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-
+	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val particle1 = Particle.DUST
 		val particle2 = Particle.SOUL_FIRE_FLAME
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 3f)
-		location.world.spawnParticle(particle1, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
-		val potentialCirclePoints = location.alongVector(direction.normalize().multiply(500), 50)
-		for (point in potentialCirclePoints) {
-			val circlePoints = point.circlePoints(2.0, 8, direction)
-			for (circlePoint in circlePoints) {
-
-				location.world.spawnParticle(particle2, circlePoint.x, circlePoint.y, circlePoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
-			}
+		location.world.spawnParticle(
+			particle1,
+			location.x,
+			location.y,
+			location.z,
+			4,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			dustOptions,
+			true
+		)
+		if (distance.toInt() % 10 == 0) {
+			val circlePoints = location.circlePoints(2.0, 8, direction)
+			for (point in circlePoints) point.world.spawnParticle(
+				particle2,
+				point.x,
+				point.y,
+				point.z,
+				2,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				null,
+				true
+			)
 		}
 	}
 }

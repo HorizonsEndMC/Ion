@@ -26,13 +26,23 @@ class ACAPTurretProjectile(
 	override val balancing: ACAPTurretBalancing.ACAPTurretProjectileBalancing
 ): LaserProjectile<ACAPTurretBalancing.ACAPTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
-	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
+	/*override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val mainParticle = Particle.DUST
 		val auxParticle = Particle.SOUL_FIRE_FLAME
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 		location.world.spawnParticle(auxParticle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
-		location.world.spawnParticle(mainParticle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
-		}
+		location.world.spawnParticle(mainParticle, x, y, z, 4, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+		}*/
+
+	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
+		val mainParticle = Particle.DUST
+		val auxParticle = Particle.LAVA
+		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
+		location.world.spawnParticle(auxParticle, location.x, location.y, location.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		location.world.spawnParticle(mainParticle, location.x, location.y, location.z, 4, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+
+	}
+
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		if (starship.initialBlockCount > 12000)
 		impactLocation.createExplosion(6.0f)
