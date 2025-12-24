@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.cache
 
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.Cache
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
@@ -22,7 +24,8 @@ object Caches : IonServerComponent() {
 		EcoStations,
 		SpaceStationCache,
 		BookmarkCache,
-		ChestShopCache
+		ChestShopCache,
+		FrontierNationCache,
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)

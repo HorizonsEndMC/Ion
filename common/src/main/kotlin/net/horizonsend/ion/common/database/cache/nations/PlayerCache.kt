@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Role
@@ -33,6 +34,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var level: Int?,
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
+		var frontierNationOid: Oid<FrontierNation>?,
 		var settlementTag: String?,
 		var nationTag: String?,
 		var bounty: Double,
@@ -163,6 +165,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 	fun cache(id: SLPlayerId, data: SLPlayer) {
 		val settlement: Oid<Settlement>? = data.settlement
 		val nation: Oid<Nation>? = data.nation
+		val frontierNation: Oid<FrontierNation>? = data.frontierNation
 
 		val settlementTag: String? = if (settlement == null) {
 			null
@@ -182,6 +185,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			level = data.level,
 			settlementOid = settlement,
 			nationOid = nation,
+			frontierNationOid = frontierNation,
 			settlementTag = settlementTag,
 			nationTag = nationTag,
 			bounty = data.bounty,

@@ -10,6 +10,8 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
 import net.horizonsend.ion.common.database.projected
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -55,6 +57,7 @@ data class SLPlayer(
 
 	var settlement: Oid<Settlement>? = null,
 	var nation: Oid<Nation>? = null,
+	var frontierNation: Oid<FrontierNation>? = null,
 
 	var snowflake: Long? = null,
 
@@ -205,6 +208,9 @@ data class SLPlayer(
 		private fun isSettlementLeader(sess: ClientSession, slPlayerId: SLPlayerId): Boolean =
 			Settlement.col.countDocuments(sess, Settlement::leader eq slPlayerId) != 0L
 
+		private fun isFrontierNationLeader(sess: ClientSession, slPlayerId: SLPlayerId): Boolean =
+			FrontierNation.col.countDocuments(sess, FrontierNation::leader eq slPlayerId) != 0L
+
 		fun leaveSettlement(slPlayerId: SLPlayerId): Unit = trx { sess ->
 			require(!isSettlementLeader(sess, slPlayerId)) { "$slPlayerId is the leader of their settlement" }
 
@@ -241,6 +247,26 @@ data class SLPlayer(
 					SLPlayer::nation, nation
 				)
 			)
+		}
+
+		fun joinFrontierNation(slPlayerId: SLPlayerId, frontierNationId: Oid<FrontierNation>): Unit = trx { sess ->
+			require(matches(sess, slPlayerId, SLPlayer::frontierNation eq null))
+
+			require(FrontierNation.exists(sess, frontierNationId))
+
+			FrontierNation.updateById(sess, frontierNationId, pull(FrontierNation::invites, slPlayerId))
+			updateById(sess, slPlayerId, org.litote.kmongo.setValue(SLPlayer::frontierNation, frontierNationId)
+			)
+		}
+
+		fun leaveFrontierNation(slPlayerId: SLPlayerId): Unit = trx { sess ->
+			require(!isFrontierNationLeader(sess, slPlayerId)) { "$slPlayerId is the leader of their frontier nation" }
+
+			require(matches(sess, slPlayerId, SLPlayer::frontierNation ne null)) { "$slPlayerId isn't in a frontier nation" }
+
+			FrontierNationRole.col.updateAll(sess, pull(FrontierNationRole::members, slPlayerId))
+
+			updateById(sess, slPlayerId, org.litote.kmongo.setValue(SLPlayer::frontierNation, null))
 		}
 	}
 }

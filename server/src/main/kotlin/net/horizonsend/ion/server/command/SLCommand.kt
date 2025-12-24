@@ -8,11 +8,14 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.HelpCommand
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -150,6 +153,10 @@ abstract class SLCommand : BaseCommand() {
 		return NationCache[id].name
 	}
 
+	protected fun getFrontierNationName(id: Oid<FrontierNation>): String {
+		return FrontierNationCache[id].name
+	}
+
 	protected fun getNPCOwnerName(id: Oid<NPCTerritoryOwner>): String? {
 		return NPCTerritoryOwner.getName(id)
 	}
@@ -189,6 +196,9 @@ abstract class SLCommand : BaseCommand() {
 	protected fun resolveNation(name: String): Oid<Nation> = NationCache.getByName(name)
 		?: fail { "Nation $name not found" }
 
+	protected fun resolveFrontierNation(name: String): Oid<FrontierNation> = FrontierNationCache.getByName(name)
+		?: fail { "Frontier nation $name not found" }
+
 	protected fun requireMinLevel(sender: Player, level: Int) =
 		failIf(Levels[sender] < level) { "You need to be at least level $level to do that" }
 
@@ -209,17 +219,26 @@ abstract class SLCommand : BaseCommand() {
 	protected fun requireNationIn(sender: Player): Oid<Nation> = PlayerCache[sender].nationOid
 		?: fail { "You need to be in a nation to do that" }
 
+	protected fun requireFrontierNationIn(sender: Player): Oid<FrontierNation> = PlayerCache[sender].frontierNationOid
+		?: fail { "You need to be in a frontier nation to do that" }
+
 	protected fun isSettlementLeader(player: Player, settlementId: Oid<Settlement>): Boolean =
 		SettlementCache[settlementId].leader == player.slPlayerId
 
 	protected fun isNationLeader(player: Player, nationId: Oid<Nation>): Boolean =
 		SettlementCache[NationCache[nationId].capital].leader == player.slPlayerId
 
+	protected fun isFrontierNationLeader(player: Player, nationId: Oid<FrontierNation>): Boolean =
+		FrontierNationCache[nationId].leader == player.slPlayerId
+
 	protected fun requireSettlementLeader(sender: Player, settlementId: Oid<Settlement>) =
 		failIf(!isSettlementLeader(sender, settlementId)) { "Only the settlement leader can do that" }
 
 	protected fun requireNationLeader(sender: Player, nationId: Oid<Nation>) =
 		failIf(!isNationLeader(sender, nationId)) { "Only the nation leader can do that" }
+
+	protected fun requireFrontierNationLeader(sender: Player, frontierNationId: Oid<FrontierNation>) =
+		failIf(!isFrontierNationLeader(sender, frontierNationId)) { "Only the nation leader can do that" }
 
 	protected fun requireIsMemberOf(slPlayerId: SLPlayerId, settlementId: Oid<Settlement>, name: String? = null) {
 		failIf(
@@ -243,6 +262,9 @@ abstract class SLCommand : BaseCommand() {
 
 	protected fun requireNotInNation(sender: Player) =
 		failIf(PlayerCache[sender].nationOid != null) { "You can't do that while in a nation. Hint: To leave the nation, use /n leave" }
+
+	protected fun requireNotInFrontierNation(sender: Player) =
+		failIf(PlayerCache[sender].frontierNationOid != null) { "You can't do that while in a nation. Hint: To leave the nation, use /fn leave" }
 
 	protected fun requireNotCapital(settlementId: Oid<Settlement>, action: String = "do that") =
 		failIf(SettlementCache[settlementId].nation?.let(NationCache::get)?.capital == settlementId) { "The capital settlement can't $action!" }
@@ -292,6 +314,20 @@ abstract class SLCommand : BaseCommand() {
 		)
 
 		failIf(NationRole.none(query)) { "You need the nation permission $permission to do that" }
+	}
+
+	protected fun requireFrontierNationPermission(
+		sender: Player,
+		nationId: Oid<FrontierNation>,
+		permission: FrontierNationRole.Permission
+	) {
+		if (isFrontierNationLeader(sender, nationId)) return
+
+		val query = and(
+			FrontierNationRole::parent eq nationId,
+			FrontierNationRole::members contains sender.slPlayerId,
+			FrontierNationRole::permissions contains permission
+		)
 	}
 
 	protected fun getSettlementTerritory(settlementId: Oid<Settlement>): RegionTerritory {
