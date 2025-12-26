@@ -210,13 +210,14 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<ACAPTurretBalancing.ACAPTurretProjectileBalancing>, ACAPTurretBalancing.ACAPTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
+		val dustOptions = Particle.DustOptions(shooter.color, 4.toFloat() * 4f)
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
 			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 500)
 			for (thisPoint in telegraphPoints) {
-				thisPoint.world.spawnParticle(Particle.DUST, thisPoint.x, thisPoint.y, thisPoint.z, 2, 0.0, 0.0, 0.0, 0.0, shooter.color, true)
+				thisPoint.world.spawnParticle(Particle.DUST, thisPoint.x, thisPoint.y, thisPoint.z, 2, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 			}
 
 			Tasks.syncDelay((20.0 * 1.5).toLong()) {
