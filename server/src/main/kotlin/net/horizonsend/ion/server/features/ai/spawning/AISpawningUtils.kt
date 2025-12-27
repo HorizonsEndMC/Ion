@@ -124,7 +124,7 @@ fun createFromClipboard(
 	createController: (ActiveControlledStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
-	val target = StarshipDealers.resolveTarget(clipboard, location)
+	val target = StarshipDealers.resolveTarget(clipboard, location, forceEmpty = true)
 	val vec3i = Vec3i(target)
 	logger.info("Attempting to place $starshipName")
 	placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
