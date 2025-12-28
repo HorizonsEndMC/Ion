@@ -44,6 +44,7 @@ import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.SuicideCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
+import net.horizonsend.ion.server.command.nations.FrontierNationCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
 import net.horizonsend.ion.server.command.nations.SettlementCommand
@@ -113,6 +114,7 @@ val commands: List<SLCommand> = listOf(
 	NationCommand,
 	SpaceStationCommand,
 	NationRelationCommand,
+	FrontierNationCommand,
 
 	CityManageCommand,
 	NationAdminCommand,

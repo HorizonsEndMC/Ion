@@ -20,6 +20,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
@@ -27,7 +28,9 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
@@ -44,6 +47,7 @@ import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
+import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import java.util.Date
 import kotlin.math.roundToInt
@@ -347,6 +351,7 @@ object FrontierNationCommand : SLCommand() {
 	}
 
 	@Subcommand("info")
+	@CommandCompletion("@frontierNations")
 	fun onInfo(sender: CommandSender, @Optional nation: String?): Unit = asyncCommand(sender) {
 		val nationId: Oid<FrontierNation> = when (sender) {
 			is Player -> {
@@ -402,5 +407,80 @@ object FrontierNationCommand : SLCommand() {
 			text("Balance: "),
 			text(data.balance).color(NamedTextColor.WHITE)
 		))
+
+		val leaderRole = FrontierNationRole.getHighestRole(cached.leader)
+		val leaderRoleComp = leaderRole?.let {
+			val leaderText = text(leaderRole.name)
+			leaderText.color(leaderRole.color.actualStyle.textColor)
+
+			leaderText
+		} ?: text()
+		val leaderText = ofChildren(
+			text("Leader: "),
+			leaderRoleComp,
+			Component.space(),
+			text(getPlayerName(cached.leader), NamedTextColor.WHITE)
+		)
+
+		message.append(leaderText)
+		message.append(newline())
+
+		val members = SLPlayer.findProps(SLPlayer::frontierNation eq nationId, SLPlayer::lastKnownName)
+			.map { Pair(it[SLPlayer::_id], it[SLPlayer::lastKnownName]) }
+			.sortedBy { it.second}
+
+		val names = mutableListOf<Component>()
+		for ((playerId, name) in members) {
+			names.add(text(getFrontierNationTag(playerId, name), NamedTextColor.GRAY))
+		}
+
+		val playerCountBuilder = ofChildren(
+			text("Members (", TextColor.fromHexString("#b8e0d4")),
+			text(members.size, NamedTextColor.WHITE),
+			text(")", TextColor.fromHexString("#b8e0d4"))
+		)
+
+		message.append(playerCountBuilder)
+		message.append(newline())
+
+		val limit = 10
+
+		val namesList = text()
+		val fullNamesList = text()
+
+		for (name in names) {
+			val isLast = names.indexOf(name) == (names.size - 1)
+			val nameBuilder = text()
+				.append(name)
+
+			if (!isLast) nameBuilder.append(text(", ").color(TextColor.fromHexString("#b8e0d4")).asComponent())
+
+			fullNamesList.append(nameBuilder)
+
+			if (names.indexOf(name) >= (limit)) continue
+
+			namesList.append(nameBuilder)
+		}
+
+		if (names.size > limit) {
+			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
+			namesList.append(text(" [Hover for full member list]").color(DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
+		}
+
+		message.append(namesList)
+		message.append(newline())
+		message.append(lineBreak)
+
+		sender.sendMessage(message.build())
+	}
+
+	@Subcommand("role")
+	fun onRole(sender: CommandSender): Unit = fail { "Use /fnrole, not /fn role (remove the space)" }
+
+	@Subcommand("broadcast")
+	fun onBroadcast(sender: Player, message: String) = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.BROADCAST)
+		ServerInboxes.sendToFrontierNationMembers(nationId, message.miniMessage())
 	}
 }

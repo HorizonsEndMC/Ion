@@ -171,6 +171,11 @@ abstract class SLCommand : BaseCommand() {
 		return "$tag$color$name"
 	}
 
+	protected fun getFrontierNationTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
+		val tag = PlayerCache.getColoredTag(FrontierNationRole.getTag(id))?.plus(" ") ?: ""
+		return "$tag$color$name"
+	}
+
 	protected fun getRelation(sender: CommandSender, nation: Oid<Nation>): NationRelation.Level = when (sender) {
 		is Player -> PlayerCache[sender].nationOid?.let { RelationCache[it, nation] }
 		else -> null

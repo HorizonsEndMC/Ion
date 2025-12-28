@@ -1,8 +1,10 @@
 package net.horizonsend.ion.common.utils.text
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -318,6 +320,11 @@ fun commandPrompt(shownText: String, color: TextColor, command: String): Compone
 	return bracketed(text(shownText, color, ITALIC))
 		.hoverEvent(text(command))
 		.clickEvent(ClickEvent.runCommand(command))
+}
+
+fun formatFrontierNationName(id: Oid<FrontierNation>): Component {
+	val cached = FrontierNationCache[id]
+	return text(cached.name, TextColor.color(cached.color))
 }
 
 fun formatNationName(id: Oid<Nation>): Component {
