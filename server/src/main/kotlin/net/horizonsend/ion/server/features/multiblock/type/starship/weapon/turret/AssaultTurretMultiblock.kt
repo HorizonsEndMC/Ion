@@ -1,20 +1,30 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
+import net.horizonsend.ion.server.configuration.starship.AssaultTurretBalancing
 import net.horizonsend.ion.server.configuration.starship.AssaultTurretBalancing.AssaultTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.GaussCannonBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.AssaultTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.AssaultTurretProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.GaussCannonProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.Material.IRON_TRAPDOOR
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.util.Vector
 
 sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileBalancing>() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): AssaultTurretWeaponSubsystem {
@@ -34,7 +44,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 
 	override fun MultiblockShape.buildStructure() {
 		z(-1) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-3).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.RIGHT,
@@ -55,7 +65,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(getSign() *4) {
+			y(getSign() * 4) {
 				x(-2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -74,12 +84,12 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(getSign() *2) {
+			y(getSign() * 2) {
 				x(0).sponge()
 			}
 		}
 		z(0) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-3).terracottaOrDoubleSlab()
 				x(-2).anyConcrete()
 				x(-1).terracottaOrDoubleSlab()
@@ -88,7 +98,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				x(2).anyConcrete()
 				x(3).terracottaOrDoubleSlab()
 			}
-			y(getSign() *4) {
+			y(getSign() * 4) {
 				x(-2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -117,7 +127,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(getSign() *2) {
+			y(getSign() * 2) {
 				x(-1).sponge()
 				x(1).sponge()
 			}
@@ -125,7 +135,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(1) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-3).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.RIGHT,
@@ -146,7 +156,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
-			y(getSign() *4) {
+			y(getSign() * 4) {
 				x(-2).type(IRON_TRAPDOOR)
 				x(-1).grindstone(
 					PrepackagedPreset.simpleDirectional(
@@ -169,19 +179,19 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				)
 				x(2).type(IRON_TRAPDOOR)
 			}
-			y(getSign() *2) {
+			y(getSign() * 2) {
 				x(0).sponge()
 			}
 		}
 		z(-2) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
 				x(0).anyConcrete()
 				x(1).anyConcrete()
 				x(2).ironBlock()
 			}
-			y(getSign() *4) {
+			y(getSign() * 4) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -200,14 +210,14 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(2) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleSlab()
 				x(0).anyConcrete()
 				x(1).terracottaOrDoubleSlab()
 				x(2).ironBlock()
 			}
-			y(getSign() *4) {
+			y(getSign() * 4) {
 				x(-1).endRod(
 					PrepackagedPreset.simpleDirectional(
 						RelativeFace.BACKWARD,
@@ -224,7 +234,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(-3) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -243,7 +253,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 			}
 		}
 		z(3) {
-			y(getSign() *3) {
+			y(getSign() * 3) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -263,6 +273,32 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 		}
 	}
 
+	override fun shoot(
+		world: World,
+		pos: Vec3i,
+		face: BlockFace,
+		dir: Vector,
+		starship: ActiveStarship,
+		shooter: Damager,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<AssaultTurretBalancing.AssaultTurretProjectileBalancing>, AssaultTurretBalancing.AssaultTurretProjectileBalancing>,
+		isAuto: Boolean
+	) {
+		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
+			if (starship.isInternallyObstructed(point, dir)) continue
+
+			val loc = point.toLocation(world).toCenterLocation()
+
+			AssaultTurretProjectile(
+				StarshipProjectileSource(starship),
+				subSystem.getName(),
+				loc,
+				dir,
+				shooter.color,
+				shooter,
+				subSystem.balancing.projectile
+			).fire()
+		}
+	}
 }
 
 object TopAssaultTurretMultiblock : AssaultTurretMultiblock() {

@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ACAPTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ACAPTurretProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Particle
@@ -210,16 +212,20 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<ACAPTurretBalancing.ACAPTurretProjectileBalancing>, ACAPTurretBalancing.ACAPTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
-		val dustOptions = Particle.DustOptions(shooter.color, 4.toFloat() * 4f)
+		val particleData = Particle.DustTransition(
+			Color.fromARGB(255, 173, 216, 230),
+			shooter.color,
+			2.0f
+		)
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
-			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 500)
-			for (thisPoint in telegraphPoints) {
-				thisPoint.world.spawnParticle(Particle.DUST, thisPoint.x, thisPoint.y, thisPoint.z, 2, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-			}
 
+			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 100)
+			for (thisPoint in telegraphPoints) {
+				thisPoint.world.spawnParticle(Particle.DUST_COLOR_TRANSITION, thisPoint.x, thisPoint.y, thisPoint.z, 2, 0.0, 0.0, 0.0, 0.0, particleData, true)
+			}
 			Tasks.syncDelay((20.0 * 1.5).toLong()) {
 				ACAPTurretProjectile(
 					StarshipProjectileSource(starship),

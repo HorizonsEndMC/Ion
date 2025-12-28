@@ -16,6 +16,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -26,12 +27,12 @@ class ArtilleryProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ParticleProjectile<ArtilleryBalancing.ArtilleryProjectileBalancing>(source, name, loc, dir, shooter, ArtilleryStarshipWeaponMultiblock.damageType) {
+) : ParticleProjectile<ArtilleryBalancing.ArtilleryProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 	override var speed: Double = balancing.speed; get() = balancing.speed
 
 	private val blueParticleData = Particle.DustTransition(
-		Color.fromARGB(255, 222, 205, 111),
-		Color.WHITE,
+		Color.fromARGB(255, 255, 165, 0),
+		shooter.color,
 		2.0f
 	)
 

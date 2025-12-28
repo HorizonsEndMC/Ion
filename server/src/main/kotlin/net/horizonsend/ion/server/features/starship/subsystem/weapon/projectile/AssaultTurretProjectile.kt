@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.starship.GaussCannonBalancing
+import net.horizonsend.ion.server.configuration.starship.AssaultTurretBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
@@ -11,46 +10,25 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
-import kotlin.math.roundToInt
 
-class GaussCannonProjectile(
+class AssaultTurretProjectile(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
 	override val color: Color,
 	shooter: Damager,
-	override val balancing: GaussCannonBalancing.GaussCannonProjectileBalancing
-): LaserProjectile<GaussCannonBalancing.GaussCannonProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
-
-	private val blueParticleData = Particle.DustTransition(
-		Color.fromARGB(255, 173, 216, 230),
-		shooter.color,
-		2.0f
-	)
+	override val balancing: AssaultTurretBalancing.AssaultTurretProjectileBalancing
+): LaserProjectile<AssaultTurretBalancing.AssaultTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		super.moveVisually(oldLocation, newLocation, travel)
-		val particle1 = Particle.DUST
-		val particle2 = Particle.SOUL_FIRE_FLAME
+		val particle = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-		location.world.spawnParticle(
-			particle1,
-			location.x,
-			location.y,
-			location.z,
-			4,
-			0.0,
-			0.0,
-			0.0,
-			0.0,
-			dustOptions,
-			true
-		)
-		if (distance < 4.0) {
+		super.moveVisually(oldLocation, newLocation, travel)
+		if (distance < 3.0) {
 			val circlePoints1 = location.circlePoints(3.0, 8, direction)
 			for (point in circlePoints1) point.world.spawnParticle(
-				Particle.DUST_COLOR_TRANSITION,
+				particle,
 				point.x,
 				point.y,
 				point.z,
@@ -59,14 +37,14 @@ class GaussCannonProjectile(
 				0.0,
 				0.0,
 				0.0,
-				blueParticleData,
+				dustOptions,
 				true
 			)
 		}
-		if (distance < 8.0) {
+		if (distance < 6.0) {
 			val circlePoints2 = location.circlePoints(1.5, 8, direction)
 			for (point in circlePoints2) point.world.spawnParticle(
-				Particle.DUST_COLOR_TRANSITION,
+				particle,
 				point.x,
 				point.y,
 				point.z,
@@ -75,7 +53,7 @@ class GaussCannonProjectile(
 				0.0,
 				0.0,
 				0.0,
-				blueParticleData,
+				dustOptions,
 				true
 			)
 		}

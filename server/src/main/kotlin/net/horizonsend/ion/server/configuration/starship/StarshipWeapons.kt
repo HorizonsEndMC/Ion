@@ -992,7 +992,7 @@ data class PlasmaCannonBalancing(
 @Serializable
 data class ArtilleryBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override val firePowerConsumption: Int = 2500,
 	override val isForwardOnly: Boolean = true,
 	override val maxPerShot: Int = 2,

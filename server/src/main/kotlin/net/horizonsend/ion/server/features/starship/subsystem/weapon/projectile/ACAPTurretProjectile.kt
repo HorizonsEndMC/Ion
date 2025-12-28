@@ -35,6 +35,7 @@ class ACAPTurretProjectile(
 		}*/
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
+		super.moveVisually(oldLocation, newLocation, travel)
 		val mainParticle = Particle.DUST
 		val auxParticle = Particle.LAVA
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
