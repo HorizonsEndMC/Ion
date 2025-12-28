@@ -28,11 +28,12 @@ class GaussCannonProjectile(
 		shooter.color,
 		2.0f
 	)
+	private var checkpoint1 = false
+	private var checkpoint2 = false
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		super.moveVisually(oldLocation, newLocation, travel)
 		val particle1 = Particle.DUST
-		val particle2 = Particle.SOUL_FIRE_FLAME
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 		location.world.spawnParticle(
 			particle1,
@@ -47,8 +48,9 @@ class GaussCannonProjectile(
 			dustOptions,
 			true
 		)
-		if (distance < 4.0) {
+		if (distance < 4.0 && !checkpoint1) {
 			val circlePoints1 = location.circlePoints(3.0, 8, direction)
+			checkpoint1 = true
 			for (point in circlePoints1) point.world.spawnParticle(
 				Particle.DUST_COLOR_TRANSITION,
 				point.x,
@@ -63,7 +65,8 @@ class GaussCannonProjectile(
 				true
 			)
 		}
-		if (distance < 8.0) {
+		if (distance < 8.0 && checkpoint1 && !checkpoint2) {
+			checkpoint2 = true
 			val circlePoints2 = location.circlePoints(1.5, 8, direction)
 			for (point in circlePoints2) point.world.spawnParticle(
 				Particle.DUST_COLOR_TRANSITION,
