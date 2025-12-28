@@ -26,8 +26,6 @@ import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
-import net.horizonsend.ion.common.database.schema.nations.KothSiege
-import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -123,10 +121,8 @@ object DBManager : IonComponent() {
 
 		// nations
 		CapturableStation.init()
-		KothStation.init()
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
-		KothSiege.init()
 		SolarSiegeData.init()
 		Nation.init()
 		NationRelation.init()

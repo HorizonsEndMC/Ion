@@ -8,8 +8,6 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.space.Space
@@ -352,13 +350,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun isInSuperPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
 		val world = player.world
-		val playerLocation = player.location
 		if (world.hasFlag(WorldFlag.PLANET_WORLD) || world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) return true
-		for (koth in KingOfTheHills.getKOTHS()) {
-			val thisKoth = koth.kothId
-			val kothRegion: RegionKothZone = Regions[thisKoth]
-			if (kothRegion.contains(playerLocation)) return true
-			}
 		if (CombatTimer.isPvpCombatTagged(player)) return true
 		return false
 	}

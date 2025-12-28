@@ -14,7 +14,6 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -22,7 +21,6 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
@@ -43,14 +41,12 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import java.lang.Integer.min
-import java.util.Date
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {
@@ -72,21 +68,6 @@ object NationsMasterTasks : IonServerComponent() {
 
 			if (SLPlayer.none(query)) {
 				purgeSettlement(id, true)
-			}
-		}
-	}
-
-	fun getPower() {
-		for (nationId: Oid<Nation> in Nation.allIds()) {
-			val nation: NationCache.NationData = NationCache[nationId]
-			val members: List<SLPlayerId> = SLPlayer
-				.find(SLPlayer::nation eq nationId)
-				.map { player -> player._id }.toList()
-
-			var nationPower = 0
-			for (playerId in members) {
-				val power = SLPlayer.getPower(playerId) ?: 0
-				nationPower += power
 			}
 		}
 	}
