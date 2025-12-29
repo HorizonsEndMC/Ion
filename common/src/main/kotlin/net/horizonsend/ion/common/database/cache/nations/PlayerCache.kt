@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Role
@@ -37,6 +38,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var frontierNationOid: Oid<FrontierNation>?,
 		var settlementTag: String?,
 		var nationTag: String?,
+		var frontierNationTag: String?,
 		var bounty: Double,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
@@ -179,6 +181,12 @@ abstract class AbstractPlayerCache : ManualCache() {
 			getColoredTag(NationRole.getTag(id))
 		}
 
+		val frontierNationTag: String? = if (frontierNation == null) {
+			null
+		} else {
+			getColoredTag(FrontierNationRole.getTag(id))
+		}
+
 		PLAYER_DATA[id.uuid] = PlayerData(
 			id = id,
 			xp = data.xp,
@@ -188,6 +196,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			frontierNationOid = frontierNation,
 			settlementTag = settlementTag,
 			nationTag = nationTag,
+			frontierNationTag = frontierNationTag,
 			bounty = data.bounty,
 			blockedPlayerIDs = data.blockedPlayerIDs
 		)

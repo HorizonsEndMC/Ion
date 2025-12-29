@@ -136,6 +136,7 @@ data class SLPlayer(
 			ensureIndex(SLPlayer::lastKnownName, indexOptions = IndexOptions().textVersion(3))
 			ensureIndex(SLPlayer::settlement)
 			ensureIndex(SLPlayer::nation)
+			ensureIndex(SLPlayer::frontierNation)
 			ensureIndex(SLPlayer::snowflake)
 		}
 	) {
