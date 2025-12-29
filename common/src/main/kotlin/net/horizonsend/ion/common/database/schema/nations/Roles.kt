@@ -249,5 +249,6 @@ data class FrontierNationRole(
 		TAKE_SHIP_OWNERSHIP,
 		START_KOTH_SIEGE,
 		BROADCAST,
+		MANAGE_STATION,
 	}
 }

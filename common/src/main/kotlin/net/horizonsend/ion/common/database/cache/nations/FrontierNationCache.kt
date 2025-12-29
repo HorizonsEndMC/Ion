@@ -19,9 +19,21 @@ object FrontierNationCache : ManualCache() {
 		var name: String,
 		var leader: SLPlayerId,
 		var color: Int,
+		var world: String,
+		var x: Int,
+		var z: Int,
+		var radius: Int,
 		var invites: Set<SLPlayerId>
 	) {
 		val textColor: TextColor get() = TextColor.color(color)
+
+		fun setNewLocation(newWorld: String, newX: Int, newZ: Int) {
+			FrontierNation.setLocation(id, newWorld, newX, newZ)
+		}
+
+		fun setNewRadius(newRadius: Int) {
+			FrontierNation.setRadius(id, newRadius)
+		}
 	}
 
 	private val FRONTIER_NATION_DATA = ConcurrentHashMap<Oid<FrontierNation>, FrontierNationData>()
@@ -32,7 +44,17 @@ object FrontierNationCache : ManualCache() {
 
 		fun cache(frontierNation: FrontierNation) {
 			val id: Oid<FrontierNation> = frontierNation._id
-			val data = FrontierNationData(id, frontierNation.name, frontierNation.leader, frontierNation.color, frontierNation.invites)
+			val data = FrontierNationData(
+				id,
+				frontierNation.name,
+				frontierNation.leader,
+				frontierNation.color,
+				frontierNation.world,
+				frontierNation.x,
+				frontierNation.z,
+				frontierNation.radius,
+				frontierNation.invites
+			)
 			FRONTIER_NATION_DATA[id] = data
 			nameCache[data.name] = id
 		}
@@ -62,6 +84,22 @@ object FrontierNationCache : ManualCache() {
 
 			change[FrontierNation::color]?.let {
 				data.color = it.int()
+			}
+
+			change[FrontierNation::world]?.let {
+				data.world = it.string()
+			}
+
+			change[FrontierNation::x]?.let {
+				data.x = it.int()
+			}
+
+			change[FrontierNation::z]?.let {
+				data.z = it.int()
+			}
+
+			change[FrontierNation::radius]?.let {
+				data.radius = it.int()
 			}
 
 			change[FrontierNation::invites]?.let {

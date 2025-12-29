@@ -4,6 +4,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -29,6 +30,10 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.ServerInboxes
+import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedMoon
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
@@ -43,21 +48,28 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.Color
+import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
-import java.util.Date
 import kotlin.math.roundToInt
 
 @CommandAlias("frontiernation|fn")
 object FrontierNationCommand : SLCommand() {
+	private const val MIN_CLAIM_DISTANCE_PADDING = 500
+	private const val INITIAL_STATION_RADIUS = 100
+
 	private val nationsMessageColor = TextColor.fromHexString("#FC3200")
 	private val nationsImportantMessageColor = TextColor.fromHexString("#FC9300")
-	private fun nationMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsMessageColor), false, *args)
-	private fun nationImportantMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsImportantMessageColor), false, *args)
+	private fun nationMessageFormat(text: String, vararg args: Any?) =
+		template(text(text, nationsMessageColor), false, *args)
+
+	private fun nationImportantMessageFormat(text: String, vararg args: Any?) =
+		template(text(text, nationsImportantMessageColor), false, *args)
 
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "frontierNations") { _ -> FrontierNationCache.all().map { it.name } }
@@ -83,7 +95,12 @@ object FrontierNationCommand : SLCommand() {
 	}
 
 	private fun validateColor(red: Int, green: Int, blue: Int, nationId: Oid<FrontierNation>?): Color {
-		failIf(sequenceOf(red, green, blue).any { it !in 0..255 }) { "Red, green, and blue must be integers within 0-255" }
+		failIf(
+			sequenceOf(
+				red,
+				green,
+				blue
+			).any { it !in 0..255 }) { "Red, green, and blue must be integers within 0-255" }
 
 		val color = Color.fromRGB(red, green, blue)
 
@@ -119,13 +136,21 @@ object FrontierNationCommand : SLCommand() {
 		validateName(name, null)
 		val color = validateColor(red, green, blue, nationId = null)
 
-		FrontierNation.create(name, sender.slPlayerId, color.asRGB())
+		val location = sender.location
+		val world = location.world
+		val x = location.blockX
+		val z = location.blockZ
 
-		Notify.chatAndGlobal(nationImportantMessageFormat(
-			"{0} founded the frontier nation {1}!",
-			sender.name,
-			name
-		))
+		checkDimensions(world, x, z, INITIAL_STATION_RADIUS, null)
+		FrontierNation.create(name, sender.slPlayerId, color.asRGB(), world.name, x, z, INITIAL_STATION_RADIUS)
+
+		Notify.chatAndGlobal(
+			nationImportantMessageFormat(
+				"{0} founded the frontier nation {1}!",
+				sender.name,
+				name
+			)
+		)
 
 		val embed = Embed(
 			title = "${sender.name} founded the frontier nation $name!",
@@ -146,11 +171,13 @@ object FrontierNationCommand : SLCommand() {
 
 		FrontierNation.delete(nation)
 
-		Notify.chatAndEvents(nationImportantMessageFormat(
-			"The nation {0} has been disbanded by its leader {1}",
-			nationName,
-			sender.name
-		))
+		Notify.chatAndEvents(
+			nationImportantMessageFormat(
+				"The nation {0} has been disbanded by its leader {1}",
+				nationName,
+				sender.name
+			)
+		)
 	}
 
 	@Subcommand("invite")
@@ -211,10 +238,12 @@ object FrontierNationCommand : SLCommand() {
 			text(player, YELLOW)
 		}
 
-		sender.sendMessage(ofChildren(
-			lineBreakWithCenterText(text("Invites", YELLOW)), Component.newline(),
-			body
-		))
+		sender.sendMessage(
+			ofChildren(
+				lineBreakWithCenterText(text("Invites", YELLOW)), Component.newline(),
+				body
+			)
+		)
 	}
 
 	@Subcommand("join")
@@ -260,7 +289,14 @@ object FrontierNationCommand : SLCommand() {
 
 		SLPlayer.leaveFrontierNation(playerId.slPlayerId)
 
-		Notify.chatAndEvents(nationImportantMessageFormat("{0} kicked {1} from the nation {2}!", sender.name, otherPlayer, getFrontierNationName(nationId)))
+		Notify.chatAndEvents(
+			nationImportantMessageFormat(
+				"{0} kicked {1} from the nation {2}!",
+				sender.name,
+				otherPlayer,
+				getFrontierNationName(nationId)
+			)
+		)
 	}
 
 	@Subcommand("set name")
@@ -271,7 +307,7 @@ object FrontierNationCommand : SLCommand() {
 		validateName(newName, nationId)
 
 		val oldName = getFrontierNationName(nationId)
-		failIf(oldName == newName) { "Your nation is already named $oldName"}
+		failIf(oldName == newName) { "Your nation is already named $oldName" }
 
 		FrontierNation.setName(nationId, newName)
 
@@ -287,7 +323,12 @@ object FrontierNationCommand : SLCommand() {
 
 		FrontierNation.setColor(nationId, color.asRGB())
 
-		sender.sendMessage(nationMessageFormat("Updated nation color to {0}", text("█████████████", color(red, green, blue))))
+		sender.sendMessage(
+			nationMessageFormat(
+				"Updated nation color to {0}",
+				text("█████████████", color(red, green, blue))
+			)
+		)
 	}
 
 	@Subcommand("top|list")
@@ -356,7 +397,9 @@ object FrontierNationCommand : SLCommand() {
 		val nationId: Oid<FrontierNation> = when (sender) {
 			is Player -> {
 				when (nation) {
-					null -> PlayerCache[sender].frontierNationOid ?: fail { "You need to specify a nation. /n info <nation>" }
+					null -> PlayerCache[sender].frontierNationOid
+						?: fail { "You need to specify a nation. /n info <nation>" }
+
 					else -> resolveFrontierNation(nation)
 				}
 			}
@@ -380,7 +423,10 @@ object FrontierNationCommand : SLCommand() {
 		message.append(lineBreak)
 
 		val leftPad = (((lineWidth * (3.0 / 2.0)) - cached.name.length) / 2) + 3 // = is 3/2 the size of a space
-		message.append(text(repeatString(" ", leftPad.roundToInt()) + cached.name).color(color(cached.color)).decorate(TextDecoration.BOLD))
+		message.append(
+			text(repeatString(" ", leftPad.roundToInt()) + cached.name).color(color(cached.color))
+				.decorate(TextDecoration.BOLD)
+		)
 		message.append(newline())
 
 		val players: List<SLPlayerId> = FrontierNation.getMembers(nationId).toList()
@@ -403,10 +449,12 @@ object FrontierNationCommand : SLCommand() {
 
 		message.append(playerText)
 		message.append(newline())
-		message.append(ofChildren(
-			text("Balance: "),
-			text(data.balance).color(NamedTextColor.WHITE)
-		))
+		message.append(
+			ofChildren(
+				text("Balance: "),
+				text(data.balance).color(NamedTextColor.WHITE)
+			)
+		)
 
 		val leaderRole = FrontierNationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let {
@@ -427,7 +475,7 @@ object FrontierNationCommand : SLCommand() {
 
 		val members = SLPlayer.findProps(SLPlayer::frontierNation eq nationId, SLPlayer::lastKnownName)
 			.map { Pair(it[SLPlayer::_id], it[SLPlayer::lastKnownName]) }
-			.sortedBy { it.second}
+			.sortedBy { it.second }
 
 		val names = mutableListOf<Component>()
 		for ((playerId, name) in members) {
@@ -464,7 +512,8 @@ object FrontierNationCommand : SLCommand() {
 
 		if (names.size > limit) {
 			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
-			namesList.append(text(" [Hover for full member list]").color(DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
+			namesList.append(text(" [Hover for full member list]").color(DARK_AQUA))
+				.hoverEvent(fullNamesList.asComponent().asHoverEvent())
 		}
 
 		message.append(namesList)
@@ -482,5 +531,106 @@ object FrontierNationCommand : SLCommand() {
 		val nationId = requireFrontierNationIn(sender)
 		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.BROADCAST)
 		ServerInboxes.sendToFrontierNationMembers(nationId, message.miniMessage())
+	}
+
+	@CommandPermission("nations.admin.movestation")
+	@Subcommand("move")
+	@CommandCompletion("@frontierNations @worlds x z")
+	fun onSetLocation(sender: CommandSender, nation: String, world: World, x: Int, z: Int) = asyncCommand(sender) {
+		val nationId: Oid<FrontierNation> = resolveFrontierNation(nation)
+		FrontierNationCache[nationId].setNewLocation(world.name, x, z)
+		sender.success("Moved station $nation to ${world.name}, $x, $z")
+	}
+
+	@Subcommand("resize")
+	@CommandCompletion("radius")
+	fun onSetRadius(sender: Player, newRadius: Int) = asyncCommand(sender) {
+		val nationId = PlayerCache[sender].frontierNationOid ?: fail { "You are not in a nation" }
+		val nation = FrontierNationCache[nationId]
+		requireFrontierNationPermission(sender, nation.id, FrontierNationRole.Permission.MANAGE_STATION)
+
+		val world = Bukkit.getWorld(nation.world) ?: fail { "Could not find station world; please contact staff" }
+		val x = nation.x
+		val z = nation.z
+		checkDimensions(world, x, z, newRadius, nation)
+
+		nation.setNewRadius(newRadius)
+
+		sender.success("Resized ${nation.name} to $newRadius")
+	}
+
+	private fun checkDimensions(
+		world: World,
+		x: Int,
+		z: Int,
+		radius: Int,
+		cachedStation: FrontierNationCache.FrontierNationData?,
+	) {
+		failIf(radius !in INITIAL_STATION_RADIUS..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
+
+		val y = 128 // we don't care about comparing height here
+
+		// Check conflicts with planet orbits
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
+			val padding = MIN_CLAIM_DISTANCE_PADDING
+			val minDistance = planet.orbitDistance - padding - radius
+			val maxDistance = planet.orbitDistance + padding + radius
+			val distance = distance(x, y, z, planet.sun.location.x, y, planet.sun.location.z).toInt()
+
+			failIf(distance in minDistance..maxDistance) {
+				"This claim would be in the way of ${planet.name}'s orbit"
+			}
+		}
+
+		// Check conflicts with moon orbits
+		for (moon: CachedMoon in Space.getMoons().filter { it.spaceWorld == world }) {
+			val padding = MIN_CLAIM_DISTANCE_PADDING
+			val minDistance = moon.orbitDistance - padding - radius
+			val maxDistance = moon.orbitDistance + padding + radius
+			val distance = distance(x, y, z, moon.parent.location.x, y, moon.parent.location.z).toInt()
+
+			failIf(distance in minDistance..maxDistance) {
+				"This claim would be in the way of ${moon.name}'s orbit"
+			}
+		}
+
+		// Check conflict with stars
+		for (star: CachedStar in Space.getStars().filter { it.spaceWorld == world }) {
+			val minDistance = MIN_CLAIM_DISTANCE_PADDING
+			val distance = distance(x, y, z, star.location.x, y, star.location.z)
+
+			failIf(distance < minDistance) {
+				"This claim would be too close to the star ${star.name}"
+			}
+		}
+
+		// Check conflict with beacons
+		HyperspaceBeaconManager.beaconWorlds[world]?.let { beacons ->
+			for (beacon in beacons) {
+				val minDistance = MIN_CLAIM_DISTANCE_PADDING
+				val distance = distance(x, y, z, beacon.spaceLocation.x, y, beacon.spaceLocation.z)
+
+				failIf(distance < minDistance) {
+					"This claim would be too close to the hyperspace beacon ${beacon.name}"
+				}
+			}
+		}
+
+		// Check conflicts with other stations
+		// (use the database directly, in order to avoid people making
+		// another one in the same location before the cache updates)
+		for (other in FrontierNationCache.all()) {
+			if (other.id == cachedStation?.id) continue
+			if (other.world != world.name) continue
+
+			val padding = MIN_CLAIM_DISTANCE_PADDING
+
+			val minDistance = other.radius + radius + padding
+			val distance = distance(x, y, z, other.x, y, other.z)
+
+			failIf(distance < minDistance) {
+				"This claim would be too close to the space station ${other.name}"
+			}
+		}
 	}
 }

@@ -31,6 +31,10 @@ data class FrontierNation(
 	var name: String,
 	var leader: SLPlayerId,
 	var color: Int,
+	var world: String,
+	var x: Int,
+	var z: Int,
+	var radius: Int,
 	override var balance: Int = 0,
 	val invites: MutableSet<SLPlayerId> = mutableSetOf()
 ) : DbObject, MoneyHolder {
@@ -45,12 +49,12 @@ data class FrontierNation(
 			return SLPlayer.col.updateMany(session, SLPlayer::frontierNation eq frontierNationId, combine(*update)).matchedCount
 		}
 
-		fun create(name: String, leader: SLPlayerId, color: Int): Oid<FrontierNation> = trx { sess ->
+		fun create(name: String, leader: SLPlayerId, color: Int, world: String, x: Int, z: Int, radius: Int): Oid<FrontierNation> = trx { sess ->
 			require(none(nameQuery(name)))
 			require(SLPlayer.matches(sess, leader, SLPlayer::frontierNation eq null))
 
 			val id: Oid<FrontierNation> = objId()
-			val frontierNation = FrontierNation(id, name, leader, color)
+			val frontierNation = FrontierNation(id, name, leader, color, world, x, z, radius)
 
 			SLPlayer.col.updateOne(sess, idFilterQuery(leader), setValue(SLPlayer::frontierNation, id))
 			col.insertOne(sess, frontierNation)
@@ -99,6 +103,18 @@ data class FrontierNation(
 
 		fun setColor(frontierNationId: Oid<FrontierNation>, rgb: Int) = trx { sess ->
 			updateById(sess, frontierNationId, setValue(FrontierNation::color, rgb))
+		}
+
+		fun setLocation(frontierNationId: Oid<FrontierNation>, newWorld: String, newX: Int, newZ: Int) = trx { sess ->
+			updateById(sess, frontierNationId,
+				setValue(FrontierNation::world, newWorld),
+				setValue(FrontierNation::x, newX),
+				setValue(FrontierNation::z, newZ)
+			)
+		}
+
+		fun setRadius(frontierNationId: Oid<FrontierNation>, radius: Int) = trx { sess ->
+			updateById(sess, frontierNationId, setValue(FrontierNation::radius, radius))
 		}
 	}
 }
