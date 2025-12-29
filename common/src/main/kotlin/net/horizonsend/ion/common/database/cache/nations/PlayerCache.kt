@@ -33,6 +33,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		val id: SLPlayerId,
 		var xp: Int?,
 		var level: Int?,
+		var power: Int?,
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
 		var frontierNationOid: Oid<FrontierNation>?,
@@ -101,6 +102,17 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::frontierNation]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newNation = it.nullable()?.oid<FrontierNation>()
+
+					data.frontierNationOid = newNation
+					data.frontierNationTag = null
+				}
+			}
+
 			change[SLPlayer::xp]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -116,6 +128,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val newLevel = it.int()
 					data.level = newLevel
+				}
+			}
+
+			change[SLPlayer::power]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newPower = it.int()
+					data.power = newPower
 				}
 			}
 
@@ -191,6 +212,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			id = id,
 			xp = data.xp,
 			level = data.level,
+			power = data.power,
 			settlementOid = settlement,
 			nationOid = nation,
 			frontierNationOid = frontierNation,

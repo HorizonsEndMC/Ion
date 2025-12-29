@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.kyori.adventure.text.format.TextColor
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KProperty
 
 object FrontierNationCache : ManualCache() {
 	data class FrontierNationData(
@@ -41,80 +42,23 @@ object FrontierNationCache : ManualCache() {
 
 	override fun load() {
 		FRONTIER_NATION_DATA.clear()
-
-		fun cache(frontierNation: FrontierNation) {
-			val id: Oid<FrontierNation> = frontierNation._id
-			val data = FrontierNationData(
-				id,
-				frontierNation.name,
-				frontierNation.leader,
-				frontierNation.color,
-				frontierNation.world,
-				frontierNation.x,
-				frontierNation.z,
-				frontierNation.radius,
-				frontierNation.invites
-			)
-			FRONTIER_NATION_DATA[id] = data
-			nameCache[data.name] = id
-		}
+		nameCache.clear()
 
 		for (frontierNation in FrontierNation.all()) {
-			cache(frontierNation)
+			createCached(frontierNation)
 		}
 
-		FrontierNation.watchInserts { change ->
-			change.fullDocument?.let(::cache)
-		}
-
-		FrontierNation.watchUpdates { change ->
-			val id: Oid<FrontierNation> = change.oid
-
-			val data = FRONTIER_NATION_DATA[id] ?: error("$id wasn't cached")
-
-			change[FrontierNation::name]?.let {
-				nameCache.remove(data.name)
-				data.name = it.string()
-				nameCache[data.name] = id
-			}
-
-			change[FrontierNation::leader]?.let {
-				data.leader = it.slPlayerId()
-			}
-
-			change[FrontierNation::color]?.let {
-				data.color = it.int()
-			}
-
-			change[FrontierNation::world]?.let {
-				data.world = it.string()
-			}
-
-			change[FrontierNation::x]?.let {
-				data.x = it.int()
-			}
-
-			change[FrontierNation::z]?.let {
-				data.z = it.int()
-			}
-
-			change[FrontierNation::radius]?.let {
-				data.radius = it.int()
-			}
-
-			change[FrontierNation::invites]?.let {
-				data.invites = it.mappedSet { id -> id.slPlayerId() }
-			}
-		}
-
-		FrontierNation.watchDeletes { change ->
-			val id: Oid<FrontierNation> = change.oid
-
-			val data = FRONTIER_NATION_DATA[id] ?: error("$id wasn't cached")
-
-			FRONTIER_NATION_DATA.remove(id)
-			nameCache.remove(data.name)
-		}
+		setupDb(
+			FrontierNation.Companion,
+			FrontierNation::name,
+			FrontierNation::leader,
+			FrontierNation::color,
+			FrontierNation::world,
+			FrontierNation::x,
+			FrontierNation::z,
+			FrontierNation::radius,
+			FrontierNation::invites,
+		)
 	}
 
 	fun all(): List<FrontierNationData> = FRONTIER_NATION_DATA.values.toList()
@@ -123,4 +67,158 @@ object FrontierNationCache : ManualCache() {
 		?: error("$frontierNationId wasn't cached")
 
 	fun getByName(name: String): Oid<FrontierNation>? = nameCache[name]
+
+	fun createCached(frontierNation: FrontierNation): FrontierNationData {
+		val cachedNation = FrontierNationData(
+			frontierNation._id,
+			frontierNation.name,
+			frontierNation.leader,
+			frontierNation.color,
+			frontierNation.world,
+			frontierNation.x,
+			frontierNation.z,
+			frontierNation.radius,
+			frontierNation.invites
+		)
+
+		FRONTIER_NATION_DATA[frontierNation._id] = cachedNation
+		nameCache[frontierNation.name] = cachedNation.id
+
+		return cachedNation
+	}
+
+	fun setupDb(
+		companion: FrontierNation.Companion,
+		nameProperty: KProperty<String>,
+		leaderProperty: KProperty<SLPlayerId>,
+		colorProperty: KProperty<Int>,
+		worldProperty: KProperty<String>,
+		xProperty: KProperty<Int>,
+		zProperty: KProperty<Int>,
+		radiusProperty: KProperty<Int>,
+		invitesProperty: KProperty<Set<SLPlayerId>>,
+	) {
+		companion.watchInserts { change ->
+			change.fullDocument?.let { createCached(it) }
+		}
+
+		companion.watchDeletes{ change ->
+			val id = change.oid
+
+			val data = FRONTIER_NATION_DATA[id] ?: error("$id wasn't cached")
+
+			FRONTIER_NATION_DATA.remove(id)
+			nameCache.remove(data.name)
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[nameProperty]?.let {
+					nameCache.remove(data.name)
+					data.name = it.string()
+					nameCache[data.name] = id
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[leaderProperty]?.let {
+					data.leader = it.slPlayerId()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[colorProperty]?.let {
+					data.color = it.int()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[worldProperty]?.let {
+					data.world = it.string()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[worldProperty]?.let {
+					data.world = it.string()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[xProperty]?.let {
+					data.x = it.int()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[zProperty]?.let {
+					data.z = it.int()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[radiusProperty]?.let {
+					data.radius = it.int()
+				}
+			}
+		}
+
+		companion.watchUpdates{ change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[invitesProperty]?.let {
+					data.invites = it.mappedSet { id -> id.slPlayerId() }
+				}
+			}
+		}
+	}
 }

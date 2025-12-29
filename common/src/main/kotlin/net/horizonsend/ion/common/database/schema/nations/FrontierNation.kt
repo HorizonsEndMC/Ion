@@ -41,6 +41,9 @@ data class FrontierNation(
 	companion object : OidDbObjectCompanion<FrontierNation>(FrontierNation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(FrontierNation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(FrontierNation::leader)
+		ensureIndex(FrontierNation::world)
+		ensureIndex(FrontierNation::x)
+		ensureIndex(FrontierNation::z)
 		ensureIndex(FrontierNation::invites)
 	}) {
 		private fun nameQuery(name: String) = Filters.regex("name", "^$name$", "i")
