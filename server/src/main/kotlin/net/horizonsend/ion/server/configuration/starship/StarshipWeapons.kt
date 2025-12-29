@@ -93,6 +93,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TorpedoProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.WebifierProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyLaserWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
@@ -337,7 +338,7 @@ data class PhaserBalancing(
 
 @Serializable
 data class WebifierBalancing(
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2),
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000, incompatibleMultiblocks = listOf(
 		/*
 		IncompatibleSubsystemInfo(
@@ -346,7 +347,7 @@ data class WebifierBalancing(
 		)
 		 */
 	)),
-	override val firePowerConsumption: Int = 50000,
+	override val firePowerConsumption: Int = 500,
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int? = null,
 	override val applyCooldownToAll: Boolean = false,
@@ -366,7 +367,7 @@ data class WebifierBalancing(
 	@Serializable
 	data class WebifierProjectileBalancing(
 		override val range: Double = 140.0,
-		override val speed: Double = 1000.0,
+		override val speed: Double = 100.0,
 		override val explosionPower: Float = 2f,
 		override val starshipShieldDamageMultiplier: Double = 55.0,
 		override val areaShieldDamageMultiplier: Double = 5.0,
@@ -375,7 +376,7 @@ data class WebifierBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 	) : StarshipProjectileBalancing {
 		@Transient
-		override val clazz: KClass<out Projectile> = PhaserProjectile::class
+		override val clazz: KClass<out Projectile> = WebifierProjectile::class
 	}
 }
 

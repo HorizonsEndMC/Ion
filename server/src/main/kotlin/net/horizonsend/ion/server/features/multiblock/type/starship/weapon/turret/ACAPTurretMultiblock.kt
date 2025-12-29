@@ -213,7 +213,7 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 		isAuto: Boolean
 	) {
 		val particleData = Particle.DustTransition(
-			Color.fromARGB(255, 173, 216, 230),
+			Color.fromARGB(255, 50, 205, 50),
 			shooter.color,
 			2.0f
 		)
@@ -222,21 +222,15 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 
 			val loc = point.toLocation(world).toCenterLocation()
 
-			val telegraphPoints = loc.alongVector(dir.normalize().multiply(500), 100)
-			for (thisPoint in telegraphPoints) {
-				thisPoint.world.spawnParticle(Particle.DUST_COLOR_TRANSITION, thisPoint.x, thisPoint.y, thisPoint.z, 2, 0.0, 0.0, 0.0, 0.0, particleData, true)
-			}
-			Tasks.syncDelay((20.0 * 1.5).toLong()) {
-				ACAPTurretProjectile(
-					StarshipProjectileSource(starship),
-					subSystem.getName(),
-					loc,
-					dir,
-					shooter.color,
-					shooter,
-					subSystem.balancing.projectile
-				).fire()
-			}
+			ACAPTurretProjectile(
+				StarshipProjectileSource(starship),
+				subSystem.getName(),
+				loc,
+				dir,
+				shooter.color,
+				shooter,
+				subSystem.balancing.projectile
+			).fire()
 		}
 	}
 }

@@ -27,7 +27,7 @@ class LightLogisticsCannonWeaponSubsystem(
 		shooter: Damager,
 		target: Vector
 	) {
-		LogisticsCannonProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter.color, balancing as LightLogisticsCannonBalancing.LightLogisticsCannonProjectileBalancing, shooter, DamageType.GENERIC)
+		LogisticsCannonProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter.color, balancing.projectile, shooter, DamageType.GENERIC)
 	}
 
 	override fun getMaxPerShot(): Int = balancing.maxPerShot

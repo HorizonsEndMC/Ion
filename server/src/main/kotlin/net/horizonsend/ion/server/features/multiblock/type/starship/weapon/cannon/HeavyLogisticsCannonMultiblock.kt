@@ -25,14 +25,12 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 	override val displayName: Component get() = text("Heavy Logistics cannon")
 	override val description: Component get() = text("Weapon system that heals other starships.")
 
-	protected abstract fun getSign(): Int
 
 	abstract fun getFirePointOffset(): Vec3i
 }
 
 
 	object TopHeavyLogisticsCannonMultiblock : HeavyLogisticsCannonMultiblock() {
-		override fun getSign(): Int = 1
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, +0)
 		override val key: String = "top_heavy_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
@@ -113,7 +111,6 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 	}
 
 	object SideHeavyLogisticsCannonMultiblock : HeavyLogisticsCannonMultiblock() {
-		override fun getSign(): Int = 1
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +4)
 		override val key: String = "side_heavy_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
@@ -192,7 +189,6 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 	}
 
 	object BottomHeavyLogisticsCannonMultiblock : HeavyLogisticsCannonMultiblock() {
-		override fun getSign(): Int = -1
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, +0)
 		override val key: String = "bottom_heavy_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {

@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -25,23 +26,26 @@ class ACAPTurretProjectile(
 	shooter: Damager,
 	override val balancing: ACAPTurretBalancing.ACAPTurretProjectileBalancing
 ): LaserProjectile<ACAPTurretBalancing.ACAPTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+	var tick = 0
+	val dustOptions = Particle.DustOptions(
+		color,
+		particleThickness.toFloat() *4f)
 
-	/*override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		val mainParticle = Particle.DUST
-		val auxParticle = Particle.SOUL_FIRE_FLAME
-		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-		location.world.spawnParticle(auxParticle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
-		location.world.spawnParticle(mainParticle, x, y, z, 4, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
-		}*/
+	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
+		super.spawnParticle(x, y, z, force)
+		if (tick % 10 == 0) {
+			for (point in location.circlePoints(2.0, 12, direction)) {
+				point.world.spawnParticle(Particle.DUST, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+			}
+			for (point in location.circlePoints(3.0, 18, direction)) {
+				point.world.spawnParticle(Particle.DUST, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+			}
+		}
+	}
 
-	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		super.moveVisually(oldLocation, newLocation, travel)
-		val mainParticle = Particle.DUST
-		val auxParticle = Particle.LAVA
-		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-		location.world.spawnParticle(auxParticle, location.x, location.y, location.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-		location.world.spawnParticle(mainParticle, location.x, location.y, location.z, 4, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-
+	override fun tick() {
+		super.tick()
+		tick+=1
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {

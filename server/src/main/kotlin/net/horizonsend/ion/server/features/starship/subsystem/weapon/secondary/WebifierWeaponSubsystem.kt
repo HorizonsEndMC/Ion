@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.WebifierProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -28,7 +28,7 @@ class WebifierWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace
 ) : CannonWeaponSubsystem<WebifierBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(WebifierWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
-	override val length: Int = 8
+	override val length: Int = 7
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
@@ -39,10 +39,6 @@ class WebifierWeaponSubsystem(
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		if (starship.initialBlockCount > 12000) {
-			starship.userError("You can't fire phasers on a ship larger than 12000 blocks!")
-			return
-		}
 
 		toPlayersInRadius(loc, balancing.projectile.range * 20.0) { player ->
 			playDirectionalStarshipSound(loc, player, balancing.projectile.fireSoundNear, balancing.projectile.fireSoundNear, balancing.projectile.range)
@@ -50,35 +46,25 @@ class WebifierWeaponSubsystem(
 
 		fixDirections(loc)
 
-		Tasks.syncDelay((20.0 * WARM_UP_TIME_SECONDS).toLong()) {
-			val newFirePos = getFirePos().toCenterVector()
-			PhaserProjectile(StarshipProjectileSource(starship), getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
-		}
+		val newFirePos = getFirePos().toCenterVector()
+		WebifierProjectile(StarshipProjectileSource(starship), getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
 	}
 
 	private fun fixDirections(loc: Location) {
 		fixGrindstoneData(loc)
-		fixHopperData(loc)
 	}
 
 	private fun fixGrindstoneData(loc: Location) {
-		val grindstone = pos.toLocation(loc.world).add(face.direction.multiply(7)).block
+		val grindstone = pos.toLocation(loc.world).add(face.direction.multiply(6)).block
 		val grindstoneData = grindstone.blockData as Grindstone
 		grindstoneData.attachedFace = FaceAttachable.AttachedFace.WALL
 		grindstoneData.facing = face
 		grindstone.setBlockData(grindstoneData, false)
 	}
 
-	private fun fixHopperData(loc: Location) {
-		val hopper = pos.toLocation(loc.world).add(face.direction.multiply(6)).block
-		val hopperData = hopper.blockData as Hopper
-		hopperData.isEnabled = false
-		hopperData.facing = face
-		hopper.setBlockData(hopperData, false)
-	}
 
 	override fun getName(): Component {
-		return Component.text("Phaser")
+		return Component.text("Webifier")
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {

@@ -33,10 +33,8 @@ class GaussCannonProjectile(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		super.moveVisually(oldLocation, newLocation, travel)
-		val particle1 = Particle.DUST
-		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 		location.world.spawnParticle(
-			particle1,
+			Particle.DUST_COLOR_TRANSITION,
 			location.x,
 			location.y,
 			location.z,
@@ -45,26 +43,10 @@ class GaussCannonProjectile(
 			0.0,
 			0.0,
 			0.0,
-			dustOptions,
+			blueParticleData,
 			true
 		)
-		if (distance < 4.0 && !checkpoint1) {
-			val circlePoints1 = location.circlePoints(3.0, 8, direction)
-			checkpoint1 = true
-			for (point in circlePoints1) point.world.spawnParticle(
-				Particle.DUST_COLOR_TRANSITION,
-				point.x,
-				point.y,
-				point.z,
-				4,
-				0.0,
-				0.0,
-				0.0,
-				0.0,
-				blueParticleData,
-				true
-			)
-		}
+		//Check the farther outer ring first
 		if (distance < 8.0 && checkpoint1 && !checkpoint2) {
 			checkpoint2 = true
 			val circlePoints2 = location.circlePoints(1.5, 8, direction)
@@ -74,6 +56,23 @@ class GaussCannonProjectile(
 				point.y,
 				point.z,
 				2,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				blueParticleData,
+				true
+			)
+		}
+		if (distance < 4.0 && !checkpoint1) {
+			val circlePoints1 = location.circlePoints(2.0, 8, direction)
+			checkpoint1 = true
+			for (point in circlePoints1) point.world.spawnParticle(
+				Particle.DUST_COLOR_TRANSITION,
+				point.x,
+				point.y,
+				point.z,
+				4,
 				0.0,
 				0.0,
 				0.0,

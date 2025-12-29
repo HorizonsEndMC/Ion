@@ -33,7 +33,7 @@ class HeavyLogisticsCannonWeaponSubsystem(
 		shooter: Damager,
 		target: Vector
 	) {
-		LogisticsCannonProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter.color, balancing as HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing, shooter, DamageType.GENERIC)
+		LogisticsCannonProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter.color, balancing.projectile, shooter, DamageType.GENERIC)
 	}
 }
 
