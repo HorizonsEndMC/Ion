@@ -54,6 +54,7 @@ data class Nation(
     var capital: Oid<Settlement>,
     var color: Int,
     override var balance: Int = 0,
+	var power: Int = 0,
     val invites: MutableSet<Oid<Settlement>> = mutableSetOf()
 ) : DbObject, MoneyHolder {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {

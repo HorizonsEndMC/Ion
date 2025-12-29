@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
@@ -29,6 +30,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionParent
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
@@ -69,6 +71,8 @@ object Regions : IonServerComponent() {
 		registerRegionType(CapturableStation.Companion) { RegionCapturableStation(it) }
 
 		registerRegionType(NationSpaceStation.Companion) { RegionSpaceStation(it) }
+
+		registerRegionType(KothStation.Companion) { RegionKothZone(it) }
 
 		registerRegionType(SettlementSpaceStation.Companion) { RegionSpaceStation(it) }
 

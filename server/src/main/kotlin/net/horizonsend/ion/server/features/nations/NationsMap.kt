@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
@@ -78,6 +79,7 @@ object NationsMap : IonServerComponent(true) {
 		Tasks.sync {
 			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
+			Regions.getAllOf<RegionKothZone>().forEach (::addKingOfTheHill)
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
@@ -91,6 +93,7 @@ object NationsMap : IonServerComponent(true) {
 
 		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
+		Regions.getAllOf<RegionKothZone>().forEach(NationsMap::updateKingOfTheHill)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 	}
 
@@ -302,6 +305,55 @@ object NationsMap : IonServerComponent(true) {
 			<p>Siege time during $quarter:00 (UTC)
 			""".trimIndent()
 		}}
+		</p>
+		""".trimIndent()
+	}
+
+	fun addKingOfTheHill(station: RegionKothZone): Unit = syncOnly {
+		removeKingOfTheHill(station)
+
+		val name = station.name
+		val world = station.world
+		val x = station.x
+		val y = 128.0
+		val z = station.z.toDouble()
+		val radius = NATIONS_BALANCE.koths.radius.toDouble()
+
+		markerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
+
+		updateKingOfTheHill(station)
+	}
+
+	fun removeKingOfTheHill(station: RegionKothZone) = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		markerSet.findAreaMarker(station.name)?.deleteMarker()
+	}
+
+	fun updateKingOfTheHill(station: RegionKothZone): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: CircleMarker = markerSet.findCircleMarker(station.name)
+			?: return@syncOnly addKingOfTheHill(station)
+
+		val rgb = Color.WHITE.asRGB()
+		marker.setFillStyle(0.0, Color.WHITE.asRGB())
+		marker.setLineStyle(5, 0.8, rgb)
+
+		val hour = station.siegeHour
+		val day = station.siegeDays
+
+		marker.description = """
+		<p><h2>${station.name}</h2></p><p>
+		${
+			"""
+			<p>Activates during $hour:00 (UTC)
+			""".trimIndent()
+		}
 		</p>
 		""".trimIndent()
 	}

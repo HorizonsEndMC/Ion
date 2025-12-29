@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.nations.sieges.SiegeRewardsGui
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
@@ -68,7 +69,24 @@ object SiegeCommand : SLCommand() {
 		tellPlayerCurrentlySiegableStations(sender)
 	}
 
+	@Subcommand("scoreboard")
+	fun tellPlayerKothScoreboard(sender: Player) {
+		val activeKoths = KingOfTheHills.getKOTHS()
+		for (koth in activeKoths) {
+			val scores = koth.kothPoints
+			val name = koth.kothId
+			sender.sendRichMessage("<gray>Current scores for $name:\n<gold> $scores")
+		}
+	}
+
 	private fun tellPlayerCurrentlySiegableStations(sender: Player) {
+		val currentKothNames = KingOfTheHills.getCurrentKoth().joinToString {
+			val stationName = it.name
+			val world = it.world
+			val x = it.x
+			val z = it.z
+			"<dark_gray>[<aqua>$stationName <gray>in <yellow>$world <gray>(<yellow>$x<gray>, <yellow>$z<gray>)<dark_gray>]"
+		}
 		val currentStationNames = StationSieges.getStationsNow().joinToString {
 			val nationName = it.nation?.let(NationCache::get)?.name
 			val stationName = it.name
@@ -79,6 +97,7 @@ object SiegeCommand : SLCommand() {
 		}
 
 		sender.sendRichMessage("<gray>Current Stations: $currentStationNames")
+		sender.sendRichMessage("<gray>Current KOTHs: $currentKothNames")
 	}
 
 	private fun ensurePilotingStarship(sender: Player) {
