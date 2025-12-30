@@ -46,8 +46,22 @@ enum class StoredValues(
 			text(" / ", GRAY),
 			text(maxAmount, AQUA)
 		).itemLore
-	}
+	},
+	ENERGYSWORDBLOCK(NamespacedKeys.ENERGY_BLOCK_AMOUNT) {
+		override fun formatLore(amount: Int, maxAmount: Int): Component = ofChildren(
+			text("Block: ", GRAY),
+			text(amount, AQUA),
+			text(" / ", GRAY),
+			text(maxAmount, AQUA)
+		).itemLore
+	},
 
+	TIMELASTUSED(NamespacedKeys.TIME_LAST_USED) {
+		override fun formatLore(amount: Int, maxAmount: Int): Component = ofChildren(
+			text("TimeLastUsed: ", GRAY),
+			text(amount, GRAY),
+		).itemLore
+	}
 	;
 
 	abstract fun formatLore(amount: Int, maxAmount: Int): Component

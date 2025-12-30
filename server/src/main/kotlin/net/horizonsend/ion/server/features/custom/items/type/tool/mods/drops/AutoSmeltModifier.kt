@@ -43,6 +43,8 @@ object AutoSmeltModifier : ItemModification, DropModifier {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class)
 
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
+
 
 	override val priority: Int = 1
 

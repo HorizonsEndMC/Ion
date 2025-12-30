@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.component
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorageBalancing
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.BlasterWeapons.AmmoStorageBalancing
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute

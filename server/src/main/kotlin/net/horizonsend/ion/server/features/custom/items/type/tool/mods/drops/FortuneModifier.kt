@@ -36,6 +36,8 @@ class FortuneModifier(
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),
 		ApplicationPredicate.ClassPredicate(PowerChainsaw::class)
 	)
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
+
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = true
 

@@ -7,12 +7,27 @@ import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.AdrenalineBoostingMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ArmorLockMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.CognitionBoostingMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.CranialPlatingMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.DuelistEnhancementMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.EnvironmentMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ExtensionBeltMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.GravityFieldMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.GuardianMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.HoverMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.IlluminationMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.MiniNukeMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.NightVisionMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.PaladinMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.PressureFieldMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.QuickdrawMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ShockAbsorbingMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.SiphonMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.SpeedBoostingMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.SwiftSneakMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.AutoSmeltModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.FortuneModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.SilkTouchSource
@@ -66,5 +81,20 @@ class ItemModRegistry() : Registry<ItemModification>(RegistryKeys.ITEM_MODIFICAT
 		register(ItemModKeys.ROCKET_BOOSTING, RocketBoostingMod)
 		register(ItemModKeys.SHOCK_ABSORBING, ShockAbsorbingMod)
 		register(ItemModKeys.SPEED_BOOSTING, SpeedBoostingMod)
+		register(ItemModKeys.MINI_NUKE, MiniNukeMod)
+		register(ItemModKeys.PALADIN, PaladinMod)
+		register(ItemModKeys.SIPHON, SiphonMod)
+		register(ItemModKeys.GUARDIAN, GuardianMod)
+		register(ItemModKeys.ARMOR_LOCK, ArmorLockMod)
+		register(ItemModKeys.ILLUMINATION, IlluminationMod)
+		register(ItemModKeys.GRAVITY_FIELD, GravityFieldMod)
+		register(ItemModKeys.CRANIAL_PLATING, CranialPlatingMod)
+		register(ItemModKeys.HOVER, HoverMod)
+		register(ItemModKeys.EXTENSION_BELT, ExtensionBeltMod)
+		register(ItemModKeys.DUELIST_ENHANCEMENT, DuelistEnhancementMod)
+		register(ItemModKeys.QUICKDRAW, QuickdrawMod)
+		register(ItemModKeys.SWIFT_SNEAK, SwiftSneakMod)
+		register(ItemModKeys.ADRENALINE_BOOSTING, AdrenalineBoostingMod)
+		register(ItemModKeys.COGNITION_BOOSTING, CognitionBoostingMod)
 	}
 }

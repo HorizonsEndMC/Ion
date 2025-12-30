@@ -33,6 +33,8 @@ object AutoCompostModifier : ItemModification, DropModifier {
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST
 
 	override val crouchingDisables: Boolean = false
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
+
 
 	override val priority: Int = 1
 

@@ -1,20 +1,26 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
+import io.papermc.paper.entity.LookAnchor
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.BlasterWeapons.Balancing
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.AmmunitionStorage
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.playerSwapHandsListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.component.MagazineType
@@ -22,7 +28,10 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
+import net.horizonsend.ion.server.miscellaneous.utils.setModel
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
@@ -31,16 +40,26 @@ import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket
 import org.bukkit.Color
 import org.bukkit.Color.fromRGB
 import org.bukkit.Particle.DUST
 import org.bukkit.Particle.DustOptions
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
+@Suppress("UnstableApiUsage")
 open class Blaster<T : Balancing>(
 	key: IonRegistryKey<CustomItem, out CustomItem>,
 	displayName: Component,
@@ -56,6 +75,7 @@ open class Blaster<T : Balancing>(
 	val ammoComponent = AmmunitionStorage(balancingSupplier, balancing.consumesAmmo)
 	val magazineComponent = MagazineType(balancingSupplier, CustomItemKeys[balancing.magazineIdentifier] ?: error("No custom item type ${balancing.magazineIdentifier}"))
 
+	val model = itemFactory.customModel ?: ""
 	override fun decorateItemStack(base: ItemStack) {
 		// Clear base item attributes
 		base.updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
@@ -66,8 +86,56 @@ open class Blaster<T : Balancing>(
 		addComponent(CustomComponentTypes.AMMUNITION_STORAGE, ammoComponent)
 		if (balancing.consumesAmmo) addComponent(CustomComponentTypes.MAGAZINE_TYPE, magazineComponent)
 
-		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item -> fire(event.player, item) })
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item ->
+			val livingEntity = event.player
+			var primaryCount = 0
+			var secondaryCount = 0
+			var tertiaryCount = 0
+			var fattyBelt = 1
+			val inventory = (livingEntity as? InventoryHolder)?.inventory ?: return@rightClickListener
+			for (i in inventory.contents){
+				val customItem = i?.customItem ?: continue
+				if (customItem is Blaster<*>){
+					if (customItem.ammoComponent.getAmmo(i)==0) continue
+					when(customItem.balancingSupplier.get().type){
+						PVPBalancingConfiguration.WeaponTypeEnum.PRIMARY -> primaryCount++
+						PVPBalancingConfiguration.WeaponTypeEnum.SECONDARY -> secondaryCount++
+						PVPBalancingConfiguration.WeaponTypeEnum.TERTIARY -> tertiaryCount++
+						else -> {}
+					}
+				}
+				else continue
+			}
+			for (item in event.player.inventory.armorContents) {
+				val customItem = item?.customItem ?: continue
+
+				if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
+				val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
+				if (!mods.contains(ItemModKeys.EXTENSION_BELT)) continue
+				fattyBelt = 2
+			}
+			if (primaryCount > fattyBelt){
+				livingEntity.userError("Over Primary weapon limit, limit is $fattyBelt but you have $primaryCount weapons ")
+				return@rightClickListener
+			}
+			else if (secondaryCount > 1){
+				livingEntity.userError("Over Secondary weapon limit, limit is 1 but you have $secondaryCount weapons")
+				return@rightClickListener
+			}
+			else if (tertiaryCount > 1){
+				livingEntity.userError("Over Tertiary weapon limit, limit is 1 but you have $tertiaryCount weapons")
+				return@rightClickListener
+			}
+			else{
+				fire(event.player, item)
+			}
+		})
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_SWAP_HANDS, playerSwapHandsListener(this@Blaster) { event, _, item -> reload(event.player, item) })
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@Blaster) { event, _, item ->
+			if (balancing.shouldHaveCameraOverlay){
+				if (!zoomIn(item, event.player)) zoomOut(item)
+			}
+		})
 	}
 
 	open fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
@@ -128,6 +196,7 @@ open class Blaster<T : Balancing>(
 		}
 
 		fireProjectiles(shooter)
+		recoil(shooter)
 	}
 
 	open fun fireProjectiles(livingEntity: LivingEntity) {
@@ -178,6 +247,7 @@ open class Blaster<T : Balancing>(
 	}
 
 	fun reload(livingEntity: LivingEntity, blasterItem: ItemStack) {
+		var speedyReload = false
 		if (livingEntity !is Player) return // Player Only
 		if (livingEntity.hasCooldown(blasterItem.type)) return // Cooldown
 
@@ -214,7 +284,17 @@ open class Blaster<T : Balancing>(
 			return
 		}
 
-		livingEntity.setCooldown(blasterItem.type, this.balancing.reload)
+		for (item in (livingEntity).inventory.armorContents) {
+			val customItem = item?.customItem ?: continue
+
+			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
+			if (!mods.contains(ItemModKeys.COGNITION_BOOSTING)) continue
+			speedyReload = true
+		}
+
+		if (speedyReload) livingEntity.setCooldown(blasterItem.type, this.balancing.reload/2)
+		else livingEntity.setCooldown(blasterItem.type, this.balancing.reload)
 
 		ammoComponent.setAmmo(blasterItem, this, ammo)
 
@@ -239,4 +319,59 @@ open class Blaster<T : Balancing>(
 	fun sendActionBarAmmo(audience: Audience, count: Int) {
 		audience.sendActionBar(template(text("Ammo: {0} / {1}", RED), count.coerceIn(0, balancing.capacity), balancing.capacity))
 	}
+
+	fun recoil(livingEntity: LivingEntity){
+
+		for (iteration in 1..balancing.packetsPerShot) {
+			if (livingEntity is Flying) return
+
+			Tasks.asyncDelay(iteration.toLong()) {
+				val location100InFront = livingEntity.eyeLocation.alongVector(livingEntity.eyeLocation.direction.multiply(100), 1).last()
+				val x = location100InFront.x
+				val y = location100InFront.y + balancing.recoil
+				val z = location100InFront.z
+				livingEntity.lookAt(x, y, z, LookAnchor.EYES)
+			}
+		}
+	}
+
+	fun zoomIn(item: ItemStack, playerHoldingIt: Player) : Boolean{
+		//if we're zoomed in already then we do not need to continue
+		if (item.getData(DataComponentTypes.EQUIPPABLE)?.cameraOverlay() == null) {
+			item.setData(
+				DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HAND)
+					.cameraOverlay(key(balancing.cameraOverlay))
+					.build()
+			)
+			item.editMeta {
+				it.addAttributeModifier(
+					Attribute.MOVEMENT_SPEED,
+					AttributeModifier(
+						NamespacedKeys.SCOPE_ZOOM,
+						balancing.zoomEffect,
+						AttributeModifier.Operation.ADD_SCALAR,
+						EquipmentSlotGroup.MAINHAND
+					)
+				)
+			}
+			val nmsItem = CraftItemStack.asNMSCopy(item.clone().setModel(balancing.scopedInItemModel))
+			val slot = playerHoldingIt.inventory.first(item)
+			val itemModelPacket = ClientboundSetPlayerInventoryPacket(slot, nmsItem)
+			(playerHoldingIt as CraftPlayer).handle.connection.send(itemModelPacket)
+			item.setModel("empty")
+			return  true
+		}
+		return false
+	}
+
+	fun zoomOut(item: ItemStack){
+		item.setData(
+			DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HAND)
+				.cameraOverlay(null)
+				.build()
+		)
+		item.editMeta { it.removeAttributeModifier(Attribute.MOVEMENT_SPEED, AttributeModifier(NamespacedKeys.SCOPE_ZOOM, balancing.zoomEffect, AttributeModifier.Operation.ADD_SCALAR, EquipmentSlotGroup.MAINHAND)) }
+		item.setModel(model)
+	}
 }
+

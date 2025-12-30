@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -16,9 +17,17 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ArmorLockMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ArmorLockMod.forceDisableArmorLock
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.GravityFieldMod.forceDisableGravityBoots
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.GravityFieldMod.getGravityEnabled
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.HoverMod
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.HoverMod.forceDisableHoverBoots
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.HoverMod.getHoverEnabled
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.SwiftSneakMod.setSneakSpeed
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -27,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import net.minecraft.references.Items
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -36,16 +46,19 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.sin
 
+@Suppress("UnstableApiUsage")
 class PowerArmorItem(
 	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
-	val slot: EquipmentSlot
+	val slot: EquipmentSlot,
+	val balancing: PVPBalancingConfiguration.Armor.AttributeHolder
 ) : CustomItem(
 	key,
 	displayName,
@@ -70,14 +83,14 @@ class PowerArmorItem(
 		)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+//			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
 //			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
 			.build())
 		.build()
 ) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(POWER_STORAGE, PowerStorage(50000, 0, true))
-		addComponent(MOD_MANAGER, ModManager(maxMods = 1))
+		addComponent(MOD_MANAGER, ModManager(maxMods = balancing.maxPrimaryModules))
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(
 			this@PowerArmorItem,
@@ -94,7 +107,54 @@ class PowerArmorItem(
 		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
 			tickRocketBoots(entity, itemStack, equipmentSlot)
 		})
+
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
+			tickSwiftSneak(entity, itemStack, equipmentSlot)
+		})
+
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(20) { entity, itemStack, _, equipmentSlot ->
+			tickGravityBoots(entity, itemStack, equipmentSlot)
+		})
+
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
+			tickHoverBoots(entity, itemStack, equipmentSlot)
+		})
+
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
+			tickArmorLock(entity, itemStack, equipmentSlot)
+		})
 	}
+
+	override fun decorateItemStack(base: ItemStack) {
+		base.editMeta { itemMeta ->
+			attributeList().forEach {
+				itemMeta.addAttributeModifier(it.key, it.value)
+			}
+			itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+		}
+
+	}
+
+	fun attributeList() : MutableMap<Attribute, AttributeModifier> {
+		return mutableMapOf(
+			Attribute.MOVEMENT_SPEED to AttributeModifier(NamespacedKeys.key(identifier), balancing.speed , AttributeModifier.Operation.MULTIPLY_SCALAR_1, slot.group),
+			Attribute.SNEAKING_SPEED to AttributeModifier(NamespacedKeys.key(identifier), balancing.sneakSpeed , AttributeModifier.Operation.MULTIPLY_SCALAR_1, slot.group),
+			Attribute.SCALE to AttributeModifier(NamespacedKeys.key(identifier), balancing.scale , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.ENTITY_INTERACTION_RANGE to AttributeModifier(NamespacedKeys.key(identifier), balancing.entityReach , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.BLOCK_INTERACTION_RANGE to AttributeModifier(NamespacedKeys.key(identifier), balancing.blockReach , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.ARMOR to AttributeModifier(NamespacedKeys.key(identifier), balancing.armor , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.ARMOR_TOUGHNESS to AttributeModifier(NamespacedKeys.key(identifier), balancing.toughness, AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.KNOCKBACK_RESISTANCE to AttributeModifier(NamespacedKeys.key(identifier), balancing.knockBackResistance , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.STEP_HEIGHT to AttributeModifier(NamespacedKeys.key(identifier), balancing.stepHeight, AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.MAX_HEALTH to AttributeModifier(NamespacedKeys.key(identifier), balancing.maxHealth , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.JUMP_STRENGTH to AttributeModifier(NamespacedKeys.key(identifier), balancing.jumpStrength , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.FLYING_SPEED to AttributeModifier(NamespacedKeys.key(identifier), balancing.flyingSpeed , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.GRAVITY to AttributeModifier(NamespacedKeys.key(identifier), balancing.gravity , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.OXYGEN_BONUS to AttributeModifier(NamespacedKeys.key(identifier), balancing.oxygenBonus , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			Attribute.WATER_MOVEMENT_EFFICIENCY to AttributeModifier(NamespacedKeys.key(identifier), balancing.waterMovementEfficiency , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+		)
+	}
+
 
 	fun tickPowerMods(entity: LivingEntity, itemStack: ItemStack) {
 		val powerManager = getComponent(POWER_STORAGE)
@@ -110,7 +170,75 @@ class PowerArmorItem(
 		if (!getComponent(MOD_MANAGER).getModKeys(itemStack).contains(ItemModKeys.ROCKET_BOOSTING)) return
 		if (entity !is Player) return
 		if (entity.isGliding && !entity.world.hasFlag(WorldFlag.ARENA)) {
-			powerManager.removePower(itemStack, this, 5)
+			powerManager.removePower(itemStack, this, 0)
+		}
+	}
+
+	fun tickSwiftSneak(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
+		if (entity !is Player) return
+		if (equipmentSlot != EquipmentSlot.LEGS) return
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.SWIFT_SNEAK)) return
+		if (!entity.isSneaking) return
+		return setSneakSpeed(entity)
+		}
+
+	fun tickHoverBoots(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
+		if (entity !is Player) return
+		if (equipmentSlot != EquipmentSlot.FEET) return
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.HOVER)) {
+			forceDisableHoverBoots(entity)
+			return
+		}
+		if ((entity.world.hasFlag(WorldFlag.SPACE_WORLD) || entity.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) && getHoverEnabled(entity.player!!)) {
+			forceDisableHoverBoots(entity)
+			return
+		}
+		if (HoverMod.hoverEnabledPlayers.contains(entity.player!!.uniqueId)) {
+			entity.player!!.isFlying = true
+			entity.player!!.allowFlight = true
+			entity.player!!.flySpeed = 0.toFloat()
+		}
+	}
+
+	fun tickArmorLock(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
+		if (entity !is Player) return
+		if (equipmentSlot != EquipmentSlot.LEGS) return
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.ARMOR_LOCK) && ArmorLockMod.armorLockEnabledPlayers.contains(entity.player!!.uniqueId)) {
+			forceDisableArmorLock(entity)
+			return
+		}
+		if (ArmorLockMod.armorLockEnabledPlayers.contains(entity.player!!.uniqueId)) {
+			if (!entity.player!!.isSneaking) {
+				forceDisableArmorLock(entity.player!!)
+				return
+			}
+			entity.player!!.isInvulnerable = true
+			entity.player!!.canPickupItems = false
+			entity.player!!.velocity = Vector(0, 0, 0)
+			ArmorLockMod.spawnAura(entity.player!!)
+
+			if ((ArmorLockMod.armorLockEnabledPlayers[entity.player!!.uniqueId]!!.plus(ArmorLockMod.maxLockTime)) < System.nanoTime()) {
+				forceDisableArmorLock(entity.player!!)
+			}
+		}
+		else return
+	}
+
+
+	fun tickGravityBoots(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
+		if (entity !is Player) return
+		if (equipmentSlot != EquipmentSlot.FEET) return
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.GRAVITY_FIELD)) {
+			forceDisableGravityBoots(entity)
+			return
+		}
+		if (!(entity.world.hasFlag(WorldFlag.SPACE_WORLD) || entity.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) && !getGravityEnabled(entity.player!!)) {
+			forceDisableGravityBoots(entity)
+			return
 		}
 	}
 

@@ -18,11 +18,14 @@ import kotlin.reflect.KClass
 
 object EnvironmentMod : ItemModification {
 	override val key = ItemModKeys.ENVIRONMENT
-	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_HELMET))
+	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.HEAVY_POWER_ARMOR_HELMET),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.MEDIUM_POWER_ARMOR_HELMET),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.LIGHT_POWER_ARMOR_HELMET))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(NightVisionMod::class, PressureFieldMod::class)
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem>? = CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(Component.text("Environment", GRAY), Component.text(" Module", GOLD))
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.HEAD), WATER_BREATHING, 20, 1, 1) { _, _, _ -> true })
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.HEAD), WATER_BREATHING, 20, 1, 0) { _, _, _ -> true })
 }

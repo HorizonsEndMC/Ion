@@ -30,6 +30,8 @@ object AutoReplantModifier: ItemModification {
 
 	// Just a range extender for something that already vein mines
 	override val crouchingDisables: Boolean = true
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
+
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }

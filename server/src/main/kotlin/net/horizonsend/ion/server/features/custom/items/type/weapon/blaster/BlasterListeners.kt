@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
@@ -59,6 +61,7 @@ class BlasterListeners : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
+		var speedyPullout = false
 		val itemStack = event.player.inventory.getItem(event.newSlot) ?: return
 		val customItem = itemStack.customItem as? Blaster<*> ?: return
 
@@ -73,6 +76,26 @@ class BlasterListeners : SLEventListener() {
 				NamedTextColor.RED
 			)
 		)
+		for (item in event.player.inventory.armorContents) {
+			val customItem = item?.customItem ?: continue
+
+			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
+			if (!mods.contains(ItemModKeys.QUICKDRAW)) continue
+			speedyPullout = true
+		}
+		val pullOutTime = if (speedyPullout) {customItem.balancing.switchToTimeTicks / 2} else {customItem.balancing.switchToTimeTicks}
+		if (event.player.hasCooldown(itemStack.type) && event.player.getCooldown(itemStack) < pullOutTime){
+			event.player.setCooldown(itemStack.type, pullOutTime) //add a cooldown for some weapons
+		}
+
+	}
+
+	@EventHandler
+	fun onPlayerItemHoldEvent1(event: PlayerItemHeldEvent) {
+		val itemStack = event.player.inventory.getItem(event.previousSlot) ?: return
+		val customItem = itemStack.customItem as? Blaster<*> ?: return
+		customItem.zoomOut(itemStack)
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

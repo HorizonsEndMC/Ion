@@ -86,6 +86,10 @@ object NamespacedKeys {
 
 	val POWER = key("power")
 	val GAS = key("Gas")
+	val ENERGY_BLOCK_AMOUNT = key("energy_sword_block")
+	val TIME_LAST_USED = key("time_last_used")
+	val SCOPE_ZOOM = key("scope_zoom")
+
 
 	val SERIALIZATION_TYPE = key("serialization_type")
 	val META_DATA = key("meta_data")

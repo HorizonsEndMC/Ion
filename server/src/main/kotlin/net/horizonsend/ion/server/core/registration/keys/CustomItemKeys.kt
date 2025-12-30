@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.BlasterWeapons.Multishot
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.BlasterWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.consumable.ConsumableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
@@ -26,6 +27,9 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val DETONATOR = registerTypedKey<ThrowableCustomItem>("DETONATOR")
 	val SMOKE_GRENADE = registerTypedKey<ThrowableCustomItem>("SMOKE_GRENADE")
 	val PUMPKIN_GRENADE = registerTypedKey<ThrowableCustomItem>("PUMPKIN_GRENADE")
+
+	val EMPTY_SYRINGE = registerTypedKey<ConsumableCustomItem>("EMPTY_SYRINGE")
+	val HEALTH_STIM = registerTypedKey<ConsumableCustomItem>("HEALTH_STIM")
 
 	val STANDARD_MAGAZINE = registerTypedKey<Magazine>("STANDARD_MAGAZINE")
 	val SPECIAL_MAGAZINE = registerTypedKey<Magazine>("SPECIAL_MAGAZINE")
@@ -82,7 +86,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ATAVUM = registerKey("ATAVUM")
 	val ATAVUM_BLOCK = registerKey("ATAVUM_BLOCK")
 	val KOTH_BLOCK = registerKey("KOTH_BLOCK")
-	
+
 	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")
 	val ENRICHED_URANIUM = registerKey("ENRICHED_URANIUM")
 	val ENRICHED_URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("ENRICHED_URANIUM_BLOCK")
@@ -179,6 +183,21 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val POWER_ARMOR_LEGGINGS = registerTypedKey<PowerArmorItem>("POWER_ARMOR_LEGGINGS")
 	val POWER_ARMOR_BOOTS = registerTypedKey<PowerArmorItem>("POWER_ARMOR_BOOTS")
 
+	val HEAVY_POWER_ARMOR_HELMET = registerTypedKey<PowerArmorItem>("HEAVY_POWER_ARMOR_HELMET")
+	val HEAVY_POWER_ARMOR_CHESTPLATE = registerTypedKey<PowerArmorItem>("HEAVY_POWER_ARMOR_CHESTPLATE")
+	val HEAVY_POWER_ARMOR_LEGGINGS = registerTypedKey<PowerArmorItem>("HEAVY_POWER_ARMOR_LEGGINGS")
+	val HEAVY_POWER_ARMOR_BOOTS = registerTypedKey<PowerArmorItem>("HEAVY_POWER_ARMOR_BOOTS")
+
+	val MEDIUM_POWER_ARMOR_HELMET = registerTypedKey<PowerArmorItem>("MEDIUM_POWER_ARMOR_HELMET")
+	val MEDIUM_POWER_ARMOR_CHESTPLATE = registerTypedKey<PowerArmorItem>("MEDIUM_POWER_ARMOR_CHESTPLATE")
+	val MEDIUM_POWER_ARMOR_LEGGINGS = registerTypedKey<PowerArmorItem>("MEDIUM_POWER_ARMOR_LEGGINGS")
+	val MEDIUM_POWER_ARMOR_BOOTS = registerTypedKey<PowerArmorItem>("MEDIUM_POWER_ARMOR_BOOTS")
+
+	val LIGHT_POWER_ARMOR_HELMET = registerTypedKey<PowerArmorItem>("LIGHT_POWER_ARMOR_HELMET")
+	val LIGHT_POWER_ARMOR_CHESTPLATE = registerTypedKey<PowerArmorItem>("LIGHT_POWER_ARMOR_CHESTPLATE")
+	val LIGHT_POWER_ARMOR_LEGGINGS = registerTypedKey<PowerArmorItem>("LIGHT_POWER_ARMOR_LEGGINGS")
+	val LIGHT_POWER_ARMOR_BOOTS = registerTypedKey<PowerArmorItem>("LIGHT_POWER_ARMOR_BOOTS")
+
 	val ENERGY_SWORD_BLUE = registerTypedKey<EnergySword>("ENERGY_SWORD_BLUE")
 	val ENERGY_SWORD_RED = registerTypedKey<EnergySword>("ENERGY_SWORD_RED")
 	val ENERGY_SWORD_YELLOW = registerTypedKey<EnergySword>("ENERGY_SWORD_YELLOW")
@@ -192,8 +211,23 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ARMOR_MODIFICATION_NIGHT_VISION = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_NIGHT_VISION")
 	val ARMOR_MODIFICATION_PRESSURE_FIELD = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_PRESSURE_FIELD")
 	val ARMOR_MODIFICATION_ROCKET_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ROCKET_BOOSTING")
+	val ARMOR_MODIFICATION_HOVER = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_HOVER")
 	val ARMOR_MODIFICATION_SHOCK_ABSORBING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SHOCK_ABSORBING")
 	val ARMOR_MODIFICATION_SPEED_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SPEED_BOOSTING")
+	val ARMOR_MODIFICATION_MINI_NUKE = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_MINI_NUKE")
+	val ARMOR_MODIFICATION_EXTENSION_BELT = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_EXTENSION_BELT")
+	val ARMOR_MODIFICATION_PALADIN = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_PALADIN")
+	val ARMOR_MODIFICATION_SIPHON = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SIPHON")
+	val ARMOR_MODIFICATION_COGNITION_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_COGNITION_BOOSTING")
+	val ARMOR_MODIFICATION_GUARDIAN = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_GUARDIAN")
+	val ARMOR_MODIFICATION_CRANIAL_PLATING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_CRANIAL_PLATING")
+	val ARMOR_MODIFICATION_GRAVITY_FIELD = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_GRAVITY_FIELD")
+	val ARMOR_MODIFICATION_ARMOR_LOCK = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ARMOR_LOCK")
+	val ARMOR_MODIFICATION_ILLUMINATION = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ILLUMINATION")
+	val ARMOR_MODIFICATION_ADRENALINE_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ADRENALINE_BOOSTING")
+	val ARMOR_MODIFICATION_SWIFT_SNEAK = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SWIFT_SNEAK")
+	val ARMOR_MODIFICATION_DUELIST_ENHANCEMENT = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_DUELIST_ENHANCEMENT")
+	val ARMOR_MODIFICATION_QUICKDRAW = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_QUICKDRAW")
 
 	val TOOL_MODIFICATION_RANGE_1 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_1")
 	val TOOL_MODIFICATION_RANGE_2 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_2")

@@ -22,13 +22,16 @@ import kotlin.reflect.KClass
 
 object SpeedBoostingMod : ItemModification {
 	override val key = ItemModKeys.SPEED_BOOSTING
-	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_LEGGINGS))
+	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.MEDIUM_POWER_ARMOR_LEGGINGS),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.LIGHT_POWER_ARMOR_LEGGINGS))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD))
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.LEGS), SPEED, 60, 2, 1) { entity, _, _ ->
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.LEGS), SPEED, 60, 1, 0) { entity, _, _ ->
 		entity is Player
 			&& hasMovedInLastSecond(entity)
 			&& !entity.world.hasFlag(WorldFlag.ARENA)

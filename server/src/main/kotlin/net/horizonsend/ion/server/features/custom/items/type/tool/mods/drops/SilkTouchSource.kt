@@ -39,6 +39,8 @@ object SilkTouchSource : ItemModification, DropSource {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = false
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD
+	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
+
 
 	override fun getDrop(block: Block): Collection<ItemStack> {
 		return block.getDrops(silkPick)
