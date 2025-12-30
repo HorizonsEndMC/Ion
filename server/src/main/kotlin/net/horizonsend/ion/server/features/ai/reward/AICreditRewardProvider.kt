@@ -20,11 +20,12 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, val con
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	override fun processDamagerRewards(
-		damager: PlayerDamager,
-		topDamagerPoints: AtomicInteger,
-		points: AtomicInteger,
-		pointsSum: Int
-	) {
+        damager: PlayerDamager,
+        topDamagerPoints: AtomicInteger,
+        points: AtomicInteger,
+        pointsSum: Int,
+        penalty: Double
+    ) {
 		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
 		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
 		debugAudience.debug("topPercent: $topPercent")
@@ -32,7 +33,7 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, val con
 		debugAudience.debug("killStreakBonus: $killStreakBonus")
 		val percent = points.get().toDouble() / pointsSum.toDouble()
 		debugAudience.debug("percent: $percent")
-		val money = configuration.creditReward * percent / topPercent * difficultyMultiplier * killStreakBonus
+		val money = configuration.creditReward * percent / topPercent * difficultyMultiplier * killStreakBonus * penalty
 
 		if (money <= 0.0) return
 
