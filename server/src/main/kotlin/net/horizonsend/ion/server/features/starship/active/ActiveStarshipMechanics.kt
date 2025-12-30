@@ -342,9 +342,15 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		for (contact in playerContacts) {
 			if (contact == ServerConfiguration.HyperspaceBeacon) beacons.plus(contact)
 		}
-		for (moon in moons) if (distanceSquared(moon.location, starship!!.centerOfMass) <= 2500) return true
-		for (star in stars) if (distanceSquared(star.location, starship!!.centerOfMass) <= 2500) return true
-		for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVec3i(), starship!!.centerOfMass) <= 2500) return true
+		if (starship != null) {
+			for (moon in moons) if (distanceSquared(moon.location, starship.centerOfMass) <= 2500) return true
+			for (star in stars) if (distanceSquared(star.location, starship.centerOfMass) <= 2500) return true
+			for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVec3i(), starship.centerOfMass) <= 2500) return true
+		} else {
+			for (moon in moons) if (distanceSquared(moon.location.toVector(), player.location.toVector()) <= 2500) return true
+			for (star in stars) if (distanceSquared(star.location.toVector(), player.location.toVector()) <= 2500) return true
+			for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVector(), player.location.toVector()) <= 2500) return true
+		}
 		return false
 	}
 
