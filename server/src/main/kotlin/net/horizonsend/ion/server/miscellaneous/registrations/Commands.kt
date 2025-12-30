@@ -56,6 +56,7 @@ import net.horizonsend.ion.server.command.nations.admin.NPCOwnerCommand
 import net.horizonsend.ion.server.command.nations.admin.NationAdminCommand
 import net.horizonsend.ion.server.command.nations.money.NationMoneyCommand
 import net.horizonsend.ion.server.command.nations.money.SettlementMoneyCommand
+import net.horizonsend.ion.server.command.nations.roles.FrontierNationRoleCommand
 import net.horizonsend.ion.server.command.nations.roles.NationRoleCommand
 import net.horizonsend.ion.server.command.nations.roles.SettlementRoleCommand
 import net.horizonsend.ion.server.command.nations.settlementZones.SettlementPlotCommand
@@ -126,6 +127,7 @@ val commands: List<SLCommand> = listOf(
 
 	NationRoleCommand,
 	SettlementRoleCommand,
+	FrontierNationRoleCommand,
 
 	SettlementPlotCommand,
 	SettlementZoneCommand,

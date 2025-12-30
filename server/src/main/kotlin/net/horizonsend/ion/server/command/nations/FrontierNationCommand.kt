@@ -4,7 +4,6 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
-import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -14,6 +13,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
+import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
@@ -26,12 +26,16 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.command.nations.roles.FrontierNationRoleCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.ServerInboxes
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -51,13 +55,11 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
+import org.litote.kmongo.setValue
 import kotlin.math.roundToInt
 
 @CommandAlias("frontiernation|fn")
 object FrontierNationCommand : SLCommand() {
-	private const val MIN_CLAIM_DISTANCE_PADDING = 500
-	private const val INITIAL_STATION_RADIUS = 100
-
 	private val nationsMessageColor = TextColor.fromHexString("#FC3200")
 	private val nationsImportantMessageColor = TextColor.fromHexString("#FC9300")
 	private fun nationMessageFormat(text: String, vararg args: Any?) =
@@ -68,6 +70,11 @@ object FrontierNationCommand : SLCommand() {
 
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "frontierNations") { _ -> FrontierNationCache.all().map { it.name } }
+		registerAsyncCompletion(manager, "frontierOutposts") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val nation = PlayerCache[player].frontierNationOid
+			Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nation }.map { it.name}
+		}
 	}
 
 	private fun validateName(name: String, nationId: Oid<FrontierNation>?) {
@@ -135,6 +142,26 @@ object FrontierNationCommand : SLCommand() {
 		requireFrontierTerritoryUnclaimed(territory)
 
 		FrontierNation.create(name, sender.slPlayerId, color.asRGB(), territory.id)
+
+		FrontierNationRoleCommand.onCreate(sender, "Leader", SLTextStyle.GOLD, 1000)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_CREATE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_DELETE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.MANAGE_ROLES)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_INVITE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_KICK)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.START_KOTH_SIEGE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.BROADCAST)
+		FrontierNationRoleCommand.onMemberAdd(sender, sender.name, "Leader")
+
+		FrontierNationRoleCommand.onCreate(sender, "Officer", SLTextStyle.YELLOW, 100)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.CLAIM_CREATE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.MANAGE_ROLES)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_INVITE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_KICK)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.START_KOTH_SIEGE)
+		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.BROADCAST)
+
+		FrontierNationRoleCommand.onCreate(sender, "Member", SLTextStyle.GRAY, 100)
 
 		Notify.chatAndGlobal(
 			nationImportantMessageFormat(
@@ -322,6 +349,83 @@ object FrontierNationCommand : SLCommand() {
 				text("█████████████", color(red, green, blue))
 			)
 		)
+	}
+
+	@Subcommand("outpost claim")
+	@Description("Claim a territory on a planet or a space sector")
+	fun onClaim(sender: Player) = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.CLAIM_CREATE)
+
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+
+		val territory = requireFrontierTerritoryIn(sender)
+		requireFrontierTerritoryUnclaimed(territory)
+
+		failIf(Regions.getAllOf<RegionFrontierTerritory>().any { it.frontierNation == nationId }) { "Nations can only have one outpost (besides the capital)" }
+
+		FrontierTerritory.setFrontierNation(territory.id, nationId)
+
+		val nationName = getFrontierNationName(nationId)
+		Notify.chatAndEvents(nationImportantMessageFormat(
+			"{0} claimed the territory {1} on {2} for their nation {3}!",
+			sender.name,
+			territory.name,
+			territory.world,
+			nationName
+		))
+	}
+
+	@Subcommand("outpost unclaim")
+	@Description("Unclaim a territory on a planet or a space sector")
+	fun onUnclaim(sender: Player, territory: String) = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.CLAIM_DELETE)
+
+		val regionTerritory = Regions.getAllOf<RegionFrontierTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true)}
+			?: fail { "Territory $territory not found" }
+		val territoryName = regionTerritory.name
+		val territoryWorld = regionTerritory.world
+
+		failIf(regionTerritory.frontierNation != nationId) { "$territoryName is not claimed by your nation" }
+
+		FrontierTerritory.setFrontierNation(regionTerritory.id, null)
+
+		val nationName = getFrontierNationName(nationId)
+		Notify.chatAndEvents(nationImportantMessageFormat(
+			"{0} unclaimed the territory {1} on {2} from their nation {3}!",
+			sender.name,
+			territoryName,
+			territoryWorld,
+			nationName
+		))
+	}
+
+	@Subcommand("outpost alias")
+	fun onTerritoryAlias(sender: Player, alias: String) = asyncCommand(sender) {
+		validateName(alias, null)
+
+		val nationId = requireFrontierNationIn(sender)
+		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.CLAIM_CREATE)
+
+		val regionTerritory = requireFrontierTerritoryIn(sender)
+		failIf(regionTerritory.frontierNation != nationId) { "Your nation doesn't own that territory!" }
+
+		val territoryName = regionTerritory.name
+		val territoryWorld = regionTerritory.world
+
+		FrontierTerritory.updateById(regionTerritory.id, setValue(FrontierTerritory::alias, alias))
+
+		val nationName = getFrontierNationName(nationId)
+		Notify.chatAndGlobal(nationImportantMessageFormat(
+			"{0}, of {1} renamed their territory outpost {2} on {3} to {4}!",
+			sender.name,
+			nationName,
+			territoryName,
+			territoryWorld,
+			alias
+		))
 	}
 
 	@Subcommand("top|list")

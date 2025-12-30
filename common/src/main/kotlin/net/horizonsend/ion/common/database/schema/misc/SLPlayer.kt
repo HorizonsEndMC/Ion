@@ -206,6 +206,9 @@ data class SLPlayer(
 		fun isMemberOfNation(slPlayerId: SLPlayerId, nationId: Oid<Nation>): Boolean =
 			matches(slPlayerId, SLPlayer::nation eq nationId)
 
+		fun isMemberOfFrontierNation(slPlayerId: SLPlayerId, frontierNationId: Oid<FrontierNation>): Boolean =
+			matches(slPlayerId, SLPlayer::frontierNation eq frontierNationId)
+
 		private fun isSettlementLeader(sess: ClientSession, slPlayerId: SLPlayerId): Boolean =
 			Settlement.col.countDocuments(sess, Settlement::leader eq slPlayerId) != 0L
 
