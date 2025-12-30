@@ -28,6 +28,7 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
+import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
@@ -175,6 +176,7 @@ object DBManager : IonComponent() {
 
 		FrontierNation.init()
 		FrontierNationRole.init()
+		FrontierTerritory.init()
 	}
 
 	override fun onDisable() {

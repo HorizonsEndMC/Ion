@@ -30,10 +30,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.ServerInboxes
-import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.body.CachedMoon
-import net.horizonsend.ion.server.features.space.body.CachedStar
-import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
@@ -48,9 +45,7 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Bukkit
 import org.bukkit.Color
-import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
@@ -130,25 +125,23 @@ object FrontierNationCommand : SLCommand() {
 	@CommandCompletion("@nothing @range:1-255 @range:0-255 @range:0-255")
 	@Description("Create a nation. Color values must be RGB color values, each from 0-255")
 	fun onCreate(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
-		requireEconomyEnabled()
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
 		requireNotInFrontierNation(sender)
 		validateName(name, null)
 		val color = validateColor(red, green, blue, nationId = null)
 
-		val location = sender.location
-		val world = location.world
-		val x = location.blockX
-		val z = location.blockZ
+		val territory = requireFrontierTerritoryIn(sender)
+		requireFrontierTerritoryUnclaimed(territory)
 
-		checkDimensions(world, x, z, INITIAL_STATION_RADIUS, null)
-		FrontierNation.create(name, sender.slPlayerId, color.asRGB(), world.name, x, z, INITIAL_STATION_RADIUS)
+		FrontierNation.create(name, sender.slPlayerId, color.asRGB(), territory.id)
 
 		Notify.chatAndGlobal(
 			nationImportantMessageFormat(
-				"{0} founded the frontier nation {1}!",
+				"{0} founded the frontier nation {1} at {2}!",
 				sender.name,
-				name
+				name,
+				territory.name
 			)
 		)
 
@@ -531,106 +524,5 @@ object FrontierNationCommand : SLCommand() {
 		val nationId = requireFrontierNationIn(sender)
 		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.BROADCAST)
 		ServerInboxes.sendToFrontierNationMembers(nationId, message.miniMessage())
-	}
-
-	@CommandPermission("nations.admin.movestation")
-	@Subcommand("move")
-	@CommandCompletion("@frontierNations @worlds x z")
-	fun onSetLocation(sender: CommandSender, nation: String, world: World, x: Int, z: Int) = asyncCommand(sender) {
-		val nationId: Oid<FrontierNation> = resolveFrontierNation(nation)
-		FrontierNationCache[nationId].setNewLocation(world.name, x, z)
-		sender.success("Moved station $nation to ${world.name}, $x, $z")
-	}
-
-	@Subcommand("resize")
-	@CommandCompletion("radius")
-	fun onSetRadius(sender: Player, newRadius: Int) = asyncCommand(sender) {
-		val nationId = PlayerCache[sender].frontierNationOid ?: fail { "You are not in a nation" }
-		val nation = FrontierNationCache[nationId]
-		requireFrontierNationPermission(sender, nation.id, FrontierNationRole.Permission.MANAGE_STATION)
-
-		val world = Bukkit.getWorld(nation.world) ?: fail { "Could not find station world; please contact staff" }
-		val x = nation.x
-		val z = nation.z
-		checkDimensions(world, x, z, newRadius, nation)
-
-		nation.setNewRadius(newRadius)
-
-		sender.success("Resized ${nation.name} to $newRadius")
-	}
-
-	private fun checkDimensions(
-		world: World,
-		x: Int,
-		z: Int,
-		radius: Int,
-		cachedStation: FrontierNationCache.FrontierNationData?,
-	) {
-		failIf(radius !in INITIAL_STATION_RADIUS..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
-
-		val y = 128 // we don't care about comparing height here
-
-		// Check conflicts with planet orbits
-		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
-			val padding = MIN_CLAIM_DISTANCE_PADDING
-			val minDistance = planet.orbitDistance - padding - radius
-			val maxDistance = planet.orbitDistance + padding + radius
-			val distance = distance(x, y, z, planet.sun.location.x, y, planet.sun.location.z).toInt()
-
-			failIf(distance in minDistance..maxDistance) {
-				"This claim would be in the way of ${planet.name}'s orbit"
-			}
-		}
-
-		// Check conflicts with moon orbits
-		for (moon: CachedMoon in Space.getMoons().filter { it.spaceWorld == world }) {
-			val padding = MIN_CLAIM_DISTANCE_PADDING
-			val minDistance = moon.orbitDistance - padding - radius
-			val maxDistance = moon.orbitDistance + padding + radius
-			val distance = distance(x, y, z, moon.parent.location.x, y, moon.parent.location.z).toInt()
-
-			failIf(distance in minDistance..maxDistance) {
-				"This claim would be in the way of ${moon.name}'s orbit"
-			}
-		}
-
-		// Check conflict with stars
-		for (star: CachedStar in Space.getStars().filter { it.spaceWorld == world }) {
-			val minDistance = MIN_CLAIM_DISTANCE_PADDING
-			val distance = distance(x, y, z, star.location.x, y, star.location.z)
-
-			failIf(distance < minDistance) {
-				"This claim would be too close to the star ${star.name}"
-			}
-		}
-
-		// Check conflict with beacons
-		HyperspaceBeaconManager.beaconWorlds[world]?.let { beacons ->
-			for (beacon in beacons) {
-				val minDistance = MIN_CLAIM_DISTANCE_PADDING
-				val distance = distance(x, y, z, beacon.spaceLocation.x, y, beacon.spaceLocation.z)
-
-				failIf(distance < minDistance) {
-					"This claim would be too close to the hyperspace beacon ${beacon.name}"
-				}
-			}
-		}
-
-		// Check conflicts with other stations
-		// (use the database directly, in order to avoid people making
-		// another one in the same location before the cache updates)
-		for (other in FrontierNationCache.all()) {
-			if (other.id == cachedStation?.id) continue
-			if (other.world != world.name) continue
-
-			val padding = MIN_CLAIM_DISTANCE_PADDING
-
-			val minDistance = other.radius + radius + padding
-			val distance = distance(x, y, z, other.x, y, other.z)
-
-			failIf(distance < minDistance) {
-				"This claim would be too close to the space station ${other.name}"
-			}
-		}
 	}
 }

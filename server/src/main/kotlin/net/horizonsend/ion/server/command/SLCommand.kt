@@ -31,6 +31,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.Levels
@@ -216,6 +217,13 @@ abstract class SLCommand : BaseCommand() {
 		territory.nation?.fail { "${territory.name} is an outpost of ${getNationName(it)}" }
 
 		territory.npcOwner?.fail { "${territory.name} is the NPC territory ${getNPCOwnerName(it)}" }
+	}
+
+	protected fun requireFrontierTerritoryIn(sender: Player): RegionFrontierTerritory = Regions.findFirstOf(sender.location)
+		?: fail { "You're not in a territory in space" }
+
+	protected fun requireFrontierTerritoryUnclaimed(territory: RegionFrontierTerritory) {
+		territory.frontierNation?.fail { "${territory.name} is claimed by ${getFrontierNationName(it)}" }
 	}
 
 	protected fun requireSettlementIn(sender: Player): Oid<Settlement> = PlayerCache[sender].settlementOid

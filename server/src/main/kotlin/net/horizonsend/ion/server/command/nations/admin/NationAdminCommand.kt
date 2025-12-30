@@ -291,6 +291,11 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		TerritoryImporter.importOldTerritories(sender)
 	}
 
+	@Subcommand("frontierterritory import")
+	fun onFrontierTerritoryImport(sender: CommandSender) {
+		FrontierTerritoryImporter.importOldTerritories(sender)
+	}
+
 	@Subcommand("territory setOwner")
 	@CommandCompletion("@nations")
 	fun onTerritoryOwn(sender: Player, newOwner: String, @Optional confirm: String?) {
