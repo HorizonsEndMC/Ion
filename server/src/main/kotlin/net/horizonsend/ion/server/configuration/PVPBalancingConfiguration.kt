@@ -51,6 +51,10 @@ data class PVPBalancingConfiguration(
 			modifierValue = 3.0,
 			cooldownTicks = 40
 		),
+		val strengthStim: ConsumableBalancing = ConsumableBalancing(
+			modifierValue = 1.0,
+			cooldownTicks = 2000
+		),
 		val emptySyringe: ConsumableBalancing = ConsumableBalancing(
 			modifierValue = 0.0,
 			cooldownTicks = 40

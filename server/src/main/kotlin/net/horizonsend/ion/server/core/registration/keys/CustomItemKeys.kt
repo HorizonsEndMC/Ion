@@ -30,6 +30,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 
 	val EMPTY_SYRINGE = registerTypedKey<ConsumableCustomItem>("EMPTY_SYRINGE")
 	val HEALTH_STIM = registerTypedKey<ConsumableCustomItem>("HEALTH_STIM")
+	val STRENGTH_STIM = registerTypedKey<ConsumableCustomItem>("STRENGTH_STIM")
 
 	val STANDARD_MAGAZINE = registerTypedKey<Magazine>("STANDARD_MAGAZINE")
 	val SPECIAL_MAGAZINE = registerTypedKey<Magazine>("SPECIAL_MAGAZINE")

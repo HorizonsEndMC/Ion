@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorIte
 import net.horizonsend.ion.server.features.custom.items.type.consumable.EmptySyringe
 import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.consumable.HealthStim
+import net.horizonsend.ion.server.features.custom.items.type.consumable.StrengthStim
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
@@ -157,6 +158,20 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				}}.build(),
 				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::healthStim
 			))
+		register(
+			CustomItemKeys.STRENGTH_STIM, StrengthStim(
+				key = CustomItemKeys.STRENGTH_STIM,
+				displayName = text("Strength Stim", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(POTION).setCustomModel("consumable/syringe")
+					.addModifier {
+						it.editMeta { meta ->
+							val potionMeta = meta as PotionMeta
+							potionMeta.color = Color.ORANGE
+						}
+					}.build(),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::strengthStim
+			)
+		)
 		register(
 			CustomItemKeys.EMPTY_SYRINGE, EmptySyringe(
 				key = CustomItemKeys.EMPTY_SYRINGE,
