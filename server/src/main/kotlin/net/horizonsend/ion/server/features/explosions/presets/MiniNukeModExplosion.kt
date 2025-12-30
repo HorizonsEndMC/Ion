@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.explosions.effects.spawnShockwave
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Entity
@@ -45,6 +46,11 @@ class MiniNukeModExplosion(val location: Location){
 			val placement = ShockWavePlacement(world = world, origin = vector, render = vector)
 			spawnShockwave(placement, shockWave, burner, entityThatExploded)
 			world.createExplosion(location, 10f)
+			for (player in world.players) {
+				if (location.distanceSquared(player.location) < 25) {
+					player.damage(25.0)
+				}
+			}
 		}
 		Tasks.asyncDelay(46) {
 			val placement = BurnWavePlacement(world = world, origin = vector, render = vector)

@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import java.util.UUID
+import java.util.Vector
 import kotlin.Array
 import kotlin.reflect.KClass
 
@@ -38,11 +39,16 @@ object HoverMod : ItemModification {
 	fun setHover(player : Player) {
 		if ((player.world.hasFlag(WorldFlag.SPACE_WORLD) || player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)))  {
 			hoverEnabledPlayers.remove(player.uniqueId)
+			player.flySpeed = 1.toFloat()
+			player.isFlying = false
 			return
 		}
-
 		val isEnabled = hoverEnabledPlayers.contains(player.uniqueId)
-		if (isEnabled) hoverEnabledPlayers.remove(player.uniqueId)
+		if (isEnabled) {
+			hoverEnabledPlayers.remove(player.uniqueId)
+			player.flySpeed = 1.toFloat()
+			player.isFlying = false
+		}
 		else hoverEnabledPlayers.add(player.uniqueId)
 		player.sendMessage("Hover Module ${if (isEnabled) { "Enabled" } else { "Disabled" }}")
 	}

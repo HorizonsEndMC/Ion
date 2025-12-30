@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
-import io.papermc.paper.registry.keys.MobEffectKeys.GLOWING
-import io.papermc.paper.registry.keys.MobEffectKeys.SPEED
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
@@ -40,7 +38,6 @@ import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect

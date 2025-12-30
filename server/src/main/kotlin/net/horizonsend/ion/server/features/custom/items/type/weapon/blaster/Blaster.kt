@@ -56,6 +56,8 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType.SLOWNESS
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
@@ -196,12 +198,13 @@ open class Blaster<T : Balancing>(
 		}
 
 		fireProjectiles(shooter)
-		recoil(shooter)
+		//recoil(shooter)
 	}
 
 	open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
-
+		val slowness = PotionEffect(SLOWNESS, 10, 1)
+		livingEntity.addPotionEffect(slowness)
 		location.y -= 0.125
 
 		if (balancing.shotDeviation > 0) {

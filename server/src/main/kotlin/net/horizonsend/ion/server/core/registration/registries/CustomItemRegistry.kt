@@ -878,8 +878,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.ARMOR_MODIFICATION_ARMOR_LOCK,
 				ItemModKeys.ARMOR_LOCK,
 				"power_armor/module/armor_lock",
-				ofChildren(Component.text("Extension Belt", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-				Component.text("Grants an extra primary weapon.")
+				ofChildren(Component.text("Armor Lock", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Locks the player in place, granting temporary invulnerability.")
 			)
 		)
 		register(

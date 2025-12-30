@@ -38,6 +38,7 @@ object DamageEvent {
 	){
 		if (entity.isInvulnerable||entity.isDead) return
 		val wasSprinting = (entity as? Player)?.isSprinting
+		val entityVelocity = entity.velocity
 
 		val source = DamageSource.builder(damageType)
 			.withDamageLocation(damageLocation)
@@ -76,6 +77,7 @@ object DamageEvent {
 		}
 
 		(entity as? Player)?.isSprinting =  wasSprinting ?: false //We dont want to stop the entity sprinting by accident
+		entity.velocity = entityVelocity
 	}
 
 	private fun calculateArmourModifier(entity: Damageable, damage: Double): Double {

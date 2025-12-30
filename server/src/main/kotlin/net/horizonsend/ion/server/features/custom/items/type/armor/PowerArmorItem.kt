@@ -220,7 +220,7 @@ class PowerArmorItem(
 			entity.player!!.velocity = Vector(0, 0, 0)
 			ArmorLockMod.spawnAura(entity.player!!)
 
-			if ((ArmorLockMod.armorLockEnabledPlayers[entity.player!!.uniqueId]!!.plus(ArmorLockMod.maxLockTime)) < System.nanoTime()) {
+			if (System.nanoTime() - ArmorLockMod.armorLockEnabledPlayers[entity.player!!.uniqueId]!! >= ArmorLockMod.maxLockTime) {
 				forceDisableArmorLock(entity.player!!)
 			}
 		}

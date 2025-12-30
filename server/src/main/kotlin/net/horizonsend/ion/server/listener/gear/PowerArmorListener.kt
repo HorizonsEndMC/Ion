@@ -255,6 +255,7 @@ object PowerArmorListener : SLEventListener() {
 	@EventHandler
 	fun onPlayerHoverAttempt(event: PlayerToggleSneakEvent) {
 		if (event.player.isSneaking) return
+		if (event.player.isOnGround) return
 		for (item in event.player.inventory.armorContents) {
 			val customItem = item?.customItem ?: continue
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
@@ -266,9 +267,7 @@ object PowerArmorListener : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerLockAttempt(event: PlayerInteractEvent) {
-		if (event.action.isRightClick) return
-		if (event.player.isSneaking) return
-		if (event.player.inventory.itemInMainHand.type == Material.AIR) return
+		if (!(!event.action.isRightClick && event.player.isSneaking && event.player.isOnGround && event.player.inventory.itemInMainHand.type == Material.AIR)) return
 		for (item in event.player.inventory.armorContents) {
 			val customItem = item?.customItem ?: continue
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue

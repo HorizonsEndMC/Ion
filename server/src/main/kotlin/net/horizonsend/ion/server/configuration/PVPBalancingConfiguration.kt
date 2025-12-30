@@ -52,7 +52,7 @@ data class PVPBalancingConfiguration(
 			cooldownTicks = 40
 		),
 		val strengthStim: ConsumableBalancing = ConsumableBalancing(
-			modifierValue = 1.0,
+			modifierValue = 0.0,
 			cooldownTicks = 2000
 		),
 		val emptySyringe: ConsumableBalancing = ConsumableBalancing(
@@ -98,7 +98,7 @@ data class PVPBalancingConfiguration(
 			knockBackResistance = .1,
 			power = 100000,
 			powerConsumedPerSecond = 0,
-			stepHeight = 0.125,
+			stepHeight = 0.0,
 			maxHealth = 1.0,
 			jumpStrength = 0.0,
 			flyingSpeed = 0.0,
@@ -251,7 +251,7 @@ data class PVPBalancingConfiguration(
 			magazineIdentifier = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
 			type = WeaponTypeEnum.SECONDARY,
-			blockbreakAmount = 0.5,
+			blockbreakAmount = 20.0,
 			switchToTimeTicks = 0,
 			shouldHaveCameraOverlay = false,
 			cameraOverlay = "",
@@ -287,7 +287,7 @@ data class PVPBalancingConfiguration(
 			magazineIdentifier = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
 			type = WeaponTypeEnum.SECONDARY,
-			blockbreakAmount = 1.0,
+			blockbreakAmount = 5.0,
 			switchToTimeTicks = 0,
 			shouldHaveCameraOverlay = false,
 			cameraOverlay = "",
@@ -323,14 +323,14 @@ data class PVPBalancingConfiguration(
 			magazineIdentifier = "SPECIAL_MAGAZINE",
 			refillType = "minecraft:emerald",
 			type = WeaponTypeEnum.PRIMARY,
-			blockbreakAmount = 4.0,
+			blockbreakAmount = 40.0,
 			switchToTimeTicks = 5,
 			shouldHaveCameraOverlay = true,
 			cameraOverlay = "horizonsend:overlays/sniper_scope",
 			zoomEffect = -0.9
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 11.0,
+			damage = 5.0,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -362,7 +362,7 @@ data class PVPBalancingConfiguration(
 			magazineIdentifier = "SPECIAL_MAGAZINE",
 			refillType = "minecraft:emerald",
 			type = WeaponTypeEnum.PRIMARY,
-			blockbreakAmount = 1.5,
+			blockbreakAmount = 10.0,
 			switchToTimeTicks = 5,
 			shouldHaveCameraOverlay = false,
 			cameraOverlay = "",

@@ -32,6 +32,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemStack
+import kotlin.math.roundToInt
 
 class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String, color: TextColor) : CustomItem(
 	key = key,
@@ -41,8 +42,8 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 		.setCustomModel("weapon/energy_sword/${type.lowercase()}_energy_sword")
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 6.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
-			.addModifier(Attribute.ATTACK_SPEED, AttributeModifier(NamespacedKeys.key("energy_sword_speed"), 1.8, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
+			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 13.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
+			.addModifier(Attribute.ATTACK_SPEED, AttributeModifier(NamespacedKeys.key("energy_sword_speed"), -2.4, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.build())
 		.build()
 ) {
@@ -81,6 +82,9 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 
 		addComponent(CustomComponentTypes.LISTENER_DAMAGED_HOLDING, damagedHoldingListener(this@EnergySword) { event, customItem, item ->
 			val damaged = event.entity
+			var critical = 1.0
+			val attacker = event.damager
+			if (!attacker.isOnGround && attacker.velocity.y < 0 && (attacker as Player).isSprinting) { critical *= 1.5}
 			if (damaged !is Player) return@damagedHoldingListener
 			if (!damaged.isBlocking) return@damagedHoldingListener
 
@@ -88,7 +92,7 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 
 			if (damaged.isBlocking) {
 				val block = blockComponent.getBlock(item, damaged)
-				blockComponent.setBlock(item, block-5, damaged)
+				blockComponent.setBlock(item, ((block-5)*critical).roundToInt(), damaged)
 			}
 
 			damaged.world.playSound(Sound.sound(key("horizonsend:energy_sword.strike"), Sound.Source.PLAYER, 5.0f, 1.0f), damaged)

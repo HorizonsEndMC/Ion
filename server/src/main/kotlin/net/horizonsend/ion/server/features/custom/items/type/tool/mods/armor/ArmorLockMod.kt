@@ -37,9 +37,9 @@ object ArmorLockMod : ItemModification {
 	val armorLockEnabledPlayers = mutableMapOf<UUID, Long>()
 	val maxLockTime = TimeUnit.NANOSECONDS.toNanos(5000000000L)
 	override val displayName: Component = ofChildren(
-		Component.text("Adrenaline Boosting", NamedTextColor.RED),
+		Component.text("Armor Lock", NamedTextColor.RED),
 		Component.text(" Module", NamedTextColor.GOLD),
-		Component.text(" Chestplate Module", NamedTextColor.DARK_GRAY)
+		Component.text(" Leggings Module", NamedTextColor.DARK_GRAY)
 	)
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
