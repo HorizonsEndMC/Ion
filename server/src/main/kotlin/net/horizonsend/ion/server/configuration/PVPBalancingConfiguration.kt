@@ -95,7 +95,7 @@ data class PVPBalancingConfiguration(
 			power = 100000,
 			powerConsumedPerSecond = 0,
 			stepHeight = 0.0,
-			maxHealth = 0.5,
+			maxHealth = 1.0,
 			jumpStrength = 0.0,
 			flyingSpeed = 0.0,
 			canDoubleJump = false,
