@@ -18,7 +18,6 @@ object NationCache : ManualCache() {
 		var name: String,
 		var capital: Oid<Settlement>,
 		var color: Int,
-		var power: Int,
 		var invites: Set<Oid<Settlement>>
 	) {
 		val leader get() = SettlementCache[capital].leader
@@ -34,7 +33,7 @@ object NationCache : ManualCache() {
 
 		fun cache(nation: Nation) {
 			val id: Oid<Nation> = nation._id
-			val data = NationData(id, nation.name, nation.capital, nation.color, nation.power, nation.invites)
+			val data = NationData(id, nation.name, nation.capital, nation.color, nation.invites)
 			NATION_DATA[id] = data
 			nameCache[data.name] = id
 		}
@@ -64,10 +63,6 @@ object NationCache : ManualCache() {
 
 			change[Nation::color]?.let {
 				data.color = it.int()
-			}
-
-			change[Nation::power]?.let {
-				data.power = it.int()
 			}
 
 			change[Nation::invites]?.let {
