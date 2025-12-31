@@ -74,6 +74,12 @@ data class PVPBalancingConfiguration(
 			blockAmount = 200,
 			blockRechargePerTick= 1.0,
 			type = WeaponTypeEnum.MELEE
+		),
+		val energyGreatswordBalancing: EnergySwordBalancing = EnergySwordBalancing(
+			damage = 6.0, //WARNING: This is EXTRA DAMAGE on the default 7 damage in EnergyGreatSword.kt
+			blockAmount = 300,
+			blockRechargePerTick= 1.0,
+			type = WeaponTypeEnum.MELEE
 		)
 	){
 		@Serializable
@@ -444,7 +450,42 @@ data class PVPBalancingConfiguration(
 			cameraOverlay = "",
 			zoomEffect = 0.0
 		),
-
+		val lightMachineBlaster: Singleshot = Singleshot(
+			damage = 20.0,
+			damageFalloffMultiplier = 0.0,
+			capacity = 90,
+			ammoPerRefill = 20,
+			packetsPerShot = 1,
+			pitch = 2f,
+			range = 150.0,
+			recoil = 1.5f,
+			reload = 60,
+			shotSize = 0.25,
+			shouldAkimbo = false,
+			shouldBypassHitTicks = true,
+			shouldHeadshot = true,
+			shouldPassThroughEntities = false,
+			speed = 8.0,
+			timeBetweenShots = 2,
+			shotDeviation = 0.05,
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = true,
+			soundReloadStart = SoundInfo("horizonsend:blaster.submachine_blaster.reload.start", volume = 1f, source = Sound.Source.PLAYER),
+			soundReloadFinish = SoundInfo("horizonsend:blaster.submachine_blaster.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.submachine_blaster.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.submachine_blaster.shell", volume = 1f, source = Sound.Source.PLAYER),
+			particleSize = 0.5f,
+			soundRange = 100.0,
+			magazineIdentifier = "SPECIAL_MAGAZINE",
+			refillType = "minecraft:emerald",
+			type = WeaponTypeEnum.PRIMARY,
+			blockbreakAmount = 5.0,
+			switchToTimeTicks = 0,
+			shouldHaveCameraOverlay = false,
+			cameraOverlay = "",
+			zoomEffect = 0.0
+		),
 
 		val standardMagazine: AmmoStorage = AmmoStorage(
 			capacity = 60,

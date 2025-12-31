@@ -39,6 +39,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val BLASTER_REVOLVER = registerTypedKey<Blaster<Singleshot>>("BLASTER_REVOLVER")
 	val BLASTER_RIFLE = registerTypedKey<Blaster<Singleshot>>("BLASTER_RIFLE")
 	val SUBMACHINE_BLASTER = registerTypedKey<Blaster<Singleshot>>("SUBMACHINE_BLASTER")
+	val LIGHT_MACHINE_BLASTER = registerTypedKey<Blaster<Singleshot>>("LIGHT_MACHINE_BLASTER")
 	val BLASTER_SHOTGUN = registerTypedKey<Blaster<Multishot>>("BLASTER_SHOTGUN")
 	val BLASTER_SNIPER = registerTypedKey<Blaster<Singleshot>>("BLASTER_SNIPER")
 	val BLASTER_CANNON = registerTypedKey<Blaster<Singleshot>>("BLASTER_CANNON")
@@ -208,6 +209,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ENERGY_SWORD_ORANGE = registerTypedKey<EnergySword>("ENERGY_SWORD_ORANGE")
 	val ENERGY_SWORD_PINK = registerTypedKey<EnergySword>("ENERGY_SWORD_PINK")
 	val ENERGY_SWORD_BLACK = registerTypedKey<EnergySword>("ENERGY_SWORD_BLACK")
+	val ENERGY_GREATSWORD = registerTypedKey<EnergySword>("ENERGY_GREATSWORD")
 
 	val ARMOR_MODIFICATION_ENVIRONMENT = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ENVIRONMENT")
 	val ARMOR_MODIFICATION_NIGHT_VISION = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_NIGHT_VISION")

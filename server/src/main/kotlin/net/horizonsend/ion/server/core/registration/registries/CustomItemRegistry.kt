@@ -43,6 +43,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergyGreatSword
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -239,6 +240,23 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			balancingSupplier = ConfigurationFiles.pvpBalancing().blasterWeapons::submachineBlaster
 		) {
 			// Allows fire above 300 rpm
+			override fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
+				val repeatCount = if (balancing.timeBetweenShots >= 4) 1 else (4.0 / balancing.timeBetweenShots).roundToInt()
+				val division = 4.0 / balancing.timeBetweenShots
+
+				for (count in 0 until repeatCount) {
+					val delay = (count * division).toLong()
+					if (delay > 0) Tasks.syncDelay(delay) { super.fire(shooter, blasterItem) } else super.fire(shooter, blasterItem)
+				}
+			}
+		})
+
+		register(CustomItemKeys.LIGHT_MACHINE_BLASTER, object : Blaster<PVPBalancingConfiguration.BlasterWeapons.Singleshot>(
+			key = CustomItemKeys.LIGHT_MACHINE_BLASTER,
+			itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/light_machine_blaster").build(),
+			displayName = Component.text("Light Machine Blaster", NamedTextColor.GOLD, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
+			balancingSupplier = ConfigurationFiles.pvpBalancing().blasterWeapons::lightMachineBlaster
+		) {
 			override fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
 				val repeatCount = if (balancing.timeBetweenShots >= 4) 1 else (4.0 / balancing.timeBetweenShots).roundToInt()
 				val division = 4.0 / balancing.timeBetweenShots
@@ -788,7 +806,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(CustomItemKeys.ENERGY_SWORD_ORANGE, EnergySword(CustomItemKeys.ENERGY_SWORD_ORANGE, "ORANGE", TextColor.fromHexString("#FF5F15")!!))
 		register(CustomItemKeys.ENERGY_SWORD_PINK, EnergySword(CustomItemKeys.ENERGY_SWORD_PINK, "PINK", TextColor.fromHexString("#FFC0CB")!!))
 		register(CustomItemKeys.ENERGY_SWORD_BLACK, EnergySword(CustomItemKeys.ENERGY_SWORD_BLACK, "BLACK", NamedTextColor.BLACK))
-	}
+		register(CustomItemKeys.ENERGY_GREATSWORD, EnergyGreatSword(CustomItemKeys.ENERGY_GREATSWORD, "GREATSWORD", NamedTextColor.GOLD,))}
+
 
 	private fun registerModificationItems() {
 		register(
