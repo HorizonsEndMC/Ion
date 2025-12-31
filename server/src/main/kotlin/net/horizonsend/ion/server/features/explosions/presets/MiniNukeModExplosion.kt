@@ -48,7 +48,7 @@ class MiniNukeModExplosion(val location: Location){
 			world.createExplosion(location, 10f)
 			for (player in world.players) {
 				if (location.distanceSquared(player.location) < 25) {
-					player.damage(25.0)
+					player.damage(135.0)
 				}
 			}
 		}

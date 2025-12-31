@@ -1,8 +1,12 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.sword
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
@@ -30,7 +34,8 @@ object SwordListener : IonServerComponent() {
 						val offhandCustomItem = offhand.customItem
 
 						if (mainCustomItem != null && mainCustomItem is EnergySword ||
-							offhandCustomItem != null && offhandCustomItem is EnergySword
+							offhandCustomItem != null && offhandCustomItem is EnergySword ||
+							player.getSettingOrThrow(PlayerSettings::energySwordIdleSound)
 						) {
 							player.world.playSound(player.location, "horizonsend:energy_sword.idle", 5.0f, 1.0f)
 						}

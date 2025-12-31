@@ -48,6 +48,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import org.bukkit.potion.PotionEffectType.RESISTANCE
 import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.sin
@@ -102,6 +105,10 @@ class PowerArmorItem(
 
 		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(20) { entity, itemStack, _, _ ->
 			tickPowerMods(entity, itemStack)
+		})
+
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(20) { entity, itemStack, _, equipmentSlot ->
+			tickGuardianMod(entity, itemStack, equipmentSlot)
 		})
 
 		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
@@ -172,6 +179,18 @@ class PowerArmorItem(
 		if (entity.isGliding && !entity.world.hasFlag(WorldFlag.ARENA)) {
 			powerManager.removePower(itemStack, this, 0)
 		}
+	}
+
+	fun tickGuardianMod(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
+		if (entity !is Player) return
+		if (equipmentSlot != EquipmentSlot.CHEST) return
+		if (entity.isDead) return
+		if (entity.gameMode != GameMode.SURVIVAL) return
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.GUARDIAN)) return
+		if (entity.health < entity.maxHealth*0.25) return
+		val potionEffect = PotionEffect(RESISTANCE, 40, 1)
+		entity.addPotionEffect(potionEffect)
 	}
 
 	fun tickSwiftSneak(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {

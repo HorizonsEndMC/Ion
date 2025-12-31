@@ -317,7 +317,7 @@ class RayTracedParticleProjectile(
 				if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
 				val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
 				if (!mods.contains(ItemModKeys.ILLUMINATION)) continue
-				val glowing = PotionEffect(PotionEffectType.GLOWING, 30, 2)
+				val glowing = PotionEffect(PotionEffectType.GLOWING, 200, 2)
 				entity.addPotionEffect(glowing)
 			}
 		}

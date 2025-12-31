@@ -39,8 +39,5 @@ object GuardianMod : ItemModification {
 		Component.text(" Chestplate Module", NamedTextColor.DARK_GRAY)
 	)
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.CHEST), RESISTANCE, 20, 0, 0) { entity, _, _ ->
-		entity is Player
-			&& entity.health < (entity.maxHealth)*0.25
-			&& !entity.world.hasFlag(WorldFlag.ARENA)
-	})}
+	override fun getAttributes(): List<CustomItemAttribute> = listOf()
+}

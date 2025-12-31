@@ -70,7 +70,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		val energySwordBalancing: EnergySwordBalancing = EnergySwordBalancing(
-			damage = 7.0, //This value is added to the damage of the shield currently, in this case 1
+			damage = 7.0, //IGNORE THIS!! it's currently manually done in EnergySword.kt
 			blockAmount = 200,
 			blockRechargePerTick= 1.0,
 			type = WeaponTypeEnum.MELEE
@@ -93,7 +93,7 @@ data class PVPBalancingConfiguration(
 			scale = 0.0,
 			entityReach = 0.0,
 			blockReach = 0.0,
-			armor = 7.0,
+			armor = 8.45,
 			toughness = 2.0,
 			knockBackResistance = .1,
 			power = 100000,
@@ -139,7 +139,7 @@ data class PVPBalancingConfiguration(
 			scale = 0.0,
 			entityReach = 0.0,
 			blockReach = 0.0,
-			armor = 6.0,
+			armor = 8.25,
 			toughness = 2.0,
 			knockBackResistance = 0.0,
 			power = 50000,

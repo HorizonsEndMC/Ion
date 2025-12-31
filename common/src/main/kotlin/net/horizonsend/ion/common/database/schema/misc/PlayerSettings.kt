@@ -87,6 +87,7 @@ data class PlayerSettings(
 	var displayEntityVisibility: Int = 0,
 	var nearbyWeaponSounds: Int = 0,
 	var farWeaponSounds: Int = 0,
+	var energySwordIdleSound: Boolean = true,
 	var floatWhileDc: Boolean = true,
 	var reverseDcBoost: Boolean = false,
 	var toggleDcBoost: Boolean = false,

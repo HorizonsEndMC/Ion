@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
@@ -24,7 +25,9 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.minecraft.sounds.SoundEvents.TOTEM_USE
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
@@ -220,8 +223,10 @@ object PowerArmorListener : SLEventListener() {
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
 			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
 			if (!mods.contains(ItemModKeys.PALADIN)) continue
-			if (!(event.damage > (event.entity as Player).maxHealth*0.9)) continue
-			event.setDamage((event.entity as Player).maxHealth*0.5)
+			if (!(event.finalDamage > (event.entity as Player).maxHealth*0.9)) return
+			event.setDamage(1.0)
+			(event.entity as Player).health = 10.0
+			event.entity.world.playSound(event.entity.location, Sound.ITEM_TOTEM_USE, 1.0f ,1.0f)
 			return
 		}
 	}
@@ -243,6 +248,7 @@ object PowerArmorListener : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerGravityAttempt(event: PlayerToggleSneakEvent) {
+		if (event.player.isSneaking) return
 		for (item in event.player.inventory.armorContents) {
 			val customItem = item?.customItem ?: continue
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
