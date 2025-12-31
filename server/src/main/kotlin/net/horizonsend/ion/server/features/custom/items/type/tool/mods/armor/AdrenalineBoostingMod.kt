@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.entity.Player
@@ -30,7 +31,10 @@ object AdrenalineBoostingMod : ItemModification {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_ADRENALINE_BOOSTING
 	override val crouchingDisables: Boolean = false
-	override val displayName: Component = ofChildren(Component.text("Adrenaline Boosting", GRAY), Component.text(" Module", GOLD))
+	override val displayName: Component = ofChildren(		Component.text("Adrenaline Boosting", NamedTextColor.RED),
+		Component.text(" Module", NamedTextColor.GOLD),
+		Component.text(" Chestplate Module", NamedTextColor.DARK_GRAY)
+	)
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.CHEST), REGENERATION, 60, 0, 0) { entity, _, _ ->

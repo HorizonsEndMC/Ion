@@ -23,7 +23,7 @@ object CognitionBoostingMod : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val key = ItemModKeys.COGNITION_BOOSTING
 	override val displayName: Component = ofChildren(
-		Component.text("Cognition Boost", NamedTextColor.RED),
+		Component.text("Cognition Boosting", NamedTextColor.RED),
 		Component.text(" Module", NamedTextColor.GOLD),
 		Component.text(" Helmet Module", NamedTextColor.DARK_GRAY)
 	)

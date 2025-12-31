@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.custom.items.type.armor.StrafingMode
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.entity.Player
@@ -25,7 +26,10 @@ object RocketBoostingMod : ItemModification {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
 	override val crouchingDisables: Boolean = false
-	override val displayName: Component = ofChildren(Component.text("Rocket Boosting", GRAY), Component.text(" Module", GOLD))
+	override val displayName: Component = ofChildren(		Component.text("Rocket Boosting", NamedTextColor.RED),
+		Component.text(" Module", NamedTextColor.GOLD),
+		Component.text(" Boots Module", NamedTextColor.DARK_GRAY)
+	)
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()

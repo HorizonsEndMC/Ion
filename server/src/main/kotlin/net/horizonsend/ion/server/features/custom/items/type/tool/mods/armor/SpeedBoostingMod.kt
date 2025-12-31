@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.entity.Player
@@ -28,7 +29,9 @@ object SpeedBoostingMod : ItemModification {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
 	override val crouchingDisables: Boolean = false
-	override val displayName: Component = ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD))
+	override val displayName: Component = ofChildren(		Component.text("Speed Boosting", NamedTextColor.RED),
+		Component.text(" Module", NamedTextColor.GOLD),
+		Component.text(" Leggings Module", NamedTextColor.DARK_GRAY))
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.LEGS), SPEED, 60, 1, 0) { entity, _, _ ->

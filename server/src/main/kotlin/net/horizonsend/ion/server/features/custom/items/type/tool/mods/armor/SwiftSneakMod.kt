@@ -28,7 +28,7 @@ object SwiftSneakMod : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val key = ItemModKeys.SWIFT_SNEAK
 	override val displayName: Component = ofChildren(
-		Component.text("Switch Sneak", NamedTextColor.RED),
+		Component.text("Swift Sneak", NamedTextColor.RED),
 		Component.text(" Module", NamedTextColor.GOLD),
 		Component.text(" Leggings Module", NamedTextColor.DARK_GRAY)
 	)

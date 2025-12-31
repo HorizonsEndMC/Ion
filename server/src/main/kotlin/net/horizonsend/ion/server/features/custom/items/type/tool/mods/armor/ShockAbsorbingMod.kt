@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.Applicati
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.attribute.Attribute
@@ -28,7 +29,10 @@ object ShockAbsorbingMod : ItemModification {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING
 	override val crouchingDisables: Boolean = false
-	override val displayName: Component = ofChildren(Component.text("Shock Absorbing", GRAY), Component.text(" Module", GOLD))
+	override val displayName: Component = ofChildren(		Component.text("Shock Absorbing", NamedTextColor.RED),
+		Component.text(" Module", NamedTextColor.GOLD),
+		Component.text(" Chestplate Module", NamedTextColor.DARK_GRAY)
+	)
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
