@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
@@ -230,6 +231,15 @@ object PowerArmorListener : SLEventListener() {
 			event.entity.world.playSound(event.entity.location, Sound.ITEM_TOTEM_USE, 1.0f ,1.0f)
 			return
 		}
+	}
+
+	@EventHandler
+	fun damageDebug(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player) return
+		if (event.damager !is Player) return
+		val damager = event.damager as Player
+		event.entity.debug("damage: ${event.finalDamage}")
+		event.entity.debug("item in hand: ${damager.inventory.itemInMainHand}")
 	}
 
 	@EventHandler
