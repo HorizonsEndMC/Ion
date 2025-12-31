@@ -42,7 +42,7 @@ class MiniNukeModExplosion(val location: Location){
 			world.playSound(location, Sound.BLOCK_CONDUIT_AMBIENT, 10f, 1f)
 			world.playSound(location, Sound.ENTITY_WARDEN_SONIC_CHARGE,10f,1f)
 		}
-		Tasks.syncDelay(40) {
+		Tasks.syncDelay(80) {
 			val placement = ShockWavePlacement(world = world, origin = vector, render = vector)
 			spawnShockwave(placement, shockWave, burner, entityThatExploded)
 			world.createExplosion(location, 10f)
@@ -52,11 +52,11 @@ class MiniNukeModExplosion(val location: Location){
 				}
 			}
 		}
-		Tasks.asyncDelay(46) {
+		Tasks.asyncDelay(86) {
 			val placement = BurnWavePlacement(world = world, origin = vector, render = vector)
 			spawnBurnWave(placement, burnWave, burner)
 		}
-		Tasks.asyncDelay(48) {
+		Tasks.asyncDelay(88) {
 			val placement = FlashBurnPlacement(world = world, origin = radiationOrigin, render = vector)
 			flashBurn(placement, flashBurn, burner)
 		}
