@@ -48,12 +48,15 @@ data class FrontierNation(
 
 		fun create(name: String, leader: SLPlayerId, color: Int, territory: Oid<FrontierTerritory>): Oid<FrontierNation> = trx { sess ->
 			require(none(nameQuery(name)))
+			require(FrontierTerritory.matches(sess, territory, FrontierTerritory.unclaimedQuery))
 			require(SLPlayer.matches(sess, leader, SLPlayer::frontierNation eq null))
 
 			val id: Oid<FrontierNation> = objId()
 			val frontierNation = FrontierNation(id, name, leader, color, territory)
 
 			SLPlayer.col.updateOne(sess, idFilterQuery(leader), setValue(SLPlayer::frontierNation, id))
+			FrontierTerritory.col.updateOne(sess, idFilterQuery(territory), setValue(FrontierTerritory::frontierNation, id))
+			FrontierTerritory.col.updateOne(sess, idFilterQuery(territory), setValue(FrontierTerritory::isCapital, true))
 			col.insertOne(sess, frontierNation)
 
 			return@trx id
@@ -61,6 +64,11 @@ data class FrontierNation(
 
 		fun delete(frontierNationId: Oid<FrontierNation>): Unit = trx { sess ->
 			require(exists(sess, frontierNationId))
+
+			FrontierTerritory.col.updateMany(sess, FrontierTerritory::frontierNation eq frontierNationId,
+				setValue(FrontierTerritory::frontierNation, null))
+			FrontierTerritory.col.updateMany(sess, FrontierTerritory::frontierNation eq frontierNationId,
+				setValue(FrontierTerritory::isCapital, false))
 
 			FrontierNationRole.col.deleteMany(sess, FrontierNationRole::parent eq frontierNationId)
 

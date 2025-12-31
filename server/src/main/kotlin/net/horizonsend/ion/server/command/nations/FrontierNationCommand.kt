@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTe
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -143,25 +144,27 @@ object FrontierNationCommand : SLCommand() {
 
 		FrontierNation.create(name, sender.slPlayerId, color.asRGB(), territory.id)
 
-		FrontierNationRoleCommand.onCreate(sender, "Leader", SLTextStyle.GOLD, 1000)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_CREATE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_DELETE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.MANAGE_ROLES)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_INVITE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_KICK)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.START_KOTH_SIEGE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.BROADCAST)
-		FrontierNationRoleCommand.onMemberAdd(sender, sender.name, "Leader")
+		Tasks.syncDelay(60L) {
+			FrontierNationRoleCommand.onCreate(sender, "Leader", SLTextStyle.GOLD, 1000)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_CREATE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_DELETE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.MANAGE_ROLES)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_INVITE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_KICK)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.START_KOTH_SIEGE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.BROADCAST)
+			FrontierNationRoleCommand.onMemberAdd(sender, sender.name, "Leader")
 
-		FrontierNationRoleCommand.onCreate(sender, "Officer", SLTextStyle.YELLOW, 100)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.CLAIM_CREATE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.MANAGE_ROLES)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_INVITE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_KICK)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.START_KOTH_SIEGE)
-		FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.BROADCAST)
+			FrontierNationRoleCommand.onCreate(sender, "Officer", SLTextStyle.YELLOW, 100)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.CLAIM_CREATE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.MANAGE_ROLES)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_INVITE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_KICK)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.START_KOTH_SIEGE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.BROADCAST)
 
-		FrontierNationRoleCommand.onCreate(sender, "Member", SLTextStyle.GRAY, 100)
+			FrontierNationRoleCommand.onCreate(sender, "Member", SLTextStyle.GRAY, 100)
+		}
 
 		Notify.chatAndGlobal(
 			nationImportantMessageFormat(
@@ -362,7 +365,7 @@ object FrontierNationCommand : SLCommand() {
 		val territory = requireFrontierTerritoryIn(sender)
 		requireFrontierTerritoryUnclaimed(territory)
 
-		failIf(Regions.getAllOf<RegionFrontierTerritory>().any { it.frontierNation == nationId }) { "Nations can only have one outpost (besides the capital)" }
+		failIf(Regions.getAllOf<RegionFrontierTerritory>().any { it.frontierNation == nationId && !it.isCapital }) { "Nations can only have one outpost (besides the capital)" }
 
 		FrontierTerritory.setFrontierNation(territory.id, nationId)
 

@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
 import java.awt.Polygon
@@ -46,7 +47,7 @@ class RegionFrontierTerritory(territory: FrontierTerritory) :
 		delta[FrontierTerritory::alias]?.let { alias = it.string() }
 		delta[FrontierTerritory::isCapital]?.let { isCapital = it.boolean() }
 
-		// TODO: Update Dynmap
+		NationsMap.updateFrontierTerritory(this)
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? {
