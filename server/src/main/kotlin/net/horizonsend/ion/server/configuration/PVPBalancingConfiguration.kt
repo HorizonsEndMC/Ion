@@ -48,12 +48,12 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class Consumables(
 		val healthStim: ConsumableBalancing = ConsumableBalancing(
-			modifierValue = 3.0,
-			cooldownTicks = 40
+			modifierValue = 8.0,
+			cooldownTicks = 5
 		),
 		val strengthStim: ConsumableBalancing = ConsumableBalancing(
-			modifierValue = 0.0,
-			cooldownTicks = 2000
+			modifierValue = 1.0,
+			cooldownTicks = 20
 		),
 		val emptySyringe: ConsumableBalancing = ConsumableBalancing(
 			modifierValue = 0.0,
