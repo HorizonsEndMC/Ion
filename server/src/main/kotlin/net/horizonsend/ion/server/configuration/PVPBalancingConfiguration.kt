@@ -70,7 +70,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		val energySwordBalancing: EnergySwordBalancing = EnergySwordBalancing(
-			damage = 7.0, //IGNORE THIS!! it's currently manually done in EnergySword.kt
+			damage = 4.0, //WARNING: This is EXTRA DAMAGE on the default 7 damage in EnergySword.kt
 			blockAmount = 200,
 			blockRechargePerTick= 1.0,
 			type = WeaponTypeEnum.MELEE
