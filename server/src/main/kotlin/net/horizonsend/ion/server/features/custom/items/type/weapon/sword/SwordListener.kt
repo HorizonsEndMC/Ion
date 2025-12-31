@@ -33,10 +33,9 @@ object SwordListener : IonServerComponent() {
 						val mainCustomItem = main.customItem
 						val offhandCustomItem = offhand.customItem
 
-						if (mainCustomItem != null && mainCustomItem is EnergySword ||
-							offhandCustomItem != null && offhandCustomItem is EnergySword ||
-							player.getSettingOrThrow(PlayerSettings::energySwordIdleSound)
-						) {
+						if ((mainCustomItem != null && mainCustomItem is EnergySword ||
+							offhandCustomItem != null && offhandCustomItem is EnergySword) &&
+							player.getSettingOrThrow(PlayerSettings::energySwordIdleSound)) {
 							player.world.playSound(player.location, "horizonsend:energy_sword.idle", 5.0f, 1.0f)
 						}
 					}
