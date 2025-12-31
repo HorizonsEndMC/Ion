@@ -215,10 +215,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
         )
 
 		register(
-			CustomItemKeys.REVOLVER_BLASTER, Blaster(
-				key = CustomItemKeys.REVOLVER_BLASTER,
+			CustomItemKeys.BLASTER_REVOLVER, Blaster(
+				key = CustomItemKeys.BLASTER_REVOLVER,
 				displayName = Component.text("Blaster Revolver", NamedTextColor.GOLD, TextDecoration.BOLD),
-				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.DIAMOND_HOE).setCustomModel("weapon/blaster/revolver_blaster").build(),
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.DIAMOND_HOE).setCustomModel("weapon/blaster/revolver").build(),
 				balancingSupplier = ConfigurationFiles.pvpBalancing().blasterWeapons::revolver
 			)
 		)
