@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.custom.items.type.armor
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
+import io.papermc.paper.datacomponent.item.ItemEnchantments
+import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -36,6 +38,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate
 import net.minecraft.references.Items
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -43,6 +46,8 @@ import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.enchantments.Enchantment.PROTECTION
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
@@ -52,6 +57,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.potion.PotionEffectType.RESISTANCE
 import org.bukkit.util.Vector
+import org.checkerframework.common.value.qual.IntRange
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -84,6 +90,8 @@ class PowerArmorItem(
 			.assetId(NamespacedKeys.packKey("power_armor"))
 			.build()
 		)
+		.addData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(PROTECTION to 4), false))
+		.addData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
 //			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
@@ -184,11 +192,9 @@ class PowerArmorItem(
 	fun tickGuardianMod(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
 		if (entity !is Player) return
 		if (equipmentSlot != EquipmentSlot.CHEST) return
-		if (entity.isDead) return
-		if (entity.gameMode != GameMode.SURVIVAL) return
 		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
 		if (!mods.contains(ItemModKeys.GUARDIAN)) return
-		if (entity.health < entity.maxHealth*0.25) return
+		if (!(entity.health < (entity.maxHealth*0.25))) return
 		val potionEffect = PotionEffect(RESISTANCE, 40, 1)
 		entity.addPotionEffect(potionEffect)
 	}
