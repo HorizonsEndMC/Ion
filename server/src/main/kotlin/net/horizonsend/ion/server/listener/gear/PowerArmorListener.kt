@@ -3,13 +3,17 @@ package net.horizonsend.ion.server.listener.gear
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
+import io.papermc.paper.event.entity.EntityMoveEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
+import io.papermc.paper.registry.keys.AttributeKeys.MAX_HEALTH
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
@@ -27,6 +31,7 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.minecraft.sounds.SoundEvents.TOTEM_USE
+import net.minecraft.util.datafix.fixes.EntityHealthFix
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -41,6 +46,8 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType.RESISTANCE
 import java.time.Instant
 import java.util.UUID
 
@@ -216,9 +223,8 @@ object PowerArmorListener : SLEventListener() {
 	}
 
 	@EventHandler
-	fun onSavePlayer(event: EntityDamageByEntityEvent) {
+	fun onSavePlayer(event: EntityDamageEvent) {
 		if (event.entity !is Player) return
-		if (event.cause != EntityDamageEvent.DamageCause.FLY_INTO_WALL) return
 		for (item in (event.entity as Player).inventory.armorContents) {
 			val customItem = item?.customItem ?: continue
 
@@ -229,6 +235,23 @@ object PowerArmorListener : SLEventListener() {
 			event.setDamage(1.0)
 			(event.entity as Player).health = 10.0
 			event.entity.world.playSound(event.entity.location, Sound.ITEM_TOTEM_USE, 1.0f ,1.0f)
+			return
+		}
+	}
+
+	@EventHandler
+	fun onPlayerLowHealth(event: PrePlayerAttackEntityEvent) {
+		if (event.attacked !is Player) return
+		val player = event.attacked as Player
+		if (player.health > (player.maxHealth * 0.25)) return
+		for (item in (event.attacked as Player).inventory.armorContents) {
+			val customItem = item?.customItem ?: continue
+
+			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
+			if (!mods.contains(ItemModKeys.GUARDIAN)) continue
+			val potionEffect = PotionEffect(RESISTANCE, 40, 0)
+			player.addPotionEffect(potionEffect)
 			return
 		}
 	}
