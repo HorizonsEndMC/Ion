@@ -61,6 +61,8 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Color
+import org.bukkit.Color.MAROON
+import org.bukkit.Color.TEAL
 import org.bukkit.Material
 import org.bukkit.Material.POTION
 import org.bukkit.entity.Entity
@@ -657,7 +659,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_HELMET, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_HELMET,
-				ofChildren(text("Heavy Power ", RED), text("Helmet", GRAY)),
+				ofChildren(text("Heavy Power ", GOLD), text("Helmet", GRAY)),
 				"power_armor/heavy_power_armor_helmet",
 				EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -666,7 +668,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_CHESTPLATE, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_CHESTPLATE,
-				ofChildren(text("Heavy Power ", RED), text("Chest", GRAY)),
+				ofChildren(text("Heavy Power ", GOLD), text("Chest", GRAY)),
 				"power_armor/heavy_power_armor_chestplate",
 				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -675,7 +677,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS,
-				ofChildren(text("Heavy Power ", RED), text("Leggings", GRAY)),
+				ofChildren(text("Heavy Power ", GOLD), text("Leggings", GRAY)),
 				"power_armor/heavy_power_armor_leggings",
 				EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -684,7 +686,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_BOOTS, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_BOOTS,
-				ofChildren(text("Heavy Power ", RED), text("Boots", GRAY)),
+				ofChildren(text("Heavy Power ", GOLD), text("Boots", GRAY)),
 				"power_armor/heavy_power_armor_boots",
 				EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -695,7 +697,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.MEDIUM_POWER_ARMOR_HELMET, PowerArmorItem(
 				CustomItemKeys.MEDIUM_POWER_ARMOR_HELMET,
-				ofChildren(text("Medium Power ", RED), text("Helmet", GRAY)),
+				ofChildren(text("Medium Power ", AQUA), text("Helmet", GRAY)),
 				"power_armor/medium_power_armor_helmet",
 				EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
@@ -704,7 +706,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.MEDIUM_POWER_ARMOR_CHESTPLATE, PowerArmorItem(
 				CustomItemKeys.MEDIUM_POWER_ARMOR_CHESTPLATE,
-				ofChildren(text("Medium Power ", RED), text("Chest", GRAY)),
+				ofChildren(text("Medium Power ", AQUA), text("Chest", GRAY)),
 				"power_armor/medium_power_armor_chestplate",
 				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
@@ -713,7 +715,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.MEDIUM_POWER_ARMOR_LEGGINGS, PowerArmorItem(
 				CustomItemKeys.MEDIUM_POWER_ARMOR_LEGGINGS,
-				ofChildren(text("Medium Power ", RED), text("Leggings", GRAY)),
+				ofChildren(text("Medium Power ", AQUA), text("Leggings", GRAY)),
 				"power_armor/medium_power_armor_leggings",
 				EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
@@ -722,7 +724,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.MEDIUM_POWER_ARMOR_BOOTS, PowerArmorItem(
 				CustomItemKeys.MEDIUM_POWER_ARMOR_BOOTS,
-				ofChildren(text("Medium Power ", RED), text("Boots", GRAY)),
+				ofChildren(text("Medium Power ", AQUA), text("Boots", GRAY)),
 				"power_armor/medium_power_armor_boots",
 				EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
