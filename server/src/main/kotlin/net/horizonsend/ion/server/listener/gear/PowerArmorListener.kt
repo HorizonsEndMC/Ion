@@ -30,6 +30,7 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
@@ -214,7 +215,7 @@ object PowerArmorListener : SLEventListener() {
 	}
 
 	@EventHandler
-	fun onSavePlayer(event: EntityDamageEvent) {
+	fun onSavePlayer(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player) return
 		if (event.cause != EntityDamageEvent.DamageCause.FLY_INTO_WALL) return
 		for (item in (event.entity as Player).inventory.armorContents) {
