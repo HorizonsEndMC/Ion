@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -39,7 +40,7 @@ import kotlin.math.roundToInt
 
 class EnergyGreatSword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String, color: TextColor) : CustomItem(
 	key = key,
-	displayName = ofChildren(Component.text("Energy Greatsword", GOLD)),
+	displayName = ofChildren(Component.text("★ Energy Greatsword", GOLD, BOLD)),
 	baseItemFactory = ItemFactory.builder()
 		.setMaterial(SHIELD)
 		.setCustomModel("weapon/energy_sword/energy_greatsword")

@@ -218,7 +218,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.BLASTER_REVOLVER, Blaster(
 				key = CustomItemKeys.BLASTER_REVOLVER,
-				displayName = Component.text("Blaster Revolver", NamedTextColor.GOLD, TextDecoration.BOLD),
+				displayName = Component.text("★ Blaster Revolver", NamedTextColor.GOLD, TextDecoration.BOLD),
 				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.DIAMOND_HOE).setCustomModel("weapon/blaster/revolver").build(),
 				balancingSupplier = ConfigurationFiles.pvpBalancing().blasterWeapons::revolver
 			)
@@ -254,7 +254,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(CustomItemKeys.LIGHT_MACHINE_BLASTER, object : Blaster<PVPBalancingConfiguration.BlasterWeapons.Singleshot>(
 			key = CustomItemKeys.LIGHT_MACHINE_BLASTER,
 			itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/light_machine_blaster").build(),
-			displayName = Component.text("Light Machine Blaster", NamedTextColor.GOLD, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
+			displayName = Component.text("★ Light Machine Blaster", NamedTextColor.GOLD, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
 			balancingSupplier = ConfigurationFiles.pvpBalancing().blasterWeapons::lightMachineBlaster
 		) {
 			override fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
@@ -686,7 +686,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_HELMET, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_HELMET,
-				ofChildren(text("Heavy Power ", GOLD), text("Helmet", GRAY)),
+				ofChildren(text("★ Heavy Power ", GOLD), text("Helmet", GRAY)),
 				"power_armor/heavy_power_armor_helmet",
 				EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -695,7 +695,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_CHESTPLATE, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_CHESTPLATE,
-				ofChildren(text("Heavy Power ", GOLD), text("Chest", GRAY)),
+				ofChildren(text("★ Heavy Power ", GOLD), text("Chest", GRAY)),
 				"power_armor/heavy_power_armor_chestplate",
 				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -704,7 +704,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS,
-				ofChildren(text("Heavy Power ", GOLD), text("Leggings", GRAY)),
+				ofChildren(text("★ Heavy Power ", GOLD), text("Leggings", GRAY)),
 				"power_armor/heavy_power_armor_leggings",
 				EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
@@ -713,7 +713,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEAVY_POWER_ARMOR_BOOTS, PowerArmorItem(
 				CustomItemKeys.HEAVY_POWER_ARMOR_BOOTS,
-				ofChildren(text("Heavy Power ", GOLD), text("Boots", GRAY)),
+				ofChildren(text("★ Heavy Power ", GOLD), text("Boots", GRAY)),
 				"power_armor/heavy_power_armor_boots",
 				EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
