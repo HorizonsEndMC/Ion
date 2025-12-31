@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipSounds
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
@@ -23,6 +24,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.Gra
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.HoverMod.setHover
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
 import net.horizonsend.ion.server.features.explosions.presets.MiniNukeModExplosion
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -237,6 +239,19 @@ object PowerArmorListener : SLEventListener() {
 			event.entity.world.playSound(event.entity.location, Sound.ITEM_TOTEM_USE, 1.0f ,1.0f)
 			return
 		}
+	}
+	//Stop SMBs sending people flying
+	@EventHandler
+	fun onSMGHit(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player) return
+		if (event.damager !is Player) return
+		val damager = (event.damager as Player)
+		val damaged = (event.entity as Player)
+		val customItem = damager.inventory.itemInMainHand.customItem ?: return
+		if (customItem !is Blaster<*>) return
+		if (customItem.identifier != "SUBMACHINE_BLASTER") return
+		event.isCancelled = true
+		damaged.damage(event.damage)
 	}
 
 	@EventHandler
