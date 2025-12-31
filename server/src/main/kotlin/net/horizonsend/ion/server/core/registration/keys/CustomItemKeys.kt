@@ -36,6 +36,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SPECIAL_MAGAZINE = registerTypedKey<Magazine>("SPECIAL_MAGAZINE")
 
 	val BLASTER_PISTOL = registerTypedKey<Blaster<Singleshot>>("BLASTER_PISTOL")
+	val BLASTER_REVOLVER = registerTypedKey<Blaster<Singleshot>>("BLASTER_REVOLVER")
 	val BLASTER_RIFLE = registerTypedKey<Blaster<Singleshot>>("BLASTER_RIFLE")
 	val SUBMACHINE_BLASTER = registerTypedKey<Blaster<Singleshot>>("SUBMACHINE_BLASTER")
 	val BLASTER_SHOTGUN = registerTypedKey<Blaster<Multishot>>("BLASTER_SHOTGUN")
