@@ -36,6 +36,6 @@ object SwiftSneakMod : ItemModification {
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 
 	fun setSneakSpeed(player: Player) {
-		if (player.isSneaking) player.walkSpeed = 0.2f
+		player.walkSpeed = 0.2f
 	}
 }

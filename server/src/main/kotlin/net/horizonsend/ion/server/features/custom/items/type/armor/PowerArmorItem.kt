@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate
@@ -202,14 +203,14 @@ class PowerArmorItem(
 			forceDisableHoverBoots(entity)
 			return
 		}
-		if ((entity.world.hasFlag(WorldFlag.SPACE_WORLD) || entity.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) && getHoverEnabled(entity.player!!)) {
+		if ((entity.world.hasFlag(WorldFlag.SPACE_WORLD) || entity.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) && getHoverEnabled(entity)) {
 			forceDisableHoverBoots(entity)
 			return
 		}
-		if (HoverMod.hoverEnabledPlayers.contains(entity.player!!.uniqueId)) {
-			entity.player!!.isFlying = true
-			entity.player!!.allowFlight = true
-			entity.player!!.flySpeed = 0.toFloat()
+		if (HoverMod.hoverEnabledPlayers.contains(entity.uniqueId)) {
+			entity.isFlying = true
+			entity.allowFlight = true
+			entity.flySpeed = 0.5.toFloat()
 		}
 	}
 
@@ -217,22 +218,25 @@ class PowerArmorItem(
 		if (entity !is Player) return
 		if (equipmentSlot != EquipmentSlot.LEGS) return
 		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
-		if (!mods.contains(ItemModKeys.ARMOR_LOCK) && ArmorLockMod.armorLockEnabledPlayers.contains(entity.player!!.uniqueId)) {
+		if (!mods.contains(ItemModKeys.ARMOR_LOCK) && ArmorLockMod.armorLockEnabledPlayers.contains(entity.uniqueId)) {
 			forceDisableArmorLock(entity)
 			return
 		}
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(entity.player!!.uniqueId)) {
-			if (!entity.player!!.isSneaking) {
-				forceDisableArmorLock(entity.player!!)
+		if (ArmorLockMod.armorLockEnabledPlayers.contains(entity.uniqueId)) {
+			if (!entity.isSneaking) {
+				forceDisableArmorLock(entity)
 				return
 			}
-			entity.player!!.isInvulnerable = true
-			entity.player!!.canPickupItems = false
-			entity.player!!.velocity = Vector(0, 0, 0)
-			ArmorLockMod.spawnAura(entity.player!!)
+			entity.isInvulnerable = true
+			entity.canPickupItems = false
+			entity.velocity = Vector(0, 0, 0)
+			val origin = entity.location
+			val vector = Vector(0, 1, 0)
+			helixAroundVector(origin, vector, 0.3, 20, wavelength = 1.0) {
+				entity.world.spawnParticle(Particle.SOUL_FIRE_FLAME, it, 1, 0.0, 0.0,0.0,0.0, null, true) }
 
-			if (System.nanoTime() - ArmorLockMod.armorLockEnabledPlayers[entity.player!!.uniqueId]!! >= ArmorLockMod.maxLockTime) {
-				forceDisableArmorLock(entity.player!!)
+			if (System.nanoTime() - ArmorLockMod.armorLockEnabledPlayers[entity.uniqueId]!! >= ArmorLockMod.maxLockTime) {
+				forceDisableArmorLock(entity)
 			}
 		}
 		else return
@@ -310,7 +314,7 @@ class PowerArmorItem(
 		entity.world.spawnParticle(Particle.SMOKE, entity.location, 0, footDir.x, footDir.y, footDir.z, 0.05)
 
 		if (!entity.world.hasFlag(WorldFlag.ARENA) && entity.gameMode != GameMode.CREATIVE) {
-			powerManager.removePower(itemStack, this, 5)
+			powerManager.removePower(itemStack, this, 0)
 		}
 
 		Tasks.sync {

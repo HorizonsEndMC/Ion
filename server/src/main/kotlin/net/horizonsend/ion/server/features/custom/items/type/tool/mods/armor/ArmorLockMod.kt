@@ -64,12 +64,4 @@ object ArmorLockMod : ItemModification {
 			player.sendMessage("Armor Lock Module Disabled")
 		}
 	}
-
-	fun spawnAura(player: Player) {
-		val origin = player.location
-		val vector = Vector(0, 1, 0)
-		helixAroundVector(origin, vector, 0.3, 20, wavelength = 1.0) {
-			origin.world.spawnParticle(Particle.SOUL_FIRE_FLAME, it, 1, 0.0, 0.0,0.0,0.0, null, true)
-		}
-	}
 }
