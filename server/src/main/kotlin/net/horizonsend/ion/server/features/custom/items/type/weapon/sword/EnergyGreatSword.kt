@@ -25,7 +25,9 @@ import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter
 import org.bukkit.GameMode
 import org.bukkit.Material.SHIELD
 import org.bukkit.attribute.Attribute
@@ -40,7 +42,7 @@ import kotlin.math.roundToInt
 
 class EnergyGreatSword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String, color: TextColor) : CustomItem(
 	key = key,
-	displayName = ofChildren(Component.text("★ Energy Greatsword", GOLD, BOLD)),
+	displayName = ofChildren(Component.text("★", GOLD, BOLD), Component.text(" Energy", YELLOW, BOLD), Component.text(" Greatsword", GOLD, BOLD)),
 	baseItemFactory = ItemFactory.builder()
 		.setMaterial(SHIELD)
 		.setCustomModel("weapon/energy_sword/energy_greatsword")
