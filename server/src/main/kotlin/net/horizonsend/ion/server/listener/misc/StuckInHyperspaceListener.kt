@@ -41,12 +41,13 @@ object StuckInHyperspaceListener : SLEventListener() {
 			// you know how you can tell if the code is written by a human? if the variable names are awful.
 			val lastPilotedStarshipOrRealspace = LastPilotedStarship.map.getOrDefault(player.uniqueId, realspaceLocation)
 			player.teleportAsync(lastPilotedStarshipOrRealspace)
+			player.sendRichMessage("<gray>Successfully sent <green>${player.name} <gray>to <green>Realspace<gray>!")
 		}
 	}
 
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
-		if (Hyperspace.isHyperspaceWorld(event.player.world)) return
+		if (!Hyperspace.isHyperspaceWorld(event.player.world)) return
 		val spaceWorld = Hyperspace.getRealspaceWorld(event.player.world)
 
 		val player = event.player
@@ -68,6 +69,7 @@ object StuckInHyperspaceListener : SLEventListener() {
 
 			val lastPilotedStarshipOrRealspace = LastPilotedStarship.map.getOrDefault(player.uniqueId, realspaceLocation)
 			player.teleportAsync(lastPilotedStarshipOrRealspace)
+			player.sendRichMessage("<gray>Successfully sent <green>${player.name} <gray>to <green>Realspace<gray>!")
 		}
 	}
 }
