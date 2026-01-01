@@ -1,0 +1,68 @@
+package net.horizonsend.ion.server.listener.misc
+
+import net.horizonsend.ion.server.features.starship.LastPilotedStarship
+import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerChangedWorldEvent
+import org.bukkit.event.player.PlayerJoinEvent
+
+object StuckInHyperspaceListener : SLEventListener() {
+	@EventHandler
+	fun onPlayerChangeWorld(event: PlayerChangedWorldEvent) {
+		val hyperspaceWorld = Hyperspace.getHyperspaceWorld(event.from) ?: return
+		val spaceWorld = Bukkit.getWorld(hyperspaceWorld.name.removeSuffix("_hyperspace")) ?: return // inlining this from the Hyperspace class
+
+		val player = event.player
+		val hyperspaceLocation = event.player.location
+
+		// first, we tell the player that they are *not* going to be stuck in space
+		Tasks.asyncDelay(3600) {
+			if (player.world != hyperspaceWorld) return@asyncDelay
+
+			player.sendRichMessage("<gray>Detected Stuck Player: Teleporting into Realspace in <green>two minutes<gray>!")
+		}
+
+		// next, we move them out of hyperspace to the relative position their ship will be at
+		Tasks.asyncDelay(6000) {
+			if (player.world != hyperspaceWorld) return@asyncDelay
+
+			val realspaceLocation = Location(
+				spaceWorld,
+				hyperspaceLocation.x,
+				hyperspaceLocation.y,
+				hyperspaceLocation.z
+			)
+
+			// you know how you can tell if the code is written by a human? if the variable names are awful.
+			val lastPilotedStarshipOrRealspace = LastPilotedStarship.map.getOrDefault(player.uniqueId, realspaceLocation)
+			player.teleportAsync(lastPilotedStarshipOrRealspace)
+		}
+	}
+
+	@EventHandler
+	fun onPlayerJoin(event: PlayerJoinEvent) {
+		if (!Hyperspace.isHyperspaceWorld(event.player.world)) return
+		val spaceWorld = Hyperspace.getRealspaceWorld(event.player.world)
+
+		val player = event.player
+		val hyperspaceLocation = player.location
+
+		Tasks.asyncDelay(3600) {
+			player.sendRichMessage("<gray>Detected Stuck Player: Teleporting into Realspace in <green>three minutes<gray>!")
+
+			val realspaceLocation = Location(
+				spaceWorld,
+				hyperspaceLocation.x,
+				hyperspaceLocation.y,
+				hyperspaceLocation.z
+			)
+
+			val lastPilotedStarshipOrRealspace = LastPilotedStarship.map.getOrDefault(player.uniqueId, realspaceLocation)
+			player.teleportAsync(lastPilotedStarshipOrRealspace)
+		}
+	}
+}
