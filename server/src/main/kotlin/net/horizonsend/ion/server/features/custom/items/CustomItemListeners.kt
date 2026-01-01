@@ -3,7 +3,8 @@ package net.horizonsend.ion.server.features.custom.items
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.command.misc.DyeCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -45,7 +46,8 @@ object CustomItemListeners : SLEventListener() {
 	}
 
 	fun sortCustomItemListeners() {
-		for (newCustomItem in CustomItemRegistry.ALL) {
+		for (newCustomItemKey in CustomItemKeys.allkeys()) {
+			val newCustomItem = newCustomItemKey.getValue()
 			val components = newCustomItem.allComponents()
 
 			components.filterIsInstance<Listener<PlayerInteractEvent, *>>().filterTo(getEntries(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }

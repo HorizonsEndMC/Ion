@@ -17,7 +17,7 @@ class ReinforcementSpawnerModule(
 	private val spawnBroadCastMessage: Component?,
 	val delay: Long = 200,
 	val controllerModifiers: MutableList<Consumer<AIController>>
-) : AIModule(controller) {
+) : AIModule(controller, true) {
 	private var triggered: Boolean = false
 
 	override fun tick() {

@@ -131,8 +131,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			playDirectionalStarshipSound(
 				starship.centerOfMass.toLocation(starship.world),
 				player,
-				starship.balancing.sounds.explodeNear,
-				starship.balancing.sounds.explodeFar,
+				starship.balancing.shipSounds.explodeNear,
+				starship.balancing.shipSounds.explodeFar,
 				1000.0
 			)
 		}

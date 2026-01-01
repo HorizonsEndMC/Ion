@@ -38,7 +38,7 @@ interface TickedMultiblockEntityParent {
 		}
 
 		fun sleep(duration: Duration) {
-			sleepTicksEnd = System.currentTimeMillis() + duration.toMinutes()
+			sleepTicksEnd = System.currentTimeMillis() + duration.toMillis()
 		}
 
 		fun sleepUntil(time: Long) {

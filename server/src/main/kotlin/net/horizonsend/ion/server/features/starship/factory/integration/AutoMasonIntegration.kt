@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.factory.integration
 
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
+import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
 import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
@@ -24,28 +24,25 @@ class AutoMasonIntegration(
 	private var recipeEnviornment: AutoMasonRecipeEnviornment? = null
 	private val recipes = multimapOf<Material, AutoMasonRecipe>()
 
+	private val inventoryReference = integratedEntity.getInputInventory()?.let(InventoryReference::wrap)
 	private var availableItems: Map<PrintItem, AvailableItemInformation> = mapOf()
 
 	override fun syncSetup(task: ShipFactoryPrintTask) {
 		recipeEnviornment = buildRecipeEnviornment()
 		recipeEnviornment?.wildcard = true
-
-		availableItems = ShipFactoryPrintTask.getAvailableItems(
-			setOfNotNull(integratedEntity.getInputInventory()?.let(InventoryReference::wrap)),
-			taskEntity.settings
-		)
 	}
 
 	override fun asyncSetup(task: ShipFactoryPrintTask) {
 		val usedMaterials = task.blockMap.values.mapTo(mutableSetOf()) { it.material }
 
-		for (recipe in MultiblockRecipeRegistry.getRecipes()) {
-			if (recipe !is AutoMasonRecipe) continue
-			val resultType = recipe.result.result.asItem().type
+		for (recipe in MultiblockRecipeKeys.allkeys()) {
+			val recipeValue = recipe.getValue()
+			if (recipeValue !is AutoMasonRecipe) continue
+			val resultType = recipeValue.result.result.asItem().type
 
 			if (!usedMaterials.contains(resultType)) continue
 
-			recipes[resultType].add(recipe)
+			recipes[resultType].add(recipeValue)
 		}
 	}
 
@@ -54,6 +51,11 @@ class AutoMasonIntegration(
 	private var transaction: MutableMap<Material, MutableMap<BlockKey, Int>>? = null
 
 	override fun startNewTransaction(task: ShipFactoryPrintTask) {
+		availableItems = ShipFactoryPrintTask.getAvailableItems(
+			setOfNotNull(inventoryReference),
+			taskEntity.settings
+		)
+
 		transaction = mutableMapOf()
 	}
 

@@ -15,9 +15,9 @@ import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_GLOBAL
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_LOCAL
@@ -1268,18 +1268,21 @@ object AISpawners : IonServerComponent(true) {
 //				pointThreshold = 20 * 60 * 7
 //			),
 //			BagSpawner(
-//				Supplier {
+//				locationProvider = Supplier {
 //					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
 //					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
 //				},
-//				VariableIntegerAmount(3, 5),
-//				groupMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage(),
+//				budget = VariableIntegerAmount(3, 5),
+//				groupMessage = "<DARK_RED>A Skuttle swarm<${HE_MEDIUM_GRAY}> {0} has been spotted at {1}, {3}, in {4}!".miniMessage(),
 //				individualSpawnMessage = null,
+//				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+//				targetModeSupplier = { AITarget.TargetMode.MIXED },
+//				fleetSupplier = { null },
 //				asBagSpawned(SKELETONS.asSpawnedShip(AITemplateRegistry.SKUTTLE), 1)
 //			)
 //		))
 //
-//		registerSingleWorldSpawner("AU-0821") { SingleWorldSpawner(
+//		registerSingleWorldSpawner("AU-0821", "Trench", "Horizon") { SingleWorldSpawner(
 //			"PUMPKIN_SPAWNER",
 //			it,
 //			AISpawnerTicker(
@@ -1289,11 +1292,14 @@ object AISpawners : IonServerComponent(true) {
 //			SingleSpawn(
 //				RandomShipSupplier(PUMPKINS.asSpawnedShip(PUMPKIN_DEVOURER), PUMPKINS.asSpawnedShip(PUMPKIN_KIN)),
 //				formatLocationSupplier(it, 1000.0, 3000.0),
-//				spawnMessage = SpawnMessage.ChatMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
+//				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+//				targetModeSupplier = { AITarget.TargetMode.MIXED },
+//				fleetSupplier = { null },
+//				spawnMessage = SpawnMessage.WorldMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
 //			)
 //		)}
 //
-//		registerSingleWorldSpawner("AU-0821") { SingleWorldSpawner(
+//		registerSingleWorldSpawner("AU-0821", "Trench", "Horizon") { SingleWorldSpawner(
 //			"ABYSSAL_SPAWNER",
 //			it,
 //			AISpawnerTicker(
@@ -1309,7 +1315,10 @@ object AISpawners : IonServerComponent(true) {
 //					ABYSSAL.asSpawnedShip(GRAFT)
 //				),
 //				formatLocationSupplier(it, 1000.0, 3000.0),
-//				spawnMessage = SpawnMessage.ChatMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
+//				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+//				targetModeSupplier = { AITarget.TargetMode.MIXED },
+//				fleetSupplier = { null },
+//				spawnMessage = SpawnMessage.WorldMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
 //			)
 //		)}
 

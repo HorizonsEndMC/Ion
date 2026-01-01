@@ -10,7 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /** An executable class containing logic for the positioning, navigation, and control of the starship */
-abstract class AIModule(val controller: AIController) {
+abstract class AIModule(val controller: AIController, val alwaysActive : Boolean = false) {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	val starship get() = controller.starship

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -16,11 +16,7 @@ object AutoTurretTargeting : IonServerComponent() {
 			val player = Bukkit.getPlayer(name)
 			if (player != null) {
 				val starship = ActiveStarships.findByPilot(player)
-				if (starship != null) {
-					starship.blocks.random()?.let { Vec3i(it).toLocation(starship.world) }
-				} else {
-					Bukkit.getPlayer(name)?.location
-				}
+                starship?.centerOfMass?.toLocation(starship.world) ?: Bukkit.getPlayer(name)?.location
 			} else {
 				Bukkit.getPlayer(name)?.location
 			}
@@ -33,7 +29,8 @@ object AutoTurretTargeting : IonServerComponent() {
 		data object HostileMobTarget: TargetType<ActiveStarship>({ ship, identifier ->
 			val type = EntityType.valueOf(identifier)
 
-			ship.world.getNearbyEntitiesByType(type.entityClass, ship.centerOfMass.toLocation(ship.world), 100.0).firstOrNull()?.location
+            ship.world.getNearbyEntitiesByType(type.entityClass, ship.centerOfMass.toLocation(ship.world), 100.0).minByOrNull {
+				entity -> ship.centerOfMass.toCenterVector().distance(entity.location.toVector()) }?.location
 		})
 	}
 

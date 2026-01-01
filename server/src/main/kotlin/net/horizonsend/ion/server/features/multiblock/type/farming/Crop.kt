@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.farming
 
-import net.horizonsend.ion.server.features.multiblock.type.farming.Crop.values
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -41,8 +40,9 @@ enum class Crop(val material: Material, val seed: Material) {
 		override fun canBePlanted(block: Block): Boolean {
 			return plantable.contains(block.getRelative(BlockFace.DOWN).type)
 		}
-	}
-
+	},
+	PUMPKINS(Material.PUMPKIN_STEM, Material.PUMPKIN_SEEDS),
+	MELONS(Material.MELON_STEM, Material.MELON_SEEDS)
 	;
 
 	open fun harvest(block: Block) {

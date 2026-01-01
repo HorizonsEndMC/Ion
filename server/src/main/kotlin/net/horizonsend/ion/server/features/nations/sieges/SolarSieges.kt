@@ -17,8 +17,8 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -34,6 +34,7 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component.text
 import org.apache.commons.lang3.time.TimeZones.GMT_ID
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -90,8 +91,7 @@ object SolarSieges : IonServerComponent(true) {
 	 * Returns whether this siege zone is being prepared for a siege, or actively under siege
 	 **/
 	private fun isUnderSiege(stationId: Oid<SolarSiegeZone>): Boolean {
-		return activeSieges.any { it.value.region.id == stationId } ||
-			   preparationSieges.any { it.value.region.id == stationId }
+		return activeSieges.any { it.value.region.id == stationId } || preparationSieges.any { it.value.region.id == stationId }
 	}
 
 	/**
@@ -104,7 +104,7 @@ object SolarSieges : IonServerComponent(true) {
 		val calendar = Calendar.getInstance(getTimeZone(GMT_ID))
 		calendar.time = Date()
 		val hour = calendar.get(Calendar.HOUR_OF_DAY)
-		return hour in 14..16
+		return hour in config.declareWindowStart..config.declareWindowStart + config.declareWindowDuration.toDuration().toHours()
 	}
 
 	// Initiation, Ending
@@ -129,7 +129,7 @@ object SolarSieges : IonServerComponent(true) {
 			return@asyncLocked player.userError("Your nation already owns this station.")
 		}
 
-		if (!isSiegeDeclarationPeriod() && false) {
+		if (!isSiegeDeclarationPeriod() && !config.ignoreSiegeWindow) {
 			player.userError("It is not the siege declaration period!")
 			player.information("Solar Sieges can only be declared on Saturday or Sunday between 14:00 and 17:00 UTC")
 			return@asyncLocked
@@ -195,7 +195,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
-			text("{0} of {1} has abandoned {2}"),
+			text("{0} of {1} has abandoned {2}", HE_MEDIUM_GRAY),
 			useQuotesAroundObjects = false,
 			player.name,
 			nationName,
@@ -213,7 +213,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
-			text("{0} of {1} has abandoned {2}"),
+			text("{0} of {1} has abandoned {2}", HE_MEDIUM_GRAY),
 			useQuotesAroundObjects = false,
 			player.name,
 			nationName,
@@ -249,7 +249,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (siege.isDefender(player.slPlayerId) && siege.isAttacker(killer.slPlayerId)) {
 			siege.attackerPoints += points
-			log.info("Awarded attacker $points points")
+			log.info("Awarded attacker $points points for killing ${player.name}")
 
 			IonServer.server.sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
@@ -261,7 +261,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (siege.isDefender(killer.slPlayerId) && siege.isAttacker(player.slPlayerId)) {
 			siege.defenderPoints += points
-			log.info("Awarded defender $points points")
+			log.info("Awarded defender $points points for killing ${player.name}")
 
 			IonServer.server.sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
@@ -280,7 +280,7 @@ object SolarSieges : IonServerComponent(true) {
 		val world = siege.region.bukkitWorld ?: return
 		val starships = ActiveStarships.getInWorld(world)
 		val contained = starships
-			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) }
+			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= config.minimumPassivePointsShipSize }
 			.mapNotNull { it.controller as? PlayerController }
 
 		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
@@ -291,7 +291,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (defenderNew > 0) {
 			siege.defenderPoints += defenderNew
-			log.info("Awarded defender $defenderNew points")
+			log.info("Awarded defender $defenderNew passive points")
 
 			siegeAudience.sendMessage(template(
 				text("{0} accrued {1} passive points for being inside the siege region."),
@@ -306,7 +306,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (attackerNew > 0) {
 			siege.attackerPoints += attackerNew
-			log.info("Awarded attacker $attackerNew points")
+			log.info("Awarded attacker $attackerNew passive points")
 
 			siegeAudience.sendMessage(template(
 				text("{0} accrued {1} passive points for being inside the siege region."),
@@ -342,7 +342,9 @@ object SolarSieges : IonServerComponent(true) {
 		if (participationData != null) {
 			val now = System.currentTimeMillis()
 			val participationLength = config.participationLength.toDuration()
-			if (participationData.tagTime - now <= participationLength.toMillis()) return participationData.siege.let(activeSieges::get)
+			if (participationData.tagTime - now <= participationLength.toMillis()) {
+				if (activeSieges.containsKey(participationData.siege)) return participationData.siege.let(activeSieges::get)
+			}
 		}
 
 		val contained = getAllActiveSieges().firstOrNull { it.region.contains(player.location) && it.isActivePeriod() } ?: return null
@@ -385,5 +387,38 @@ object SolarSieges : IonServerComponent(true) {
 	private fun handleNationDisband(id: Oid<Nation>) {
 		getAllSieges().filter { it.defender == id }.forEach { it.fail(); it.removeActive() }
 		getAllSieges().filter { it.attacker == id }.forEach { it.succeed(); it.removeActive() }
+	}
+
+	/**
+	 * Returns if player's nation owns a solar siege zone
+	 **/
+	fun checkZoneBenefits(player: Player): Boolean {
+		val nation = PlayerCache[player].nationOid ?: return false
+		return Regions.getAllOf<RegionSolarSiegeZone>().any { zone -> zone.nation == nation }
+	}
+
+	/**
+	 * Returns if player's nation owns a solar siege zone in the specified world
+	 **/
+	fun checkZoneBenefits(player: Player, world: World): Boolean {
+		val nation = PlayerCache[player].nationOid ?: return false
+		return Regions.getAllOfInWorld<RegionSolarSiegeZone>(world).any { zone -> zone.nation == nation }
+	}
+
+	fun isWinner(siege: Oid<SolarSiegeData>, nation: Oid<Nation>): Boolean {
+		val completed = SolarSiegeData.findOnePropById(siege, SolarSiegeData::complete)
+		if (completed != true) return false
+
+		val props = SolarSiegeData.findPropsById(siege, SolarSiegeData::attacker, SolarSiegeData::defender, SolarSiegeData::attackerPoints, SolarSiegeData::defenderPoints) ?: return false
+		val attacker = props[SolarSiegeData::attacker]
+		val attackerPoints = props[SolarSiegeData::attackerPoints]
+		val defender = props[SolarSiegeData::defender]
+		val defenderPoints = props[SolarSiegeData::defenderPoints]
+
+		val success = attackerPoints > defenderPoints
+		if (nation == attacker && success) return true
+		if (nation == defender && !success) return true
+
+		return false
 	}
 }

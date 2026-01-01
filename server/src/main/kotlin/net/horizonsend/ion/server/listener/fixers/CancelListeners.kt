@@ -4,9 +4,9 @@ import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.Blocks
@@ -213,12 +214,12 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: EntityExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE }
+		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE }
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE}
+		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE}
 	}
 
 	@EventHandler
@@ -270,7 +271,7 @@ class CancelListeners : SLEventListener() {
 	}
 
 	private val disabledVaultConfig = VaultConfig(
-		net.minecraft.world.entity.EntityType.BAT.defaultLootTable.get(),
+		EntityType.BAT.defaultLootTable.get(),
 		0.0,
 		0.0001,
 		net.minecraft.world.item.ItemStack(Blocks.BEDROCK),

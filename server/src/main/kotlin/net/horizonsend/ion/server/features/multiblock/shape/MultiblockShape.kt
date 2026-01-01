@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.shape
 
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -264,18 +263,18 @@ class MultiblockShape {
 
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
-				alias = customBlock.identifier,
+				alias = customBlock.key.key,
 				example = customBlock.blockData,
 				syncCheck = { block, _, loadChunks ->
-					if (loadChunks) CustomBlocks.getByBlock(block) else {
-						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
+					if (loadChunks) block.customBlock else {
+						getBlockDataSafe(block.world, block.x, block.y, block.z)?.customBlock
 					} === customBlock
 				},
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { val customItem = it.customItem; customItem is CustomBlockItem && customItem.getCustomBlock() == customBlock },
 					amountConsumed = { 1 },
 					toBlock = { _ -> customBlock.blockData },
-					toItemStack = { block -> CustomBlocks.getByBlockData(block)?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
+					toItemStack = { blockData -> blockData.customBlock?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
 				)
 			)
 
@@ -366,11 +365,11 @@ class MultiblockShape {
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
 		fun lapisBlock() = type(Material.LAPIS_BLOCK)
 
-		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
-		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
-		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
-		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
-		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
+		fun titaniumBlock() = customBlock(CustomBlockKeys.TITANIUM_BLOCK.getValue())
+		fun aluminumBlock() = customBlock(CustomBlockKeys.ALUMINUM_BLOCK.getValue())
+		fun chetheriteBlock() = customBlock(CustomBlockKeys.CHETHERITE_BLOCK.getValue())
+		fun steelBlock() = customBlock(CustomBlockKeys.STEEL_BLOCK.getValue())
+		fun enrichedUraniumBlock() = customBlock(CustomBlockKeys.ENRICHED_URANIUM_BLOCK.getValue())
 
 		fun anyCopperVariant() = anyType(
 			Material.COPPER_BLOCK,
@@ -429,7 +428,10 @@ class MultiblockShape {
 			Material.WAXED_EXPOSED_COPPER_GRATE,
 			Material.WAXED_WEATHERED_COPPER_GRATE,
 			Material.WAXED_OXIDIZED_COPPER_GRATE,
-			alias = "any copper grate"
+			alias = "any copper grate",
+			edit = {
+				setExample(Material.WAXED_COPPER_GRATE)
+			}
 		)
 
 		fun anyUnwaxedCopperGrate() = anyType(
@@ -457,7 +459,10 @@ class MultiblockShape {
 			Material.WAXED_EXPOSED_COPPER_BULB,
 			Material.WAXED_WEATHERED_COPPER_BULB,
 			Material.WAXED_OXIDIZED_COPPER_BULB,
-			alias = "any copper bulb"
+			alias = "any copper bulb",
+			edit = {
+				setExample(Material.WAXED_COPPER_BULB)
+			}
 		)
 
 		fun anyWaxedCopperBulb() = anyType(
@@ -476,7 +481,7 @@ class MultiblockShape {
 			alias = "any unwaxed copper bulb"
 		)
 
-		fun fluidInput() = type(Material.FLETCHING_TABLE)
+		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 
@@ -488,7 +493,7 @@ class MultiblockShape {
 		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { it.isPipedInventory }
 		fun dispenser() = type(Material.DISPENSER)
 
-		fun netheriteCasing() = customBlock(NETHERITE_CASING)
+		fun netheriteCasing() = customBlock(CustomBlockKeys.NETHERITE_CASING.getValue())
 
 		fun redstoneLamp() = filteredTypes("redstone lamp") { it.isRedstoneLamp }
 		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }

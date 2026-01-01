@@ -4,11 +4,13 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
+import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -44,7 +46,13 @@ object Hyperspace : IonServerComponent() {
 		return movementTasks[starship]?.dest
 	}
 
-	const val HYPERMATTER_AMOUNT = 2
+	fun getHyperMatterAmount(starship: Starship): Int {
+		val playerPilot = starship.playerPilot ?: return DEFAULT_HYPERMATTER_AMOUNT
+
+		return if (SolarSieges.checkZoneBenefits(playerPilot)) 1 else DEFAULT_HYPERMATTER_AMOUNT
+	}
+
+	private const val DEFAULT_HYPERMATTER_AMOUNT = 2
 	const val INTER_SYSTEM_DISTANCE = 60000
 
 	override fun onDisable() {
@@ -76,7 +84,7 @@ object Hyperspace : IonServerComponent() {
 			}
 		}
 
-		if (starship.type == PLATFORM) {
+		if (starship.type == StarshipType.PLATFORM) {
 			starship.onlinePassengers.forEach {
 				it.userErrorAction("This ship type is not capable of moving.")
 			}
@@ -108,7 +116,7 @@ object Hyperspace : IonServerComponent() {
 		destinationWorld: World,
 		useFuel: Boolean
 	) {
-		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
+		val dest = Location(destinationWorld, x.toDouble(), starship.centerOfMass.y.toDouble(), z.toDouble())
 		val mass = starship.mass
 		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
 			else calculateSpeed(3, mass)
@@ -123,8 +131,6 @@ object Hyperspace : IonServerComponent() {
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
 		check(warmupTasks.remove(warmup.ship, warmup)) { "Warmup wasn't in the map!" }
 
-		val drive: HyperdriveSubsystem? = warmup.drive
-		if (drive != null && drive.isIntact()) drive.restoreFuel()
 		warmup.ship.information("Canceled Jump Warmup")
 	}
 
@@ -146,7 +152,7 @@ object Hyperspace : IonServerComponent() {
 		val z = starship.centerOfMass.z.toDouble()
 		val loc = Location(world, x, y, z)
 
-		starship.playSound(starship.balancing.sounds.enterHyperspace.sound)
+		starship.playSound(starship.balancing.shipSounds.enterHyperspace.sound)
 
 		StarshipTeleportation.teleportStarship(starship, loc) {
 			// Happens after the teleport finishes
@@ -185,7 +191,7 @@ object Hyperspace : IonServerComponent() {
 		dest.x = movement.x
 		dest.z = movement.z
 
-		starship.playSound(starship.balancing.sounds.exitHyperspace.sound)
+		starship.playSound(starship.balancing.shipSounds.exitHyperspace.sound)
 		StarshipTeleportation.teleportStarship(starship, dest) {
 			Tasks.syncDelay(2L) {
 				// Happens after the teleport finishes
@@ -203,7 +209,7 @@ object Hyperspace : IonServerComponent() {
 
 		starship.subsystems.forEach { it.handleJump(movement) }
 
-		starship.playSound(starship.balancing.sounds.exitHyperspace.sound)
+		starship.playSound(starship.balancing.shipSounds.exitHyperspace.sound)
 		StarshipTeleportation.teleportStarship(starship, movement.dest) {
 			Tasks.syncDelay(2L) {
 				// Happens after the teleport finishes
@@ -300,25 +306,25 @@ object Hyperspace : IonServerComponent() {
 		val starship = event.starship
 		val origin = starship.centerOfMass.toLocation(starship.world)
 
-		playSoundInRadius(origin, 2500.0, event.starship.balancing.sounds.enterHyperspace.sound)
+		playSoundInRadius(origin, 2500.0, event.starship.balancing.shipSounds.enterHyperspace.sound)
 
 		Space.getAllPlanets()
 			.filter { it.location.toLocation(starship.world).distance(origin) < 2500 }
 			.filter { it.spaceWorld == starship.world }
 			.forEach {
-				it.planetWorld?.playSound(event.starship.balancing.sounds.enterHyperspace.sound)
+				it.planetWorld?.playSound(event.starship.balancing.shipSounds.enterHyperspace.sound)
 			}
 	}
 
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		val movement = event.movement
-		playSoundInRadius(movement.dest, 2500.0, event.starship.balancing.sounds.exitHyperspace.sound)
+		playSoundInRadius(movement.dest, 2500.0, event.starship.balancing.shipSounds.exitHyperspace.sound)
 
 		Space.getAllPlanets()
 			.filter { it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500 }
 			.forEach {
-				it.planetWorld?.playSound(event.starship.balancing.sounds.exitHyperspace.sound)
+				it.planetWorld?.playSound(event.starship.balancing.shipSounds.exitHyperspace.sound)
 			}
 	}
 

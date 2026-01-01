@@ -1,14 +1,15 @@
 package net.horizonsend.ion.server.features.starship.dealers
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
 import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -62,7 +63,7 @@ object StarshipDealers : IonServerComponent(false) {
 		}
 	}
 
-	fun resolveTarget(schematic: Clipboard, destination: Location): Location {
+	fun resolveTarget(schematic: Clipboard, destination: Location, forceEmpty : Boolean = false): Location {
 		val target = destination.clone()
 
 		var xOffset = listOf(-25, 25).random()
@@ -77,8 +78,10 @@ object StarshipDealers : IonServerComponent(false) {
 			val dz = targetVec.z - schematic.origin.z()
 
 			var obstructed = false
-			for (blockVector3 in schematic.region) {
-				if (schematic.getBlock(blockVector3).blockType.material.isAir) {
+			val region = schematic.region
+			region.expand(BlockVector3.at(-2,-2,-2), BlockVector3.at(2,2,2))
+			for (blockVector3 in region) {
+				if (!forceEmpty && schematic.getBlock(blockVector3).blockType.material.isAir) {
 					continue
 				}
 

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.world.configuration
 import net.horizonsend.ion.server.configuration.util.StaticDoubleAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
-import net.horizonsend.ion.server.features.gas.Gasses
+import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.features.gas.collection.ChildWeight
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.collection.HeightRamp
@@ -23,8 +23,8 @@ object DefaultWorldConfiguration {
 		return settings
 	}
 
-	val TEST = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+	val TEST = register("world", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -35,7 +35,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.5)
         )
 		),
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -43,7 +43,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.5)
 			),
 		),
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.METHANE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -54,7 +54,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.5)
         )
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -62,7 +62,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.5)
 			),
 		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.CHLORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -73,7 +73,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.5)
         )
 		),
-		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.FLUORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -87,7 +87,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val CHANDRA = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -101,7 +101,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val ILIUS = register("Ilius", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -109,7 +109,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.5)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -120,7 +120,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val LUXITERNA = register("Luxiterna", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -131,7 +131,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.2)
         )
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -139,7 +139,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.25)
 			),
 		),
-		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.FLUORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -153,7 +153,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val HERDOLI = register("Herdoli", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -167,7 +167,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val RUBACIEA = register("Rubaciea", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -178,7 +178,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.6)
         )
 		),
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -186,7 +186,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.3)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -198,7 +198,7 @@ object DefaultWorldConfiguration {
 
 	val ISIK = register("Isik", WorldSettings(
 		gasConfiguration = WorldGasConfiguration(gasses = listOf(
-			CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+			CollectedGas(AtmosphericGasKeys.METHANE, ChildWeight(
 				parent = HeightRamp(
 					parent = StaticBase(amount = StaticIntegerAmount(85)),
 					minHeight = StaticIntegerAmount(0),
@@ -209,7 +209,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.25)
     	    )
 			),
-			CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+			CollectedGas(AtmosphericGasKeys.CHLORINE, ChildWeight(
 				parent = HeightRamp(
 					parent = StaticBase(amount = StaticIntegerAmount(85)),
 					minHeight = StaticIntegerAmount(0),
@@ -231,7 +231,7 @@ object DefaultWorldConfiguration {
 	))
 
 	val CHIMGARA = register("Chimgara", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -239,7 +239,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.2)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -247,7 +247,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.2)
 			),
 		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.CHLORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -261,7 +261,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val DAMKOTH = register("Damkoth", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.METHANE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -272,7 +272,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.2)
         )
 		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.CHLORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -286,7 +286,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val KRIO = register("Krio", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -294,7 +294,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.333)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -305,7 +305,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val ARET = register("Aret", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -313,7 +313,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.4)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -324,7 +324,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val AERACH = register("Aerach", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -332,7 +332,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.5)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -343,7 +343,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val VASK = register("Vask", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -351,7 +351,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.5)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -362,7 +362,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val GAHARA = register("Gahara", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -373,7 +373,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.3)
         )
 		),
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -381,7 +381,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.2)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -392,7 +392,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val QATRA = register("Qatra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.METHANE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -403,7 +403,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.35)
         )
 		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.CHLORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -414,7 +414,7 @@ object DefaultWorldConfiguration {
 			weight = StaticDoubleAmount(0.2)
         )
 		),
-		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.FLUORINE, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(0),
@@ -428,7 +428,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val KOVFEFE = register("Kovfefe", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -442,7 +442,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val LIODA = register("Lioda", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.NITROGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.NITROGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -450,7 +450,7 @@ object DefaultWorldConfiguration {
 				weight = StaticDoubleAmount(0.5)
 			),
 		),
-		CollectedGas(Gasses.OXYGEN.identifier,
+		CollectedGas(AtmosphericGasKeys.OXYGEN,
 			ChildWeight(
 				parent = ChildWeight(
 					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
@@ -461,7 +461,7 @@ object DefaultWorldConfiguration {
 	))))
 
 	val TURMS = register("Turms", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
 				minHeight = StaticIntegerAmount(100),
@@ -476,7 +476,7 @@ object DefaultWorldConfiguration {
 
 	val EDEN = register("Ilius_horizonsend_eden", WorldSettings(
 		gasConfiguration = WorldGasConfiguration(gasses = listOf(
-			CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+			CollectedGas(AtmosphericGasKeys.METHANE, ChildWeight(
 				parent = HeightRamp(
 					parent = StaticBase(amount = StaticIntegerAmount(85)),
 					minHeight = StaticIntegerAmount(0),
@@ -486,7 +486,7 @@ object DefaultWorldConfiguration {
 				),
 				weight = StaticDoubleAmount(0.45))
 			),
-			CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
+			CollectedGas(AtmosphericGasKeys.FLUORINE, ChildWeight(
 				parent = HeightRamp(
 					parent = StaticBase(amount = StaticIntegerAmount(85)),
 					minHeight = StaticIntegerAmount(0),

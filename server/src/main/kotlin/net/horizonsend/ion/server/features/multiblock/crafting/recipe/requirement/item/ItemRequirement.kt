@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RecipeRequirement
 import org.bukkit.Material
@@ -20,12 +21,12 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 
 	open fun asItemStack(): ItemStack? = null
 
-	class CustomItemRequirement(val customItem: CustomItem) : ItemRequirement {
+	class CustomItemRequirement(val customItem: IonRegistryKey<CustomItem, out CustomItem>) : ItemRequirement {
 		override fun matches(item: ItemStack?): Boolean {
-			return item?.customItem == customItem && item.amount >= 1
+			return item?.customItem?.key == customItem && item.amount >= 1
 		}
 
-		override fun asItemStack(): ItemStack = customItem.constructItemStack()
+		override fun asItemStack(): ItemStack = customItem.getValue().constructItemStack()
 	}
 
 	class MaterialRequirement(val material: Material, val count: Int = 1) : ItemRequirement {

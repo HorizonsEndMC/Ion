@@ -9,8 +9,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -85,8 +85,16 @@ object Bounties : IonServerComponent() {
 		val sum = damagers.values.sum().toDouble()
 		val totalMoney = event.starship.initialBlockCount.toDouble() * blockCountMultipler
 
+		val victimNation = PlayerCache[victim].nationOid
+
 		for ((damager : PlayerDamager, points) in damagers) {
 			val killer = damager.player
+
+			val damagerNation = PlayerCache[killer].nationOid
+			if (damagerNation != null && victimNation != null) {
+				if (RelationCache[victimNation, damagerNation] >= NationRelation.Level.ALLY) continue
+			}
+
 			val percent = points / sum
 			val money = totalMoney * percent
 

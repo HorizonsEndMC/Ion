@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 abstract class Mutes: IonComponent() {
 	var isLitebansEnabled: Boolean = false
-	lateinit var liteBansDatabase: Database
+	var liteBansDatabase: Database? = null ; private set
 
 	abstract fun runWhenInitialized(block: () -> Unit)
 
@@ -20,7 +20,10 @@ abstract class Mutes: IonComponent() {
 			val db = Database.get()
 			isLitebansEnabled = true
 			db
-		} catch (e: Exception) { throw Error("Litebans is not installed. Mutes will not be checked, but chat will still function.", e) }
+		} catch (e: Throwable) {
+			log.warn("Litebans is not installed. Mutes will not be checked, but chat will still function.")
+			null
+		}
 	}
 
 	private val muteCache: LoadingCache<UUID, Boolean> = CacheBuilder.newBuilder()
@@ -49,9 +52,18 @@ abstract class Mutes: IonComponent() {
 			}
 		)
 
-	fun checkMute(playerId: UUID): CompletableFuture<Boolean> = CompletableFuture.supplyAsync { muteCache[playerId] }
-	fun checkBan(playerId: UUID): CompletableFuture<Boolean> = CompletableFuture.supplyAsync { banCache[playerId] }
+	fun checkMute(playerId: UUID): CompletableFuture<Boolean> {
+		val presentValue = muteCache.getIfPresent(playerId)
+		if (presentValue != null) return CompletableFuture.completedFuture(presentValue)
+		return CompletableFuture.supplyAsync { muteCache[playerId] }
+	}
 
-	private fun playerIsMuted(playerId: UUID): Boolean = liteBansDatabase.isPlayerMuted(playerId, null)
-	private fun playerIsBanned(playerId: UUID): Boolean = liteBansDatabase.isPlayerBanned(playerId, null)
+	fun checkBan(playerId: UUID): CompletableFuture<Boolean> {
+		val presentValue = banCache.getIfPresent(playerId)
+		if (presentValue != null) return CompletableFuture.completedFuture(presentValue)
+		return CompletableFuture.supplyAsync { banCache[playerId] }
+	}
+
+	private fun playerIsMuted(playerId: UUID): Boolean = liteBansDatabase?.isPlayerMuted(playerId, null) ?: false
+	private fun playerIsBanned(playerId: UUID): Boolean = liteBansDatabase?.isPlayerBanned(playerId, null) ?: false
 }

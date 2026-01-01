@@ -17,6 +17,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import java.util.function.Supplier
 import kotlin.math.cbrt
+import kotlin.math.sqrt
 
 class BagSpawner(
 	locationProvider: Supplier<Location?>,
@@ -105,24 +106,26 @@ class BagSpawner(
 			superCapitalWeight : Double = 3.0,
 			threshold: Int = 19,
 		) : Supplier<Int> {
-			val baseBudget = baseSupplier.get()
-			val location = locationSupplier.get()
-			//get all nearby starships TODO: make sure to grab also inactive ships
-			val ships = ActiveStarships.getInWorld(location.world).filter { it.controller is PlayerController
-				&& it.centerOfMass.toVector().distance(location.toVector()) <= 2000.0
-			}
-			var cumulativeWeight = 0.0
-			ships.forEach { ship ->
-				val weight = (cbrt(ship.initialBlockCount.toDouble()) * shipWeight)
-				cumulativeWeight += if (ship.initialBlockCount > 12000) {
-					weight * superCapitalWeight
-				} else {
-					weight
+			return Supplier {
+				val baseBudget = baseSupplier.get()
+				val location = locationSupplier.get()
+				//get all nearby starships TODO: make sure to grab also inactive ships
+				val ships = ActiveStarships.getInWorld(location.world).filter { it.controller is PlayerController
+					&& it.centerOfMass.toVector().distance(location.toVector()) <= 2000.0
 				}
+				var cumulativeWeight = 0.0
+				ships.forEach { ship ->
+					val weight = (cbrt(ship.initialBlockCount.toDouble()) * shipWeight)
+					cumulativeWeight += if (ship.initialBlockCount > 12000) {
+						weight * superCapitalWeight
+					} else {
+						weight
+					}
+				}
+				cumulativeWeight = (cumulativeWeight - threshold).coerceAtLeast(0.0)
+				cumulativeWeight = sqrt(cumulativeWeight)
+				baseBudget + cumulativeWeight.toInt()
 			}
-
-			cumulativeWeight = (cumulativeWeight - threshold).coerceAtLeast(0.0)
-			return Supplier { baseBudget + cumulativeWeight.toInt() }
 		}
 	}
 

@@ -16,10 +16,9 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -41,8 +40,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -421,6 +422,17 @@ object PilotedStarships : IonServerComponent() {
 				}
 			}
 
+			for (subsystem in activePlayerStarship.weapons) {
+				if (subsystem !is BalancedWeaponSubsystem<*>) continue
+				for (incompatibleSubsystem in subsystem.balancing.fireRestrictions.incompatibleMultiblocks) {
+					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
+			}
+
 			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
 			if (activePlayerStarship.type != StarshipType.PLATFORM && miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
@@ -452,7 +464,7 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
-			val pilotSound = data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound
+			val pilotSound = data.starshipType.actualType.balancing.shipSounds.pilot.sound
 			if (activePlayerStarship.rewardsProviders.filterIsInstance<StandardRewardsProvider>().isEmpty()) {
 				activePlayerStarship.rewardsProviders.add(StandardRewardsProvider(activePlayerStarship))
 			}
@@ -492,7 +504,7 @@ object PilotedStarships : IonServerComponent() {
 		playSoundInRadius(
 			starship.centerOfMass.toLocation(starship.world),
 			10_000.0,
-			starship.balancing.sounds.release.sound
+			starship.balancing.shipSounds.release.sound
 		)
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")

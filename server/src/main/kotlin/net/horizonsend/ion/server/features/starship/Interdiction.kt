@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -85,7 +85,7 @@ object Interdiction : IonServerComponent() {
 
 		val input = GravityWellMultiblock.getInput(sign)
 
-		if (!input.containsAtLeast(CHETHERITE.constructItemStack(), 2)) {
+		if (!input.containsAtLeast(CHETHERITE.getValue().constructItemStack(), 2)) {
 			player.userError(
 				"Not enough hypermatter in the dropper. Two chetherite shards are required!"
 			)
@@ -109,7 +109,7 @@ object Interdiction : IonServerComponent() {
 			}
 		}
 
-		input.removeItem(CHETHERITE.constructItemStack().asQuantity(2))
+		input.removeItem(CHETHERITE.getValue().constructItemStack().asQuantity(2))
 		starship.onlinePassengers.forEach { passenger ->
 			passenger.alert("Gravity pulse has been invoked by ${player.name}.")
 		}

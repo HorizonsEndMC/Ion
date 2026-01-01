@@ -15,10 +15,13 @@ import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -41,6 +44,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingMa
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.createPastebinHttpRequest
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -51,16 +55,25 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import okhttp3.OkHttpClient
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlin.math.ceil
+import kotlin.plus
 
 @CommandAlias("bazaar|ah|auctionhouse|shop|buy")
 object BazaarCommand : SLCommand() {
+	private val exportCooldown: MutableMap<UUID, Long> = mutableMapOf()
+	private const val TIME_BETWEEN_EXPORTS_MIN = 15L
+
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "bazaarItemStrings") { context ->
 			val player = context.player ?: throw InvalidCommandArgument("Players only")
@@ -237,6 +250,41 @@ object BazaarCommand : SLCommand() {
 
 		sender.sendMessage(builder.build())
 	}
+	
+	@Subcommand("export")
+	@Description("Export your sell orders in CSV format (provides link)")
+	fun onExportPlayer(sender: Player) = asyncCommand(sender) {
+		// Prevent users from spamming API requests
+		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
+		failIf(exportOnCooldown(sender)) {
+			"You must wait $TIME_BETWEEN_EXPORTS_MIN minutes before requesting another export " +
+					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
+		}
+
+		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
+
+		exportSellOrders(items, sender, true)
+	}
+
+	@Subcommand("export")
+	@Description("Export a city's sell orders in CSV format (provides link)")
+	@CommandCompletion("@bazaarCities")
+	fun onExportCity(sender: Player, city: TradeCityData) = asyncCommand(sender) {
+		// Prevent users from spamming API requests
+		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
+		failIf(exportOnCooldown(sender)) {
+			"You must wait $TIME_BETWEEN_EXPORTS_MIN minutes before requesting another export " +
+					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
+		}
+
+		val items = BazaarItem.find(BazaarItem::cityTerritory eq city.territoryId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
+
+		exportSellOrders(items, sender, false)
+	}
 
 	@Suppress("Unused")
 	@Subcommand("list menu")
@@ -407,5 +455,124 @@ object BazaarCommand : SLCommand() {
 		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
 
 		Bazaars.fulfillOrder(sender, sender.inventory, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
+	}
+
+	@Subcommand("order export")
+	@Description("Export your buy orders in CSV format (provides link)")
+	fun onOrderExportPlayer(sender: Player) = asyncCommand(sender) {
+		// Prevent users from spamming API requests
+		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
+		failIf(exportOnCooldown(sender)) {
+			"You must wait $TIME_BETWEEN_EXPORTS_MIN minutes before requesting another export " +
+					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
+		}
+
+		val items = BazaarOrder.find(BazaarOrder::player eq sender.slPlayerId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
+		exportBuyOrders(items, sender, true)
+	}
+
+	@Subcommand("order export")
+	@Description("Export a city's buy orders in CSV format (provides link)")
+	@CommandCompletion("@bazaarCities")
+	fun onOrderExportCity(sender: Player, city: TradeCityData) = asyncCommand(sender) {
+		// Prevent users from spamming API requests
+		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
+		failIf(exportOnCooldown(sender)) {
+			"You must wait $TIME_BETWEEN_EXPORTS_MIN minutes before requesting another export " +
+					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
+		}
+
+		val items = BazaarOrder.find(BazaarOrder::cityTerritory eq city.territoryId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
+		exportBuyOrders(items, sender, false)
+	}
+
+	private fun exportSellOrders(
+		items: List<BazaarItem>,
+		sender: Player,
+		showPrivateInfo: Boolean
+	) {
+		// Construct CSV string
+		val stringBuilder: StringBuilder = StringBuilder("Seller,Trade City,Item,Price,Stock" + if (showPrivateInfo) ",Balance" else "").appendLine()
+
+		for (item in items) {
+			stringBuilder.appendLine(
+				SLPlayer[item.seller]?.lastKnownName + ',' +
+						cityName(Regions[item.cityTerritory]) + ',' +
+						item.itemString + ',' +
+						item.price.roundToHundredth() + ',' +
+						item.stock + ',' +
+						if (showPrivateInfo) item.balance.roundToHundredth() else ""
+			)
+		}
+
+		// Construct HTTP request
+		val httpClient = OkHttpClient()
+		val request = createPastebinHttpRequest(
+			stringBuilder.toString(), sender.name + "_Bazaar_Export_" +
+					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".csv"
+		)
+		httpClient.newCall(request).execute().use { response ->
+			if (!response.isSuccessful) {
+				sender.userError("Failed to export bazaar sell order data (${response.code}, ${response.body?.string()})")
+				return
+			}
+
+			// Set new export cooldown
+			exportCooldown[sender.uniqueId] = System.currentTimeMillis()
+			sender.success("Exported bazaar sell order data as CSV (expires in 10 minutes): ")
+			val responseBody = response.body?.string() ?: "null"
+			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
+		}
+	}
+	
+	private fun exportBuyOrders(
+		items: List<BazaarOrder>,
+		sender: Player,
+		showPrivateInfo: Boolean
+	) {
+		// Construct CSV string
+		val stringBuilder: StringBuilder =
+			StringBuilder("Buyer,Trade City,Item,Price" + if (showPrivateInfo) ",Balance" else "" + ",Requested Quantity,Fulfilled Quantity,Stock").appendLine()
+
+		for (item in items) {
+			stringBuilder.appendLine(
+				SLPlayer[item.player]?.lastKnownName + ',' +
+						cityName(Regions[item.cityTerritory]) + ',' +
+						item.itemString + ',' +
+						item.pricePerItem.roundToHundredth() + ',' +
+						if (showPrivateInfo) item.balance.roundToHundredth().toString() + ',' else "" +
+						item.requestedQuantity + ',' +
+						item.fulfilledQuantity + ',' +
+						item.stock
+			)
+		}
+
+		// Construct HTTP request
+		val httpClient = OkHttpClient()
+		val request = createPastebinHttpRequest(
+			stringBuilder.toString(), sender.name + "_Bazaar_Order_Export_" +
+					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".csv"
+		)
+		httpClient.newCall(request).execute().use { response ->
+			if (!response.isSuccessful) {
+				sender.userError("Failed to export bazaar sell order data (${response.code}, ${response.body?.string()})")
+				return
+			}
+
+			// Set new export cooldown
+			exportCooldown[sender.uniqueId] = System.currentTimeMillis()
+			sender.success("Exported bazaar buy order data as CSV (expires in 10 minutes): ")
+			val responseBody = response.body?.string() ?: "null"
+			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
+		}
+	}
+
+	private fun exportOnCooldown(sender: Player): Boolean {
+		val cooldownMillis = exportCooldown[sender.uniqueId]
+		return cooldownMillis != null && Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes() < TIME_BETWEEN_EXPORTS_MIN
 	}
 }

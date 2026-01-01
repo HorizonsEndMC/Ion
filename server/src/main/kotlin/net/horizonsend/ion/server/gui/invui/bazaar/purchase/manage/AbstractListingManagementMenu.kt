@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
@@ -41,7 +41,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 		val SORTING_METHODS = listOf(BazaarSort.ALPHABETICAL, BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE)
 	}
 
-    private var sortingMethod: Int = viewer.getSetting(PlayerSettings::defaultBazaarListingManagementSort)
+    private var sortingMethod: Int = viewer.getSettingOrThrow(PlayerSettings::defaultBazaarListingManagementSort)
 
 	override fun generateEntries(): List<BazaarItem> {
 		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)

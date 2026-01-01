@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
 import net.horizonsend.ion.server.features.npcs.database.type.PlayerShipDealerType

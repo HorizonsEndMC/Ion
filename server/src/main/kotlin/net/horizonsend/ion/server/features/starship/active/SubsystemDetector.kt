@@ -48,7 +48,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.EventShield
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterType
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -91,7 +92,8 @@ object SubsystemDetector {
 				type == Material.REDSTONE_LAMP ||
 				type == Material.SEA_LANTERN ||
 				type == Material.MAGMA_BLOCK ||
-				type.isFroglight
+				type.isFroglight ||
+				type == Material.SHROOMLIGHT
 			) {
 				potentialThrusterBlocks += block
 			}
@@ -155,7 +157,7 @@ object SubsystemDetector {
 			val location = sign.block.getRelative(inwardFace).location
 			val pos = Vec3i(location)
 			val weaponSubsystems = starship.subsystems
-				.filterIsInstance<WeaponSubsystem>()
+				.filterIsInstance<FiredSubsystem>()
 				.filter { it.pos == pos }
 
 			for (weaponSubsystem in weaponSubsystems) {
@@ -171,6 +173,8 @@ object SubsystemDetector {
 		}
 
 		if (multiblock == null) return
+
+		if (!multiblock.signMatchesStructure(sign)) return
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
@@ -274,7 +278,7 @@ object SubsystemDetector {
 				continue
 			}
 
-			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) {
+			if (subsystem is BalancedWeaponSubsystem<*> && !subsystem.canCreateSubsystem()) {
 //				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!") TODO wait for preference system
 				continue
 			}
@@ -301,7 +305,7 @@ object SubsystemDetector {
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
 		return subsystem is DirectionalSubsystem && starship.subsystems
-			.filterIsInstance<WeaponSubsystem>()
+			.filterIsInstance<FiredSubsystem>()
 			.filter { it.pos == subsystem.pos }
 			.filterIsInstance<DirectionalSubsystem>()
 			.any { it.face == subsystem.face }

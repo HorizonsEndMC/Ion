@@ -15,7 +15,7 @@ class FleeMessageModule(
 	controller: AIController,
 	private val prefix: Component,
 	private val messages: List<FleeTriggerMessage>,
-) : AIModule(controller) {
+) : AIModule(controller, true) {
 	private val distanceModule = controller.getCoreModuleByType<DistancePositioningModule>()!!
 	private val enmityModule = controller.getCoreModuleByType<EnmityModule>()!!
 	private var fleeState: Boolean = false

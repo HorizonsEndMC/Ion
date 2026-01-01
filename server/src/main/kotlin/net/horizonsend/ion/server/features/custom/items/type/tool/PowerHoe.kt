@@ -1,16 +1,20 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.alertAction
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser.fertilizeCrop
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -31,7 +35,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
 import kotlin.math.roundToInt
 
-class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+class PowerHoe(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerHoe) { event, _, item ->
 			handleLeftClick(event.player, item, event)
@@ -82,7 +86,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 		Material.DIRT,
 	)
 
-	private fun tryHarvest(player: Player, mods: Array<ItemModification>, itemStack: ItemStack, origin: Block) {
+	private fun tryHarvest(player: Player, mods: List<ItemModification>, itemStack: ItemStack, origin: Block) {
 		val blockList = compileBlockList(player, origin, itemStack)
 
 		val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
@@ -106,7 +110,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 			}
 		}
 
-		val collectorPresent = mods.contains(ItemModRegistry.COLLECTOR)
+		val collectorPresent = mods.contains(ItemModKeys.COLLECTOR.getValue())
 
 		for ((dropLocation, items) in drops) {
 			val location = toVec3i(dropLocation).toLocation(origin.world).toCenterLocation()
@@ -125,7 +129,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 
 	private fun handleHarvest(
 		player: Player,
-		mods: Array<ItemModification>,
+		mods: List<ItemModification>,
 		block: Block,
 		drops: MutableMap<Long, Collection<ItemStack>>,
 		usage: UsageReference
@@ -135,9 +139,9 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 		if (data !is Ageable) return false
 
 		if (data.age != data.maximumAge) {
-			if (!mods.contains(net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser)) return false
+			if (!mods.contains(element = net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser)) return false
 
-			return net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser.fertilizeCrop(player, block)
+			return fertilizeCrop(player, block)
 		}
 
 		val crop = Crop[block.type] ?: return false
@@ -165,7 +169,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 
 		var replacement = Material.AIR.createBlockData()
 
-		if (mods.contains(AUTO_REPLANT)) {
+		if (mods.contains(AUTO_REPLANT.getValue())) {
 			replacement = crop.material.createBlockData()
 		}
 
@@ -233,7 +237,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 		val mods = modManager.getMods(itemStack)
 
 		mods.filterNot { it.crouchingDisables && player.isSneaking }
-			.filterIsInstance<net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier>()
+			.filterIsInstance<BlockListModifier>()
 			.sortedBy { it.priority }
 			.forEach {
 				it.modifyBlockList(BlockFace.DOWN, origin, blockList)

@@ -16,7 +16,7 @@ class Vec3i: DBVec3i {
 
 	constructor(location: Location) : super(location.blockX, location.blockY, location.blockZ)
 
-	constructor(vector: BlockVector3) : super(vector.blockX, vector.blockY, vector.blockZ)
+	constructor(vector: BlockVector3) : super(vector.x(), vector.y(), vector.z())
 
 	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
@@ -28,6 +28,9 @@ class Vec3i: DBVec3i {
 
 	fun distance(x: Int, y: Int, z: Int): Double = distance(this.x, this.y, this.z, x, y, z)
 	fun distance(other: Vec3i): Double = distance(this.x, this.y, this.z, other.x, other.y, other.z)
+
+	fun distanceSquared(x: Int, y: Int, z: Int): Long = distanceSquared(this.x, this.y, this.z, x, y, z)
+	fun distanceSquared(other: Vec3i): Long = distanceSquared(this.x, this.y, this.z, other.x, other.y, other.z)
 
 	/**
 	 * @param other Vector that should be added from this one

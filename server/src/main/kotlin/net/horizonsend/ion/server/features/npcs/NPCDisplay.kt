@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.npcs
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import org.bukkit.Bukkit
 import org.dynmap.bukkit.DynmapPlugin

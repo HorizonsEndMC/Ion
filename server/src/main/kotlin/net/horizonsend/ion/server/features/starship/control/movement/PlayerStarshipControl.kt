@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

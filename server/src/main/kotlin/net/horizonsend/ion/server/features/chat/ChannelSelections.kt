@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.chat
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
@@ -33,6 +33,10 @@ object ChannelSelections : IonServerComponent() {
 			localCache[playerId] = get(redisKey(playerId))?.let { enumValueOfOrNull<ChatChannel>(it) } ?: ChatChannel.GLOBAL
 		}
 	}
+
+	private val temporaryChannelSelections: MutableMap<UUID, ChatChannel> = mutableMapOf()
+
+	fun consumeTemporaryChannel(playerID: UUID): ChatChannel? = temporaryChannelSelections.remove(playerID)
 
 	override fun onEnable() {
 		listen<AsyncPlayerPreLoginEvent>(EventPriority.MONITOR, ignoreCancelled = true) { event ->
@@ -74,6 +78,7 @@ object ChannelSelections : IonServerComponent() {
 
 						Tasks.sync {
 							localCache[playerID] = channel
+							temporaryChannelSelections[playerID] = channel
 							try {
 								player.chat(message.removePrefix("/").removePrefix("$command "))
 							} finally {

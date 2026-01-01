@@ -7,8 +7,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -55,8 +55,6 @@ object AISpawningManager : IonServerComponent(true) {
 
 	private fun despawnOldAIShips() {
 		for (starship in ActiveStarships.all()) {
-			starship
-
 			if (meetsDespawnCriteria(starship)) {
 				despawn(starship)
 			}
@@ -66,7 +64,7 @@ object AISpawningManager : IonServerComponent(true) {
 	// The AI ship must be at least 30 minutes old
 	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
 
-	// And not damaged within the last 15 minutes
+	// And not damaged within the last 7 minutes
 	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
 
 	private fun meetsDespawnCriteria(starship: ActiveControlledStarship): Boolean {
@@ -74,7 +72,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 		if (controller !is AIController) return false
 
-		val mostRecentDamager = starship.damagers.entries.minByOrNull { it.value.lastDamaged }
+		val mostRecentDamager = starship.damagers.entries.maxByOrNull { it.value.lastDamaged }
 
 		if (mostRecentDamager != null && mostRecentDamager.value.lastDamaged > lastDamagedRequirement) return false
 

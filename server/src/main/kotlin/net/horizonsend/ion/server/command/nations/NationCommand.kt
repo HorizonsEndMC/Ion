@@ -430,7 +430,7 @@ internal object NationCommand : SLCommand() {
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
 		val regionTerritory = Regions.getAllOf<RegionTerritory>()
-			.firstOrNull { it.name.equals(territory, ignoreCase = true) }
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
 			?: fail { "Territory $territory not found" }
 		val territoryName = regionTerritory.name
 		val territoryWorld = regionTerritory.world
@@ -476,7 +476,7 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("top|list")
-	@Description("View the top nations on Star Legacy")
+	@Description("View the top nations on Horizon's End")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
 		val nations = Nation.allIds()
 

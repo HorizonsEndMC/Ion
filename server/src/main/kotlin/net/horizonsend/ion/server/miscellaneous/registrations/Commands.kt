@@ -56,6 +56,8 @@ import net.horizonsend.ion.server.command.nations.roles.NationRoleCommand
 import net.horizonsend.ion.server.command.nations.roles.SettlementRoleCommand
 import net.horizonsend.ion.server.command.nations.settlementZones.SettlementPlotCommand
 import net.horizonsend.ion.server.command.nations.settlementZones.SettlementZoneCommand
+import net.horizonsend.ion.server.command.nations.stationZones.StationPlotCommand
+import net.horizonsend.ion.server.command.nations.stationZones.StationZoneCommand
 import net.horizonsend.ion.server.command.progression.AdvanceAdminCommand
 import net.horizonsend.ion.server.command.progression.BuyXPCommand
 import net.horizonsend.ion.server.command.progression.XPCommand
@@ -66,6 +68,7 @@ import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.DisplayShieldsCommand
 import net.horizonsend.ion.server.command.qol.EnableOrbitBreakingCommand
+import net.horizonsend.ion.server.command.qol.EnableStationBreakingCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
@@ -122,6 +125,8 @@ val commands: List<SLCommand> = listOf(
 
 	SettlementPlotCommand,
 	SettlementZoneCommand,
+	StationZoneCommand,
+	StationPlotCommand,
 
 	SiegeCommand,
 
@@ -165,7 +170,6 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
-	SetFluidCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
 	DisplayShieldsCommand,
@@ -200,5 +204,7 @@ val commands: List<SLCommand> = listOf(
 	DisplayDebug,
 	ChatCommand,
 	IonNPCCommand,
-	EnableOrbitBreakingCommand
+	EnableOrbitBreakingCommand,
+	SetFluidCommand,
+	EnableStationBreakingCommand
 )

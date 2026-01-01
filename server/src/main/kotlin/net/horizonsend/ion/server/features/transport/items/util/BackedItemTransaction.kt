@@ -12,12 +12,12 @@ class BackedItemTransaction(
 	val destinations: MutableCollection<PathfindResult>,
 	val destinationSelector: () -> Pair<PathfindResult, CraftInventory>
 ) {
-	fun execute() {
-		if (amount <= 0) return
-		val cloned = source.get()?.clone() ?: return
+	fun execute(): Set<CraftInventory> {
+		if (amount <= 0) return setOf()
+		val cloned = source.get()?.clone() ?: return setOf()
 
 		val (addedInventories, notAdded) = addToDestination(amount)
-		if (notAdded == amount) return
+		if (notAdded == amount) return setOf()
 
 		val notRemoved = tryRemove(amount - notAdded)
 
@@ -30,8 +30,12 @@ class BackedItemTransaction(
 
 				val missing = addedInventory.removeItem(cloned.asQuantity(amount)).entries.firstOrNull()?.key ?: 0
 				removeAmount -= (amount - missing)
+
+				if (missing == amount) return setOf()
 			}
 		}
+
+		return addedInventories.keys
 	}
 
 	// Returns amount that could not be removed

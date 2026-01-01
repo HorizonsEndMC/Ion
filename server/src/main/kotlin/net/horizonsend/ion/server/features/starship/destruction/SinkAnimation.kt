@@ -6,7 +6,7 @@ import io.papermc.paper.datacomponent.item.DyedItemColor
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSettingOrThrow
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.modular.DisplayWrapper
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
@@ -179,8 +179,7 @@ class SinkAnimation(
 	override fun run() {
 		iterations++
 
-		@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
-		if (blockWrappers.isEmpty) {
+		if (blockWrappers.isEmpty()) {
 			cancel()
 			return
 		}
@@ -201,7 +200,7 @@ class SinkAnimation(
 		}
 
 		private val playerFilter = { player: Player ->
-			val playerSetting = player.getEnumSetting<ClientDisplayEntities.Visibility>(PlayerSettings::displayEntityVisibility)
+			val playerSetting = player.getEnumSettingOrThrow<ClientDisplayEntities.Visibility>(PlayerSettings::displayEntityVisibility)
 
 			when (playerSetting) {
 				ClientDisplayEntities.Visibility.ON -> true

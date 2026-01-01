@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.gui.invui.misc
 
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.text.miniMessage
@@ -32,7 +31,7 @@ import kotlin.reflect.KMutableProperty1
 class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
 	override val listingsPerPage: Int = 36
 
-	private var filterTypes: List<KMutableProperty1<Blueprint, out Any>> = listOf(
+	private var sortTypes: List<KMutableProperty1<Blueprint, out Any>> = listOf(
 		Blueprint::size,
 		Blueprint::type,
 		Blueprint::name
@@ -43,7 +42,7 @@ class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, 
 	override fun generateEntries(): List<Blueprint> {
 		return Blueprint
 			.find(Blueprint::owner eq target)
-			.descendingSort(filterTypes[filterType])
+			.descendingSort(sortTypes[filterType])
 			.toList()
 	}
 
@@ -73,7 +72,7 @@ class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, 
 
 			.addIngredient('b', parentOrBackButton())
 			.addIngredient('s', searchButton)
-			.addIngredient('F', filterButton)
+			.addIngredient('F', sortButton)
 
 			.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('<', GuiItems.PageLeftItem())
@@ -104,9 +103,9 @@ class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, 
 		)
 	}
 
-	private val filterButton = CollectionScrollButton(
-		entries = filterTypes,
-		providedItem = GuiItem.FILTER,
+	private val sortButton = CollectionScrollButton(
+		entries = sortTypes,
+		providedItem = { GuiItem.SORT.makeItem(text("Change Sorting Method")) },
 		value = { filterType },
 		nameFormatter = { filterProperty -> text(filterProperty.name.replaceFirstChar { it.uppercase() }) },
 		valueConsumer = { index, _ ->

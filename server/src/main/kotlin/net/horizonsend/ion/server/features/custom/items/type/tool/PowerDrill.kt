@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.alertAction
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
@@ -39,7 +41,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
-class PowerDrill(identifier: String, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+class PowerDrill(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerDrill) { event, _, item ->
 			handleClick(event.player, item, event)
@@ -90,7 +92,7 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 
 		powerManager.setPower(this, itemStack, availablePower)
 
-		val collectorPresent = mods.contains(ItemModRegistry.COLLECTOR)
+		val collectorPresent = mods.contains(ItemModKeys.COLLECTOR.getValue())
 
 		for ((dropLocation, items) in drops) {
 			val location = toVec3i(dropLocation).toLocation(origin.world).toCenterLocation()
@@ -107,12 +109,12 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 		fun tryBreakBlock(
 			player: Player,
 			block: Block,
-			mods: Array<ItemModification>,
+			mods: Collection<ItemModification>,
 			drops: MutableMap<BlockKey, Collection<ItemStack>>,
 			usage: PowerHoe.UsageReference
 		): Boolean {
 			val blockType = block.type
-			val customBlock = CustomBlocks.getByBlock(block)
+			val customBlock = block.customBlock
 
 			if (blockType == Material.BEDROCK || blockType == Material.BARRIER || blockType.isShulkerBox) {
 				return false

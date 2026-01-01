@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.client.display
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
@@ -17,7 +18,9 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Display.BlockDisplay
 import net.minecraft.world.entity.Display.DATA_POS_ROT_INTERPOLATION_DURATION_ID
+import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.PositionMoveRotation
@@ -188,7 +191,10 @@ object ClientDisplayEntities : IonServerComponent() {
     fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
 		@Suppress("OverrideOnly")
 		when (this) {
-			is Player -> sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			is Player -> {
+				if (distanceSquared(Vec3i(this.location), pos) >= 240 * 240) return
+				sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			}
 			is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) {
 				sendEntityPacket(player, highlightBlock(player.world.minecraft, pos), duration)
 			}
@@ -218,7 +224,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		pos: Vector,
 		scale: Float = 1.0f,
 		glowColor: Color? = null,
-	): net.minecraft.world.entity.Display.BlockDisplay {
+	): BlockDisplay {
 
         val block = createBlockDisplay(level)
         val offset = (-scale / 2) + 0.5
@@ -244,7 +250,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		level: ServerLevel,
 		pos: Vector,
 		scale: Float = 0.75f,
-	): net.minecraft.world.entity.Display.BlockDisplay {
+	): BlockDisplay {
 
 		val block = createBlockDisplay(level)
 		val offset = (-scale / 2) + 0.5
@@ -274,7 +280,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		item: ItemStack,
 		pos: Vector,
 		scale: Float = 0.75f,
-	): net.minecraft.world.entity.Display.ItemDisplay {
+	): ItemDisplay {
 		val block = createItemDisplay(player)
 		block.setItemStack(item)
 		block.isGlowing = true
@@ -425,6 +431,10 @@ object ClientDisplayEntities : IonServerComponent() {
 		location: Location,
 		text: Component,
 		durationTicks: Long,
+		scale: Float = 1.0f,
+		backgroundColor: Color = Color.fromARGB(0x00000000),
+		defaultBackground: Boolean = false,
+		seeThrough: Boolean = false,
 		highlight: Boolean = false
 	) {
 		val entity = CraftTextDisplay(IonServer.server as CraftServer, TextDisplay(EntityType.TEXT_DISPLAY, location.world.minecraft))
@@ -435,14 +445,19 @@ object ClientDisplayEntities : IonServerComponent() {
 		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
 		entity.brightness = Display.Brightness(15, 15)
 		entity.teleportDuration = 0
-		entity.backgroundColor = Color.fromARGB(0x00000000)
+
+		if (!defaultBackground) {
+			entity.backgroundColor = backgroundColor
+		} else entity.isDefaultBackground = true
+
 		entity.isGlowing = highlight
+		entity.isSeeThrough = seeThrough
 
 		// apply transformation
 		entity.transformation = Transformation(
 			Vector3f(),
 			rotateToFaceVector2d(Vector3f()),
-			Vector3f(1.0f),
+			Vector3f(scale),
 			Quaternionf()
 		)
 

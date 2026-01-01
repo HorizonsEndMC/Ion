@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -23,6 +23,7 @@ import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.boss.BarColor
+import org.bukkit.boss.BossBar
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -122,6 +123,8 @@ object StarshipShields : IonServerComponent() {
 
 	@Synchronized
 	fun updateShieldBars(ship: ActiveControlledStarship) {
+		val barsToRemove = mutableListOf<String>()
+
 		for ((name, bossBar) in ship.shieldBars) {
 			var amount = 0
 			var isReinforced = false
@@ -130,11 +133,18 @@ object StarshipShields : IonServerComponent() {
 
 			for (subsystem in ship.shields) {
 				if (subsystem.name != name) continue
+				if (!subsystem.isIntact()) continue
 				amount++
 				isReinforced = subsystem.isReinforcementActive()
 				val subsystemPercent = subsystem.powerRatio
 				total += subsystemPercent
 				percents.add(subsystemPercent)
+			}
+
+			// no more shields of this type, remove from boss bar
+			if (amount == 0) {
+				barsToRemove.add(name)
+				continue
 			}
 
 			val percent = total / amount.toDouble()
@@ -166,6 +176,13 @@ object StarshipShields : IonServerComponent() {
 			if (bossBar.color != barColor) {
 				bossBar.color = barColor
 			}
+		}
+
+		// remove shield bar, after all bars have been updated
+		for (bar in barsToRemove) {
+			val barToRemove = ship.shieldBars[bar] ?: continue
+			barToRemove.removeAll()
+			ship.shieldBars.remove(bar)
 		}
 	}
 
@@ -322,7 +339,7 @@ object StarshipShields : IonServerComponent() {
 
 		Tasks.async {
 			// Lifetime: use the max preference among nearby players
-			val lifetime = interested.maxOf { it.getSetting(PlayerSettings::flareTime).toLong() }
+			val lifetime = interested.maxOf { it.getSettingOrThrow(PlayerSettings::flareTime).toLong() }
 
 			// Throttle number of displays per hit to keep it light
 			val maxFlares = 20

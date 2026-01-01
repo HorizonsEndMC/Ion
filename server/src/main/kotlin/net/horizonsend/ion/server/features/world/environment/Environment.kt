@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.features.world.environment
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
@@ -37,8 +40,8 @@ enum class Environment {
 			val customItem = helmet.customItem ?: return false
 
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return false
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(helmet)
-			if (!mods.contains(ItemModRegistry.PRESSURE_FIELD)) return false
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(helmet)
+			if (!mods.contains(ItemModKeys.PRESSURE_FIELD)) return false
 
 			val powerUsage = 10
 
@@ -62,6 +65,9 @@ enum class Environment {
 	NO_GRAVITY {
 		override fun tickPlayer(player: Player) {
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
+
+			// do not update fly speed if the player is piloting and is in direct control
+			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true && player.getSetting(PlayerSettings::floatWhileDc) == true) return
 
 			if (isInside(player.eyeLocation, 1)) {
 				player.allowFlight = true

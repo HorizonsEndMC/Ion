@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.client.display.modular
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.modular.display.DisplayModule
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

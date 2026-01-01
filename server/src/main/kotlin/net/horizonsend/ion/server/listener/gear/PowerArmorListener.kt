@@ -2,11 +2,12 @@ package net.horizonsend.ion.server.listener.gear
 
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
@@ -72,7 +73,7 @@ object PowerArmorListener : SLEventListener() {
 		if (event.entity !is Player) return
 		val player = event.entity as Player
 		var modifier = 0.0
-		val modules = HashMap<ItemModification, ItemStack>()
+		val modules = HashMap<IonRegistryKey<ItemModification, out ItemModification>, ItemStack>()
 		val cause = event.cause
 
 		for (item in player.inventory.armorContents) {
@@ -95,7 +96,7 @@ object PowerArmorListener : SLEventListener() {
 				powerStorage.removePower(item, customItem, 100)
 			}
 
-			for (module in customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(item)) {
+			for (module in customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)) {
 				modules[module] = item
 			}
 		}
@@ -135,8 +136,8 @@ object PowerArmorListener : SLEventListener() {
 		val customItem = boots.customItem
 		if (customItem !is PowerArmorItem) return
 
-		val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(boots)
-		if (!mods.contains(ItemModRegistry.ROCKET_BOOSTING)) return
+		val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(boots)
+		if (!mods.contains(ItemModKeys.ROCKET_BOOSTING)) return
 
 		val power = customItem.getComponent(POWER_STORAGE).getPower(boots)
 		if (power <= 0) return
@@ -152,9 +153,9 @@ object PowerArmorListener : SLEventListener() {
 			val customItem = item?.customItem ?: continue
 
 			if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(item)
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
 
-			if (!mods.contains(ItemModRegistry.SHOCK_ABSORBING)) return continue
+			if (!mods.contains(ItemModKeys.SHOCK_ABSORBING)) return continue
 
 			if (customItem.hasComponent(POWER_STORAGE)) return continue
 			val power = customItem.getComponent(POWER_STORAGE).getPower(item)

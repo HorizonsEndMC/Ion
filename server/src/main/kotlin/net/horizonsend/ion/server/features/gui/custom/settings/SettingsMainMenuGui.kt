@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSet
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting
+import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -30,7 +31,11 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
 			DBCachedIntegerInput(-1,1_000_000, text("DC Refresh Rate"),
-				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate)
+				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate),
+			DBCachedBooleanToggle(text("Enable Floating While DC"), "Enabling this setting allows your character to float while in DC for a smoother experience.", GuiItem.LIST, true, PlayerSettings::floatWhileDc),
+			DBCachedBooleanToggle(text("Reverse DC Speed Boost Key"), "Enabled = DC speed is boosted by default; sneaking slows. Disabled = DC speed is slow by default; sneaking boosts.", GuiItem.LIST, false, PlayerSettings::reverseDcBoost),
+			DBCachedBooleanToggle(text("Toggle DC Speed Boost Key"), "Enabling this setting changes the DC boost key to a toggle.", GuiItem.LIST, false, PlayerSettings::toggleDcBoost),
+			DBCachedBooleanToggle(text("Switch Light/Heavy Weapon Keys"), "Switches the firing controls for light and heavy weapons.", GuiItem.LIST, false, PlayerSettings::alternateFireButtons),
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
@@ -54,6 +59,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedBooleanToggle(text("Enable Beacons"), "", GuiItem.BEACON, true, PlayerSettings::beaconsEnabled),
 				DBCachedBooleanToggle(text("Enable Stations"), "", GuiItem.STATION, true, PlayerSettings::stationsEnabled),
 				DBCachedBooleanToggle(text("Enable Bookmarks"), "", GuiItem.BOOKMARK, true, PlayerSettings::bookmarksEnabled),
+				DBCachedBooleanToggle(text("Enable Fleet Status"), "", GuiItem.LIST, true, PlayerSettings::fleetStatus),
 				DBCachedBooleanToggle(text("Enable AI Starships"), "", GuiItem.GUNSHIP, true, PlayerSettings::relationAiEnabled),
 				DBCachedBooleanToggle(text("Enable No Relation Starships"), "", GuiItem.GUNSHIP, true, PlayerSettings::relationNoneEnabled),
 				DBCachedBooleanToggle(text("Enable Enemy Starships"), "", GuiItem.GUNSHIP, true, PlayerSettings::relationEnemyEnabled),
@@ -95,7 +101,10 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Sound Settings",
 			DBCachedBooleanToggle(text("Enable Additional Sounds"), "", GuiItem.SOUND, true, PlayerSettings::enableAdditionalSounds),
 			DBCachedEnumCycle(CruiseIndicatorSounds::class.java, text("Cruise Indicator Sound"), "Click to Cycle", GuiItem.SOUND, 0, PlayerSettings::soundCruiseIndicator),
-			DBCachedBooleanToggle(text("Hitmarker On Hull"), "", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull)
+			DBCachedBooleanToggle(text("Hitmarker On Hull"), "An indicator plays if you damage a starship's hull", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
+			DBCachedBooleanToggle(text("Hitmarker On Shield"), "An indicator plays if you damage a starship's shields", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnShield),
+			DBCachedEnumCycle(AudioRange::class.java, text("Nearby Weapon Sounds"), "Enables nearby weapon sounds", GuiItem.SOUND, 0, PlayerSettings::nearbyWeaponSounds),
+			DBCachedEnumCycle(AudioRange::class.java, text("Far Weapon Sounds"), "Enables far weapon sounds", GuiItem.SOUND, 0, PlayerSettings::farWeaponSounds),
 		),
 		createSettingsPage(player, "Other Settings",
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, PlayerSettings::enableCombatTimerAlerts),
@@ -104,7 +113,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Remove User Prefixes"), "Removes prefixes, like Helper and Mod, from non-global chats", GuiItem.LIST, false, PlayerSettings::hideUserPrefixes),
 			DBCachedBooleanToggle(text("Remove Global Prefixes"), "Removes prefixes, like Helper and Mod, from global chats", GuiItem.LIST, false, PlayerSettings::hideGlobalPrefixes),
 			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::showItemSearchItem),
-			PermissionBooleanToggle(sitStateNode, text("Hitmarker On Hull"), "", GuiItem.BOOKMARK, true)
+			PermissionBooleanToggle(sitStateNode, text("Toggle Sitting"), "", GuiItem.BOOKMARK, true)
 		)
     ).onEach { subMenu -> subMenu.setParent(this@SettingsMainMenuGui)  }
 

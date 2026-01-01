@@ -15,10 +15,10 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -61,7 +61,7 @@ object Bazaars : IonServerComponent() {
 
 	private fun buildStrings() {
 		strings.addAll(MATERIALS.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
-		strings.addAll(CustomItemRegistry.identifiers)
+		strings.addAll(CustomItemKeys.allStrings())
 		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=\"${it.javaClass.simpleName}\"]" })
 		strings.remove("MULTIBLOCK_TOKEN")
 		strings.remove("PACKAGED_MULTIBLOCK")
@@ -249,6 +249,17 @@ object Bazaars : IonServerComponent() {
 		}
 
 		return ValidatorResult.ValidatorSuccessSingleEntry(cityData)
+	}
+
+	/**
+	 * Checks if the [player] is within [territory], and returns a validator result.
+	 **/
+	fun checkInsideCorrectTerritory(player: Player, territory: RegionTerritory): ValidatorResult<RegionTerritory> {
+		val currentTerritory = Regions.findFirstOf<RegionTerritory>(player.location) ?: return ValidatorResult.FailureResult(text("You're not in a territory!", RED))
+
+		if (territory != currentTerritory) return ValidatorResult.FailureResult(text("You're not in the correct territory!", RED))
+
+		return ValidatorResult.ValidatorSuccessSingleEntry(territory)
 	}
 
 	/**
@@ -600,6 +611,9 @@ object Bazaars : IonServerComponent() {
 			return InputResult.FailureReason(listOf(text("That order does have any stock to withdraw!", RED)))
 		}
 
+		val withinTerritoryResult = checkInsideCorrectTerritory(player, Regions[orderDocument.cityTerritory])
+		if (!withinTerritoryResult.isSuccess()) return withinTerritoryResult
+
 		val toRemove = minOf(limit, currentStock)
 
 		BazaarOrder.updateById(order, inc(BazaarOrder::stock, -toRemove))
@@ -633,6 +647,9 @@ object Bazaars : IonServerComponent() {
 
 		val territoryResult = checkValidTerritory(Regions[orderDocument.cityTerritory])
 		if (!territoryResult.isSuccess()) return territoryResult
+
+		val withinTerritoryResult = checkInsideCorrectTerritory(fulfiller, Regions[orderDocument.cityTerritory])
+		if (!withinTerritoryResult.isSuccess()) return withinTerritoryResult
 
 		val itemValidationResult = checkValidString(orderDocument.itemString)
 		val itemReference: ItemStack = itemValidationResult.result ?: return itemValidationResult

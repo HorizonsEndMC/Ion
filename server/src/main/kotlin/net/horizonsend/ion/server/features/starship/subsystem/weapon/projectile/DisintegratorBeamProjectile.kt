@@ -2,12 +2,11 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipSounds
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.DisintegratorBeamBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -19,32 +18,22 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class DisintegratorBeamProjectile(
-	starship: ActiveStarship?,
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	override val range: Double,
 	shooter: Damager,
 	private val subsystem: DisintegratorBeamWeaponSubsystem,
 	damage: Double
-) : LaserProjectile(starship, name, loc, dir, shooter, DamageType.GENERIC) {
+) : LaserProjectile<DisintegratorBeamBalancing.DisintegratorBeamProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
     companion object {
         private const val RESET_STACK_TIME_MILLIS = 4000L
     }
 
-    override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.disintegratorBeam ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.disintegratorBeam
-    override val speed: Double = balancing.speed
     override val starshipShieldDamageMultiplier = damage
-    override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
     override val color: Color = Color.ORANGE
-    override val particleThickness: Double = balancing.particleThickness
     override val explosionPower: Float = damage.toFloat()
-    override val volume: Int = balancing.volume
-    override val pitch: Float = balancing.pitch
-    override val soundName: String = balancing.soundName
-    override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
-    override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         super.onImpactStarship(starship, impactLocation)

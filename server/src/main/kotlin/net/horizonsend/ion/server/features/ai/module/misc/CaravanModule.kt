@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruct
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.FleetLogic
 import net.horizonsend.ion.server.features.starship.fleet.FleetMember
+import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -30,7 +31,7 @@ class CaravanModule(
 	val template: AIConvoyTemplate<out ConvoyContext>,
 	val source: Location,
 	val route: ConvoyRoute
-) : AIModule(controller) {
+) : AIModule(controller, true) {
 
 	var target: AITarget = GoalTarget(Vec3i(source), source.world, false)
 	var isTraveling = true
@@ -159,6 +160,7 @@ class CaravanFleetLogic(
 	}
 
 	override fun tick() {
+		cleanUp.invoke()
 		if (!isTraveling) return
 		// Use shared state and tick all members
 		if (fleet.leader == null ||
@@ -189,4 +191,27 @@ class CaravanFleetLogic(
 			}
 		}
 	}
+
+	private val cleanUp = IntervalExecutor(40) {
+		val aiFleetMembers = fleet.members.filterIsInstance<FleetMember.AIShipMember>().mapNotNull { it.shipRef.get() }
+		aiFleetMembers.forEach { starship ->
+			val controller = starship.controller as?  AIController ?: return@forEach
+			if (controller.getUtilModule(CaravanModule::class.java) == null) {
+				controller.addUtilModule(
+					CaravanModule(
+						controller,
+						fleet,
+						template,
+						source,
+						route
+					)
+				)
+				controller.getCoreModuleByType<EnmityModule>()?.removeAnchor()
+				controller.addUtilModule(DespawnModule(controller, DespawnModule.neverDespawn))
+			}
+		}
+
+	}
+
+
 }

@@ -26,7 +26,6 @@ import org.bukkit.entity.Player
 import java.util.*
 
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
-
 val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId

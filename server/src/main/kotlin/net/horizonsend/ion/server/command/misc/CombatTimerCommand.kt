@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
@@ -25,7 +25,7 @@ object CombatTimerCommand : SLCommand() {
     @CommandCompletion("true|false")
     @Description("Toggle combat timer alerts")
     fun onToggle(sender: Player, @Optional toggle: Boolean?) {
-        val enableCombatTimerAlerts = toggle ?: !sender.getSetting(PlayerSettings::enableCombatTimerAlerts)
+        val enableCombatTimerAlerts = toggle ?: !sender.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::enableCombatTimerAlerts, enableCombatTimerAlerts))
 		sender.setSetting(PlayerSettings::enableCombatTimerAlerts, enableCombatTimerAlerts)
         sender.success("Changed enabled combat timer alerts to $enableCombatTimerAlerts")

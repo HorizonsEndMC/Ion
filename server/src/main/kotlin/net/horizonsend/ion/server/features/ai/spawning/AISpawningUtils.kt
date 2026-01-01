@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.AdditionalOverridesManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -105,6 +106,11 @@ fun createShipFromTemplate(
 		template.miniMessageName + suffix,
 		createController
 	) { starship ->
+
+		if (template.balancingOverrides.isNotEmpty()) {
+			starship.balancingManager = AdditionalOverridesManager(starship.type, template.balancingOverrides)
+		}
+
 		callback(starship)
 	}
 }
@@ -118,7 +124,7 @@ fun createFromClipboard(
 	createController: (ActiveControlledStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
-	val target = StarshipDealers.resolveTarget(clipboard, location)
+	val target = StarshipDealers.resolveTarget(clipboard, location, forceEmpty = true)
 	val vec3i = Vec3i(target)
 	logger.info("Attempting to place $starshipName")
 	placeSchematicEfficiently(clipboard, location.world, vec3i, true) {

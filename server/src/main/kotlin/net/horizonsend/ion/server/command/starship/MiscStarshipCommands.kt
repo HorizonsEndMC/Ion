@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -41,6 +42,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction
+import net.horizonsend.ion.server.features.starship.Interdiction.pulseGravityWell
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
@@ -68,6 +70,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.parseData
 import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
@@ -79,6 +82,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -113,10 +117,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val starship = ActiveStarships.getByIdentifier(target)
 			if (starship != null) return@registerContext AutoTurretTargeting.target(starship)
 
-			val entityType = EntityType.entries.firstOrNull { type -> type.name == target } ?: return@registerContext null
-			if (!Enemy::class.java.isAssignableFrom(entityType::class.java)) return@registerContext null
-
-			AutoTurretTargeting.target(entityType)
+			val entityType = EntityType.entries.firstOrNull { type -> type.name.lowercase() == target.lowercase() } ?: return@registerContext null
+			val entityClass = entityType.entityClass ?: return@registerContext null
+			if (!Enemy::class.java.isAssignableFrom(entityClass)) return@registerContext null
+			else return@registerContext AutoTurretTargeting.target(entityType)
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
@@ -229,8 +233,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("jump")
-	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks")
-	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@onlineNationMembers")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, or a member of your nation")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val separated = destination.split(",")
 		if (separated.size == 2 && separated.all { runCatching { it.toInt() }.isSuccess }) {
@@ -265,6 +269,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
+		val otherPlayer = Bukkit.getPlayer(destination)
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(
 				it.spaceWorldName,
@@ -282,7 +287,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.y,
 				it.z
 			)
-		}
+		} ?: if (otherPlayer != null && PlayerCache[otherPlayer].nationOid == PlayerCache[sender].nationOid) {
+			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
+		} else null
 
 		if (destinationPos == null) {
 			sender.userError("Unknown destination $destination.")
@@ -321,7 +328,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 
 		failIf(!hyperdrive.hasFuel()) {
-			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
+			"Insufficient chetherite, need ${Hyperspace.getHyperMatterAmount(starship)} in each hopper"
 		}
 
 		val currentWorld = starship.world
@@ -716,6 +723,20 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		Interdiction.findGravityWell(starship) ?: fail { "Intact gravity well not found!" }
 
 		toggleGravityWell(starship)
+	}
+
+	@Suppress("unused")
+	@CommandAlias("gravpulse")
+	@Description("Invoke a gravity pulse on your starship")
+	fun onInvokeGravpulse(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+		val gravityWell = Interdiction.findGravityWell(starship) ?: fail { "Intact gravity well not found!" }
+
+		val block = starship.world.getBlockAt(gravityWell.pos.x, gravityWell.pos.y, gravityWell.pos.z)
+		if (!block.type.isWallSign) fail { "Intact gravity well not found!" }
+		val sign = block.getState(false) as Sign
+
+		pulseGravityWell(sender, starship, sign)
 	}
 
 	@Suppress("unused")

@@ -9,24 +9,38 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatNationName
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.minecraftLength
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.command.nations.SiegeCommand.SIEGE_INFO_WIDTH
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges.config
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
+import org.litote.kmongo.setValue
 import java.time.Duration
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 class SolarSiege(
 	val databaseId: Oid<SolarSiegeData>,
@@ -36,6 +50,7 @@ class SolarSiege(
 	val defender: Oid<Nation>,
 	defenderPoints: Int = 0,
 	val declaredTime: Long,
+	val availableRewards: MutableMap<String, Int> = mutableMapOf()
 ) {
 	val taskIds = mutableSetOf<Int>()
 
@@ -107,7 +122,6 @@ class SolarSiege(
 	fun endSiege(disableEarlyCheck: Boolean = false) {
 		removeActive()
 		if (isSuccess()) succeed() else fail(disableEarlyCheck)
-
 	}
 
 	private fun isSuccess(): Boolean {
@@ -116,6 +130,8 @@ class SolarSiege(
 
 	fun succeed() {
 		SolarSiegeZone.setNation(region.id, attacker)
+
+		disperseMaterialRewards(true)
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
@@ -131,6 +147,38 @@ class SolarSiege(
 				)
 			)
 		)
+
+		val totalWidth = lineBreak(48).minecraftLength + 8
+
+		val totalPoints = (defenderPoints + attackerPoints).toDouble()
+		val attackerWidth = ((attackerPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+		val defenderWidth = ((defenderPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+
+		val attackerColor = NationCache[attacker].textColor
+		val defenderColor = NationCache[defender].textColor
+
+		val guiText = GuiText("", guiWidth = totalWidth, initialShiftDown = -1)
+
+		guiText.add(text(repeatString("=", attackerWidth), attackerColor), -1, GuiText.TextAlignment.LEFT)
+		guiText.add(text(repeatString("=", defenderWidth), defenderColor), -1, GuiText.TextAlignment.RIGHT)
+
+		guiText.add(attackerNameFormatted, 0, GuiText.TextAlignment.LEFT)
+		guiText.add(defenderNameFormatted, 0, GuiText.TextAlignment.RIGHT)
+
+		guiText.add(text(attackerPoints, attackerColor), 1, GuiText.TextAlignment.LEFT)
+		guiText.add(text(defenderPoints, defenderColor), 1, GuiText.TextAlignment.RIGHT)
+
+		val headerLine = template(text("{0}'s siege of {1}'s Solar Siege Zone {2} has suceeded", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
+
+		val globalMessage = ofChildren(
+			headerLine, newline(),
+			guiText.build(),
+			newline(),
+			newline(),
+			newline(),
+		)
+
+		Notify.allOnline(globalMessage)
 	}
 
 	fun fail(disableEarlyCheck: Boolean = false) {
@@ -145,7 +193,7 @@ class SolarSiege(
 			return
 		}
 
-//		Notify.chatAndGlobal()
+		disperseMaterialRewards(false)
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
@@ -161,6 +209,38 @@ class SolarSiege(
 				)
 			)
 		)
+
+		val totalWidth = lineBreak(48).minecraftLength + 8
+
+		val totalPoints = (defenderPoints + attackerPoints).toDouble()
+		val attackerWidth = ((attackerPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+		val defenderWidth = ((defenderPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+
+		val attackerColor = NationCache[attacker].textColor
+		val defenderColor = NationCache[defender].textColor
+
+		val guiText = GuiText("", guiWidth = totalWidth, initialShiftDown = -1)
+
+		guiText.add(text(repeatString("=", attackerWidth), attackerColor), -1, GuiText.TextAlignment.LEFT)
+		guiText.add(text(repeatString("=", defenderWidth), defenderColor), -1, GuiText.TextAlignment.RIGHT)
+
+		guiText.add(attackerNameFormatted, 0, GuiText.TextAlignment.LEFT)
+		guiText.add(defenderNameFormatted, 0, GuiText.TextAlignment.RIGHT)
+
+		guiText.add(text(attackerPoints, attackerColor), 1, GuiText.TextAlignment.LEFT)
+		guiText.add(text(defenderPoints, defenderColor), 1, GuiText.TextAlignment.RIGHT)
+
+		val headerLine = template(text("{0}'s siege of {1}'s Solar Siege Zone {2} has failed", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
+
+		val globalMessage = ofChildren(
+			headerLine, newline(),
+			guiText.build(),
+			newline(),
+			newline(),
+			newline(),
+		)
+
+		Notify.allOnline(globalMessage)
 	}
 
 	private fun scheduleStart() {
@@ -212,6 +292,24 @@ class SolarSiege(
 		SolarSiegeData.markComplete(databaseId)
 	}
 
-	val defenderNameFormatted = formatNationName(defender)
-	val attackerNameFormatted = formatNationName(attacker)
+	val defenderNameFormatted get() = formatNationName(defender)
+	val attackerNameFormatted get() = formatNationName(attacker)
+
+	fun disperseMaterialRewards(success: Boolean) {
+		val rewards = SolarSiegeRewards.generateRewards(attackerPoints)
+		availableRewards.putAll(rewards)
+		SolarSiegeData.updateById(databaseId, setValue(SolarSiegeData::availableRewards, availableRewards))
+
+		Tasks.async {
+			val message = text()
+				.append(template(text("For winning your siege of {0} against {1}, your nation has won:", HE_MEDIUM_GRAY), region.name, if (success) defenderNameFormatted else attackerNameFormatted))
+
+			for ((material, amount) in availableRewards) {
+				val rewardName = fromItemString(material).displayNameComponent
+				message.append(newline(), ofChildren(rewardName, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY)))
+			}
+
+			Notify.nationCrossServer(if (success) attacker else defender, message.build())
+		}
+	}
 }

@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -46,7 +46,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 		)
 	}
 
-	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::defaultBazaarGroupedSort)
+	private var sortingMethod: Int = viewer.getSettingOrThrow(PlayerSettings::defaultBazaarGroupedSort)
 
 	abstract val bson: Bson
 
@@ -96,7 +96,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 	override fun onClickDisplayedItem(entry: Map.Entry<String, List<BazaarItem>>, clickedFrom: CommonGuiWrapper) {
 		val (itemString, groupedItems) = entry
 
-		if (groupedItems.size == 1 && viewer.getSetting(PlayerSettings::skipBazaarSingleEntryMenus)) {
+		if (groupedItems.size == 1 && viewer.getSettingOrThrow(PlayerSettings::skipBazaarSingleEntryMenus)) {
 			val item = groupedItems.firstOrNull() ?: return
 
 			BazaarGUIs.openBrowsePurchaseMenu(

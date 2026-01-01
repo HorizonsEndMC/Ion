@@ -12,8 +12,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.input.AIInput
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
-import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PointDefenseSubsystem
@@ -211,42 +211,57 @@ object AIControlUtils {
 		val fudgeFactor = starship.max.distance(starship.min) / 3
 
 		//special cases first
-		val predicate = {weapon :WeaponSubsystem ->
-			weapon is MiningLaserSubsystem ||
+		val predicate = { weapon: FiredSubsystem ->
 			weapon is ArsenalRocketStarshipWeaponSubsystem ||
 			weapon is PointDefenseSubsystem ||
 			weapon is RocketWeaponSubsystem
 		}
-		val specialWeapons = starship.weapons.filter(predicate)
+
+		val specialWeapons = starship.weapons.filter(predicate).filterIsInstance<BalancedWeaponSubsystem<*>>()
+
 		for (specialWeapon in specialWeapons) {
-			val weaponSets = starshipWeaponSets.filter{ it.second.contains(specialWeapon) }
-			for (weaponSet in weaponSets) {
-				if (accountedFor.contains(weaponSet.first)) continue
-				controller.addSpecialSet(
-					weaponSet.first,0.0,weaponSet.second.first().balancing.range + fudgeFactor)
-				accountedFor.add(weaponSet.first)
+			val weaponSets = starshipWeaponSets.filter { it.second.contains(specialWeapon) }
+
+			for ((name, weapons) in weaponSets) {
+				if (accountedFor.contains(name)) continue
+				val filtered = weapons.filterIsInstance<BalancedWeaponSubsystem<*>>()
+
+				controller.addSpecialSet(name, 0.0, filtered.first().balancing.projectile.range + fudgeFactor)
+
+				accountedFor.add(name)
 			}
 		}
 
-		//first we have to divy up manual weapons using heavy weapon range as a guide
-		//get all unique heavy weapons and sort by priority
-		val heavyWeapons = starship.weapons.filter { it is HeavyWeaponSubsystem }.sortedBy {
-			weaponSortMap.getOrDefault(it::class,2) }.distinctBy { it::class }.toMutableList()
+		// first we have to divy up manual weapons using heavy weapon range as a guide
+		// get all unique heavy weapons and sort by priority
+		val heavyWeapons = starship.weapons
+			.filterIsInstance<HeavyWeaponSubsystem>()
+			.sortedBy { weaponSortMap.getOrDefault(it::class,2) }
+			.distinctBy { it::class }
+			.toMutableList()
+
 		var initialHeavyRange = 0.0
 		var initialHeavyAutoRange = 0.0
-		var heavyWeapon : WeaponSubsystem
+//		var heavyWeapon: HeavyWeaponSubsystem
 		//go through weapons until heaves are exausted, or the light weapons range on shared heavy+light set is less than
 		//the next heavy weapon
+
 		heavyWeapons@ while (heavyWeapons.isNotEmpty()) {
-			heavyWeapon = heavyWeapons.removeFirst()
-			val weaponSets = starshipWeaponSets.filter{ it.second.contains(heavyWeapon) }
-				.sortedBy{ it.second.filter { weapon -> weapon !is HeavyWeaponSubsystem}.minOfOrNull { weapon -> weapon.balancing.range } }
+			val heavyWeapon = heavyWeapons.removeFirst()
+			if (heavyWeapon !is BalancedWeaponSubsystem<*>) continue
+
+			val weaponSets = starshipWeaponSets
+				.filter { it.second.contains(heavyWeapon) }
+				.sortedBy { it.second.filter { weapon -> weapon !is HeavyWeaponSubsystem }.filterIsInstance<BalancedWeaponSubsystem<*>>().minOfOrNull { weapon -> weapon.balancing.projectile.range } }
+
 			for (weaponSet in weaponSets) {
 				if (accountedFor.contains(weaponSet.first)) continue
 				if (weaponSet.second.all { it is AutoWeaponSubsystem }) continue // this is an auto set
-				val heavyWeaponRange = heavyWeapon.balancing.range + fudgeFactor
-				val lightWeaponRange = (weaponSet.second.filter{it !is HeavyWeaponSubsystem}
-					.minOfOrNull { weapon -> weapon.balancing.range } ?: heavyWeaponRange) + fudgeFactor
+
+				val heavyWeaponRange = heavyWeapon.balancing.projectile.range + fudgeFactor
+
+				val lightWeaponRange = (weaponSet.second.filter { it !is HeavyWeaponSubsystem }.filterIsInstance<BalancedWeaponSubsystem<*>>().minOfOrNull { weapon -> weapon.balancing.projectile.range } ?: heavyWeaponRange) + fudgeFactor
+
 				if (heavyWeaponRange < lightWeaponRange) {
 					controller.addManualSet(weaponSet.first,initialHeavyRange,heavyWeaponRange)
 					initialHeavyRange = heavyWeaponRange
@@ -267,30 +282,40 @@ object AIControlUtils {
 		// now that heavies in manual sets are covered, we have to take care of the remaining manual sets and autosets
 		var initialLightRange = 0.0
 		var initialAutoRange = 0.0
-		val weaponSets = starshipWeaponSets.filter{ !accountedFor.contains(it.first) }
-			.sortedBy { it.second.minOf{weapon -> weapon.balancing.range} }
+
+		val weaponSets = starshipWeaponSets
+			.filter { !accountedFor.contains(it.first) }
+			.sortedBy { it.second.filterIsInstance<BalancedWeaponSubsystem<*>>().minOf { weapon -> weapon.balancing.projectile.range} }
+
 		for (weaponSet in weaponSets) {
 			if (weaponSet.second.all { it is AutoWeaponSubsystem }) {// this is an auto set
 				if (weaponSet.second.any { it is HeavyWeaponSubsystem }) {// this is an auto heavy set
-					val heavyWeaponRange = weaponSet.second.filter { it is HeavyWeaponSubsystem }
-						.minOf { weapon -> weapon.balancing.range } + fudgeFactor
+					val heavyWeaponRange = weaponSet.second
+						.filter { it is HeavyWeaponSubsystem }
+						.filterIsInstance<BalancedWeaponSubsystem<*>>()
+						.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
+
 					controller.addAutoSet(weaponSet.first,initialHeavyAutoRange,heavyWeaponRange)
 					initialHeavyAutoRange = heavyWeaponRange
 					accountedFor.add(weaponSet.first)
 					continue
 				}
-				val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.range } + fudgeFactor
+
+				val lightWeaponRange = weaponSet.second.filterIsInstance<BalancedWeaponSubsystem<*>>().minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
 				controller.addAutoSet(weaponSet.first,initialAutoRange,lightWeaponRange)
 				accountedFor.add(weaponSet.first)
 				continue
 			}
-			val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.range } + fudgeFactor
+
+			val lightWeaponRange = weaponSet.second.filterIsInstance<BalancedWeaponSubsystem<*>>().minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
 			controller.addManualSet(weaponSet.first,initialLightRange,lightWeaponRange)
 			initialLightRange = lightWeaponRange
 			accountedFor.add(weaponSet.first)
 			continue
 		}
+
 		debugAudience.information("Accounted for ${accountedFor.size} of ${starship.weaponSets.keySet().size}")
+
 		val notCounted = starship.weaponSets.keySet().subtract(accountedFor)
 		if (notCounted.isNotEmpty()) debugAudience.alert("Some sets not accounted for! ${notCounted.joinToString { it }}")
 	}
@@ -304,7 +329,7 @@ object AIControlUtils {
 		TorpedoWeaponSubsystem::class to 4,
 	)
 
-	private fun weaponSetFilter(weaponsets : HashMultimap<String, WeaponSubsystem>, predicate : (Set<WeaponSubsystem> )-> Boolean) {
+	private fun weaponSetFilter(weaponsets : HashMultimap<String, BalancedWeaponSubsystem<*>>, predicate : (Set<BalancedWeaponSubsystem<*>> )-> Boolean) {
 
 	}
 }

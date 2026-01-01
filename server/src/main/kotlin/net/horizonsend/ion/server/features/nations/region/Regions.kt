@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
+import net.horizonsend.ion.common.database.schema.nations.StationZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
@@ -23,7 +24,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.Settlemen
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
@@ -34,6 +35,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -61,6 +63,8 @@ object Regions : IonServerComponent() {
 		registerRegionType(Territory.Companion) { RegionTerritory(it) }
 
 		registerRegionType(SettlementZone.Companion) { RegionSettlementZone(it) }
+
+		registerRegionType(StationZone.Companion) { RegionStationZone(it) }
 
 		registerRegionType(CapturableStation.Companion) { RegionCapturableStation(it) }
 

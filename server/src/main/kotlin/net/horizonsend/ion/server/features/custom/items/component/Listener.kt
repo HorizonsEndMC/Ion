@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.component
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Event
@@ -94,7 +94,7 @@ class Listener<E: Event, T: CustomItem>(
 			preCheck = { event, customItem, itemStack ->
 				val damager = event.damager as? LivingEntity ?: return@Listener false
 				val itemInHand = damager.equipment?.itemInMainHand ?: return@Listener false
-				itemInHand.customItem == customItem
+				itemInHand.customItem?.key == customItem.key
 			},
 			eventReceiver =  handleEvent
 		)

@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import org.bukkit.entity.Player
 
@@ -17,7 +17,7 @@ object HudCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val hudPlanetsImage = toggle ?: !sender.getSetting(PlayerSettings::hudPlanetsImage)
+        val hudPlanetsImage = toggle ?: !sender.getSettingOrThrow(PlayerSettings::hudPlanetsImage)
         sender.setSetting(PlayerSettings::hudPlanetsImage, hudPlanetsImage)
 
         sender.success("Changed planet visibility in HUD to $hudPlanetsImage")
@@ -28,7 +28,7 @@ object HudCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val hudPlanetsSelector = toggle ?: !sender.getSetting(PlayerSettings::hudPlanetsSelector)
+        val hudPlanetsSelector = toggle ?: !sender.getSettingOrThrow(PlayerSettings::hudPlanetsSelector)
         sender.setSetting(PlayerSettings::hudPlanetsSelector, hudPlanetsSelector)
 
         sender.success("Changed planet selector visibility in HUD to $hudPlanetsSelector")
@@ -39,7 +39,7 @@ object HudCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val hudIconStars = toggle ?: !sender.getSetting(PlayerSettings::hudIconStars)
+        val hudIconStars = toggle ?: !sender.getSettingOrThrow(PlayerSettings::hudIconStars)
         sender.setSetting(PlayerSettings::hudIconStars, hudIconStars)
 
         sender.success("Changed star visibility in HUD to $hudIconStars")
@@ -50,7 +50,7 @@ object HudCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val hudIconBeacons = toggle ?: !sender.getSetting(PlayerSettings::hudIconBeacons)
+        val hudIconBeacons = toggle ?: !sender.getSettingOrThrow(PlayerSettings::hudIconBeacons)
         sender.setSetting(PlayerSettings::hudIconBeacons, hudIconBeacons)
 
         sender.success("Changed beacon visibility in HUD to $hudIconBeacons")
@@ -61,7 +61,7 @@ object HudCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val hudIconStations = toggle ?: !sender.getSetting(PlayerSettings::hudIconStations)
+        val hudIconStations = toggle ?: !sender.getSettingOrThrow(PlayerSettings::hudIconStations)
         sender.setSetting(PlayerSettings::hudIconStations, hudIconStations)
 
         sender.success("Changed station visibility in HUD to $hudIconStations")
@@ -72,7 +72,7 @@ object HudCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val hudIconBookmarks = toggle ?: !sender.getSetting(PlayerSettings::hudIconBookmarks)
+        val hudIconBookmarks = toggle ?: !sender.getSettingOrThrow(PlayerSettings::hudIconBookmarks)
         sender.setSetting(PlayerSettings::hudIconBookmarks, hudIconBookmarks)
 
         sender.success("Changed bookmark visibility in HUD to $hudIconBookmarks")

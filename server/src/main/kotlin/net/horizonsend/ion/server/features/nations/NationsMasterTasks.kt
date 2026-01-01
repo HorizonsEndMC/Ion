@@ -9,21 +9,31 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
+import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
+import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -137,6 +147,17 @@ object NationsMasterTasks : IonServerComponent() {
 				)
 			}
 
+			val solarSiegeCount = SolarSiegeZone.count(SolarSiegeZone::nation eq nationId).toInt()
+			val solarSiegeIncome = solarSiegeCount * 100
+
+			if (solarSiegeIncome > 0) {
+				Nation.deposit(nationId, solarSiegeIncome)
+				Notify.nationCrossServer(
+					nationId,
+					template(Component.text("Your nation received {0} credits of hourly income for owning {1} solar siege zones.", HE_MEDIUM_GRAY), solarSiegeIncome.toCreditComponent(), stationCount)
+				)
+			}
+
 			val activeCount = SLPlayer.count(
 				and(SLPlayer::lastSeen gte ACTIVE_AFTER_TIME, SLPlayer::nation eq nationId)
 			).toInt()
@@ -189,7 +210,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			val money = settlementResults[Settlement::balance]
 			val tax = NATIONS_BALANCE.settlement.cityHourlyTax
-			
+
 			val activeMembers: Long = SLPlayer.count(
 					and(SLPlayer::settlement eq settlementId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
 			)
@@ -236,7 +257,7 @@ object NationsMasterTasks : IonServerComponent() {
 				Notify.settlementCrossServer(zone.settlement, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
 
 				ServerInboxes.settlementMessage(zone.settlement, template(Component.text("{0} failed to pay rent for zone {1}", RED), offlinePlayer.name, zone.name))
-					.setSubject(Component.text("Failure to Pay Zone Rent", RED))
+					.setSubject(Component.text("Renter Failed to Pay Zone Rent", RED))
 					.setAllowDuplicates(false)
 					.filterRecipients { playerId ->
 						if (Settlement.matches(zone.settlement, Settlement::leader eq playerId)) {
@@ -251,16 +272,96 @@ object NationsMasterTasks : IonServerComponent() {
 					}
 					.send()
 
-				ServerInboxes.settlementMessage(zone.settlement, template(Component.text("You failed to pay {0} in rent for zone {1}", RED), rent.toCreditComponent(), zone.name))
-					.setSubject(Component.text("Failure to Pay Zone Rent", RED))
-					.setAllowDuplicates(false)
-					.send()
+				ServerInboxes.sendMessage(zone.owner!!,
+					Component.text("Settlement of ${SettlementCache[zone.settlement].name}"),
+					Component.text("Failure to Pay Zone Rent", RED),
+					template(Component.text("You failed to pay {0} in rent for zone {1}", RED), rent.toCreditComponent(), zone.name))
 
 				continue
 			}
 
 			VAULT_ECO.withdrawPlayer(offlinePlayer, rent.toDouble())
 			Settlement.deposit(zone.settlement, rent)
+
+			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize("Paid ${rent.toCreditsString()} rent for zone ${zone.id}"))
+		}
+
+		for (zone in Regions.getAllOf<RegionStationZone>()) {
+			val station = SpaceStationCache[zone.station] ?: continue
+			val owner: SLPlayerId = zone.owner ?: continue
+			val rent: Int = zone.cachedRent ?: continue
+
+			val offlinePlayer = Bukkit.getOfflinePlayer(owner.uuid)
+
+			if (!VAULT_ECO.has(offlinePlayer, rent.toDouble())) {
+				when (station) {
+					is CachedPlayerSpaceStation -> Notify.playerCrossServer(station.owner.uuid, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
+					is CachedSettlementSpaceStation -> Notify.settlementCrossServer(station.owner, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
+					is CachedNationSpaceStation -> Notify.nationCrossServer(station.owner, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
+					else -> continue
+				}
+
+				when (station) {
+					is CachedPlayerSpaceStation -> {
+						ServerInboxes.sendMessage(
+							station.owner,
+							Component.text("Station ${SpaceStationCache[zone.station]?.name ?: continue}"),
+							Component.text("Renter Failed to Pay Zone Rent"),
+							template(Component.text("{0} failed to pay rent for zone {1}", RED), offlinePlayer.name, zone.name)
+						)
+					}
+					is CachedSettlementSpaceStation -> {
+						ServerInboxes.settlementMessage(station.owner, template(Component.text("{0} failed to pay rent for zone {1}", RED), offlinePlayer.name, zone.name))
+							.setSubject(Component.text("Renter Failed to Pay Zone Rent", RED))
+							.setAllowDuplicates(false)
+							.filterRecipients { playerId ->
+								if (Settlement.matches(station.owner, Settlement::leader eq playerId)) {
+									return@filterRecipients true// leaders have all perms
+								}
+
+								SettlementRole.any(and(
+									SettlementRole::parent eq station.owner, // just in case, but should never have a role from another settlement
+									SettlementRole::members contains playerId,
+									SettlementRole::permissions contains SettlementRole.Permission.MANAGE_ZONES
+								))
+							}
+							.send()
+					}
+					is CachedNationSpaceStation -> {
+						ServerInboxes.nationMessage(station.owner, template(Component.text("{0} failed to pay rent for zone {1}", RED), offlinePlayer.name, zone.name))
+							.setSubject(Component.text("Renter Failed to Pay Zone Rent", RED))
+							.setAllowDuplicates(false)
+							.filterRecipients { playerId ->
+								if (Nation.matches(station.owner, Settlement::leader eq playerId)) {
+									return@filterRecipients true// leaders have all perms
+								}
+
+								SettlementRole.any(and(
+									NationRole::parent eq station.owner, // just in case, but should never have a role from another settlement
+									NationRole::members contains playerId,
+									NationRole::permissions contains NationRole.Permission.MANAGE_STATION
+								))
+							}
+							.send()
+					}
+					else -> continue
+				}
+
+				ServerInboxes.sendMessage(zone.owner!!,
+					Component.text("Station of ${SpaceStationCache[zone.station]?.name ?: continue}"),
+					Component.text("Failure to Pay Zone Rent", RED),
+					template(Component.text("You failed to pay {0} in rent for zone {1}", RED), rent.toCreditComponent(), zone.name))
+
+				continue
+			}
+
+			VAULT_ECO.withdrawPlayer(offlinePlayer, rent.toDouble())
+
+			when (station) {
+				is CachedPlayerSpaceStation -> VAULT_ECO.depositPlayer(Bukkit.getOfflinePlayer(station.owner.uuid), rent.toDouble())
+				is CachedSettlementSpaceStation -> Settlement.deposit(station.owner, rent)
+				is CachedNationSpaceStation -> Nation.deposit(station.owner, rent)
+			}
 
 			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize("Paid ${rent.toCreditsString()} rent for zone ${zone.id}"))
 		}

@@ -4,11 +4,12 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
+import net.horizonsend.ion.server.features.transport.inputs.WorldIOManager
+import net.horizonsend.ion.server.features.transport.manager.WorldTransportManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.data.DataFixers
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -41,7 +43,8 @@ class IonWorld private constructor(
 		}
 
 	val multiblockManager = WorldMultiblockManager(this)
-	val inputManager = WorldInputManager(this)
+	val inputManager = WorldIOManager(this)
+	val transportManager = WorldTransportManager(this).apply { load() }
 
 	/**
 	 * Key: The location of the chunk packed into a long
@@ -138,7 +141,7 @@ class IonWorld private constructor(
 
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
 
-		fun register(world: World) {
+		fun register(world: World) = kotlin.runCatching {
 			mainThreadCheck()
 
 			if (ionWorlds.contains(world)) {
@@ -152,6 +155,10 @@ class IonWorld private constructor(
 
 			ionWorld.configuration.environments.forEach { it.setup() }
 			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)
+		}.onFailure {
+			log.error("There was an error loading an Ion World [${world.key}]. The server will now shut down to prevent undefined behavior.")
+			it.printStackTrace()
+			Bukkit.shutdown()
 		}
 
 		fun unregisterAll() {
@@ -162,7 +169,7 @@ class IonWorld private constructor(
 			while (iterator.hasNext()) {
 				val (_, ionWorld) = iterator.next()
 
-				saveAllChunks(ionWorld)
+				saveAll(ionWorld)
 				iterator.remove()
 			}
 		}
@@ -183,7 +190,8 @@ class IonWorld private constructor(
 			val bukkitWorld = event.world
 			val ionWorld = ionWorlds[bukkitWorld]!!
 
-			saveAllChunks(ionWorld)
+			saveAll(ionWorld)
+			ionWorld.transportManager.unload()
 			ionWorlds.remove(bukkitWorld)
 		}
 
@@ -207,16 +215,19 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-			saveAllChunks(event.world.ion)
+			saveAll(event.world.ion)
+
 		}
 
 		override fun onDisable() {
 			for (world in ionWorlds.values) {
-				saveAllChunks(world)
+				saveAll(world)
 			}
 		}
 
-		private fun saveAllChunks(world: IonWorld) {
+		private fun saveAll(world: IonWorld) {
+			world.transportManager.save()
+
 			for ((_, chunk) in world.chunks) {
 				chunk.save()
 			}

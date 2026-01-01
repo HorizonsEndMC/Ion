@@ -1003,25 +1003,19 @@ class AIFaction private constructor(
 			.build()
 
 		val ABYSSAL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
-			.addNames(0, listOf("Spectre", "Nebuchadnezzar").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames(0, listOf("Legion", "Nebuchadnezzar").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.addNames(1, listOf("Balthazar", "Salmanazar").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.addNames(2, listOf("Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
-			.addNames(3, listOf("Silent Screm", "Final Woe").map { it.toComponent(ABYSSAL_DARK_RED) })
-			.addNames(4, listOf("Lucifer", "The Last Dusk").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames(3, listOf("Baal", "Orobas").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames(4, listOf("Astaroth", "Moloch").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
 				"<$ABYSSAL_DESATURATED_RED>Why do you hide your bones?",
-				"<$ABYSSAL_DESATURATED_RED>The sand and the bones.",
 				"<$ABYSSAL_DESATURATED_RED>Oh you fool.",
-				"<$ABYSSAL_DESATURATED_RED>Do you see the wings?",
-				"<$ABYSSAL_DESATURATED_RED>Only in darkness does the flower take hold.",
-				"<$ABYSSAL_DESATURATED_RED>Your fear is branded deep.",
 				"<$ABYSSAL_DESATURATED_RED>Its a shame.",
 				"<$ABYSSAL_DESATURATED_RED>We are sorry.",
-				"<$ABYSSAL_DESATURATED_RED>Under a starless sky.",
 				"<$ABYSSAL_DESATURATED_RED>Godspeed.",
 				"<$ABYSSAL_DESATURATED_RED>Do you know your worth?.",
-				"<$ABYSSAL_DESATURATED_RED>Purposeless.",
 				"<$ABYSSAL_DESATURATED_RED>Do you know what's really out there?.",
 			)
 			.addDifficultySuffix(0, "✦")
@@ -1032,11 +1026,11 @@ class AIFaction private constructor(
 			.build()
 
 		val PUMPKINS = builder("PUMPKINS", TextColor.fromHexString("#FFA500")!!.value())
-			.addNames(0, listOf("Kin!", "Matriarch!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(1, listOf("Kin!!", "Matriarch!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(2, listOf("Kin!!!", "Matriarch!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(3, listOf("Kin!!!!", "Matriarch!!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(4, listOf("Kin!!!!!", "Matriarch!!!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(0, listOf("Kin").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(1, listOf("Ironkin",).map { it.toComponent(TextColor.fromHexString("#FF9900")!!) })
+			.addNames(2, listOf("Host",).map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(3, listOf("Matriarch",).map { it.toComponent(TextColor.fromHexString("#FF9100")!!) })
+			.addNames(4, listOf("The Destined").map { it.toComponent(TextColor.fromHexString("#FF8400")!!) })
 			.setMessagePrefix("<#FFA500>OY! Hey!")
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
@@ -1064,8 +1058,7 @@ class AIFaction private constructor(
 				"FOOLISH MORTAL!",
 				"YOU CANNOT KILL THE DEAD!",
 				"<i>ominous rattling",
-				"BURN, MORTAL!",
-				"<i>incomprehensible gibberish"
+				"BURN, MORTAL!"
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")

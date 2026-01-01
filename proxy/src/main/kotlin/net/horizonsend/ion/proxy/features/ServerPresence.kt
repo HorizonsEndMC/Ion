@@ -14,7 +14,7 @@ import java.util.EnumSet
 import javax.imageio.ImageIO
 
 object ServerPresence : IonProxyComponent() {
-	private val primaryVersion = ProtocolVersion.MINECRAFT_1_20_3
+	private val primaryVersion = ProtocolVersion.MINECRAFT_1_21_4
 	private val supportedProtocol = EnumSet.of(
 		ProtocolVersion.MINECRAFT_1_19,
 		ProtocolVersion.MINECRAFT_1_19_1,
@@ -25,6 +25,12 @@ object ServerPresence : IonProxyComponent() {
 		ProtocolVersion.MINECRAFT_1_20_3,
 		ProtocolVersion.MINECRAFT_1_20_5,
 		ProtocolVersion.MINECRAFT_1_21,
+		ProtocolVersion.MINECRAFT_1_21_2,
+		ProtocolVersion.MINECRAFT_1_21_4,
+		ProtocolVersion.MINECRAFT_1_21_5,
+		ProtocolVersion.MINECRAFT_1_21_6,
+		ProtocolVersion.MINECRAFT_1_21_7,
+		ProtocolVersion.MINECRAFT_1_21_9,
 	)
 
 	private val messages = URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")
@@ -39,7 +45,7 @@ object ServerPresence : IonProxyComponent() {
 		val response = event.ping.asBuilder()
 		val clientVersion = event.connection.protocolVersion
 
-		if (clientVersion.isSupported) {
+		if (clientVersion in supportedProtocol) {
 			response.version(ServerPing.Version(clientVersion.protocol, clientVersion.name))
 		} else {
 			response.version(ServerPing.Version(primaryVersion.protocol, primaryVersion.name))

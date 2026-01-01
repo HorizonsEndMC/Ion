@@ -19,8 +19,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
@@ -168,6 +168,30 @@ object StationSieges : IonServerComponent() {
 		val nation = PlayerCache[player].nationOid
 			?: return@asyncLocked player.userError("You need to be in a nation to siege a station.")
 
+		// only allow nations to siege multiple times within the time period if it's simultaneous
+		if (sieges.none { Bukkit.getPlayer(it.siegerId.uuid)?.let(PlayerCache::get)?.nationOid == nation }) {
+			val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
+			val duration = (TimeUnit.DAYS.toMillis(1) * daysPerSiege).toLong()
+			val date = Date(currentTimeMillis() - duration)
+
+			val lastSiege: CapturableStationSiege? = CapturableStationSiege
+				.find(and(CapturableStationSiege::nation eq nation, CapturableStationSiege::time gt date))
+				.maxBy { it.time }
+
+			if (lastSiege != null) {
+				val remainingTime = lastSiege.time.time + duration - currentTimeMillis()
+				player.information(
+					"Your nation has already besieged stations in the past $daysPerSiege day(s)!" +
+						" Time until next siege: ${getDurationBreakdownString(remainingTime)}"
+				)
+				player.information(
+					"Note: Please do not try to bypass this restriction using " +
+						"exploits such as splitting into multiple nations. This would be considered exploiting and against the rules."
+				)
+				return@asyncLocked
+			}
+		}
+
 		val station = Regions.findFirstOf<RegionCapturableStation>(player.location)
 			?: return@asyncLocked player.userError("You must be within a station's area to siege it.")
 
@@ -208,30 +232,6 @@ object StationSieges : IonServerComponent() {
 		if (!isInBigShip(player)) {
 			player.userError("You cannot siege in a ship smaller then 2000 blocks.")
 			return@asyncLocked
-		}
-
-		// only allow nations to siege multiple times within the time period if it's simultaneous
-		if (sieges.none { Bukkit.getPlayer(it.siegerId.uuid)?.let(PlayerCache::get)?.nationOid == nation }) {
-			val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
-			val duration = (TimeUnit.DAYS.toMillis(1) * daysPerSiege).toLong()
-			val date = Date(currentTimeMillis() - duration)
-
-			val lastSiege: CapturableStationSiege? = CapturableStationSiege
-				.find(and(CapturableStationSiege::nation eq nation, CapturableStationSiege::time gt date))
-				.maxBy { it.time }
-
-			if (lastSiege != null) {
-				val remainingTime = lastSiege.time.time + duration - currentTimeMillis()
-				player.information(
-					"Your nation has already besieged stations in the past $daysPerSiege day(s)!" +
-						" Time until next siege: ${getDurationBreakdownString(remainingTime)}"
-				)
-				player.information(
-					"Note: Please do not try to bypass this restriction using " +
-						"exploits such as splitting into multiple nations. This would be considered exploiting and against the rules."
-				)
-				return@asyncLocked
-			}
 		}
 
 		if (ConfigurationFiles.featureFlags().economy) {

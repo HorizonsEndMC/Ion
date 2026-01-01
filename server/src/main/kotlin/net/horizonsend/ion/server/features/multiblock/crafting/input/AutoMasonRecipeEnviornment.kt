@@ -22,24 +22,20 @@ class AutoMasonRecipeEnviornment(
 		return multiblock.getBlockRelative(0, 0, 3)
 	}
 
-	override fun getInputItems(): List<ItemStack?> {
-		return inputInventory.toList()
-	}
-
 	override fun getResultInventory(): Inventory {
 		return outputInventory
 	}
 
-	override fun getItemSize(): Int {
+	override fun getInputItems(): List<ItemStack?> {
+		return inputInventory.toList()
+	}
+
+	override fun getInputItemSize(): Int {
 		return inputInventory.size
 	}
 
-	override fun getItem(index: Int): ItemStack? {
+	override fun getInputItem(index: Int): ItemStack? {
 		return inputInventory.getItem(index)
-	}
-
-	override fun isEmpty(): Boolean {
-		return inputInventory.all { stack -> stack == null || stack.isEmpty }
 	}
 
 	override fun playSound(sound: Sound) {

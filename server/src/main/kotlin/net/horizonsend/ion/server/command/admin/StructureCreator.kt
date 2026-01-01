@@ -4,11 +4,17 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.createPastebinHttpRequest
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
@@ -21,6 +27,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
+import okhttp3.OkHttpClient
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
@@ -31,6 +38,8 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Player
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @CommandPermission("ion.admin.structurecreator")
 @CommandAlias("structurecreator")
@@ -95,18 +104,36 @@ object StructureCreator : SLCommand() {
 		structure += "\n}"
 
 		sender.sendMessage(Component.text(structure).hoverEvent(Component.text(structure)).clickEvent(ClickEvent.copyToClipboard(structure)))
+
+		val httpClient = OkHttpClient()
+		val request = createPastebinHttpRequest(
+			structure, sender.name + "_structure_" +
+					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".txt"
+		)
+		httpClient.newCall(request).execute().use { response ->
+			if (!response.isSuccessful) {
+				sender.userError("Failed to export structure (${response.code}, ${response.body?.string()})")
+				return
+			}
+
+			// Set new export cooldown
+			sender.success("Exported structure data as TXT (expires in 10 minutes): ")
+			val responseBody = response.body?.string() ?: "null"
+			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
+		}
 	}
 
 	private fun getBlockRequirement(data: BlockData, forwards: BlockFace): String {
-		val customBlock = CustomBlocks.getByBlockData(data)
-		if (customBlock != null) return when (customBlock) {
-			CustomBlocks.TITANIUM_BLOCK -> ".titaniumBlock()"
-			CustomBlocks.ALUMINUM_BLOCK -> ".aluminumBlock()"
-			CustomBlocks.CHETHERITE_BLOCK -> ".chetheriteBlock()"
-			CustomBlocks.STEEL_BLOCK -> ".steelBlock()"
-			CustomBlocks.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
-			CustomBlocks.NETHERITE_CASING -> ".netheriteCasing()"
-			else -> ".customBlock(CustomBlocks.${customBlock.identifier})"
+		val registryKey = data.customBlock?.key
+		if (registryKey != null) return when (registryKey) {
+			CustomBlockKeys.TITANIUM_BLOCK -> ".titaniumBlock()"
+			CustomBlockKeys.ALUMINUM_BLOCK -> ".aluminumBlock()"
+			CustomBlockKeys.CHETHERITE_BLOCK -> ".chetheriteBlock()"
+			CustomBlockKeys.STEEL_BLOCK -> ".steelBlock()"
+			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
+			CustomBlockKeys.NETHERITE_CASING -> ".netheriteCasing()"
+			CustomBlockKeys.FLUID_INPUT -> ".fluidInput()"
+			else -> ".customBlock(CustomBlocksKeys.${registryKey.key}.getValue())"
 		}
 
 		return when {
@@ -151,7 +178,6 @@ object StructureCreator : SLCommand() {
 			data.material == Material.REDSTONE_BLOCK -> ".redstoneBlock()"
 			data.material == Material.LAPIS_BLOCK -> ".lapisBlock()"
 
-			data.material == Material.FLETCHING_TABLE -> ".fluidInput()"
 			data.material == Material.NOTE_BLOCK -> ".powerInput()"
 			data.material == STANDARD_EXTRACTOR_TYPE -> ".extractor()"
 			data.material == Material.HOPPER -> ".hopper()"

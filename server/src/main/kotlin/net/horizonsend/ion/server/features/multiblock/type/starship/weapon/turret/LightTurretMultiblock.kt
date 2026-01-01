@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.LightTurretBalancing.LightTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LightTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -11,8 +11,8 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.block.BlockFace
 
-sealed class LightTurretMultiblock : TurretMultiblock() {
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
+sealed class LightTurretMultiblock : TurretMultiblock<LightTurretProjectileBalancing>() {
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): LightTurretWeaponSubsystem {
 		return LightTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
 
@@ -21,7 +21,7 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getSign(): Int
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.lightTurret
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<LightTurretProjectileBalancing> = starship.balancingManager.getWeapon(LightTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(0, +4 * getSign(), +2))
 

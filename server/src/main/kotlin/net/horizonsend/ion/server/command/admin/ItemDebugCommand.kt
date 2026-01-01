@@ -8,12 +8,13 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.util.serialization.CustomItemSerialization
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -36,11 +37,11 @@ object ItemDebugCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(ItemModification::class.java) {
 			val name = it.popFirstArg()
-			return@registerContext ItemModRegistry[name] ?: throw InvalidCommandArgument("$name not found!")
+			return@registerContext ItemModKeys[name]?.getValue() ?: throw InvalidCommandArgument("$name not found!")
 		}
 
 		manager.commandCompletions.registerCompletion("tool_mods") {
-			return@registerCompletion ItemModRegistry.mods.keys
+			return@registerCompletion ItemModKeys.allkeys().map { key -> key.key }
 		}
 
 		manager.commandCompletions.setDefaultCompletion("tool_mods", ItemModification::class.java)
@@ -58,7 +59,7 @@ object ItemDebugCommand : SLCommand() {
 		failIf(!customItem.hasComponent(MOD_MANAGER)) { "${item.customItem?.identifier} is not moddable" }
 		val modManger = customItem.getComponent(MOD_MANAGER)
 
-		sender.information("MODS: " + modManger.getMods(item).joinToString { it.identifier })
+		sender.information("MODS: " + modManger.getModKeys(item).joinToString { it.key })
 	}
 
 	@Subcommand("addmod")
@@ -68,9 +69,9 @@ object ItemDebugCommand : SLCommand() {
 		failIf(!customItem.hasComponent(MOD_MANAGER)) { "${item.customItem?.identifier} is not moddable" }
 		val modManger = customItem.getComponent(MOD_MANAGER)
 
-		modManger.addMod(item, customItem, mod)
+		modManger.addMod(item, customItem, mod.key)
 
-		sender.information("Added ${mod.identifier}")
+		sender.information("Added ${mod.key.key}")
 	}
 
 	@Subcommand("removemod")
@@ -80,9 +81,9 @@ object ItemDebugCommand : SLCommand() {
 		failIf(!customItem.hasComponent(MOD_MANAGER)) { "${item.customItem?.identifier} is not moddable" }
 		val modManger = customItem.getComponent(MOD_MANAGER)
 
-		modManger.removeMod(item, customItem, mod)
+		modManger.removeMod(item, customItem, mod.key)
 
-		sender.information("Removed ${mod.identifier}")
+		sender.information("Removed ${mod.key.key}")
 	}
 
 	@Subcommand("set power")
@@ -108,7 +109,7 @@ object ItemDebugCommand : SLCommand() {
 
 	@Subcommand("test all")
 	fun onTestAll(sender: Player) {
-		val allItems = CustomItemRegistry.ALL.map { item -> object : GuiItems.AbstractButtonItem(item.displayName.itemName, item.constructItemStack()) {
+		val allItems = IonRegistries.CUSTOM_ITEMS.getAll().map { item -> object : GuiItems.AbstractButtonItem(item.displayName.itemName, item.constructItemStack()) {
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 				player.inventory.addItem(item.constructItemStack())
 			}
@@ -150,8 +151,8 @@ object ItemDebugCommand : SLCommand() {
 		sender.information(CustomItemSerialization.getCompletions(value)?.joinToString { it } ?: "null")
 
 		val data = "[${value.substringAfter('[')}"
-		val customItem = CustomItemRegistry.getByIdentifier(value.substringBefore('[')) ?: fail { "Not valid custom item: ${value.substringBefore('[')}" }
+		val customItem = CustomItemKeys[value.substringBefore('[')] ?: fail { "Not valid custom item: ${value.substringBefore('[')}" }
 
-		sender.inventory.addItem(customItem.deserialize(data))
+		sender.inventory.addItem(customItem.getValue().deserialize(data))
 	}
 }

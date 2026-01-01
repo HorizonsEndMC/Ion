@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
@@ -50,7 +51,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object MultimeterItem : CustomItem(
-	"MULTIMETER",
+	CustomItemKeys.MULTIMETER,
 	Component.text("Multimeter", NamedTextColor.YELLOW),
 	ItemFactory.builder(ItemFactory.unStackableCustomItem("tool/multimeter")).build()
 ) {
@@ -77,14 +78,14 @@ object MultimeterItem : CustomItem(
 				val block = Material.GLASS.createBlockData()
 
 				sendEntityPacket(entity, displayBlock(entity.world.minecraft, block, Vector(location.x, location.y, location.z), 0.75f, Color.AQUA), 11L)
-				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("Start", NamedTextColor.AQUA), 11L, true)
+				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("Start", NamedTextColor.AQUA), 11L, highlight = true)
 			}
 			getSecondPoint(itemStack)?.let {
 				val location = it.toLocation(entity.world)
 				val block = Material.GLASS.createBlockData()
 
 				sendEntityPacket(entity, displayBlock(entity.world.minecraft, block, Vector(location.x, location.y, location.z), 0.75f, Color.RED), 11L)
-				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("End", NamedTextColor.RED), 11L, true)
+				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("End", NamedTextColor.RED), 11L, highlight = true)
 			}
 		})
 
@@ -252,5 +253,5 @@ object MultimeterItem : CustomItem(
 		tryCheckResistance(audience, world, itemStack)
 	}
 
-	private val caches = arrayOf(CacheType.POWER, CacheType.ITEMS)
+	private val caches get() = arrayOf(CacheType.POWER, CacheType.ITEMS)
 }

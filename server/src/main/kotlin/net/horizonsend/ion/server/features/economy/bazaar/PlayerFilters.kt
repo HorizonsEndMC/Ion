@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.BazaarFilter.CityBlacklist
 import net.horizonsend.ion.server.features.economy.bazaar.BazaarFilter.CityWhitelist
@@ -29,7 +29,7 @@ data class PlayerFilters(var filters: List<BazaarFilter> = listOf()) {
 	}
 
 	companion object {
-		fun get(player: Player, setting: KMutableProperty1<PlayerSettings, String>) = Configuration.parse<PlayerFilters>(player.getSetting(setting))
+		fun get(player: Player, setting: KMutableProperty1<PlayerSettings, String>) = Configuration.parse<PlayerFilters>(player.getSettingOrThrow(setting))
 
 		data class RegisteredFilter(val generator: () -> BazaarFilter)
 		private val filterKeys = mutableMapOf<String, RegisteredFilter>()

@@ -4,6 +4,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.datacomponent.item.Unbreakable
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -14,7 +17,6 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
@@ -41,12 +43,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class PowerArmorItem(
-	identifier: String,
+	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
 	val slot: EquipmentSlot
 ) : CustomItem(
-	identifier,
+	key,
 	displayName,
 	ItemFactory
 		.builder()
@@ -64,8 +66,8 @@ class PowerArmorItem(
 		)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
-//			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+//			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
 			.build())
 		.build()
 ) {
@@ -96,9 +98,12 @@ class PowerArmorItem(
 		if (power <= 0) return
 
 		val attributes = getAttributes(itemStack)
-		for (attribute in attributes.filterIsInstance<PotionEffectAttribute>()) attribute.addPotionEffect(entity, this, itemStack)
+		for (attribute in attributes.filterIsInstance<PotionEffectAttribute>()) {
+			if (!attribute.requiredSlot.contains(slot)) continue
+			attribute.addPotionEffect(entity, this, itemStack)
+		}
 
-		if (!getComponent(MOD_MANAGER).getMods(itemStack).contains(ItemModRegistry.ROCKET_BOOSTING)) return
+		if (!getComponent(MOD_MANAGER).getModKeys(itemStack).contains(ItemModKeys.ROCKET_BOOSTING)) return
 		if (entity !is Player) return
 		if (entity.isGliding && !entity.world.hasFlag(WorldFlag.ARENA)) {
 			powerManager.removePower(itemStack, this, 5)
@@ -111,8 +116,8 @@ class PowerArmorItem(
 
 		if (ActiveStarships.findByPilot(entity) != null && entity.inventory.itemInMainHand.type == Material.CLOCK) return
 
-		val mods = getComponent(MOD_MANAGER).getMods(itemStack)
-		if (!mods.contains(ItemModRegistry.ROCKET_BOOSTING)) {
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.ROCKET_BOOSTING)) {
 			return setGliding(entity, false)
 		}
 
@@ -155,7 +160,11 @@ class PowerArmorItem(
 			}
 		}
 
-		entity.world.spawnParticle(Particle.SMOKE, entity.location, 5)
+		val footDir = entity.location.direction.normalize().multiply(-1)
+			.rotateAroundX(randomDouble(0.20, 0.40))
+			.rotateAroundY(randomDouble(0.20, 0.40))
+			.rotateAroundZ(randomDouble(0.20, 0.40))
+		entity.world.spawnParticle(Particle.SMOKE, entity.location, 0, footDir.x, footDir.y, footDir.z, 0.05)
 
 		if (!entity.world.hasFlag(WorldFlag.ARENA) && entity.gameMode != GameMode.CREATIVE) {
 			powerManager.removePower(itemStack, this, 5)
