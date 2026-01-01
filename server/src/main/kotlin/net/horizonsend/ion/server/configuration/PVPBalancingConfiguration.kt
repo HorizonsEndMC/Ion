@@ -69,13 +69,13 @@ data class PVPBalancingConfiguration(
 
 	@Serializable
 	data class MeleeWeapons(
-		val energySwordBalancing: EnergySwordBalancing = EnergySwordBalancing(
+		var energySwordBalancing: EnergySwordBalancing = EnergySwordBalancing(
 			damage = 4.0, //WARNING: This is EXTRA DAMAGE on the default 7 damage in EnergySword.kt
 			blockAmount = 200,
 			blockRechargePerTick= 1.0,
 			type = WeaponTypeEnum.MELEE
 		),
-		val energyGreatswordBalancing: EnergySwordBalancing = EnergySwordBalancing(
+		var energyGreatswordBalancing: EnergySwordBalancing = EnergySwordBalancing(
 			damage = 6.0, //WARNING: This is EXTRA DAMAGE on the default 7 damage in EnergyGreatSword.kt
 			blockAmount = 300,
 			blockRechargePerTick= 1.0,
@@ -84,9 +84,9 @@ data class PVPBalancingConfiguration(
 	){
 		@Serializable
 		data class EnergySwordBalancing(
-			val damage: Double,
-			val blockAmount: Int,
-			val blockRechargePerTick: Double,
+			var damage: Double,
+			var blockAmount: Int,
+			var blockRechargePerTick: Double,
 			override val type: WeaponTypeEnum
 		): BlasterWeapons.WeaponType
 	}

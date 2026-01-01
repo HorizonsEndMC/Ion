@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
@@ -17,9 +18,14 @@ import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.filterIsInstance
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.createType
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.javaType
 
 @CommandAlias("ion")
 @CommandPermission("ion.config")
@@ -30,6 +36,9 @@ object ConfigurationCommands : SLCommand() {
 	private val weaponFields = StarshipWeaponBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 	private val projectileFields = StarshipProjectileBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 	private val starshipFields = StarshipTypeBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
+
+	private val meleeWeaponTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
+	private val meleeWeaponFields = PVPBalancingConfiguration.MeleeWeapons::class.typeParameters
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("starshipTypes") {
@@ -51,6 +60,25 @@ object ConfigurationCommands : SLCommand() {
 		manager.commandCompletions.registerCompletion("starshipValues") {
 			starshipFields.map { it.name }
 		}
+
+
+
+		manager.commandCompletions.registerCompletion("meleeWeaponTypes") {
+			meleeWeaponTypes.map { it.name}
+		}
+	}
+
+	@Subcommand("config set meleeWeapons properties")
+	@CommandCompletion("@meleeWeaponTypes property value")
+	fun setMeleeWeaponProperties(sender: CommandSender, meleeWeaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		val weapon = meleeWeaponTypes.find { it.name == meleeWeaponName } ?: fail { "Melee weapon $meleeWeaponName not found" }
+		val meleeWeaponBalancing = weapon.get(ConfigurationFiles.pvpBalancing.get().meleeWeapons) ?: fail { "Melee weapon $meleeWeaponName not found" }
+		val fields = meleeWeaponBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $meleeWeaponName" }
+
+		try { setField(field, meleeWeaponBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+
+		sender.success("Set $meleeWeaponName property $fieldName to $value")
 	}
 //
 //	@Subcommand("config set starship properties")
@@ -203,5 +231,35 @@ object ConfigurationCommands : SLCommand() {
 	private fun reloadOthers() {
 		schematicCache.invalidateAll()
 		AsteroidConfigurations.reload()
+	}
+
+	private fun setField(field: KMutableProperty<*>, containing: Any, value: String) {
+		when (field.returnType) {
+			Int::class.createType() -> {
+				field.setter.call(containing, value.toInt())
+			}
+
+			Double::class.createType() -> {
+				field.setter.call(containing, value.toDouble())
+			}
+
+			Float::class.createType() -> {
+				field.setter.call(containing, value.toFloat())
+			}
+
+			Long::class.createType() -> {
+				field.setter.call(containing, value.toLong())
+			}
+
+			Boolean::class.createType() -> {
+				field.setter.call(containing, value.toBooleanStrict())
+			}
+
+			String::class.createType() -> {
+				field.setter.call(containing, value)
+			}
+
+			else -> throw NotImplementedError("type is: ${field.returnType.javaType.typeName}, to add in the switch case")
+		}
 	}
 }
