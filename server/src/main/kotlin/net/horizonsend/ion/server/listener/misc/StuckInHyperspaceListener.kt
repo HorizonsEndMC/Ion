@@ -17,7 +17,6 @@ object StuckInHyperspaceListener : SLEventListener() {
 		val spaceWorld = Bukkit.getWorld(hyperspaceWorld.name.removeSuffix("_hyperspace")) ?: return // inlining this from the Hyperspace class
 
 		val player = event.player
-		val hyperspaceLocation = event.player.location
 
 		// first, we tell the player that they are *not* going to be stuck in space after three minutes
 		Tasks.asyncDelay(3600) {
@@ -31,11 +30,12 @@ object StuckInHyperspaceListener : SLEventListener() {
 			// this should work
 			if (player.world != hyperspaceWorld) return@asyncDelay
 
+			val currentPlayerPos = player.location
 			val realspaceLocation = Location(
 				spaceWorld,
-				hyperspaceLocation.x,
-				hyperspaceLocation.y,
-				hyperspaceLocation.z
+				currentPlayerPos.x,
+				currentPlayerPos.y,
+				currentPlayerPos.z
 			)
 
 			// you know how you can tell if the code is written by a human? if the variable names are awful.
@@ -58,11 +58,12 @@ object StuckInHyperspaceListener : SLEventListener() {
 			// this should also work
 			if (player.world != hyperspaceLocation.world) return@asyncDelay
 
+			val currentPlayerPos = player.location
 			val realspaceLocation = Location(
 				spaceWorld,
-				hyperspaceLocation.x,
-				hyperspaceLocation.y,
-				hyperspaceLocation.z
+				currentPlayerPos.x,
+				currentPlayerPos.y,
+				currentPlayerPos.z
 			)
 
 			val lastPilotedStarshipOrRealspace = LastPilotedStarship.map.getOrDefault(player.uniqueId, realspaceLocation)
