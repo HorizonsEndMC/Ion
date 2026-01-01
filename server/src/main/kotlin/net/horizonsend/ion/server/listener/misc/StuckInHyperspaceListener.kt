@@ -19,15 +19,16 @@ object StuckInHyperspaceListener : SLEventListener() {
 		val player = event.player
 		val hyperspaceLocation = event.player.location
 
-		// first, we tell the player that they are *not* going to be stuck in space
+		// first, we tell the player that they are *not* going to be stuck in space after three minutes
 		Tasks.asyncDelay(3600) {
 			if (player.world != hyperspaceWorld) return@asyncDelay
 
-			player.sendRichMessage("<gray>Detected Stuck Player: Teleporting into Realspace in <green>two minutes<gray>!")
+			player.sendRichMessage("<gray>Detected Player in Hyperspace: Teleporting into Realspace in <green>two minutes<gray>!")
 		}
 
-		// next, we move them out of hyperspace to the relative position their ship will be at
+		// next, we move them out of hyperspace to relative realspace position or where their ship will be at
 		Tasks.asyncDelay(6000) {
+			// this should work
 			if (player.world != hyperspaceWorld) return@asyncDelay
 
 			val realspaceLocation = Location(
@@ -45,14 +46,17 @@ object StuckInHyperspaceListener : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
-		if (!Hyperspace.isHyperspaceWorld(event.player.world)) return
+		if (Hyperspace.isHyperspaceWorld(event.player.world)) return
 		val spaceWorld = Hyperspace.getRealspaceWorld(event.player.world)
 
 		val player = event.player
 		val hyperspaceLocation = player.location
 
+		player.sendRichMessage("<gray>Detected Player in Hyperspace: Teleporting into Realspace in <green>three minutes<gray>!")
+
 		Tasks.asyncDelay(3600) {
-			player.sendRichMessage("<gray>Detected Stuck Player: Teleporting into Realspace in <green>three minutes<gray>!")
+			// this should also work
+			if (player.world != hyperspaceLocation.world) return@asyncDelay
 
 			val realspaceLocation = Location(
 				spaceWorld,
