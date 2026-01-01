@@ -52,6 +52,7 @@ data class FrontierTerritory(
 
 			if (nation == null) {
 				updateById(sess, id, org.litote.kmongo.setValue(FrontierTerritory::alias, null))
+				updateById(sess, id, org.litote.kmongo.setValue(FrontierTerritory::isCapital, null))
 			}
 
 			updateById(sess, id, org.litote.kmongo.setValue(FrontierTerritory::frontierNation, nation))

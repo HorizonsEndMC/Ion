@@ -109,5 +109,9 @@ data class FrontierNation(
 		fun setColor(frontierNationId: Oid<FrontierNation>, rgb: Int) = trx { sess ->
 			updateById(sess, frontierNationId, setValue(FrontierNation::color, rgb))
 		}
+
+		fun getTotalPower(frontierNationId: Oid<FrontierNation>): Int = SLPlayer
+			.findProp(SLPlayer::frontierNation eq frontierNationId, SLPlayer::power)
+			.sum()
 	}
 }

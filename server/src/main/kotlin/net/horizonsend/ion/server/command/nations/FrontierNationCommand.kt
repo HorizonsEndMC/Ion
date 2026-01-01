@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -34,6 +35,7 @@ import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -74,7 +76,7 @@ object FrontierNationCommand : SLCommand() {
 		registerAsyncCompletion(manager, "frontierOutposts") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val nation = PlayerCache[player].frontierNationOid
-			Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nation }.map { it.name}
+			Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nation }.map { it.name }
 		}
 	}
 
@@ -209,7 +211,6 @@ object FrontierNationCommand : SLCommand() {
 	fun onInvite(sender: Player, otherPlayer: String) = asyncCommand(sender) {
 		val nationId = requireFrontierNationIn(sender)
 		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.PLAYER_INVITE)
-
 
 		val playerId = resolveOfflinePlayer(otherPlayer)
 		val nationName = getFrontierNationName(nationId)
@@ -381,6 +382,7 @@ object FrontierNationCommand : SLCommand() {
 
 	@Subcommand("outpost unclaim")
 	@Description("Unclaim a territory on a planet or a space sector")
+	@CommandCompletion("@frontierOutposts")
 	fun onUnclaim(sender: Player, territory: String) = asyncCommand(sender) {
 		val nationId = requireFrontierNationIn(sender)
 		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.CLAIM_DELETE)
@@ -392,6 +394,7 @@ object FrontierNationCommand : SLCommand() {
 		val territoryWorld = regionTerritory.world
 
 		failIf(regionTerritory.frontierNation != nationId) { "$territoryName is not claimed by your nation" }
+		failIf(regionTerritory.isCapital) { "$territoryName is your nation's capital and cannot be unclaimed (use /fn disband)" }
 
 		FrontierTerritory.setFrontierNation(regionTerritory.id, null)
 
@@ -529,37 +532,71 @@ object FrontierNationCommand : SLCommand() {
 		)
 		message.append(newline())
 
-		val players: List<SLPlayerId> = FrontierNation.getMembers(nationId).toList()
-
-		val playerText = ofChildren(
-			text("Settlements ("),
-			text(players.size).color(NamedTextColor.WHITE),
-			text("): "),
+		val capitalResult = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId && it.isCapital }
+		val capital = if (capitalResult.isNotEmpty()) capitalResult.first().name else "None"
+		val capitalText = ofChildren(
+			text("Capital: "),
+			text(capital, NamedTextColor.WHITE),
 			newline()
 		)
+		message.append(capitalText)
 
-		for (player in players) {
-			val playerData = SLPlayer[player]
+		val outposts = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId }
+		val outpostsText = ofChildren(
+			text("Outposts ("),
+			text(outposts.size, NamedTextColor.WHITE),
+			text("): ")
+		)
 
-			playerText.append(text(playerData?.lastKnownName ?: "Unknown")).color(NamedTextColor.WHITE)
+		message.append(outpostsText)
+		for (outpost in outposts) {
+			val outpostBuilder = text()
+			val hoverText = text().color(TextColor.fromHexString("#b8e0d4"))
+				.append(text(outpost.name, NamedTextColor.AQUA))
+				.append(newline())
+				.append(text("World: ", TextColor.fromHexString("#b8e0d4")))
+				.append(text(outpost.world, NamedTextColor.WHITE))
+				.append(newline())
+				.append(text("Centered at ", TextColor.fromHexString("#b8e0d4"))
+					.append(text(outpost.centerX, NamedTextColor.WHITE))
+					.append(text(",", TextColor.fromHexString("#b8e0d4")))
+					.append(text(outpost.centerZ, NamedTextColor.WHITE))
+				).build().asHoverEvent()
 
-			val isLast = players.indexOf(player) == (players.size - 1)
-			if (!isLast) playerText.append(text(", "))
+			val isLast = outposts.indexOf(outpost) == (outposts.size - 1)
+
+			outpostBuilder.append(
+				text(outpost.name)
+					.hoverEvent(hoverText)
+					.color(NamedTextColor.WHITE)
+			)
+
+			if (!isLast) outpostBuilder.append(text(", "))
+			val builtText = outpostBuilder.build()
+
+			message.append(builtText)
 		}
-
-		message.append(playerText)
 		message.append(newline())
+
 		message.append(
 			ofChildren(
 				text("Balance: "),
-				text(data.balance).color(NamedTextColor.WHITE)
+				text(data.balance).color(NamedTextColor.WHITE),
+				newline()
+			)
+		)
+
+		message.append(
+			ofChildren(
+				text("Power: "),
+				text(FrontierNation.getTotalPower(nationId), NamedTextColor.WHITE),
+				newline()
 			)
 		)
 
 		val leaderRole = FrontierNationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let {
-			val leaderText = text(leaderRole.name)
-			leaderText.color(leaderRole.color.actualStyle.textColor)
+			val leaderText = text(leaderRole.name, leaderRole.color.actualStyle.textColor)
 
 			leaderText
 		} ?: text()
@@ -585,7 +622,7 @@ object FrontierNationCommand : SLCommand() {
 		val playerCountBuilder = ofChildren(
 			text("Members (", TextColor.fromHexString("#b8e0d4")),
 			text(members.size, NamedTextColor.WHITE),
-			text(")", TextColor.fromHexString("#b8e0d4"))
+			text("):", TextColor.fromHexString("#b8e0d4"))
 		)
 
 		message.append(playerCountBuilder)
@@ -631,5 +668,13 @@ object FrontierNationCommand : SLCommand() {
 		val nationId = requireFrontierNationIn(sender)
 		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.BROADCAST)
 		ServerInboxes.sendToFrontierNationMembers(nationId, message.miniMessage())
+	}
+
+	@Subcommand("power")
+	@CommandCompletion("@players")
+	fun onGetPower(sender: Player, otherPlayer: String) = asyncCommand(sender) {
+		val playerId = resolveOfflinePlayer(otherPlayer)
+		val power = PlayerXPLevelCache[playerId]?.power ?: fail { "Player $playerId does not exist, or somehow does not have power" }
+		sender.information("$otherPlayer has $power power")
 	}
 }
