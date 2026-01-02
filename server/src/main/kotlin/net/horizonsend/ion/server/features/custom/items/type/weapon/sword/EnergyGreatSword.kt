@@ -84,16 +84,18 @@ class EnergyGreatSword(key: IonRegistryKey<CustomItem, out CustomItem>, type: St
 		addComponent(CustomComponentTypes.LISTENER_DAMAGED_HOLDING, damagedHoldingListener(this@EnergyGreatSword) { event, customItem, item ->
 			val damaged = event.entity
 			var critical = 1.0
+			var blockDamage = 5
 			val attacker = event.damager
 			if (!attacker.isOnGround && attacker.velocity.y < 0 && (attacker as Player).isSprinting) { critical *= 1.5}
 			if (damaged !is Player) return@damagedHoldingListener
 			if (!damaged.isBlocking) return@damagedHoldingListener
+			if (damaged.inventory.itemInMainHand == EnergySword || damaged.inventory.itemInMainHand == EnergyGreatSword) blockDamage = 50
 
 			if (damaged.getCooldown(SHIELD) != 0) return@damagedHoldingListener
 
 			if (damaged.isBlocking) {
 				val block = blockComponent.getBlock(item, damaged)
-				blockComponent.setBlock(item, (block-5), damaged)
+				blockComponent.setBlock(item, (block-blockDamage), damaged)
 			}
 
 			damaged.world.playSound(Sound.sound(key("horizonsend:energy_sword.strike"), Sound.Source.PLAYER, 5.0f, 1.0f), damaged)
