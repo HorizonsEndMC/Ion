@@ -271,7 +271,7 @@ data class NewStarshipBalancing(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
-					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+					boostChargeNanos = TimeUnit.MILLISECONDS.toNanos(4500)
 				),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000))
 			),
