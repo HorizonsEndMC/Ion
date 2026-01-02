@@ -59,7 +59,7 @@ data class NewStarshipBalancing(
 			LightLogisticsCannonBalancing(),
 			HeavyLogisticsCannonBalancing(),
 			ScramblerBalancing(),
-			RapidMissileLauncherBalancing(),
+			LightMissileLauncherBalancing(),
 			RapidHeavyMissileLauncherBalancing(),
 			AutocannonBalancing(),
 			LightTurretBalancing(),
@@ -847,7 +847,7 @@ data class NewStarshipBalancing(
 				)),
 			weaponOverrides = listOf(
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, ),
-				RapidMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2,),
+				LightMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2,),
 				RapidHeavyMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),

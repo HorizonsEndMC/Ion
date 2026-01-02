@@ -33,7 +33,7 @@ class NeutralizerWeaponSubsystem(
 	}
 
 	override fun getName(): Component {
-		return Component.text("Heavy Laser")
+		return Component.text("Neutralizer")
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {

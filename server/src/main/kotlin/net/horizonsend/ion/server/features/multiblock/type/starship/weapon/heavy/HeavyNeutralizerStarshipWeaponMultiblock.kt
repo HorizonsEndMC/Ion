@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
@@ -6,26 +6,25 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.Signl
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyNeutralizerWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
-import org.bukkit.block.BlockFace
 import org.bukkit.Material
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<HeavyNeutralizerWeaponSubsystem>(), DisplayNameMultilblock {
-	override val key: String = "heavy neutralizer"
+object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<HeavyNeutralizerWeaponSubsystem>(),
+    DisplayNameMultilblock {
+	override val key: String = "heavy_neutralizer"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): HeavyNeutralizerWeaponSubsystem {
 		return HeavyNeutralizerWeaponSubsystem(starship, pos, face)
 	}
 
 	override val displayName: Component
-		get() = text("Heavy Neutralizer")
+		get() = Component.text("Heavy Neutralizer")
 	override val description: Component
-		get() = text("A Heavy Weapon with a homing projectile. Decreases Ship Capacitor on hit")
+		get() = Component.text("A Heavy Weapon with a homing projectile. Decreases Ship Capacitor on hit")
 
 	override fun MultiblockShape.buildStructure() {
 		z(0) {

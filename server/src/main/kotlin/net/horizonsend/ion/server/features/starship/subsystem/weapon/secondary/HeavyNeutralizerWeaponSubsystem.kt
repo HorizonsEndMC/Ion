@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyNeutralizerProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -21,13 +21,12 @@ class HeavyNeutralizerWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem<HeavyNeutralizerBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyNeutralizerWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
-	override val length: Int = 8
+	override val length: Int = 5
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
-	override val aimDistance: Int get() = balancing.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		HeavyLaserProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, target, aimDistance).fire()
+		HeavyNeutralizerProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, this).fire()
 	}
 
 	override fun getName(): Component {

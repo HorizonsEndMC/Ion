@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomRapidMissileLauncherStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopRapidMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomLightMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopLightMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.BottomArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock

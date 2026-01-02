@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
-import net.horizonsend.ion.server.configuration.starship.RapidMissileLauncherBalancing
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomRapidMissileLauncherStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.RapidMissileLauncherStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopRapidMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.configuration.starship.LightMissileLauncherBalancing
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomLightMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.LightMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopLightMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -30,19 +30,19 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class RapidMissileLauncherStarshipWeaponSubsystem(
+class LightMissileLauncherStarshipWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace,
-    private val multiblock: RapidMissileLauncherStarshipWeaponMultiblock,
-) : BalancedWeaponSubsystem<RapidMissileLauncherBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(RapidMissileLauncherStarshipWeaponSubsystem::class)),
+    private val multiblock: LightMissileLauncherStarshipWeaponMultiblock,
+) : BalancedWeaponSubsystem<LightMissileLauncherBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(LightMissileLauncherStarshipWeaponSubsystem::class)),
     ManualWeaponSubsystem,
     DirectionalSubsystem,
     AmmoConsumingWeaponSubsystem {
 
 	val projectileBalancing = balancing.projectile
 	override val fireCooldownNanos: Long get() = balancing.fireCooldownNanos
-    override fun getName(): Component = Component.text("Rapid Missile Launcher")
+    override fun getName(): Component = Component.text("Light Missile Launcher")
 
     override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
         val fireDir = target.clone()
@@ -75,8 +75,8 @@ class RapidMissileLauncherStarshipWeaponSubsystem(
 
     override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
         val initialLaunchDirection = when (multiblock) {
-            is TopRapidMissileLauncherStarshipWeaponMultiblock -> BlockFace.UP.direction
-            is BottomRapidMissileLauncherStarshipWeaponMultiblock -> BlockFace.DOWN.direction
+            is TopLightMissileLauncherStarshipWeaponMultiblock -> BlockFace.UP.direction
+            is BottomLightMissileLauncherStarshipWeaponMultiblock -> BlockFace.DOWN.direction
             else -> face.direction
         }
 

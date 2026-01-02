@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
 import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing.HeavyLaserProjectileBalancing
-import net.horizonsend.ion.server.configuration.starship.RapidMissileLauncherBalancing
+import net.horizonsend.ion.server.configuration.starship.LightMissileLauncherBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration

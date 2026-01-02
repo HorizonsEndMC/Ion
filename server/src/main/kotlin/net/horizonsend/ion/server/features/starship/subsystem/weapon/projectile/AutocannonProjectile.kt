@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.AutocannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.AutocannonMultiblock
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component

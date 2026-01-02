@@ -152,7 +152,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.navigationco
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ArtilleryStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomRapidMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomLightMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.HeavyLogisticsCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.InterceptorCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.LaserCannonStarshipWeaponMultiblock
@@ -160,8 +160,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.canno
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ScramblerStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopRapidMissileLauncherStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.BottomAutocannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopLightMissileLauncherStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomAutocannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.BottomRapidHeavyMissileLauncherMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
@@ -169,12 +169,12 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.FlamethrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.GazeStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.HeavyNeutralizerStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyNeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.PumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.SkullThrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.SonicMissileWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.TopAutocannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopAutocannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.TopRapidHeavyMissileLauncherMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AIPhaserStarshipWeaponMultiblock
@@ -391,8 +391,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HeavyLogisticsCannonMultiblock)
 		registerMultiblock(LightLogisticsCannonMultiblock)
 		registerMultiblock(WebifierStarshipWeaponMultiblock)
-		registerMultiblock(TopRapidMissileLauncherStarshipWeaponMultiblock)
-		registerMultiblock(BottomRapidMissileLauncherStarshipWeaponMultiblock)
+		registerMultiblock(TopLightMissileLauncherStarshipWeaponMultiblock)
+		registerMultiblock(BottomLightMissileLauncherStarshipWeaponMultiblock)
 		registerMultiblock(SkirmishCommandBurstMultiBlock)
 		registerMultiblock(ShieldCommandBurstMultiBlock)
 		registerMultiblock(CapitalShieldCommandBurstMultiBlock)

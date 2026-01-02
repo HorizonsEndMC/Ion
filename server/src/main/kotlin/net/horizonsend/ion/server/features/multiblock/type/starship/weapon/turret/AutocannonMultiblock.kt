@@ -1,12 +1,9 @@
-package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing
 import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing.AutocannonProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
-import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys.KOTH_BLOCK
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -287,7 +284,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 		dir: Vector,
 		starship: ActiveStarship,
 		shooter: Damager,
-		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<AutocannonBalancing.AutocannonProjectileBalancing>, AutocannonBalancing.AutocannonProjectileBalancing>,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<AutocannonProjectileBalancing>, AutocannonProjectileBalancing>,
 		isAuto: Boolean
 	) {
 		for ((index, point) in getAdjustedFirePoints(pos, face).withIndex()) {

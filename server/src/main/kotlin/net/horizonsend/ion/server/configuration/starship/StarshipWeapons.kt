@@ -65,7 +65,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Pla
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PointDefenseSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PulseCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.RapidMissileLauncherStarshipWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LightMissileLauncherStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ScramblerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.TestBoidWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArtilleryProjectile
@@ -97,8 +97,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.WebifierProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyLaserWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyNeutralizerWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.PhaserWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RocketWeaponSubsystem
@@ -461,7 +461,7 @@ data class SwarmMissileBalancing(
 }
 
 @Serializable
-data class RapidMissileLauncherBalancing(
+data class LightMissileLauncherBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, incompatibleMultiblocks = listOf(
 		/*
 		IncompatibleSubsystemInfo(
@@ -475,18 +475,18 @@ data class RapidMissileLauncherBalancing(
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int? = 1,
 	override val applyCooldownToAll: Boolean = false,
-	override val projectile: RapidMissileLauncherProjectileBalancing = RapidMissileLauncherProjectileBalancing(),
+	override val projectile: LightMissileLauncherProjectileBalancing = LightMissileLauncherProjectileBalancing(),
 	override val aimDistance: Int = 5,
 	override val convergeDistance: Double = 10.0,
 	override val projectileSpawnDistance: Int = 4,
 	override val angleRadiansHorizontal: Double = 180.0,
 	override val angleRadiansVertical: Double = 180.0,
-) : StarshipTrackingWeaponBalancing<RapidMissileLauncherBalancing.RapidMissileLauncherProjectileBalancing> {
+) : StarshipTrackingWeaponBalancing<LightMissileLauncherBalancing.LightMissileLauncherProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = RapidMissileLauncherStarshipWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LightMissileLauncherStarshipWeaponSubsystem::class
 
 	@Serializable
-	data class RapidMissileLauncherProjectileBalancing(
+	data class LightMissileLauncherProjectileBalancing(
 		override val range: Double = 170.0,
 		override val speed: Double = 100.0,
 		override val explosionPower: Float = 2.0f,
