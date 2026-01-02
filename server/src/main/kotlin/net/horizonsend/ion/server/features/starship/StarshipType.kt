@@ -591,7 +591,7 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_PLATE.getValue().constructItemStack() },
-		menuSubclasses = { listOf(AI_CRUISER, LOGISTICS_CRUISER, DRONE_CRUISER) },
+		menuSubclasses = { listOf(AI_CRUISER, LOGISTICS_CRUISER, MISSILE_CRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#FFD700",
 		overridePermission = "ion.ships.override.70",
@@ -641,8 +641,8 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logistics_cruiser
 	),
-	DRONE_CRUISER(
-		displayName = "Drone Cruiser",
+	MISSILE_CRUISER(
+		displayName = "Missile Cruiser",
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 13500,
 		maxSize = 16000,
@@ -658,7 +658,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::drone_cruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missile_cruiser
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",

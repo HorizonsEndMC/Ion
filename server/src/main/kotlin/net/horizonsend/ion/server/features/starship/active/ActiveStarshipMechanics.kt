@@ -183,7 +183,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		// Destroy large tech 2 ships without intact reactors
 		ActiveStarships.all().filter {
-			it.type == StarshipType.DRONE_CRUISER ||
+			it.type == StarshipType.MISSILE_CRUISER ||
 			it.type == StarshipType.LOGISTICS_CRUISER ||
 			it.type == StarshipType.LANCER_BATTLECRUISER &&
 			!it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->

@@ -550,11 +550,10 @@ data class RapidHeavyMissileLauncherBalancing(
 		)
 		 */
 	)),
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(3),
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override val firePowerConsumption: Int = 32846,
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2500),
+	override val firePowerConsumption: Int = 500,
 	override val isForwardOnly: Boolean = false,
-	override val maxPerShot: Int? = 1,
+	override val maxPerShot: Int? = 2,
 	override val applyCooldownToAll: Boolean = false,
 	override val aimDistance: Int = 5,
 	override val convergeDistance: Double = 10.0,
@@ -564,8 +563,7 @@ data class RapidHeavyMissileLauncherBalancing(
 	override val projectile: RapidHeavyMissileLauncherProjectileBalancing = RapidHeavyMissileLauncherProjectileBalancing(),
 	override val inaccuracyDegrees: Double = 2.0,
 
-	) : StarshipHeavyWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
-	StarshipTrackingWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
+	) : StarshipTrackingWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
 	StarshipTurretWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>{
 	@Transient
 	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = RapidHeavyMissileLauncherWeaponSubsystem::class

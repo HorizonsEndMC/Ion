@@ -1063,7 +1063,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
 			)
 		),
-		val drone_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val missile_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1076,9 +1076,12 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				RapidHeavyMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				LightMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				ThermonuclearMissileBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
