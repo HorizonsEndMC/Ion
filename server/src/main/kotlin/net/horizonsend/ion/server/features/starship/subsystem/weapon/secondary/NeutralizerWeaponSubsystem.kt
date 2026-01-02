@@ -4,10 +4,12 @@ import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing
 import net.horizonsend.ion.server.configuration.starship.NeutralizerBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.NeutralizerProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -21,14 +23,13 @@ class NeutralizerWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : TargetTrackingCannonWeaponSubsystem<NeutralizerBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(NeutralizerWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : CannonWeaponSubsystem<NeutralizerBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(NeutralizerWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val length: Int = 8
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
-	override val aimDistance: Int get() = balancing.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		HeavyLaserProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, target, aimDistance).fire()
+		NeutralizerProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, this).fire()
 	}
 
 	override fun getName(): Component {

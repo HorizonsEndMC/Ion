@@ -261,16 +261,14 @@ data class NeutralizerBalancing(
 
 	override val convergeDistance: Double = 0.0,
 	override val projectileSpawnDistance: Int = 1,
-	override val angleRadiansHorizontal: Double = 0.0,
-	override val angleRadiansVertical: Double = 0.0,
+	override val angleRadiansHorizontal: Double = 15.0,
+	override val angleRadiansVertical: Double = 15.0,
 
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(5),
-	override val aimDistance: Int = 10,
 
 	override val projectile: NeutralizerProjectileBalancing = NeutralizerProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing>,
-	StarshipHeavyWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing>,
-	StarshipTrackingWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing> {
+	StarshipHeavyWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing> {
 	@Transient
 	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = NeutralizerWeaponSubsystem::class
 
@@ -283,10 +281,9 @@ data class NeutralizerBalancing(
 		override val areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val particleThickness: Double = 4.0,
-		override val maxDegrees: Double = 25.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
-	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
+	) : StarshipParticleProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = NeutralizerProjectile::class
 	}
