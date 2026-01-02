@@ -24,6 +24,8 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.playerSwapHandsListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.component.MagazineType
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergyGreatSword
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -94,9 +96,11 @@ open class Blaster<T : Balancing>(
 			var secondaryCount = 0
 			var tertiaryCount = 0
 			var fattyBelt = 1
+			var hasSword = false
 			val inventory = (livingEntity as? InventoryHolder)?.inventory ?: return@rightClickListener
 			for (i in inventory.contents){
 				val customItem = i?.customItem ?: continue
+				if (customItem is EnergySword || customItem is EnergyGreatSword) hasSword = true
 				if (customItem is Blaster<*>){
 					if (customItem.ammoComponent.getAmmo(i)==0) continue
 					when(customItem.balancingSupplier.get().type){
@@ -126,6 +130,10 @@ open class Blaster<T : Balancing>(
 			}
 			else if (tertiaryCount > 1){
 				livingEntity.userError("Over Tertiary weapon limit, limit is 1 but you have $tertiaryCount weapons")
+				return@rightClickListener
+			}
+			else if (hasSword){
+				livingEntity.userError("You cannot wield energy swords and blasters at the same time!")
 				return@rightClickListener
 			}
 			else{

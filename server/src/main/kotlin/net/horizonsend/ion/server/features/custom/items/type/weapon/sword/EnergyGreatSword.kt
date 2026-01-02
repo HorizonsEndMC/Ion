@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.custom.items.type.weapon.sword
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -20,25 +19,20 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.StoredValues
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter
 import org.bukkit.GameMode
 import org.bukkit.Material.SHIELD
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
-import org.bukkit.enchantments.Enchantment.KNOCKBACK
-import org.bukkit.enchantments.Enchantment.PROTECTION
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemStack
-import kotlin.math.roundToInt
 
 class EnergyGreatSword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String, color: TextColor) : CustomItem(
 	key = key,
@@ -48,7 +42,7 @@ class EnergyGreatSword(key: IonRegistryKey<CustomItem, out CustomItem>, type: St
 		.setCustomModel("weapon/energy_sword/energy_greatsword")
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 7.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
+			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 11.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.addModifier(Attribute.ATTACK_SPEED, AttributeModifier(NamespacedKeys.key("energy_sword_speed"), -2.4, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.addModifier(Attribute.ATTACK_KNOCKBACK, AttributeModifier(NamespacedKeys.key("energy_sword_knockback"), 2.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.build())

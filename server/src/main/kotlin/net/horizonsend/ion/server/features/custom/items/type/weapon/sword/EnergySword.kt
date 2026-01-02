@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.StoredValues
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -42,7 +41,7 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 		.setCustomModel("weapon/energy_sword/${type.lowercase()}_energy_sword")
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 7.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
+			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 10.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.addModifier(Attribute.ATTACK_SPEED, AttributeModifier(NamespacedKeys.key("energy_sword_speed"), -2.4, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.build())
 		.build()

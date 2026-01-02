@@ -70,13 +70,13 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		var energySwordBalancing: EnergySwordBalancing = EnergySwordBalancing(
-			damage = 4.0, //WARNING: This is EXTRA DAMAGE on the default 7 damage in EnergySword.kt
+			damage = 69.0, //WARNING: THIS NUMBER DOESNT WORK AND THE ATTACK DAMAGE IS DETERMINED IN THE ENERGY SWORD CLASS
 			blockAmount = 200,
 			blockRechargePerTick= 1.0,
 			type = WeaponTypeEnum.MELEE
 		),
 		var energyGreatswordBalancing: EnergySwordBalancing = EnergySwordBalancing(
-			damage = 6.0, //WARNING: This is EXTRA DAMAGE on the default 7 damage in EnergyGreatSword.kt
+			damage = 6.0, //WARNING: THIS NUMBER DOESNT WORK AND THE ATTACK DAMAGE IS DETERMINED IN THE ENERGY GREATSWORD CLASS
 			blockAmount = 300,
 			blockRechargePerTick= 1.0,
 			type = WeaponTypeEnum.MELEE

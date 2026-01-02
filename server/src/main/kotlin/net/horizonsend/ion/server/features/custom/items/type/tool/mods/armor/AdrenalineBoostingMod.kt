@@ -6,20 +6,10 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
-import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
-import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import org.bukkit.entity.Player
-import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.potion.PotionEffectType.REGENERATION
-import org.bukkit.potion.PotionEffectType.SPEED
 import kotlin.reflect.KClass
 
 object AdrenalineBoostingMod : ItemModification {
@@ -37,9 +27,5 @@ object AdrenalineBoostingMod : ItemModification {
 	)
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.CHEST), REGENERATION, 60, 0, 0) { entity, _, _ ->
-		entity is Player
-			&& hasMovedInLastSecond(entity)
-			&& !entity.world.hasFlag(WorldFlag.ARENA)
-	})
+	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }

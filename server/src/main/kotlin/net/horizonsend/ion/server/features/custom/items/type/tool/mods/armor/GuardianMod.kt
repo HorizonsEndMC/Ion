@@ -4,23 +4,12 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
-import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
-import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
-import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.entity.Player
-import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.potion.PotionEffectType.RESISTANCE
-import org.bukkit.potion.PotionEffectType.SPEED
-import java.util.function.Supplier
 import kotlin.Array
 import kotlin.reflect.KClass
 
