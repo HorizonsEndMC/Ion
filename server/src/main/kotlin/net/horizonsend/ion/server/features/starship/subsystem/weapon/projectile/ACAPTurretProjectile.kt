@@ -27,26 +27,19 @@ class ACAPTurretProjectile(
 	override val balancing: ACAPTurretBalancing.ACAPTurretProjectileBalancing
 ): LaserProjectile<ACAPTurretBalancing.ACAPTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 	var tick = 0
-	val dustOptions = Particle.DustOptions(
-		color,
-		particleThickness.toFloat() *4f)
+	val particleData = Particle.DustTransition(
+		Color.fromARGB(255, 0, 139, 139),
+		shooter.color,
+		2.0f
+	)
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		super.spawnParticle(x, y, z, force)
-		if (tick % 10 == 0) {
-			for (point in location.circlePoints(2.0, 12, direction)) {
-				point.world.spawnParticle(Particle.DUST, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
-			}
-			for (point in location.circlePoints(3.0, 18, direction)) {
-				point.world.spawnParticle(Particle.DUST, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
-			}
-		}
+		val particle1 = Particle.DUST_COLOR_TRANSITION
+		val particle2 = Particle.SONIC_BOOM
+		location.world.spawnParticle(particle2, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
+		location.world.spawnParticle(particle1, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, particleData, force)
 	}
 
-	override fun tick() {
-		super.tick()
-		tick+=1
-	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		if (starship.initialBlockCount > 12000)

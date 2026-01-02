@@ -25,6 +25,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.util.Vector
+import kotlin.math.sign
 
 sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileBalancing>() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): AssaultTurretWeaponSubsystem {
@@ -283,8 +284,11 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<AssaultTurretBalancing.AssaultTurretProjectileBalancing>, AssaultTurretBalancing.AssaultTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
+		var side: Boolean
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
+
+			side = point.x - pos.x < 0 //if true then left else right
 
 			val loc = point.toLocation(world).toCenterLocation()
 
@@ -295,7 +299,8 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				dir,
 				shooter.color,
 				shooter,
-				subSystem.balancing.projectile
+				subSystem.balancing.projectile,
+				side
 			).fire()
 		}
 	}

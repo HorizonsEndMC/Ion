@@ -15,188 +15,95 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<LightLogisticsCannonWeaponSubsystem>(), DisplayNameMultilblock {
+object LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<LightLogisticsCannonWeaponSubsystem>(), DisplayNameMultilblock {
 
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): LightLogisticsCannonWeaponSubsystem {
+	override fun createSubsystem(
+		starship: ActiveStarship,
+		pos: Vec3i,
+		face: BlockFace
+	): LightLogisticsCannonWeaponSubsystem {
 		return LightLogisticsCannonWeaponSubsystem(starship, pos, face)
 	}
 
 
 	override val displayName: Component get() = text("Light Logistics cannon")
 	override val description: Component get() = text("Weapon system that heals other starships.")
+	override val key: String = "light_logistics_cannon"
 
-
-	abstract fun getFirePointOffset(): Vec3i
+	override fun MultiblockShape.buildStructure() {
+		z(2) {
+			y(-1) {
+				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
+				x(0).anyWall()
+				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
+			}
+			y(0) {
+				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
+				x(0).type(Material.LODESTONE)
+				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
+			}
+			y(1) {
+				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
+				x(0).anyWall()
+				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
+			}
+		}
+		z(1) {
+			y(-1) {
+				x(-1).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.TOP,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
+				x(0).ironBlock()
+				x(1).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.TOP,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
+			}
+			y(0) {
+				x(-1).ironBlock()
+				x(0).emeraldBlock()
+				x(1).ironBlock()
+			}
+			y(1) {
+				x(-1).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.BOTTOM,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
+				x(0).ironBlock()
+				x(1).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.BOTTOM,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
+			}
+		}
+		z(0) {
+			y(-1) {
+				x(-1).ironBlock()
+				x(1).ironBlock()
+			}
+			y(0) {
+				x(-1).ironBlock()
+				x(0).emeraldBlock()
+				x(1).ironBlock()
+			}
+			y(1) {
+				x(-1).ironBlock()
+				x(1).ironBlock()
+			}
+		}
+	}
 }
 
-
-	object TopLightLogisticsCannonMultiblock : LightLogisticsCannonMultiblock() {
-		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, +0)
-		override val key: String = "top_light_logistics_cannon"
-		override fun MultiblockShape.buildStructure() {
-			z(1) {
-				y(0) {
-					x(-1).ironBlock()
-					x(1).ironBlock()
-				}
-				y(1) {
-					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-					x(0).ironBlock()
-					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				}
-				y(2) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
-					x(0).anyWall()
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
-				}
-			}
-			z(0) {
-				y(0) {
-					x(-1).ironBlock()
-					x(0).emeraldBlock()
-					x(1).ironBlock()
-				}
-				y(1) {
-					x(-1).ironBlock()
-					x(0).emeraldBlock()
-					x(1).ironBlock()
-				}
-				y(2) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-					x(0).type(Material.LODESTONE)
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
-				}
-			}
-			z(-1) {
-				y(0) {
-					x(-1).ironBlock()
-					x(1).ironBlock()
-				}
-				y(1) {
-					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-					x(0).ironBlock()
-					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				}
-				y(2) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT))
-					x(0).anyWall()
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.LEFT))
-				}
-			}
-		}
-
-	}
-
-	object SideLightLogisticsCannonMultiblock : LightLogisticsCannonMultiblock() {
-		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +4)
-		override val key: String = "side_light_logistics_cannon"
-		override fun MultiblockShape.buildStructure() {
-			z(2) {
-				y(-1) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
-					x(0).anyWall()
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
-				}
-				y(0) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
-					x(0).type(Material.LODESTONE)
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
-				}
-				y(1) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
-					x(0).anyWall()
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
-				}
-			}
-			z(1) {
-				y(-1) {
-					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-					x(0).ironBlock()
-					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				}
-				y(0) {
-					x(-1).ironBlock()
-					x(0).emeraldBlock()
-					x(1).ironBlock()
-				}
-				y(1) {
-					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-					x(0).ironBlock()
-					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				}
-			}
-			z(0) {
-				y(-1) {
-					x(-1).ironBlock()
-					x(1).ironBlock()
-				}
-				y(0) {
-					x(-1).ironBlock()
-					x(0).emeraldBlock()
-					x(1).ironBlock()
-				}
-				y(1) {
-					x(-1).ironBlock()
-					x(1).ironBlock()
-				}
-			}
-		}
-
-	}
-
-	object BottomLightLogisticsCannonMultiblock : LightLogisticsCannonMultiblock() {
-		override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, +0)
-		override val key: String = "bottom_light_logistics_cannon"
-		override fun MultiblockShape.buildStructure() {
-			z(1) {
-				y(-2) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
-					x(0).anyWall()
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
-				}
-				y(-1) {
-					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-					x(0).ironBlock()
-					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				}
-				y(0) {
-					x(-1).ironBlock()
-					x(1).ironBlock()
-				}
-			}
-			z(0) {
-				y(-2) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-					x(0).type(Material.LODESTONE)
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
-				}
-				y(-1) {
-					x(-1).ironBlock()
-					x(0).emeraldBlock()
-					x(1).ironBlock()
-				}
-				y(0) {
-					x(-1).ironBlock()
-					x(0).emeraldBlock()
-					x(1).ironBlock()
-				}
-			}
-			z(-1) {
-				y(-2) {
-					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT))
-					x(0).anyWall()
-					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.LEFT))
-				}
-				y(-1) {
-					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-					x(0).ironBlock()
-					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				}
-				y(0) {
-					x(-1).ironBlock()
-					x(1).ironBlock()
-				}
-			}
-		}
-
-	}

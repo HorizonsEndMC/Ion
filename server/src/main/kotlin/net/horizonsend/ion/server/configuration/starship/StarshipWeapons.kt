@@ -74,13 +74,14 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLogisticsProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyNeutralizerProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.InterceptorCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.IonTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LaserCannonLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LightLogisticsProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LogisticTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.NeutralizerProjectile
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LogisticsCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
@@ -526,7 +527,7 @@ data class RapidHeavyMissileLauncherBalancing(
 	override val projectile: RapidHeavyMissileLauncherProjectileBalancing = RapidHeavyMissileLauncherProjectileBalancing(),
 	override val inaccuracyDegrees: Double = 2.0,
 
-) : StarshipHeavyWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
+	) : StarshipHeavyWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
 	StarshipTrackingWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>,
 	StarshipTurretWeaponBalancing<RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing>{
 	@Transient
@@ -544,7 +545,8 @@ data class RapidHeavyMissileLauncherBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val maxDegrees: Double = 90.0,
 		override val particleThickness: Double = 2.0,
-	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
+		val delayMillis: Int = 450,
+		) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
 	}
@@ -1235,7 +1237,7 @@ data class LightLogisticsCannonBalancing(
 		override val shieldBoostFactor: Int = 50000
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
 		@Transient
-		override val clazz: KClass<out Projectile> = LogisticsCannonProjectile::class
+		override val clazz: KClass<out Projectile> = LightLogisticsProjectile::class
 	}
 }
 
@@ -1271,7 +1273,7 @@ data class HeavyLogisticsCannonBalancing(
 		override val shieldBoostFactor: Int = 50000
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
 		@Transient
-		override val clazz: KClass<out Projectile> = LogisticsCannonProjectile::class
+		override val clazz: KClass<out Projectile> = HeavyLogisticsProjectile::class
 	}
 }
 

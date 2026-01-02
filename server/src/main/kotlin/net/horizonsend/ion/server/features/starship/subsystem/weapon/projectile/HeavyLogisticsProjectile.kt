@@ -1,33 +1,32 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.starship.GaussCannonBalancing
+import net.horizonsend.ion.server.configuration.starship.HeavyLogisticsCannonBalancing
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
-import kotlin.math.roundToInt
 
-class GaussCannonProjectile(
+class HeavyLogisticsProjectile(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	override val color: Color,
-	shooter: Damager,
-	override val balancing: GaussCannonBalancing.GaussCannonProjectileBalancing
-): LaserProjectile<GaussCannonBalancing.GaussCannonProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+	shooter: Damager
+) : LaserProjectile<HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+	override val color: Color get() = shooter.color
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val origin = Location(location.world, x, y, z)
 		val forwardDirection = origin.direction.clone().normalize()
-		val rightDirection = forwardDirection.clone().crossProduct(Vector(0, 1, 0)).normalize()
-		val radius = 1.0
+		val rightDirection = forwardDirection.clone().crossProduct(Vector(0.0, 1.5,0.0)).normalize()
+		val radius = 1.5
 
 		val pointForward = origin.clone().add(forwardDirection.clone().multiply(radius))
 		val pointBackward = origin.clone().subtract(forwardDirection.clone().multiply(radius))
@@ -38,16 +37,12 @@ class GaussCannonProjectile(
 		super.spawnParticle(pointRight.x, pointRight.y, pointRight.z, force)
 		super.spawnParticle(pointBackward.x, pointBackward.y, pointBackward.z, force)
 		super.spawnParticle(pointForward.x, pointForward.y, pointForward.z, force)
+	}
 
-		val midForwardRight = pointForward.clone().add(pointRight).multiply(0.5)
-		val midBackwardRight = pointBackward.clone().add(pointRight).multiply(0.5)
-		val midBackwardLeft = pointBackward.clone().add(pointLeft).multiply(0.5)
-		val midForwardLeft = pointForward.clone().add(pointLeft).multiply(0.5)
-
-		super.spawnParticle(midForwardRight.x, midForwardRight.y, midForwardRight.z, force)
-		super.spawnParticle(midBackwardRight.x, midBackwardRight.y, midBackwardRight.z, force)
-		super.spawnParticle(midBackwardLeft.x, midBackwardLeft.y, midBackwardLeft.z, force)
-		super.spawnParticle(midForwardLeft.x, midForwardLeft.y, midForwardLeft.z, force)
-
+	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+		for (shield: ShieldSubsystem in starship.shields) {
+			if (shield.isReinforcementEnabled) continue
+			shield.power += balancing.shieldBoostFactor
+		}
 	}
 }

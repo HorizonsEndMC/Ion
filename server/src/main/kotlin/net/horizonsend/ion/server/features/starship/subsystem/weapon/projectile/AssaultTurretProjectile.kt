@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.configuration.starship.AssaultTurretBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rectangle
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -18,53 +20,58 @@ class AssaultTurretProjectile(
 	dir: Vector,
 	override val color: Color,
 	shooter: Damager,
-	override val balancing: AssaultTurretBalancing.AssaultTurretProjectileBalancing
+	override val balancing: AssaultTurretBalancing.AssaultTurretProjectileBalancing,
+	side: Boolean
 ): LaserProjectile<AssaultTurretBalancing.AssaultTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+	val currentSide = side
 
-	private var checkpoint1 = false
-	private var checkpoint2 = false
+	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
+		val origin = Location(location.world, x, y, z)
+		val forwardDirection = origin.direction.clone().normalize()
+		val rightDirection = forwardDirection.clone().crossProduct(Vector(0.0, 1.5, 0.0)).normalize()
+		val radius = 1.5
 
+		if (currentSide) { spawnRightParticles(force, origin, forwardDirection, rightDirection, radius) }
+		else { spawnLeftParticles(force, origin, forwardDirection, rightDirection, radius) }
+	}
 
-	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		val particle = Particle.DUST
-		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-		super.moveVisually(oldLocation, newLocation, travel)
+	fun spawnRightParticles(
+		force: Boolean,
+		origin: Location,
+		forwardDirection: Vector,
+		rightDirection: Vector,
+		radius: Double
+	) {
+		val pointForward = origin.clone().add(forwardDirection.clone().multiply(radius))
+		val pointBackward = origin.clone().subtract(forwardDirection.clone().multiply(radius))
+		val pointRight = origin.clone().add(rightDirection.clone().multiply(radius))
+		val midBackwardRight = pointBackward.clone().add(pointRight).multiply(0.5)
+		val midForwardRight = pointForward.clone().add(pointRight).multiply(0.5)
 
-		//Checks the smaller ring that's farther out first
-		if (distance < 8.0 && !checkpoint2 && checkpoint1) {
-			checkpoint2 = true
-			val circlePoints2 = location.circlePoints(1.5, 8, direction)
-			for (point in circlePoints2) point.world.spawnParticle(
-				particle,
-				point.x,
-				point.y,
-				point.z,
-				2,
-				0.0,
-				0.0,
-				0.0,
-				0.0,
-				dustOptions,
-				true
-			)
-		}
+		super.spawnParticle(pointRight.x, pointRight.y, pointRight.z, force)
+		super.spawnParticle(pointBackward.x, pointBackward.y, pointBackward.z, force)
+		super.spawnParticle(pointForward.x, pointForward.y, pointForward.z, force)
+		super.spawnParticle(midForwardRight.x, midForwardRight.y, midForwardRight.z, force)
+		super.spawnParticle(midBackwardRight.x, midBackwardRight.y, midBackwardRight.z, force)
+	}
 
-		if (distance < 4.0 && !checkpoint1) {
-			checkpoint1 = true
-			val circlePoints1 = location.circlePoints(2.0, 8, direction)
-			for (point in circlePoints1) point.world.spawnParticle(
-				particle,
-				point.x,
-				point.y,
-				point.z,
-				4,
-				0.0,
-				0.0,
-				0.0,
-				0.0,
-				dustOptions,
-				true
-			)
-		}
+	fun spawnLeftParticles(
+		force: Boolean,
+		origin: Location,
+		forwardDirection: Vector,
+		rightDirection: Vector,
+		radius: Double
+	) {
+		val pointForward = origin.clone().add(forwardDirection.clone().multiply(radius))
+		val pointBackward = origin.clone().subtract(forwardDirection.clone().multiply(radius))
+		val pointLeft = origin.clone().subtract(rightDirection.clone().multiply(radius))
+		val midBackwardLeft = pointBackward.clone().add(pointLeft).multiply(0.5)
+		val midForwardLeft = pointForward.clone().add(pointLeft).multiply(0.5)
+
+		super.spawnParticle(pointLeft.x, pointLeft.y, pointLeft.z, force)
+		super.spawnParticle(pointBackward.x, pointBackward.y, pointBackward.z, force)
+		super.spawnParticle(pointForward.x, pointForward.y, pointForward.z, force)
+		super.spawnParticle(midBackwardLeft.x, midBackwardLeft.y, midBackwardLeft.z, force)
+		super.spawnParticle(midForwardLeft.x, midForwardLeft.y, midForwardLeft.z, force)
 	}
 }

@@ -212,11 +212,6 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<ACAPTurretBalancing.ACAPTurretProjectileBalancing>, ACAPTurretBalancing.ACAPTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
-		val particleData = Particle.DustTransition(
-			Color.fromARGB(255, 50, 205, 50),
-			shooter.color,
-			2.0f
-		)
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 

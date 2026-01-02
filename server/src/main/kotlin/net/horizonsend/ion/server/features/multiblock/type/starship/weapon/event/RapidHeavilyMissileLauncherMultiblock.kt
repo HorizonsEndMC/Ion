@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.RapidHeavyMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
@@ -98,7 +99,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 			}
 			y(getSign() * 4) {
 				x(-1).ironBlock()
-				x(0).kothBlock()
+				x(0).ironBlock()
 				x(1).ironBlock()
 			}
 		}
@@ -188,12 +189,12 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		val initialLaunchDirection = face.direction
 		val projectileBalancing = subSystem.balancing.projectile
 
-		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
+		for ((index, point) in getAdjustedFirePoints(pos, face).withIndex()) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 			val target: Vector = StarshipWeaponry.getTarget(point.toLocation(starship.world), dir, starship)
 
 			for (newBoid in 0 until 1) {
-				Tasks.syncDelay(newBoid.toLong()) {
+				Tasks.syncDelay((index * projectileBalancing.delayMillis/50).toLong()) {
 					val randomInitialDir = initialLaunchDirection.clone()
 						.rotateAroundX(randomDouble(-0.15, 0.15))
 						.rotateAroundY(randomDouble(-0.15, 0.15))
@@ -201,7 +202,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 					val randomLoc = point.toCenterVector().clone()
 						.add(randomInitialDir.clone().normalize().multiply(0.1))
 
-					TrackingMissileProjectile(
+					RapidHeavyMissileProjectile(
 						StarshipProjectileSource(starship),
 						getName(),
 						randomLoc.toLocation(starship.world),
