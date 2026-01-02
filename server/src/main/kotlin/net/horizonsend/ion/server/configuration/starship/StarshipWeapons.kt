@@ -338,14 +338,7 @@ data class PhaserBalancing(
 @Serializable
 data class WebifierBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2),
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000, incompatibleMultiblocks = listOf(
-		/*
-		IncompatibleSubsystemInfo(
-			SwarmMissileStarshipWeaponSubsystem::class.java,
-			"Phasers are incompatible with swarm missiles!"
-		)
-		 */
-	)),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000, incompatibleMultiblocks = listOf()),
 	override val firePowerConsumption: Int = 500,
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int? = null,
@@ -373,7 +366,8 @@ data class WebifierBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-	) : StarshipProjectileBalancing {
+		override val particleThickness: Double = 2.0,
+	) : StarshipParticleProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = WebifierProjectile::class
 	}

@@ -49,7 +49,7 @@ class NeutralizerProjectile(
 		starship.userErrorAction("Ship shield regeneration disrupted!")
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {
-			val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world)
+			val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world).toCenterLocation()
 
 			for (startPoint in impactLocation.circlePoints(5.0, 20, direction)) {
 				shooterStarship.world.spawnParticle(

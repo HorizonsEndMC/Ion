@@ -1,105 +1,69 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.starship.WebifierBalancing.WebifierProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.WebifierStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.WebifierWeaponSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
-import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
+import kotlin.math.pow
 
 class WebifierProjectile(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	shooter: Damager
-) : ParticleProjectile<WebifierProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
-	override var speed: Double = balancing.speed; get() = balancing.speed
-	var tick: Int = -1
-	val firePos = loc
-
-	private val blueParticleData = Particle.DustTransition(
-		Color.AQUA,
-		Color.PURPLE,
-		2.0f
-	)
-
-
+	shooter: Damager,
+	private val subsystem: WebifierWeaponSubsystem
+) : LaserProjectile<WebifierProjectileBalancing>(source, name, loc, dir, shooter, WebifierStarshipWeaponMultiblock.damageType) {
+	override val color: Color = Color.TEAL
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		val origin = Location(location.world, x, y, z)
-			//for (point in origin.circlePoints(0.3, 12, direction)) {
-			location.world.spawnParticle(
-				Particle.DUST_COLOR_TRANSITION,
-				origin.x,
-				origin.y,
-				origin.z,
-				1,
-				0.0,
-				0.0,
-				0.0,
-				0.0,
-				blueParticleData,
-				force
-			)
-				//}
+		super.spawnParticle(x, y, z, force)
 	}
 
+	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+		val shooterStarship = shooter.starship ?: return
 
-/*	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
-		super.impact(newLoc, block, entity)
+		val task = Tasks.syncRepeatTask(0L, 4L) {
+			val endLocation = subsystem.getFirePos().toLocation(shooterStarship.world).toCenterLocation()
 
-		val rayEnds = newLoc.spherePoints(3.0, 3)
-		for (rayEnd in rayEnds) {
-			val lightningPoints = lightning(newLoc, rayEnd, generations, maxOffset, 0.7)
-			for (lightningPoint in lightningPoints) {
-				lightningPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, lightningPoint.x, lightningPoint.y, lightningPoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-			}
-		}
-
-		for (point in newLoc.spherePoints(2.5, 5)) {
-			newLoc.iterateVector(Vector(point.x - newLoc.x, point.y - newLoc.y, point.z - newLoc.z), 5) { pointAlong, _ ->
-				pointAlong.world.spawnParticle(
-					Particle.DUST_COLOR_TRANSITION,
-					pointAlong.x,
-					pointAlong.y,
-					pointAlong.z,
+			for (startPoint in impactLocation.circlePoints(10.0, 30, direction)) {
+				shooterStarship.world.spawnParticle(
+					Particle.TRAIL,
+					startPoint,
 					1,
-					0.25,
-					0.25,
-					0.25,
-					2.0,
-					blueParticleData,
+					0.5,
+					0.5,
+					0.5,
+					0.0,
+					Particle.Trail(endLocation, color, randomInt(20, 60)),
 					true
 				)
 			}
 		}
 
-		newLoc.world.spawnParticle(
-			Particle.GLOW,
-			newLoc.x,
-			newLoc.y,
-			newLoc.z,
-			25,
-			0.5,
-			0.5,
-			0.5,
-			0.0,
-			null,
-			true
-		)
-	} */
+		Tasks.syncDelay(60L) {
+			task.cancel()
+		}
 
-	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		super.onImpactStarship(starship, impactLocation)
 	}
 
 	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
+
+	private fun curveEquation(x: Double, horizontalShift: Double) = (1.025.pow(x - horizontalShift) + 1) / 8
+
+	companion object {
+		private const val SEGMENT_LENGTH = 5
+		private const val SHIFT_START = 100
+	}
 }
