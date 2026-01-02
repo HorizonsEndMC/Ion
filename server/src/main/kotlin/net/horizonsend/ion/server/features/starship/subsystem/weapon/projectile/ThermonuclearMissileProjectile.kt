@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.damage.DamageType
 import org.bukkit.Color
@@ -17,7 +18,7 @@ import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
+class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
@@ -137,10 +138,25 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	}
 
 	override fun onImpact() {
-		for (loc in location.circlePoints(2.0, 30, direction)) {
+		for (loc in location.circlePoints(4.0, 50, direction)) {
 			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
 			loc.world.spawnParticle(
 				Particle.CLOUD,
+				location,
+				0,
+				radialVector.x,
+				radialVector.y,
+				radialVector.z,
+				1.0,
+				null,
+				true
+			)
+		}
+
+		for (loc in location.spherePoints(4.0, 50)) {
+			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
+			loc.world.spawnParticle(
+				Particle.FLAME,
 				location,
 				0,
 				radialVector.x,
