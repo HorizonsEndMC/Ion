@@ -4,7 +4,6 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
-import net.horizonsend.ion.server.configuration.starship.IncompatibleSubsystemInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
@@ -313,7 +312,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 			)
 		),
-		val scrambler_starfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val scramblerStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			interdictionRange = 10,

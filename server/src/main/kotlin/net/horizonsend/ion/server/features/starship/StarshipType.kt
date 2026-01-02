@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
-import net.horizonsend.ion.server.features.starship.StarshipType.entries
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -144,7 +143,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::scrambler_starfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::scramblerStarfighter
 	),
 	RECON_STARFIGHTER(
 		displayName = "Recon Fighter",

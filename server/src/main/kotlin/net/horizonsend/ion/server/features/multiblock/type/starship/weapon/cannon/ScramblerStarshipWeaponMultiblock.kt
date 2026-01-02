@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PulseCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ScramblerWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -15,7 +14,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.Material
 
 object ScramblerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ScramblerWeaponSubsystem>(), DisplayNameMultilblock {
-	override val key: String = "Scrambler"
+	override val key: String = "scrambler"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): ScramblerWeaponSubsystem {
 		return ScramblerWeaponSubsystem(starship, pos, face)
 	}
