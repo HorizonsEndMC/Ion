@@ -442,12 +442,12 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 
 	object TopThermonuclearMissileWeaponMultiblock : VerticalThermonuclearMissileWeaponMultiblock() {
 		override fun getYFactor() = 1
-		override fun getFirePointOffset(): Vec3i = Vec3i(+0, 8, +0)
+		override fun getFirePointOffset(): Vec3i = Vec3i(+0, 8, -2)
 		override fun upOrDown(): BlockFace = BlockFace.UP
 	}
 
 	object BottomThermonuclearMissileWeaponMultiblock : VerticalThermonuclearMissileWeaponMultiblock() {
 		override fun getYFactor() = -1
-		override fun getFirePointOffset(): Vec3i = Vec3i(+0, -8, +0)
+		override fun getFirePointOffset(): Vec3i = Vec3i(+0, -8, -2)
 		override fun upOrDown(): BlockFace = BlockFace.DOWN
 	}

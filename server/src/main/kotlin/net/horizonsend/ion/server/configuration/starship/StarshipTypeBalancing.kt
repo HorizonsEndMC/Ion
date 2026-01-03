@@ -70,6 +70,7 @@ data class NewStarshipBalancing(
 			PlasmaCannonBalancing(),
 			LaserCannonBalancing(),
 			InterceptorCannonBalancing(),
+			ProbeBalancing(),
 
 			// Event weapons
 			DoomsdayDeviceBalancing(),
@@ -376,6 +377,7 @@ data class NewStarshipBalancing(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 			),
 			shieldPowerMultiplier = 0.75,
 			shieldRegenMultiplier = 0.25,

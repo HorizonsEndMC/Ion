@@ -99,7 +99,7 @@ data class PVPBalancingConfiguration(
 			scale = 0.0,
 			entityReach = 0.0,
 			blockReach = 0.0,
-			armor = 6.0,
+			armor = 5.25,
 			toughness = 3.0,
 			knockBackResistance = .1,
 			power = 100000,

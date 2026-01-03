@@ -40,7 +40,7 @@ object TopLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncherSta
 		z(0) {
 			y(0) {
 				x(-1).ironBlock()
-				x(0).powerInput()
+				x(0).ironBlock()
 				x(+1).ironBlock()
 			}
 			y(1) {
@@ -66,6 +66,7 @@ object TopLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncherSta
 						shape = Stairs.Shape.STRAIGHT
 					)
 				)
+				x(0).powerInput()
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -151,7 +152,7 @@ object BottomLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncher
 			}
 			y(0) {
 				x(-1).ironBlock()
-				x(0).powerInput()
+				x(0).ironBlock()
 				x(+1).ironBlock()
 			}
 		}
@@ -192,6 +193,7 @@ object BottomLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncher
 						shape = Stairs.Shape.STRAIGHT
 					)
 				)
+				x(0).powerInput()
 				x(+1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -201,7 +203,7 @@ object BottomLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncher
 				)
 			}
 		}
-		z(1) {
+		z(-1) {
 			y(-4) {
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
