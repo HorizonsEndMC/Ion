@@ -94,17 +94,17 @@ object DoomsdayDeviceWeaponMultiblock : SignlessStarshipWeaponMultiblock<Doomsda
         }
         z(5) {
             y(0) {
-                x(2).type(Material.COPPER_BLOCK)
-                x(1).type(Material.COPPER_BLOCK)
+                x(2).anyCopperVariant()
+                x(1).anyCopperVariant()
                 x(0).uraniumBlock()
-                x(-1).type(Material.COPPER_BLOCK)
-                x(-2).type(Material.COPPER_BLOCK)
+                x(-1).anyCopperVariant()
+                x(-2).anyCopperVariant()
             }
             y(-1) {
-                x(0).type(Material.COPPER_BLOCK)
+                x(0).anyCopperVariant()
             }
             y(1) {
-                x(0).type(Material.COPPER_BLOCK)
+                x(0).anyCopperVariant()
             }
         }
         z(6) {
@@ -124,17 +124,17 @@ object DoomsdayDeviceWeaponMultiblock : SignlessStarshipWeaponMultiblock<Doomsda
         }
         z(7) {
             y(0) {
-                x(2).type(Material.COPPER_BLOCK)
-                x(1).type(Material.COPPER_BLOCK)
+                x(2).anyCopperVariant()
+                x(1).anyCopperVariant()
                 x(0).uraniumBlock()
-                x(-1).type(Material.COPPER_BLOCK)
-                x(-2).type(Material.COPPER_BLOCK)
+                x(-1).anyCopperVariant()
+                x(-2).anyCopperVariant()
             }
             y(-1) {
-                x(0).type(Material.COPPER_BLOCK)
+                x(0).anyCopperVariant()
             }
             y(1) {
-                x(0).type(Material.COPPER_BLOCK)
+                x(0).anyCopperVariant()
             }
         }
         z(8) {
