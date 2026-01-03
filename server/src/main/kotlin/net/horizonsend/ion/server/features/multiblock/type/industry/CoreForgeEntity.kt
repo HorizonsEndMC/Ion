@@ -46,8 +46,8 @@ abstract class CoreForgeEntity (
 	val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, persistent = false)
 	val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-	private fun getInput(): Inventory? = getInventory(-2, 1, -1)
-	private fun getOutput(): Inventory? = getInventory(2, 1, -1)
+	private fun getInput(): Inventory? = getInventory(-2, 1, 0)
+	private fun getOutput(): Inventory? = getInventory(2, 1, 0)
 
 
 	fun openMenu(player: Player) {
@@ -93,18 +93,21 @@ abstract class CoreForgeEntity (
 		return future
 	}
 	fun startTask(player: Player, currentCore: ItemStack, gui: CoreForgeGui?) {
-		val currentRecipe = when {
-			currentCore == MINI_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.miniReactorRecipe
-			currentCore == SMALL_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.smallReactorRecipe
-			currentCore == MEDIUM_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.mediumReactorRecipe
-			currentCore == LARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.largeReactorRecipe
-			currentCore == CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
-			currentCore == BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.battlecruiserReactorRecipe
-			else -> return player.userError("Something broke! blame fell")
-		} as Map<ItemStack, Int>
-
+		val currentRecipe = when (currentCore) {
+			MINI_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.miniReactorRecipe
+			SMALL_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.smallReactorRecipe
+			MEDIUM_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.mediumReactorRecipe
+			LARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.largeReactorRecipe
+			CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
+			BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.battlecruiserReactorRecipe
+			else -> return player.userError("Something broke! Blame fell")
+		}
+		println(getInput())
+		println(getOutput())
+		println(getOrigin())
 		val input: Inventory = getInput() ?: return
 		val output: Inventory = getOutput() ?: return
+		println("diddy")
 		for (item in currentRecipe)
 			if (!input.contains(item.key, item.value)) {
 				return

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.industry
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
+import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
@@ -13,7 +14,9 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_RE
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
+import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.misc.BlueprintMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -40,12 +43,42 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				". 6 7 . . . 1 . .",
 				". . . . . . . . ."
 			)
-			.addIngredient('m', selectMiniCore)
-			.addIngredient('a', selectSmallCore)
-			.addIngredient('n', selectMediumCore)
-			.addIngredient('g', selectLargeCore)
-			.addIngredient('o', selectCruiserCore)
-			.addIngredient('4', selectBattlecruiserCore)
+			.addIngredient('m', tracked { id ->
+				AsyncItem({ MINI_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = MINI_REACTOR_CORE.getValue().constructItemStack()
+					refreshButtons(id)
+				}
+			})
+			.addIngredient('a', tracked { id ->
+				AsyncItem({ SMALL_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = SMALL_REACTOR_CORE.getValue().constructItemStack()
+					refreshButtons(id)
+				}
+			})
+			.addIngredient('n', tracked { id ->
+				AsyncItem({ MEDIUM_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = MEDIUM_REACTOR_CORE.getValue().constructItemStack()
+					refreshButtons(id)
+				}
+			})
+			.addIngredient('g', tracked { id ->
+				AsyncItem({ LARGE_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = LARGE_REACTOR_CORE.getValue().constructItemStack()
+					refreshButtons(id)
+				}
+			})
+			.addIngredient('o', tracked { id ->
+				AsyncItem({ CRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = CRUISER_REACTOR_CORE.getValue().constructItemStack()
+					refreshButtons(id)
+				}
+			})
+			.addIngredient('4', tracked { id ->
+				AsyncItem({ BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack()
+					refreshButtons(id)
+				}
+			})
 			.addIngredient('6', GuiItems.CustomControlItem(text("Selected Core:"), GuiItem.RIGHT))
 			.addIngredient('7', targetCore)
 			.addIngredient('1', enableButton)
@@ -58,11 +91,13 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 
 	override fun buildTitle(): Component {
 		val text = GuiText(entity.guiTitle)
-			.addBackground(GuiText.GuiBackground(
-				backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
-				backgroundWidth = 176 - 9,
-				verticalShift = 10
-			))
+			.addBackground(
+				GuiText.GuiBackground(
+					backgroundChar = DEFAULT_BACKGROUND_CHARACTER,
+					backgroundWidth = DEFAULT_GUI_WIDTH,
+					verticalShift = 10
+				)
+			)
 			.add(
 				text("Core Forge").itemLore,
 				verticalShift = -7 /* down 1 line */ + 2 /* Padding */,
@@ -72,8 +107,19 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 	}
 
 	val enableButton: FeedbackItem = FeedbackItem
-		.builder({ if (entity.isRunning) GuiItem.CHECKMARK.makeItem(text("Start")) else GuiItem.SHIP_FACTORY_RUNNING.makeItem(text("Start")) }) { _, player ->
-			if (entity.userManager.currentlyUsed()) return@builder InputResult.FailureReason(listOf(text("This ship factory is already being used!", RED)))
+		.builder({
+			if (entity.isRunning) GuiItem.CHECKMARK.makeItem(text("Start")) else GuiItem.SHIP_FACTORY_RUNNING.makeItem(
+				text("Start")
+			)
+		}) { _, player ->
+			if (entity.userManager.currentlyUsed()) return@builder InputResult.FailureReason(
+				listOf(
+					text(
+						"This core forge is already being used!",
+						RED
+					)
+				)
+			)
 			val otherCheckResults = entity.checkEnableButton(player)
 
 			val future = FutureInputResult()
@@ -97,41 +143,4 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 		}
 		.build()
 		.tracked()
-
-	private val selectMiniCore = GuiItems.createButton(MINI_REACTOR_CORE.getValue().constructItemStack()) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
-			entity.changeTargetCore(MINI_REACTOR_CORE.getValue().constructItemStack())
-			entity.openGui(player)
-		}.openGui(this)
-	}
-	private val selectSmallCore = GuiItems.createButton(SMALL_REACTOR_CORE.getValue().constructItemStack()) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
-			entity.changeTargetCore(SMALL_REACTOR_CORE.getValue().constructItemStack())
-			entity.openGui(player)
-		}.openGui(this)
-	}
-	private val selectMediumCore = GuiItems.createButton(MEDIUM_REACTOR_CORE.getValue().constructItemStack()) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
-			entity.changeTargetCore(MEDIUM_REACTOR_CORE.getValue().constructItemStack())
-			entity.openGui(player)
-		}.openGui(this)
-	}
-	private val selectLargeCore = GuiItems.createButton(LARGE_REACTOR_CORE.getValue().constructItemStack()) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
-			entity.changeTargetCore(LARGE_REACTOR_CORE.getValue().constructItemStack())
-			entity.openGui(player)
-		}.openGui(this)
-	}
-	private val selectCruiserCore = GuiItems.createButton(CRUISER_REACTOR_CORE.getValue().constructItemStack()) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
-			entity.changeTargetCore(CRUISER_REACTOR_CORE.getValue().constructItemStack())
-			entity.openGui(player)
-		}.openGui(this)
-	}
-	private val selectBattlecruiserCore = GuiItems.createButton(BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack()) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
-			entity.changeTargetCore(BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack())
-			entity.openGui(player)
-		}.openGui(this)
-	}
 }
