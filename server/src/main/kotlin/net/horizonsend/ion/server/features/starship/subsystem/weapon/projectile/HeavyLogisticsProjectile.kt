@@ -1,15 +1,13 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.starship.HeavyLogisticsCannonBalancing
+import net.horizonsend.ion.server.configuration.starship.HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
@@ -19,7 +17,7 @@ class HeavyLogisticsProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : LaserProjectile<HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+) : LaserProjectile<HeavyLogisticsCannonProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 	override val color: Color get() = shooter.color
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {

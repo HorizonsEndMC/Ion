@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
@@ -10,7 +9,6 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.starship.ProbeBalancing
-import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -25,7 +23,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Location
 import org.bukkit.Material
@@ -48,11 +45,11 @@ class ProbeWeaponSubsystem(
 		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 
 		Tasks.syncDelay(60L) {
-			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN COMPLETE]", HE_LIGHT_ORANGE)))
+			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN START]", HE_LIGHT_ORANGE)))
 			val ships = ActiveStarships.all().filter {
 				it.controller is PlayerController
 				it.world == starship.world
-				it.centerOfMass.distanceSquared(starship.centerOfMass) < 56250000 //5km squared
+				it.centerOfMass.distanceSquared(starship.centerOfMass) < 56250000 //7.5km squared
 				it.type != StarshipType.RECON_STARFIGHTER
 			}
 			val totalShips = ships.size
@@ -91,7 +88,7 @@ class ProbeWeaponSubsystem(
 			}
 			shooter.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
 			shooter.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
-			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN COMPLETE]", HE_DARK_GRAY)))
+			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN END]", HE_DARK_GRAY)))
 		}
 	}
 
