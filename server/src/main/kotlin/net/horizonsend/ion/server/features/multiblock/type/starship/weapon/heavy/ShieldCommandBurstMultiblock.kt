@@ -1,11 +1,10 @@
-package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurst
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 
-object ShieldCommandBurstMultiBlock : AbstractCommandBurst({ Material.SEA_LANTERN }) {
+object ShieldCommandBurstMultiblock : AbstractCommandBurstMultiblock(Material.SEA_LANTERN) {
 	override val displayName: Component get() = text("Shield Burst")
 	override val description: Component get() = text("AOE Shield Pulse")
 

@@ -111,8 +111,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.ShieldCommandBurstMultiBlock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SkirmishCommandBurstMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ShieldCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.SkirmishCommandBurstMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.DisruptorMultiblock
@@ -194,10 +194,9 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopThermonuclearMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.UpwardRocketStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.VerticalThermonuclearMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.WebifierStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CapitalShieldCommandBurstMultiBlock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CapitalSkirmishCommandBurstMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.CapitalShieldCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.CapitalSkirmishCommandBurstMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockTop
@@ -399,10 +398,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(WebifierStarshipWeaponMultiblock)
 		registerMultiblock(TopLightMissileLauncherStarshipWeaponMultiblock)
 		registerMultiblock(BottomLightMissileLauncherStarshipWeaponMultiblock)
-		registerMultiblock(SkirmishCommandBurstMultiBlock)
-		registerMultiblock(ShieldCommandBurstMultiBlock)
-		registerMultiblock(CapitalShieldCommandBurstMultiBlock)
-		registerMultiblock(CapitalSkirmishCommandBurstMultiBlock)
+		registerMultiblock(SkirmishCommandBurstMultiblock)
+		registerMultiblock(ShieldCommandBurstMultiblock)
+		registerMultiblock(CapitalShieldCommandBurstMultiblock)
+		registerMultiblock(CapitalSkirmishCommandBurstMultiblock)
 
 		registerMultiblock(TopThermonuclearMissileWeaponMultiblock)
 		registerMultiblock(BottomThermonuclearMissileWeaponMultiblock)

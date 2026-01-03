@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
@@ -45,7 +46,8 @@ import kotlin.reflect.KClass
 @Serializable
 data class NewStarshipBalancing(
 	val weaponDefaults: WeaponDefaults = WeaponDefaults(),
-	val shipClasses: ShipClasses = ShipClasses()
+	val shipClasses: ShipClasses = ShipClasses(),
+	val commandBurstDefaults: CommandBurstDefaults = CommandBurstDefaults(),
 ) {
 	@Serializable
 	data class WeaponDefaults(
@@ -94,6 +96,13 @@ data class NewStarshipBalancing(
 			CapitalCannonBalancing(),
 			TestBoidCannonBalancing(),
 			SwarmMissileBalancing(),
+		)
+	)
+
+	@Serializable
+	data class CommandBurstDefaults(
+		val commandBursts: List<StarshipCommandBurstBalancing> = listOf(
+			ShieldCommandBurstBalancing()
 		)
 	)
 
@@ -1398,6 +1407,7 @@ sealed interface StarshipTypeBalancing {
 	val forbiddenMultiblocks: List<IncompatibleSubsystemInfo>
 
 	val weaponOverrides: List<StarshipWeaponBalancing<*>>
+	val commandBurstOverrides: List<StarshipCommandBurstBalancing>
 }
 
 @Serializable
@@ -1422,6 +1432,7 @@ open class StanrdardStarshipTypeBalancing(
 	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
+	override val commandBurstOverrides: List<StarshipCommandBurstBalancing> = listOf(),
 ) : StarshipTypeBalancing
 
 @Serializable
@@ -1446,6 +1457,7 @@ open class GroundStarshipBalancing(
 	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
+	override val commandBurstOverrides: List<StarshipCommandBurstBalancing> = listOf(),
 ) : StarshipTypeBalancing
 
 @Serializable
@@ -1683,4 +1695,28 @@ sealed interface StarshipAutoWeaponBalancing<T : StarshipProjectileBalancing> : 
 @Serializable
 sealed interface StarshipTrackingWeaponBalancing<T : StarshipProjectileBalancing> : StarshipCannonWeaponBalancing<T> {
 	val aimDistance: Int
+}
+
+@Serializable
+sealed interface StarshipCommandBurstBalancing {
+	val clazz: KClass<out AbstractCommandBurstSubsystem<*>>
+
+	val activateRestrictions: ActivateRestrictions
+
+	val activateCooldownNanos: Long
+	val range: Double
+	val durationNanos: Long
+
+	/**
+	 * @param canActivate Whether this weapon can be fired.
+	 * @param minBlockCount The minimum block count of a ship to be able to fire this weapon.
+	 * @param maxBlockCount The maximum block count of a ship to be able to fire this weapon.
+	 * **/
+	@Serializable
+	data class ActivateRestrictions(
+		val canActivate: Boolean = true,
+		val minBlockCount: Int = 0,
+		val maxBlockCount: Int = Int.MAX_VALUE,
+		val incompatibleMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
+	)
 }

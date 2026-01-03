@@ -110,8 +110,8 @@ fun createShipFromTemplate(
 		createController
 	) { starship ->
 
-		if (template.balancingOverrides.isNotEmpty()) {
-			starship.balancingManager = AdditionalOverridesManager(starship.type, template.balancingOverrides)
+		if (template.weaponBalancingOverrides.isNotEmpty()) {
+			starship.balancingManager = AdditionalOverridesManager(starship.type, template.weaponBalancingOverrides, template.commandBurstBalancingOverrides)
 		}
 
 		callback(starship)

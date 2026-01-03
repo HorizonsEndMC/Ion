@@ -7,8 +7,10 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -47,6 +49,15 @@ object StarshipWeapons {
 
 			weapon.autoFire(target, dir)
 			weapon.postFire()
+		}
+	}
+
+	data class QueuedCommandBurstActivation(
+		val commandBurst: AbstractCommandBurstSubsystem<*>
+	) {
+		fun activate() {
+			commandBurst.activate()
+			commandBurst.postActivate()
 		}
 	}
 
@@ -128,6 +139,57 @@ object StarshipWeapons {
 		}
 
 		ship.reactor.heavyWeaponBooster.reduceWarmup(boostPower.get())
+	}
+
+	fun activateQueuedCommandBursts(queuedCommandBursts: List<QueuedCommandBurstActivation>, ship: Starship) {
+			val commandBurstTypes = queuedCommandBursts.map { it.commandBurst.javaClass.simpleName }.distinct()
+
+			ship.debug("commandBurstTypes = ${commandBurstTypes.joinToString(", ")}")
+
+			if (commandBurstTypes.count() > 1) {
+				ship.debug(
+					""""
+					CANNOT ACTIVATE MORE THAN 1 TYPE OF COMMAND BURST
+					Types: ${commandBurstTypes.joinToString()}
+					""".trimIndent()
+				)
+
+				ship.onlinePassengers.forEach { player ->
+					player.userErrorActionMessage("You can only activate one type of command burst at a time!")
+				}
+
+				return
+			}
+
+			val commandBurstType = commandBurstTypes.single()
+			ship.debug("commandBurstType = $commandBurstType")
+
+
+		val activatedCounts = HashMultimap.create<KClass<out AbstractCommandBurstSubsystem<*>>, AbstractCommandBurstSubsystem<*>>()
+
+		for (burst in queuedCommandBursts.shuffled(ThreadLocalRandom.current())) {
+			val commandBurst = burst.commandBurst
+
+			val clazz = burst.commandBurst::class.java
+
+			for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
+				subsystem.lastActivated = System.nanoTime()
+			}
+
+			val activatedSet = activatedCounts[commandBurst::class]
+			ship.debug("have we activated those already?")
+			if (activatedSet.size >= 1) {
+				ship.debug("we did, goodbye (${activatedSet.size})")
+
+				continue
+			}
+
+			ship.debugRed("activating")
+			burst.activate()
+
+			ship.debug("adding to fired")
+			activatedSet.add(commandBurst)
+		}
 	}
 
 	private fun resourcesUnavailable(

@@ -30,6 +30,8 @@ import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalan
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.AbyssalGazeSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.CapitalBeamWeaponSubsystem
@@ -1768,3 +1770,16 @@ data class TestBoidCannonBalancing(
 }
 
 // End Event Weapons
+
+// Begin Command Bursts
+@Serializable
+data class ShieldCommandBurstBalancing(
+	@Transient
+	override val clazz: KClass<out AbstractCommandBurstSubsystem<*>> = ShieldCommandBurstSubsystem::class,
+
+	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(),
+	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
+	override val range: Double = 200.0,
+	override val durationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
+) : StarshipCommandBurstBalancing
+// End Command Bursts

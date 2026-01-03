@@ -1,12 +1,10 @@
-package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCapitalCommandBurst
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurst
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 
-object CapitalSkirmishCommandBurstMultiBlock : AbstractCapitalCommandBurst({ Material.MAGMA_BLOCK }) {
+object CapitalSkirmishCommandBurstMultiblock : AbstractCapitalCommandBurst({ Material.MAGMA_BLOCK }) {
 	override val displayName: Component get() = text("Capital Skirmish Burst")
 	override val description: Component get() = text("AOE Speed Pulse")
 

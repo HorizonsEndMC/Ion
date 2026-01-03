@@ -80,6 +80,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		player.debug("Didn't click sign, trying to fire")
 
 		manualFire(player, starship, firingLightWeapons, player.inventory.itemInMainHand)
+		activateCommandBursts(player, starship, firingLightWeapons)
 
 		player.debugBanner("END")
 	}
@@ -197,5 +198,14 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 			target,
 			weaponSet
 		)
+	}
+
+	fun activateCommandBursts(
+		player: Player,
+		starship: ActiveStarship,
+		lightWeapons: Boolean,
+	) {
+		val shooter = player.damager()
+		StarshipWeaponry.activateCommandBursts(shooter, starship, lightWeapons)
 	}
 }

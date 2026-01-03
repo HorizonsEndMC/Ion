@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -501,6 +502,7 @@ class Starship(
 	val drills = LinkedList<PlanetDrillSubsystem>()
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
+	val commandBursts = LinkedList<AbstractCommandBurstSubsystem<*>>()
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 

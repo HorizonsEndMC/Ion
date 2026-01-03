@@ -7,10 +7,13 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.ManualQueuedShot
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.QueuedCommandBurstActivation
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.activateQueuedCommandBursts
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -118,6 +121,30 @@ object StarshipWeaponry : IonServerComponent() {
 		}
 	}
 
+	fun activateCommandBursts(
+		shooter: Damager,
+		starship: ActiveStarship,
+		lightWeapons: Boolean,
+	) {
+		starship.debug("Activating command bursts")
+		if (lightWeapons) {
+			starship.debug("Not right click; returning")
+			return
+		}
+
+		val commandBursts = starship.commandBursts
+
+		starship.debug("Command Bursts: ${commandBursts.joinToString { it.javaClass.simpleName }}")
+
+		val activateTask = {
+			val queuedActivations = queueActivations(shooter, commandBursts, lightWeapons)
+			starship.debug("Queued activations: ${queuedActivations.joinToString { it.commandBurst.javaClass.simpleName }}")
+			activateQueuedCommandBursts(queuedActivations, starship)
+		}
+
+		activateTask()
+	}
+
 	private fun queueShots(
 		shooter: Damager,
 		weapons: List<FiredSubsystem>,
@@ -187,5 +214,40 @@ object StarshipWeaponry : IonServerComponent() {
 		shooter.debugBanner("Queuing shots end")
 
 		return queuedShots
+	}
+
+	private fun queueActivations(
+		shooter: Damager,
+	 	commandBursts: List<AbstractCommandBurstSubsystem<*>>,
+	 	lightWeapons: Boolean,
+	): LinkedList<QueuedCommandBurstActivation> {
+		val queuedActivations = LinkedList<QueuedCommandBurstActivation>()
+
+		shooter.starship?.debugBanner("Queuing activations")
+
+		for (commandBurst in commandBursts) {
+			shooter.starship?.debug("Command Burst: ${commandBurst.javaClass.simpleName}")
+
+			if (lightWeapons) {
+				shooter.starship?.debug("Continue, not correct click")
+				continue
+			}
+
+			if (!commandBurst.isCooledDown()) {
+				shooter.starship?.debug("Continue, command burst not cooled down")
+				continue
+			}
+
+			if (!commandBurst.isIntact()) {
+				shooter.starship?.debug("Continue, command burst not intact")
+				continue
+			}
+
+			queuedActivations.add(QueuedCommandBurstActivation(commandBurst))
+		}
+
+		shooter.debugBanner("Queuing shots end")
+
+		return queuedActivations
 	}
 }

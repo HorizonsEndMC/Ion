@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.navigationco
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ShieldCommandBurstMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
@@ -46,6 +47,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
@@ -286,6 +288,10 @@ object SubsystemDetector {
 			is GravityWellMultiblock -> {
 				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
 			}
+
+			is ShieldCommandBurstMultiblock -> {
+				starship.subsystems += ShieldCommandBurstSubsystem(starship, sign, multiblock)
+			}
 		}
 	}
 
@@ -403,5 +409,6 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.drills)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 		starship.subsystems.filterIsInstanceTo(starship.customTurrets)
+		starship.subsystems.filterIsInstanceTo(starship.commandBursts)
 	}
 }
