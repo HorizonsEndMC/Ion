@@ -4,6 +4,9 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.sendMessage
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
@@ -17,6 +20,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblo
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component
+import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
@@ -77,8 +82,11 @@ abstract class CoreForgeEntity (
 		CoreForgeGui(player, this).openGui()
 	}
 
-	fun disable() {
+	fun disable(success: Boolean) {
 		if (!userManager.currentlyUsed()) return
+		val player = userManager.getUserPlayer()
+		if (success) player?.sendMessage(Component.text("Success!", HE_DARK_ORANGE))
+		else player?.sendMessage(Component.text("Insufficient resources.", HE_MEDIUM_GRAY))
 		userManager.clear()
 	}
 
@@ -87,7 +95,7 @@ abstract class CoreForgeEntity (
 		val future = FutureInputResult()
 
 		Tasks.async {
-				future.complete(InputResult.InputSuccess)
+			future.complete(InputResult.InputSuccess)
 		}
 
 		return future
@@ -105,14 +113,16 @@ abstract class CoreForgeEntity (
 		println(getInput())
 		println(getOutput())
 		println(getOrigin())
-		val input: Inventory = getInput() ?: return
-		val output: Inventory = getOutput() ?: return
+		val input: Inventory = getInput() ?: return disable(false)
+		val output: Inventory = getOutput() ?: return disable(false)
 		println("diddy")
 		for (item in currentRecipe)
 			if (!input.contains(item.key, item.value)) {
+				disable(false)
 				return
 			}
 		output.addItem(currentCore)
+		disable(true)
 		return
 	}
 }

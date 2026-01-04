@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.SPACE_RED_NEBULA_CHARACTER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
@@ -47,36 +48,42 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ MINI_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = MINI_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					openGui(this)
 				}
 			})
 			.addIngredient('a', tracked { id ->
 				AsyncItem({ SMALL_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = SMALL_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					openGui(this)
 				}
 			})
 			.addIngredient('n', tracked { id ->
 				AsyncItem({ MEDIUM_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = MEDIUM_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					openGui(this)
 				}
 			})
 			.addIngredient('g', tracked { id ->
 				AsyncItem({ LARGE_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = LARGE_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					openGui(this)
 				}
 			})
 			.addIngredient('o', tracked { id ->
 				AsyncItem({ CRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = CRUISER_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					openGui(this)
 				}
 			})
 			.addIngredient('4', tracked { id ->
 				AsyncItem({ BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					openGui(this)
 				}
 			})
 			.addIngredient('6', GuiItems.CustomControlItem(text("Selected Core:"), GuiItem.RIGHT))
@@ -93,22 +100,22 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 		val text = GuiText(entity.guiTitle)
 			.addBackground(
 				GuiText.GuiBackground(
-					backgroundChar = DEFAULT_BACKGROUND_CHARACTER,
+					backgroundChar = SPACE_RED_NEBULA_CHARACTER,
 					backgroundWidth = DEFAULT_GUI_WIDTH,
-					verticalShift = 10
+					verticalShift = 0
 				)
 			)
-			.add(
+		/*	.add(
 				text("Core Forge").itemLore,
 				verticalShift = -7 /* down 1 line */ + 2 /* Padding */,
 				horizontalShift = DEFAULT_GUI_WIDTH + 2
-			)
+			)*/
 		return text.build()
 	}
 
 	val enableButton: FeedbackItem = FeedbackItem
 		.builder({
-			if (entity.isRunning) GuiItem.CHECKMARK.makeItem(text("Start")) else GuiItem.SHIP_FACTORY_RUNNING.makeItem(
+			if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(text("Start")) else GuiItem.CHECKMARK.makeItem(
 				text("Start")
 			)
 		}) { _, player ->
