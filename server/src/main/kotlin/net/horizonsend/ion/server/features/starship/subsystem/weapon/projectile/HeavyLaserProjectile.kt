@@ -32,7 +32,7 @@ class HeavyLaserProjectile(
 
 		var speedPenalty = SLOW_FACTOR
 		// ships above 3500 not affected
-		if (starship.initialBlockCount >= 3500) return
+		if (starship.initialBlockCount >= 3500 || starship.type.tech2) return
 		// ships above 2500 half affected
 		if (starship.initialBlockCount >= 2500) speedPenalty = SLOW_FACTOR * 0.5
 

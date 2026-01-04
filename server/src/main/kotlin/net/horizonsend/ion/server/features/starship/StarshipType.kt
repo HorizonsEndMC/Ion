@@ -24,6 +24,8 @@ import java.util.function.Supplier
 
 enum class StarshipType(
 	val displayName: String,
+	val needsFuel: Boolean,
+	val tech2: Boolean,
 	val icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,
 	val color: String,
 	val dynmapIcon: String = "anchor",
@@ -59,6 +61,8 @@ enum class StarshipType(
 ) {
 	SPEEDER(
 		displayName = "Speeder",
+		needsFuel = false,
+		tech2 = false,
 		minSize = 25,
 		maxSize = 100,
 		minLevel = 1,
@@ -76,6 +80,8 @@ enum class StarshipType(
 	),
 	AI_SPEEDER(
 		displayName = "Speeder",
+		needsFuel = false,
+		tech2 = false,
 		minSize = 25,
 		maxSize = 100,
 		minLevel = 1000,
@@ -94,6 +100,8 @@ enum class StarshipType(
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.STARFIGHTER_ICON.text,
 		minSize = 350,
 		maxSize = 500,
@@ -111,6 +119,8 @@ enum class StarshipType(
 	),
 	AI_STARFIGHTER(
 		displayName = "Starfighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_STARFIGHTER_ICON.text,
 		minSize = 150,
 		maxSize = 500,
@@ -130,6 +140,8 @@ enum class StarshipType(
 	),
 	SCRAMBLER_STARFIGHTER(
 		displayName = "Scrambler",
+		needsFuel = false,
+		tech2 = true,
 		icon = SidebarIcon.STARFIGHTER_ICON.text,
 		minSize = 250,
 		maxSize = 500,
@@ -147,6 +159,8 @@ enum class StarshipType(
 	),
 	RECON_STARFIGHTER(
 		displayName = "Recon Fighter",
+		needsFuel = false,
+		tech2 = true,
 		icon = SidebarIcon.STARFIGHTER_ICON.text,
 		minSize = 250,
 		maxSize = 500,
@@ -164,6 +178,8 @@ enum class StarshipType(
 	),
 	INTERCEPTOR(
 		displayName = "Interceptor",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.INTERCEPTOR_ICON.text,
 		minSize = 150,
 		maxSize = 350,
@@ -182,6 +198,8 @@ enum class StarshipType(
 	),
 	AI_INTERCEPTOR(
 		displayName = "Interceptor",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.INTERCEPTOR_ICON.text,
 		minSize = 150,
 		maxSize = 350,
@@ -201,6 +219,8 @@ enum class StarshipType(
 	),
 	GUNSHIP(
 		displayName = "Gunship",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.GUNSHIP_ICON.text,
 		minSize = 500,
 		maxSize = 2000,
@@ -218,6 +238,8 @@ enum class StarshipType(
 	),
 	ASSAULT_GUNSHIP(
 		displayName = "Assault Gunship",
+		needsFuel = false,
+		tech2 = true,
 		icon = SidebarIcon.GUNSHIP_ICON.text,
 		minSize = 1000,
 		maxSize = 2500,
@@ -235,6 +257,8 @@ enum class StarshipType(
 	),
 	INTERDICTOR_GUNSHIP(
 		displayName = "Interdictor Gunship",
+		needsFuel = false,
+		tech2 = true,
 		icon = SidebarIcon.GUNSHIP_ICON.text,
 		minSize = 1000,
 		maxSize = 2500,
@@ -252,6 +276,8 @@ enum class StarshipType(
 	),
 	AI_GUNSHIP(
 		displayName = "Gunship",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_GUNSHIP_ICON.text,
 		minSize = 500,
 		maxSize = 2000,
@@ -271,6 +297,8 @@ enum class StarshipType(
 	),
 	CORVETTE(
 		displayName = "Corvette",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
@@ -290,6 +318,8 @@ enum class StarshipType(
 	),
 	AI_CORVETTE(
 		displayName = "Corvette",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_CORVETTE_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
@@ -311,6 +341,8 @@ enum class StarshipType(
 	),
 	AI_CORVETTE_LOGISTIC(
 		displayName = "Logistic Corvette",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_CORVETTE_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
@@ -331,7 +363,9 @@ enum class StarshipType(
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette
 	),
 	INTERDICTOR_CORVETTE(
-		displayName = "Heavy Interdictor",
+		displayName = "Interdictor Corvette",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2500,
 		maxSize = 4500,
@@ -351,6 +385,8 @@ enum class StarshipType(
 	),
 	STASIS_CORVETTE(
 		displayName = "Stasis Corvette",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2500,
 		maxSize = 4500,
@@ -370,6 +406,8 @@ enum class StarshipType(
 	),
 	ASSAULT_CORVETTE(
 		displayName = "Assault Corvette",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2500,
 		maxSize = 4500,
@@ -389,6 +427,8 @@ enum class StarshipType(
 	),
 	LOGISTICS_CORVETTE(
 		displayName = "Logistics Corvette",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2500,
 		maxSize = 4500,
@@ -408,6 +448,8 @@ enum class StarshipType(
 	),
 	FRIGATE(
 		displayName = "Frigate",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.FRIGATE_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
@@ -427,6 +469,8 @@ enum class StarshipType(
 	),
 	AI_FRIGATE(
 		displayName = "Frigate",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_FRIGATE_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
@@ -448,6 +492,8 @@ enum class StarshipType(
 	),
 	ASSAULT_FRIGATE(
 		displayName = "Assault Frigate",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.FRIGATE_ICON.text,
 		minSize = 6500,
 		maxSize = 8500,
@@ -467,6 +513,8 @@ enum class StarshipType(
 	),
 	BLACK_OPS_FRIGATE(
 		displayName = "Black Ops Frigate",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.FRIGATE_ICON.text,
 		minSize = 6500,
 		maxSize = 8500,
@@ -486,6 +534,8 @@ enum class StarshipType(
 	),
 	MISSILE_FRIGATE(
 		displayName = "Missile Frigate",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.FRIGATE_ICON.text,
 		minSize = 6500,
 		maxSize = 8500,
@@ -505,6 +555,8 @@ enum class StarshipType(
 	),
 	DESTROYER(
 		displayName = "Destroyer",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.DESTROYER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
@@ -524,6 +576,8 @@ enum class StarshipType(
 	),
 	AI_DESTROYER(
 		displayName = "Destroyer",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_DESTROYER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
@@ -545,6 +599,8 @@ enum class StarshipType(
 	),
 	ASSAULT_DESTROYER(
 		displayName = "Assault Destroyer",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.DESTROYER_ICON.text,
 		minSize = 9500,
 		maxSize = 12500,
@@ -564,6 +620,8 @@ enum class StarshipType(
 	),
 	INTERDICTOR_DESTROYER(
 		displayName = "Interdictor Destroyer",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.DESTROYER_ICON.text,
 		minSize = 9500,
 		maxSize = 12500,
@@ -583,6 +641,8 @@ enum class StarshipType(
 	),
 	CRUISER(
 		displayName = "Cruiser",
+		needsFuel = true,
+		tech2 = false,
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 12000,
 		maxSize = 16000,
@@ -602,6 +662,8 @@ enum class StarshipType(
 	),
 	AI_CRUISER(
 		displayName = "Cruiser",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_BATTLECRUISER_ICON.text,
 		minSize = 12000,
 		maxSize = 16000,
@@ -623,6 +685,8 @@ enum class StarshipType(
 	),
 	LOGISTICS_CRUISER(
 		displayName = "Logistics Cruiser",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 13500,
 		maxSize = 16000,
@@ -642,6 +706,8 @@ enum class StarshipType(
 	),
 	MISSILE_CRUISER(
 		displayName = "Missile Cruiser",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 13500,
 		maxSize = 16000,
@@ -661,6 +727,8 @@ enum class StarshipType(
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
+		needsFuel = true,
+		tech2 = false,
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 16000,
 		maxSize = 20000,
@@ -681,6 +749,8 @@ enum class StarshipType(
 	),
 	AI_BATTLECRUISER(
 		displayName = "Battlecruiser",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_BATTLESHIP_ICON.text,
 		minSize = 12000,
 		maxSize = 20000,
@@ -702,6 +772,8 @@ enum class StarshipType(
 	),
 	LANCER_BATTLECRUISER(
 		displayName = "Lancer",
+		needsFuel = true,
+		tech2 = true,
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 25000,
 		maxSize = 32000,
@@ -722,6 +794,8 @@ enum class StarshipType(
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.BATTLESHIP_ICON.text,
 		minSize = 20000,
 		maxSize = 32000,
@@ -738,6 +812,8 @@ enum class StarshipType(
 	),
 	AI_BATTLESHIP(
 		displayName = "Battleship",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_BATTLESHIP_ICON.text,
 		minSize = 20000,
 		maxSize = 32000,
@@ -756,6 +832,8 @@ enum class StarshipType(
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.DREADNOUGHT_ICON.text,
 		minSize = 32000,
 		maxSize = 48000,
@@ -772,6 +850,8 @@ enum class StarshipType(
 	),
 	AI_DREADNOUGHT(
 		displayName = "Dreadnought",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_DREADNOUGHT_ICON.text,
 		minSize = 32000,
 		maxSize = 48000,
@@ -790,6 +870,8 @@ enum class StarshipType(
 	),
 	TANK(
 		displayName = "Tank",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.STARFIGHTER_ICON.text,
 		minSize = 50,
 		maxSize = 500,
@@ -807,6 +889,8 @@ enum class StarshipType(
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.SHUTTLE_ICON.text,
 		minSize = 100,
 		maxSize = 1000,
@@ -828,6 +912,8 @@ enum class StarshipType(
 	),
 	AI_SHUTTLE(
 		displayName = "Shuttle",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_SHUTTLE_ICON.text,
 		minSize = 100,
 		maxSize = 1000,
@@ -850,6 +936,8 @@ enum class StarshipType(
 	),
 	TRANSPORT(
 		displayName = "Transport",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.TRANSPORT_ICON.text,
 		minSize = 1000,
 		maxSize = 2000,
@@ -871,6 +959,8 @@ enum class StarshipType(
 	),
 	AI_TRANSPORT(
 		displayName = "Transport",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_TRANSPORT_ICON.text,
 		minSize = 1000,
 		maxSize = 2000,
@@ -893,6 +983,8 @@ enum class StarshipType(
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.LIGHT_FREIGHTER_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
@@ -914,6 +1006,8 @@ enum class StarshipType(
 	),
 	AI_LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_LIGHT_FREIGHTER_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
@@ -936,6 +1030,8 @@ enum class StarshipType(
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.MEDIUM_FREIGHTER_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
@@ -957,6 +1053,8 @@ enum class StarshipType(
 	),
 	AI_MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.MEDIUM_FREIGHTER_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
@@ -979,6 +1077,8 @@ enum class StarshipType(
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.HEAVY_FREIGHTER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
@@ -1001,6 +1101,8 @@ enum class StarshipType(
 	),
 	AI_HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.AI_HEAVY_FREIGHTER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
@@ -1023,6 +1125,8 @@ enum class StarshipType(
 	),
 	BARGE(
 		displayName = "Barge",
+		needsFuel = true,
+		tech2 = false,
 		icon = SidebarIcon.BARGE_ICON.text,
 		minSize = 16000,
 		maxSize = 20000,
@@ -1045,6 +1149,8 @@ enum class StarshipType(
 	),
 	AI_BARGE(
 		displayName = "Barge",
+		needsFuel = false,
+		tech2 = false,
 		icon = SidebarIcon.BARGE_ICON.text,
 		minSize = 16000,
 		maxSize = 20000,
@@ -1066,6 +1172,8 @@ enum class StarshipType(
 	),
 	PLATFORM(
 		displayName = "Platform",
+		needsFuel = false,
+		tech2 = false,
 		minSize = 25,
 		maxSize = 2000000,
 		minLevel = 1,
@@ -1082,6 +1190,8 @@ enum class StarshipType(
 	),
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
+		needsFuel = false,
+		tech2 = false,
 		minSize = 25,
 		maxSize = 250000,
 		minLevel = 1000,
@@ -1099,6 +1209,8 @@ enum class StarshipType(
 	),
 	AI_SHIP(
 		displayName = "AI Ship",
+		needsFuel = false,
+		tech2 = false,
 		minSize = 50,
 		maxSize = 48000,
 		minLevel = 1000,

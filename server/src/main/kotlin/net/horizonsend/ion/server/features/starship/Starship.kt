@@ -621,11 +621,15 @@ class Starship(
 
 		val calculatedSpeed = totalSpeed.pow(speedExponent) / mass.pow(massExponent) * baseSpeedFactor
 
-		val maxSpeed = reactor.output * .4 / totalSpeed
+		val maxSpeed = if(type.tech2){
+			reactor.output * .4 / totalSpeed}
+		else (reactor.output * .4 / totalSpeed)*1.1
 
 		val speed = (min(maxSpeed, calculatedSpeed) * finalSpeedFactor).roundToInt()
 
-		val acceleration = ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0
+		val acceleration = if(type.tech2) {
+			ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0 }
+		else (ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0)*1.1
 		return ThrustData(acceleration, speed)
 	}
 

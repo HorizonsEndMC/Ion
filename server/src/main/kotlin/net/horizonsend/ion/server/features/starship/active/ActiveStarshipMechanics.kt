@@ -143,7 +143,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun handleSupercapitalMechanics() {
 		// Consume fuel
 		ActiveStarships.all()
-			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE }
+			.filter { it.type.needsFuel }
 			//TODO replace this system with something better
 			.filter { it.controller is ActivePlayerController }
 			.filter { !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) } // consume fuel if world did not disable supercapital requirements
