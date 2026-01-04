@@ -134,7 +134,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			// Give the nation its station income if it has stations
 			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), stationsConfig.maximumSiegeStations)
-			val stationIncome = stationCount * 75 // this is capped to 300 due to the maximum amount declared above.
+			val stationIncome = stationCount * 75
 
 			if (stationIncome > 0) {
 				Nation.deposit(nationId, stationIncome)
