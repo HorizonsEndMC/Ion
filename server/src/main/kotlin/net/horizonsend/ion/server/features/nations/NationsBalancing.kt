@@ -44,7 +44,8 @@ object NationsBalancing : IonServerComponent() {
 			val siegeCost: Int = 1000,
 			val daysPerSiege: Double = 0.5,
 			val siegerXP: Int = 2000,
-			val siegerAllyXP: Int = 1000
+			val siegerAllyXP: Int = 1000,
+			val maximumSiegeStations: Int = 4
 		)
 	}
 

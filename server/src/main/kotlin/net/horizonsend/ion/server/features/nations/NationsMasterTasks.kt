@@ -14,7 +14,6 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -22,7 +21,6 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
@@ -50,6 +48,8 @@ import org.litote.kmongo.ne
 import java.lang.Integer.min
 
 object NationsMasterTasks : IonServerComponent() {
+	private val stationsConfig = NationsBalancing.Config.Stations()
+
 	override fun onEnable() {
 		if (ConfigurationFiles.legacySettings().master) {
 			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
@@ -133,8 +133,8 @@ object NationsMasterTasks : IonServerComponent() {
 			val nation: NationCache.NationData = NationCache[nationId]
 
 			// Give the nation its station income if it has stations
-			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
-			val stationIncome = if (stationCount > 2) stationCount * 75 else stationCount * 50
+			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), stationsConfig.maximumSiegeStations)
+			val stationIncome = stationCount * 75 // this is capped to 300 due to the maximum amount declared above.
 
 			if (stationIncome > 0) {
 				Nation.deposit(nationId, stationIncome)
