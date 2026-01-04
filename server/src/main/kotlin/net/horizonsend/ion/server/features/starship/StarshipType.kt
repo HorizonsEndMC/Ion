@@ -174,7 +174,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::recon_starfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::reconStarfighter
 	),
 	INTERCEPTOR(
 		displayName = "Interceptor",
@@ -253,7 +253,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.10",
 		dynmapIcon = "gunship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assault_gunship
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultGunship
 	),
 	INTERDICTOR_GUNSHIP(
 		displayName = "Interdictor Gunship",
@@ -272,7 +272,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.10",
 		dynmapIcon = "gunship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictor_gunship
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictorGunship
 	),
 	AI_GUNSHIP(
 		displayName = "Gunship",
@@ -381,7 +381,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictor_corvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictorCorvette
 	),
 	STASIS_CORVETTE(
 		displayName = "Stasis Corvette",
@@ -402,7 +402,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::stasis_corvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::stasisCorvette
 	),
 	ASSAULT_CORVETTE(
 		displayName = "Assault Corvette",
@@ -423,7 +423,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assault_corvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultCorvette
 	),
 	LOGISTICS_CORVETTE(
 		displayName = "Logistics Corvette",
@@ -444,7 +444,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logistics_corvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logisticsCorvette
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -509,7 +509,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assault_frigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultFrigate
 	),
 	BLACK_OPS_FRIGATE(
 		displayName = "Black Ops Frigate",
@@ -530,7 +530,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::blackOps_frigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::blackOpsFrigate
 	),
 	MISSILE_FRIGATE(
 		displayName = "Missile Frigate",
@@ -551,7 +551,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missile_frigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missileFrigate
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -616,7 +616,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assault_destroyer
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultDestroyer
 	),
 	INTERDICTOR_DESTROYER(
 		displayName = "Interdictor Destroyer",
@@ -637,7 +637,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictor_destroyer
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictorDestroyer
 	),
 	CRUISER(
 		displayName = "Cruiser",
@@ -702,7 +702,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logistics_cruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logisticsCruiser
 	),
 	MISSILE_CRUISER(
 		displayName = "Missile Cruiser",
@@ -723,7 +723,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missile_cruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missileCruiser
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -790,7 +790,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
-		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lancer_battlecruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lancerBattlecruiser
 	),
 	BATTLESHIP(
 		displayName = "Battleship",

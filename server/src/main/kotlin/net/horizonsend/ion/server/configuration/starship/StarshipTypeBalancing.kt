@@ -23,7 +23,14 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSu
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.AssaultTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.GaussCannonWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.IonTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.WebifierWeaponSubsystem
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.damage.DamageSource
@@ -354,7 +361,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 			)
 		),
-		val recon_starfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val reconStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			interdictionRange = 10,
@@ -451,7 +458,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
-		val assault_gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val assaultGunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
@@ -490,7 +497,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
-		val interdictor_gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val interdictorGunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
@@ -560,7 +567,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
-		val interdictor_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val interdictorCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 1000,
@@ -604,7 +611,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
-		val stasis_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val stasisCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
@@ -652,7 +659,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
-		val assault_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val assaultCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
@@ -699,7 +706,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
-		val logistics_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val logisticsCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
@@ -737,6 +744,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					AssaultTurretWeaponSubsystem::class.java,
+					"Logistics ships cannot have weapons!"
+				),
+				IncompatibleSubsystemInfo(
+					GaussCannonWeaponSubsystem::class.java,
+					"Logistics ships cannot have weapons!"
+				),
+				IncompatibleSubsystemInfo(
+					NeutralizerWeaponSubsystem::class.java,
+					"Logistics ships cannot have weapons!"
+				),
+				IncompatibleSubsystemInfo(
+					WebifierWeaponSubsystem::class.java,
+					"Logistics ships cannot have weapons!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -778,7 +801,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 			)
 		),
-		val assault_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val assaultFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
@@ -821,7 +844,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 			)
 		),
-		val blackOps_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val blackOpsFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
@@ -861,7 +884,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 			)
 		),
-		val missile_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val missileFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
@@ -900,6 +923,18 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					AssaultTurretWeaponSubsystem::class.java,
+					"Missile ships cannot have assault turrets!"
+				),
+				IncompatibleSubsystemInfo(
+					HeavyTurretWeaponSubsystem::class.java,
+					"Missile ships cannot have heavy turrets!"
+				),
+				IncompatibleSubsystemInfo(
+					TriTurretWeaponSubsystem::class.java,
+					"Missile ships cannot have tri turrets!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -938,7 +973,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 			)
 		),
-		val assault_destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val assaultDestroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1000,
@@ -981,7 +1016,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 			)
 		),
-		val interdictor_destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val interdictorDestroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 2000,
@@ -1043,6 +1078,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					"Tech 1 super-capitals cannot house tech 2 reactors!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -1065,7 +1104,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
 			)
 		),
-		val logistics_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val logisticsCruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1099,6 +1138,14 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					IonTurretWeaponSubsystem::class.java,
+					"Logistics ships cannot have weapons!"
+				),
+				IncompatibleSubsystemInfo(
+					TriTurretWeaponSubsystem::class.java,
+					"Logistics ships cannot have weapons!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1109,7 +1156,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
 			)
 		),
-		val missile_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val missileCruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1145,6 +1192,15 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					TriTurretWeaponSubsystem::class.java,
+					"Missile ships cannot have tri turrets!"
+				)
+				,
+				IncompatibleSubsystemInfo(
+					IonTurretWeaponSubsystem::class.java,
+					"Logistics ships cannot have ion turrets!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1181,6 +1237,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 				"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					"Tech 1 super-capitals cannot house tech 2 reactors!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -1203,7 +1263,7 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
 			)
 		),
-		val lancer_battlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+		val lancerBattlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1500,
