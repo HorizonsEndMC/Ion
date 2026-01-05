@@ -92,7 +92,7 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
 		val cooldown: Long = DirectControlHandler
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
-		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets *
+		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets * starship.directControlSpeedModifierFromWebifiers *
 				starship.directControlSpeedModifierFromHeavyLasers * oversizeModifier * (1000.0f / cooldown)).roundToInt() / 10.0f
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))

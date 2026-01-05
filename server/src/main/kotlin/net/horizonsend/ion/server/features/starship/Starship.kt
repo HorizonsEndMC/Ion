@@ -455,9 +455,14 @@ class Starship(
 		set(value) {
 			field = value.coerceIn(0.0, 1.0)
 		}
+	var directControlSpeedModifierFromWebifiers = 1.0
+		set(value) {
+			field = value.coerceIn(0.4, 1.0)
+		}
 	var directControlSlowExpiryFromIonTurrets = 0L
 	var lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened = 0L
 	var directControlSlowExpiryFromHeavyLasers = 0L
+	var directControlSlowExpiryFromWebifier = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
 		when(controller) {
@@ -593,6 +598,8 @@ class Starship(
 
 	val disabledThrusterRatio: Double get() =
 		thrusters.count { it.lastIonTurretLimited < (System.currentTimeMillis() - 5000L) } / thrusters.size.toDouble()
+
+	var webifierCruiseSpeedMod: Double = 1.0
 
 	fun generateThrusterMap() {
 		for (face in CARDINAL_BLOCK_FACES) {

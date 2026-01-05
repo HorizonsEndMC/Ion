@@ -53,7 +53,7 @@ object StarshipCruising : IonServerComponent() {
 		var lastBlockCount = starship.initialBlockCount
 
 		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
-			val limitedTarget = (targetSpeed * starship.disabledThrusterRatio).toInt()
+			val limitedTarget = (targetSpeed * starship.disabledThrusterRatio * starship.webifierCruiseSpeedMod).toInt()
 
 			val dir = this.targetDir ?: Vector()
 			val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)

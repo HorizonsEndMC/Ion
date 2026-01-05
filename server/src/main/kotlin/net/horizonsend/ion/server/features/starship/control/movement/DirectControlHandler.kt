@@ -82,7 +82,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		// The starship's direction
 		val direction = starship.getTargetForward()
 		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
-		val targetSpeed = (calculateSpeed(data.selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets *
+		val targetSpeed = (calculateSpeed(data.selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets * starship.directControlSpeedModifierFromWebifiers *
 				starship.directControlSpeedModifierFromHeavyLasers) * oversizeModifier
 
 		if (data.isBoosting) {
