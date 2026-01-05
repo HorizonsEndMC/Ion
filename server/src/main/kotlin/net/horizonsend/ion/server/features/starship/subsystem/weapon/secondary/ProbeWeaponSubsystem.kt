@@ -54,7 +54,7 @@ class ProbeWeaponSubsystem(
 			}
 			val totalShips = ships.size
 			for (ship in ships) {
-				val pilot: Player? = ship.playerPilot
+				val pilot = ship.playerPilot ?: "None"
 				val starshipType: StarshipType = ship.type
 
 				val dx: Double =
