@@ -237,7 +237,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.durationSeconds -= 1 } }
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.removeAll { statusEffect ->
-				starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${statusEffect.strength} has worn off")
+				if (statusEffect.durationSeconds <= 0) {
+					starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${statusEffect.strength} has worn off")
+				}
 				statusEffect.durationSeconds <= 0
 			} }
 		}

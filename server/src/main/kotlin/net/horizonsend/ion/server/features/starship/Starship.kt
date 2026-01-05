@@ -834,6 +834,10 @@ class Starship(
 	fun addStatusEffect(newStatusEffect: StarshipStatusEffect) {
 		val type = newStatusEffect.type
 
+		if (statusEffects[type] == null) {
+			statusEffects[type] = mutableListOf()
+		}
+
 		val sameStrenthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
 		// there is an effect with the same strength value as the new one. refresh the duration
 		if (sameStrenthEffect != null) {
@@ -844,7 +848,7 @@ class Starship(
 				sameStrenthEffect.type.displayName,
 				text("Strength: ${sameStrenthEffect.strength}"),
 				text("Duration: ${sameStrenthEffect.durationSeconds}s"),
-				text("[Hover for description]").hoverEvent(sameStrenthEffect.type.description.asHoverEvent())
+				text("[Hover for description]").hoverEvent(sameStrenthEffect.type.description)
 			) }
 			return
 		}
@@ -855,10 +859,13 @@ class Starship(
 		this.information("Gained status effect:")
 		this.sendMessage { ofChildren(
 			newStatusEffect.type.displayName,
+			Component.newline(),
 			text("Strength: ${newStatusEffect.strength}"),
+			Component.newline(),
 			text("Duration: ${newStatusEffect.durationSeconds}s"),
-			text("[Hover for description]").hoverEvent(newStatusEffect.type.description.asHoverEvent())
-		) }
+			Component.newline(),
+			text("[Hover for description]")
+		).hoverEvent(newStatusEffect.type.description) }
 	}
 
 	fun getActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {
