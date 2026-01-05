@@ -116,11 +116,16 @@ abstract class CoreForgeEntity (
 		val input: Inventory = getInput() ?: return disable(false)
 		val output: Inventory = getOutput() ?: return disable(false)
 		println("diddy")
-		for (item in currentRecipe)
+		for (item in currentRecipe) {
 			if (!input.contains(item.key, item.value)) {
 				disable(false)
 				return
 			}
+		} //Need a second loop to stop items being removed without checking if the input has all the items, thus failing the craft but still taking items
+		for (item in currentRecipe) {
+			val targetItem = item.key.asOne().apply{amount = item.value}
+			input.removeItem(targetItem)
+		}
 		output.addItem(currentCore)
 		disable(true)
 		return
