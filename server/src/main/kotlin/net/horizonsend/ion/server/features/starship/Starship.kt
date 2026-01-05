@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
@@ -14,6 +15,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.formatException
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
@@ -58,6 +60,8 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementFor
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.logStatistics
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
@@ -151,6 +155,7 @@ class Starship(
 	val minutesUnpiloted get() = if (isPiloted(this) || controller is NoOpController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 	var pilotDisconnectLocation: Vec3i? = null
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
+	val statusEffects: MutableMap<StarshipStatusEffectType, MutableList<StarshipStatusEffect>> = mutableMapOf()
 
 	var world: World = data.bukkitWorld()
 		set(value) {
@@ -824,5 +829,44 @@ class Starship(
 			vec3i.y,
 			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
 		)
+	}
+
+	fun addStatusEffect(newStatusEffect: StarshipStatusEffect) {
+		val type = newStatusEffect.type
+
+		val sameStrenthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
+		// there is an effect with the same strength value as the new one. refresh the duration
+		if (sameStrenthEffect != null) {
+			sameStrenthEffect.durationSeconds = max(sameStrenthEffect.durationSeconds, newStatusEffect.durationSeconds)
+
+			this.information("Refreshed status effect:")
+			this.sendMessage { ofChildren(
+				sameStrenthEffect.type.displayName,
+				text("Strength: ${sameStrenthEffect.strength}"),
+				text("Duration: ${sameStrenthEffect.durationSeconds}s"),
+				text("[Hover for description]").hoverEvent(sameStrenthEffect.type.description.asHoverEvent())
+			) }
+			return
+		}
+
+		// this effect has no others with the same strength. add it to the list
+		statusEffects[type]?.add(newStatusEffect)
+
+		this.information("Gained status effect:")
+		this.sendMessage { ofChildren(
+			newStatusEffect.type.displayName,
+			text("Strength: ${newStatusEffect.strength}"),
+			text("Duration: ${newStatusEffect.durationSeconds}s"),
+			text("[Hover for description]").hoverEvent(newStatusEffect.type.description.asHoverEvent())
+		) }
+	}
+
+	fun getActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {
+		return statusEffects[statusEffectType]?.firstOrNull { it.type == statusEffectType }
+	}
+
+	fun removeStatusEffectType(statusEffectType: StarshipStatusEffectType) {
+		statusEffects[statusEffectType]?.clear()
+		this.information("All status effects of ${statusEffectType.displayName.plainText()} were removed")
 	}
 }

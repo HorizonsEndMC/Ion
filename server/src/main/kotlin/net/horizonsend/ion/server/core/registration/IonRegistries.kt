@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.core.registration.registries.FluidPropertyType
 import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
+import net.horizonsend.ion.server.core.registration.registries.StarshipStatusEffectTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.WorldGenerationFeatureRegistry
@@ -49,6 +50,7 @@ object IonRegistries : IonComponent() {
 	val WEATHER_TYPE = register(WeatherTypeRegistry())
 	val WORLD_GENERATION_FEATURES = register(WorldGenerationFeatureRegistry())
 	val WRECK_STRUCTURES = register(WreckStructureRegistry())
+	val STARSHIP_STATUS_EFFECT = register(StarshipStatusEffectTypeRegistry())
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
 	val SEQUENCE = register(SequenceRegistry())

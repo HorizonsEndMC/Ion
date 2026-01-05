@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
@@ -42,9 +43,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
-import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
-import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -72,6 +71,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(60L, 60L, this::destroyLowHullIntegrityShips)
 		Tasks.syncRepeat(60L, 60L, this::handleSupercapitalMechanics)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
+		Tasks.syncRepeat(20L, 20L, this::updateStarshipStatusEffects)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
@@ -221,6 +221,25 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
+		}
+	}
+
+	private fun updateStarshipStatusEffects() {
+		ActiveStarships.all().forEach { starship ->
+			val statusEffects = starship.statusEffects
+
+			// Find the status effect with the largest strength value, and set it to the active effect
+			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.isActive = false } }
+			statusEffects.mapValues { (_, statusEffectList) ->
+				val highestStrengthEffect = statusEffectList.maxByOrNull { statusEffect -> statusEffect.strength } ?: return@mapValues
+				highestStrengthEffect.isActive = true
+			}
+
+			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.durationSeconds -= 1 } }
+			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.removeAll { statusEffect ->
+				starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${statusEffect.strength} has worn off")
+				statusEffect.durationSeconds <= 0
+			} }
 		}
 	}
 
