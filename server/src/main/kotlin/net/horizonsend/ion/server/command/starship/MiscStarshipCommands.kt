@@ -775,11 +775,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 
 			val line = template(
-				"{0}{1} piloted by {2} {3} in {4}",
+				"{0} piloted by {1} {2}",
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
 				useQuotesAroundObjects = true,
-				if (pilot?.hasProtection() == true) text(" ★", GOLD) else Component.empty(),
+				//if (pilot?.hasProtection() == true) text(" ★", GOLD) else Component.empty(),
 				starship.getDisplayName(),
 				name,
 				bracketed(text(starship.initialBlockCount, WHITE)),

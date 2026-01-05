@@ -75,7 +75,7 @@ class ProbeWeaponSubsystem(
 				val distance =
 					starship.centerOfMass.toLocation(starship.world).distance(ship.centerOfMass.toLocation(ship.world))
 				val line = template(
-					"{0} piloted by {2} {3}m to the {4}",
+					"{0} piloted by {1} {2}m to the {3}",
 					color = HE_LIGHT_GRAY,
 					paramColor = WHITE,
 					useQuotesAroundObjects = true,
