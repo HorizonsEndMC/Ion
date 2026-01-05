@@ -37,6 +37,8 @@ import java.util.UUID
 @CommandAlias("aiopponent")
 @CommandPermission("ion.command.aiopponent")
 object AIOpponentCommand : SLCommand() {
+	private const val MAX_SPAWNS = 5
+
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("allTemplates") {
 			AITemplateRegistry.all().mapTo(mutableSetOf()) { it.key }
@@ -131,7 +133,7 @@ object AIOpponentCommand : SLCommand() {
 		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0)).apply { y = 192.0 }
 
 		Tasks.async {
-			if (limitSpawns && getExisting(summoner).isNotEmpty()) return@async summoner.userError("You may only have one AI opponent active at once.")
+			if (limitSpawns && getExisting(summoner).count() >= MAX_SPAWNS) return@async summoner.userError("You may only have a maximum of $MAX_SPAWNS AI opponents active at once.")
 
 			Tasks.sync {
 				try {
