@@ -60,7 +60,7 @@ class WebifierProjectile(
 		}
 		val speedPenalty = 0.55
 
-		starship.userErrorAction("Direct Control speed slowed by ${(0.55 * 100).toInt()}%!")
+		starship.userErrorAction("Ship speed slowed by ${(0.55 * 100).toInt()}%!")
 		starship.directControlSlowExpiryFromWebifier = System.currentTimeMillis() + Duration.ofSeconds(5).toMillis()
 		starship.directControlSpeedModifierFromWebifiers *= (1 - speedPenalty)
 		starship.webifierCruiseSpeedMod *= (1-speedPenalty)
@@ -74,7 +74,7 @@ class WebifierProjectile(
 				starship.directControlSpeedModifierFromWebifiers = 1.0
 				starship.webifierCruiseSpeedMod = 1.0
 				starship.directControlSlowExpiryFromWebifier = 0L
-				starship.informationAction("Direct Control speed restored")
+				starship.informationAction("Ship speed restored")
 			}
 		}
 	}

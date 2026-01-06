@@ -23,7 +23,7 @@ class ProbeProjectile(
 ) : LaserProjectile<ProbeProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 	override val color: Color = Color.ORANGE
 
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
+	val item = ItemFactory.unStackableCustomItem("projectile/scanner_probe").construct()
 
 	private val container = ItemDisplayContainer(
 		source.getWorld(),
