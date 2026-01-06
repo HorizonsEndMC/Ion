@@ -48,7 +48,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			),
 			createSettingsPage(player, "Contacts Settings",
 				DBCachedBooleanToggle(text("Enable Contacts Info"), "", GuiItem.LIST, true, PlayerSettings::contactsEnabled),
-				DBCachedIntegerInput(0, MainSidebar.CONTACTS_RANGE, text("Change Contacts Range"), "", GuiItem.ROUTE_SEGMENT, 6000, PlayerSettings::contactsDistance),
+				DBCachedIntegerInput(0, MainSidebar.CONTACTS_RANGE, text("Change Contacts Range"), "", GuiItem.ROUTE_SEGMENT, 2500, PlayerSettings::contactsDistance),
 				DBCachedIntegerInput(1, MainSidebar.MAX_NAME_LENGTH, text("Change Max Name Length"), "", GuiItem.LIST, 6000, PlayerSettings::contactsMaxNameLength),
 				DBCachedEnumCycle(ContactsSorting::class.java, text("Change Sort Order"), "", GuiItem.LIST, 0, PlayerSettings::contactsSort),
 				DBCachedEnumCycle(ContactsColoring::class.java, text("Change Coloring"), "", GuiItem.LIST, 0, PlayerSettings::contactsColoring),

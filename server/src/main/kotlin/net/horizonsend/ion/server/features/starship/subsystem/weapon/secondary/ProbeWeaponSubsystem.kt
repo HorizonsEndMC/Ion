@@ -23,13 +23,19 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import java.awt.Color
 import kotlin.math.atan2
 
 class ProbeWeaponSubsystem(
@@ -54,8 +60,9 @@ class ProbeWeaponSubsystem(
 			}
 			val totalShips = ships.size
 			for (ship in ships) {
-				val pilot = ship.playerPilot ?: "None"
-				val starshipType: StarshipType = ship.type
+				val name = ship.playerPilot?.name ?: "None"
+				val pilot: Component = text(name, HE_LIGHT_BLUE) //TODO: Change this to change on frontier nation color
+				val starshipName: Component = text(ship.type.displayName, TextColor.fromHexString(ship.type.color))
 
 				val dx: Double =
 					ship.centerOfMass.toLocation(ship.world).x - starship.centerOfMass.toLocation(starship.world).x
@@ -72,17 +79,25 @@ class ProbeWeaponSubsystem(
 					(angle in 225.0..<315.0) -> "East"
 					else -> "Narnia"
 				}
+
 				val distance =
-					starship.centerOfMass.toLocation(starship.world).distance(ship.centerOfMass.toLocation(ship.world))
+					starship.centerOfMass.toLocation(starship.world).distance(ship.centerOfMass.toLocation(ship.world)).toInt()
+				val distanceColor = when {
+					distance < 500 -> RED
+					distance < 1500 -> YELLOW
+					distance < 2500 -> GREEN
+					else -> DARK_GREEN
+				}
+
 				val line = template(
-					"{0} piloted by {1} {2}m to the {3}",
+					"{0} piloted by {1} {2}m to the {3}.",
 					color = HE_LIGHT_GRAY,
-					paramColor = WHITE,
+					paramColor = HE_LIGHT_GRAY,
 					useQuotesAroundObjects = true,
-					starshipType,
+					starshipName,
 					pilot,
-					distance,
-					direction
+					text(distance, distanceColor),
+					text(direction, HE_MEDIUM_GRAY)
 				)
 				shooter.sendMessage(line)
 			}
