@@ -19,7 +19,7 @@ class ShieldCommandBurstSubsystem(
 )) {
 	override fun activate() {
 		val loc = starship.centerOfMass.toLocation(starship.world)
-		starship.addStatusEffect(StarshipStatusEffect(StarshipStatusEffectTypes.SHIELD_HEALTH_BOOST, 10000.0, 30L))
+		starship.addStatusEffect(StarshipStatusEffect(StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED, 10000.0, 30L))
 		toPlayersInRadius(loc, balancing.range) {
 			it.hint("pluh")
 		}

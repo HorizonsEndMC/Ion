@@ -101,6 +101,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
@@ -843,29 +844,34 @@ class Starship(
 		if (sameStrenthEffect != null) {
 			sameStrenthEffect.durationSeconds = max(sameStrenthEffect.durationSeconds, newStatusEffect.durationSeconds)
 
-			this.information("Refreshed status effect:")
-			this.sendMessage { ofChildren(
+			this.playerPilot?.information("Refreshed status effect:")
+			this.playerPilot?.sendMessage(ofChildren(
 				sameStrenthEffect.type.displayName,
-				text("Strength: ${sameStrenthEffect.strength}"),
-				text("Duration: ${sameStrenthEffect.durationSeconds}s"),
-				text("[Hover for description]").hoverEvent(sameStrenthEffect.type.description)
-			) }
+				Component.newline(),
+				text("Strength: ${sameStrenthEffect.strength}", NamedTextColor.YELLOW),
+				Component.newline(),
+				text("Duration: ${sameStrenthEffect.durationSeconds}s", NamedTextColor.YELLOW),
+				Component.newline(),
+				text("[Hover for description]", NamedTextColor.GRAY)
+					.hoverEvent(sameStrenthEffect.type.description.color(NamedTextColor.WHITE))
+			))
 			return
 		}
 
 		// this effect has no others with the same strength. add it to the list
 		statusEffects[type]?.add(newStatusEffect)
 
-		this.information("Gained status effect:")
-		this.sendMessage { ofChildren(
+		this.playerPilot?.information("Gained status effect:")
+		this.playerPilot?.sendMessage(ofChildren(
 			newStatusEffect.type.displayName,
 			Component.newline(),
-			text("Strength: ${newStatusEffect.strength}"),
+			text("Strength: ${newStatusEffect.strength}", NamedTextColor.YELLOW),
 			Component.newline(),
-			text("Duration: ${newStatusEffect.durationSeconds}s"),
+			text("Duration: ${newStatusEffect.durationSeconds}s", NamedTextColor.YELLOW),
 			Component.newline(),
-			text("[Hover for description]")
-		).hoverEvent(newStatusEffect.type.description) }
+			text("[Hover for description]", NamedTextColor.GRAY)
+				.hoverEvent(newStatusEffect.type.description.color(NamedTextColor.WHITE))
+		))
 	}
 
 	fun getActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {

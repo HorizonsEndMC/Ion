@@ -28,9 +28,9 @@ object StarshipStatusEffectTypes {
 		description = Component.empty()
 	)
 
-	val SHIELD_HEALTH_BOOST = StarshipStatusEffectType(
-		key = StarshipStatusEffectTypeKeys.SHIELD_HEALTH_BOOST,
-		displayName = Component.text("Shield Health Boost"),
+	val SHIELD_REGENERATION_SPEED = StarshipStatusEffectType(
+		key = StarshipStatusEffectTypeKeys.SHIELD_REGENERATION_SPEED,
+		displayName = Component.text("Shield Regeneration Speed Boost"),
 		description = Component.empty()
 	)
 }

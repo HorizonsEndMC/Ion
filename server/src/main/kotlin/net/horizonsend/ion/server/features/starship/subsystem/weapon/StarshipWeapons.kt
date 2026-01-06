@@ -142,28 +142,27 @@ object StarshipWeapons {
 	}
 
 	fun activateQueuedCommandBursts(queuedCommandBursts: List<QueuedCommandBurstActivation>, ship: Starship) {
-			val commandBurstTypes = queuedCommandBursts.map { it.commandBurst.javaClass.simpleName }.distinct()
+		val commandBurstTypes = queuedCommandBursts.map { it.commandBurst.javaClass.simpleName }.distinct()
 
-			ship.debug("commandBurstTypes = ${commandBurstTypes.joinToString(", ")}")
+		ship.debug("commandBurstTypes = ${commandBurstTypes.joinToString(", ")}")
 
-			if (commandBurstTypes.count() > 1) {
-				ship.debug(
-					""""
+		if (commandBurstTypes.count() > 1) {
+			ship.debug(
+				""""
 					CANNOT ACTIVATE MORE THAN 1 TYPE OF COMMAND BURST
 					Types: ${commandBurstTypes.joinToString()}
 					""".trimIndent()
-				)
+			)
 
-				ship.onlinePassengers.forEach { player ->
-					player.userErrorActionMessage("You can only activate one type of command burst at a time!")
-				}
-
-				return
+			ship.onlinePassengers.forEach { player ->
+				player.userErrorActionMessage("You can only activate one type of command burst at a time!")
 			}
 
-			val commandBurstType = commandBurstTypes.single()
-			ship.debug("commandBurstType = $commandBurstType")
+			return
+		}
 
+		val commandBurstType = if (commandBurstTypes.isNotEmpty()) commandBurstTypes.single() else ""
+		ship.debug("commandBurstType = $commandBurstType")
 
 		val activatedCounts = HashMultimap.create<KClass<out AbstractCommandBurstSubsystem<*>>, AbstractCommandBurstSubsystem<*>>()
 
