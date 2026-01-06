@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -51,6 +52,7 @@ object CoreRecipes {
 		URANIUM_BLOCK.getValue().constructItemStack() to 960,
 		ItemStack(Material.REDSTONE_BLOCK) to 640,
 		SCORDITE.getValue().constructItemStack() to 16,
-		VANADIUM.getValue().constructItemStack() to 4
+		VANADIUM.getValue().constructItemStack() to 4,
+		ATAVUM.getValue().constructItemStack() to 2
 	)
 }
