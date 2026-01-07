@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

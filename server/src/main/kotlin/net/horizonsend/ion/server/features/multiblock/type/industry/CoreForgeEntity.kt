@@ -13,14 +13,19 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_RE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MEDIUM_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MINI_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask.Companion.getAvailableItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -107,24 +112,58 @@ abstract class CoreForgeEntity (
 			MEDIUM_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.mediumReactorRecipe
 			LARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.largeReactorRecipe
 			CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
-			BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.battlecruiserReactorRecipe
-			else -> return player.userError("Something broke! Blame fell")
+			else -> CoreRecipes.battlecruiserReactorRecipe
 		}
-		println(getInput())
-		println(getOutput())
-		println(getOrigin())
 		val input: Inventory = getInput() ?: return disable(false)
 		val output: Inventory = getOutput() ?: return disable(false)
-		println("diddy")
 		for (item in currentRecipe) {
-			if (!input.contains(item.key, item.value)) {
-				disable(false)
-				return
+			val neededAmount = item.value
+			val recipeItem = item.key.clone().apply { amount = 1 }
+
+			if (recipeItem.customItem is CustomItem) {
+				val total = input.storageContents
+					.filterNotNull()
+					.filter { it.customItem?.key?.key == recipeItem.customItem?.key?.key }
+					.sumOf { it.amount }
+
+				if (total < neededAmount) {
+					disable(false)
+					return
+				}
 			}
-		} //Need a second loop to stop items being removed without checking if the input has all the items, thus failing the craft but still taking items
-		for (item in currentRecipe) {
-			val targetItem = item.key.asOne().apply{amount = item.value}
-			input.removeItem(targetItem)
+			else {
+				val total = input.storageContents
+					.filterNotNull()
+					.filter { it.isSimilar(recipeItem)}
+					.sumOf { it.amount }
+
+				if (total < neededAmount) {
+					disable(false)
+					return
+				}
+			}
+		}
+		 //Need a second loop to stop items being removed without checking if the input has all the items, thus failing the craft but still taking items
+		for ((recipeItem, neededAmount) in currentRecipe) {
+			var remaining = neededAmount
+			val item = recipeItem.clone().apply { amount = 1 }
+			val isCustomItem = item.customItem is CustomItem
+
+			for (i in input.storageContents.indices) {
+				val stack = input.storageContents[i] ?: continue
+				if (isCustomItem && stack.customItem is CustomItem) { if (stack.customItem?.key?.key != item.customItem!!.key.key) continue }
+
+				if (!stack.isSimilar(item)) continue
+
+				val take = minOf(stack.amount, remaining)
+				stack.amount -= take
+				remaining -= take
+
+				if (stack.amount <= 0) {
+					input.storageContents[i] = null
+				}
+				if (remaining <= 0) break
+			}
 		}
 		output.addItem(currentCore)
 		disable(true)
