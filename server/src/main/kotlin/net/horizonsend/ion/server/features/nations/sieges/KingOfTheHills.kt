@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
-import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
-import net.horizonsend.ion.common.utils.text.formatNationName
+import net.horizonsend.ion.common.utils.text.formatFrontierNationName
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -35,6 +36,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.lang.System.currentTimeMillis
+import java.sql.Time
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
@@ -42,39 +44,44 @@ object KingOfTheHills : IonServerComponent() {
 	data class Koths(
 		val kothId: Oid<KothStation>,
 		val start: Long,
-		var kothPoints: MutableMap<Oid<KothStation>, MutableMap<Oid<Nation>, Int?>>,
-		var nation: Oid<Nation>?
+		var kothPoints: MutableMap<Oid<KothStation>, MutableMap<Oid<FrontierNation>, Int?>>,
+		var nation: Oid<FrontierNation>?,
+		val type: Boolean,
+		val timeLimit: Long
 	)
 
 	private val activeKoths = mutableListOf<Koths>()
+	private val activatingKoths = mutableMapOf<RegionKothZone, Long>()
 
-	private val kothMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.koths.majorKOTHMaxDuration)
+	//private val kothMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.koths.majorKOTHMaxDuration)
 
 	private fun currentHour() = ZonedDateTime.now().hour
 
-	private val kothScores = mutableMapOf<Oid<KothStation>, MutableMap<Oid<Nation>, Int?>>()
+	private val kothScores = mutableMapOf<Oid<KothStation>, MutableMap<Oid<FrontierNation>, Int?>>()
 
-	private var nation: Oid<Nation>? = null
+	private var nation: Oid<FrontierNation>? = null
 
 
 	override fun onEnable() {
 		Tasks.syncRepeat(20, 20) {
 			updateKOTHs()
 			updateQuarter()
+			beginKoth()
 		}
 	}
 
 	private fun updateKOTHs() {
 		for (koth: Koths in getKOTHS()) {
-			val memberCount = mutableMapOf<Oid<Nation>, Int?>()
+			val memberCount = mutableMapOf<Oid<FrontierNation>, Int?>()
 			val kothId = koth.kothId
 			val kothRegion: RegionKothZone = Regions[kothId]
 			val elapsed = currentTimeMillis() - koth.start
+			val timeLimit = TimeUnit.MINUTES.toMillis(koth.timeLimit)
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
 
 			for (player in world.players) {
 				if (!kothRegion.contains(player.location)) continue
-				val playerNation = PlayerCache[player].nationOid
+				val playerNation = PlayerCache[player].frontierNationOid
 				if (playerNation == null || !isPiloting(player)) continue
 				println(memberCount)
 				//If the player's nation hasnt gotten a player in the koth this loop yet:
@@ -137,11 +144,11 @@ object KingOfTheHills : IonServerComponent() {
 
 				when {
 
-					elapsed > kothMaxTimeMillis -> endKoth(koth)
+					elapsed > timeLimit -> endKoth(koth)
 					else -> {
 						for (player in world.players) {
 							if (!kothRegion.contains(player.location)) continue
-							val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(kothMaxTimeMillis - elapsed) / 60.0
+							val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(timeLimit - elapsed) / 60.0
 							player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
 							CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
 						}
@@ -152,7 +159,7 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 
-	fun findDominantNation(numbers: MutableMap<Oid<Nation>, Int?>, nation: Oid<Nation>): Oid<Nation> {
+	fun findDominantNation(numbers: MutableMap<Oid<FrontierNation>, Int?>, nation: Oid<FrontierNation>): Oid<FrontierNation> {
 		if (numbers.isEmpty()) return nation
 		val orderedNation = numbers.entries
 			.sortedByDescending { it.value }
@@ -204,15 +211,15 @@ object KingOfTheHills : IonServerComponent() {
 
 
 	private fun processKothKill(player: Player, killer: Player, points: Int, kothId: Oid<KothStation>) {
-		val victimNation = PlayerCache[player].nationOid
-		val killerNation = PlayerCache[killer].nationOid
+		val victimNation = PlayerCache[player].frontierNationOid
+		val killerNation = PlayerCache[killer].frontierNationOid
 		kothScores[kothId]?.get(killerNation)?.plus(points)
 		log.info("Awarded $killerNation $points points for killing ${player.name}")
 		if (killerNation != null && victimNation != null) {
 			IonServer.server.sendMessage(
 				template(
 					text("${killer.name} accrued ${points} points for killing ${player.name}."),
-					formatNationName(killerNation),
+					formatFrontierNationName(killerNation),
 					points,
 					player.name
 				)
@@ -229,52 +236,35 @@ object KingOfTheHills : IonServerComponent() {
 		if (lastQuarter == newQuarter) {
 			return
 		}
-		log.info("Koth quarter change: $lastQuarter -> $newQuarter")
 		lastQuarter = newQuarter
-		lastStations.forEach { lastStationName ->
-			val message = template(
-				"KOTH {0}'s hour has ended.",
-				color = HEColorScheme.HE_MEDIUM_GRAY,
-				paramColor = HEColorScheme.HE_LIGHT_BLUE,
-				useQuotesAroundObjects = false,
-				lastStationName
-			)
-
-			IonServer.server.sendMessage(message)
-			if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(
-				ConfigurationFiles.discordSettings().globalChannel, (Embed(
-					description = "KOTH $lastStationName's hour has ended."
-				))
-			)
-		}
-
-		val stations = Regions.getAllOf<RegionKothZone>()
+		val koths = Regions.getAllOf<RegionKothZone>()
 			.filter { station -> station.siegeHour == lastQuarter }
 
-		for (station in stations) {
-
-			beginKoth()
-			val message = template(
-				"KOTH {0}'s hour has began! Enter the ring to participate!",
-				color = HEColorScheme.HE_MEDIUM_GRAY,
-				paramColor = HEColorScheme.HE_LIGHT_BLUE,
-				useQuotesAroundObjects = false,
-				station.name
-			)
-
-			IonServer.server.sendMessage(message)
-			if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(
-				ConfigurationFiles.discordSettings().globalChannel, Embed(
-					description = "KOTH ${station.name}'s hour has began! Enter the ring to participate!"
-				)
-			)
+		for (koth in koths) {
+			activateKoth(koth)
 		}
-		lastStations = stations.map { it.name }
+		lastStations = koths.map { it.name }
+
+		//Start a koth if sufficient players are on and none are starting
+		if (activatingKoths.isEmpty() && activeKoths.isEmpty() && Bukkit.getOnlinePlayers().size > 19) {
+			val playerCount = Bukkit.getOnlinePlayers().size
+			val koths = Regions.getAllOf<RegionKothZone>()
+			if (playerCount > 34) {
+				val majorKoth = koths.find {it.type}
+				if (majorKoth == null) return
+				activateKoth(majorKoth)
+			}
+			else {
+				val minorKoth = koths.find{!it.type}
+				if (minorKoth == null) return
+				activateKoth(minorKoth)
+			}
+		}
 	}
 
-	fun getCurrentKoth() = Regions.getAllOf<RegionKothZone>()
-		.filter { koth -> koth.siegeHour == currentHour() }
 
+	fun getCurrentKoth() = Regions.getAllOf<RegionKothZone>()
+		.filter { koth -> activatingKoths.keys.contains(koth) }
 
 	override fun onDisable() {
 		activeKoths.forEach(this::endKoth)
@@ -322,23 +312,48 @@ object KingOfTheHills : IonServerComponent() {
 			.sortedByDescending { it.value }
 			.associate { it.key to it.value }
 		val numNationsParticipated = leaderboard.size
-		val firstPlace = if (numNationsParticipated > 0) NationCache[leaderboard.entries.elementAt(0).key].name else "None"
-		val secondPlace = if (numNationsParticipated > 1) NationCache[leaderboard.entries.elementAt(1).key].name else "None"
-		val thirdPlace = if (numNationsParticipated > 2) NationCache[leaderboard.entries.elementAt(2).key].name else "None"
+		val firstPlace = if (numNationsParticipated > 0) FrontierNationCache[leaderboard.entries.elementAt(0).key].name else "None"
+		val secondPlace = if (numNationsParticipated > 1) FrontierNationCache[leaderboard.entries.elementAt(1).key].name else "None"
+		val thirdPlace = if (numNationsParticipated > 2) FrontierNationCache[leaderboard.entries.elementAt(2).key].name else "None"
 		val topThree = mutableListOf(firstPlace, secondPlace, thirdPlace)
 		return topThree
 	}
 
+	//Starts a 15 minute activating timer before starting
+	fun activateKoth(koth: RegionKothZone) = asyncLocked {
+		if (!activatingKoths.isEmpty() || !activeKoths.isEmpty()) return@asyncLocked
+		activatingKoths[koth] = System.nanoTime()
+		val message = template(
+			"KOTH {0} is starting in 15 minutes at ${koth.x}, ${koth.z}, (/jump ${koth.x} ${koth.z})!",
+			color = HEColorScheme.HE_MEDIUM_GRAY,
+			paramColor = HEColorScheme.HE_LIGHT_BLUE,
+			useQuotesAroundObjects = false,
+			koth.name
+		)
+
+		IonServer.server.sendMessage(message)
+		if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(
+			ConfigurationFiles.discordSettings().globalChannel, Embed(
+				description = "KOTH ${koth.name} is starting in 15 minutes at ${koth.x}, ${koth.z}!"
+			)
+		)
+	}
+
+
+	//Begins an activating KOTH
 	fun beginKoth() = asyncLocked {
 
 		for (currentKoth in getCurrentKoth()) {
 
 			val currentKothID = currentKoth.id
+			if (System.nanoTime() - activatingKoths[currentKoth]!! > TimeUnit.MINUTES.toNanos(15.toLong())) continue
+			val kothType = currentKoth.type
+			val timeLimit = if(kothType) NATIONS_BALANCE.koths.majorKOTHMaxDuration else NATIONS_BALANCE.koths.minorKOTHMaxDuration
 
-
+			activatingKoths.remove(currentKoth)
 			KothSiege.create(currentKothID)
 
-			activeKoths.add(Koths(currentKothID, currentTimeMillis(), kothScores, null))
+			activeKoths.add(Koths(currentKothID, currentTimeMillis(), kothScores, null, kothType, timeLimit))
 
 			Notify.chatAndGlobal(
 				MiniMessage.miniMessage().deserialize("<gold>King of the hill ${currentKoth.name} has begun!")
@@ -360,17 +375,8 @@ object KingOfTheHills : IonServerComponent() {
 			.filter { koth -> koth.siegeHour == currentHour()+1 }
 		for (koth in allKoths) {
 			if (koth.name == desiredKoth) {
-				if(!activeKoths.isEmpty()) return
 				if (iminentKoths.contains(koth)) return
-				KothSiege.create(koth.id)
-				activeKoths.add(Koths(koth.id, currentTimeMillis(), kothScores, null))
-				Notify.chatAndGlobal(
-					MiniMessage.miniMessage().deserialize("<gold>King of the hill ${koth.name} has begun!")
-				)
-				Discord.sendMessage(
-					ConfigurationFiles.discordSettings().eventsChannel,
-					"<gold>King of the hill ${koth.name} has begun!"
-				)
+				activateKoth(koth)
 				return
 			}
 		}
@@ -378,5 +384,4 @@ object KingOfTheHills : IonServerComponent() {
 
 
 	fun getKOTHS(): Iterable<Koths> = activeKoths
-
 }

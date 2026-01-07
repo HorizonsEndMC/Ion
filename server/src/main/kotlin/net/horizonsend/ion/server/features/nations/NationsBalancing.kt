@@ -50,7 +50,8 @@ object NationsBalancing : IonServerComponent() {
 
 		@Serializable
 		data class KOTHS(
-			val radius: Int = 2000,
+			val majorKothradius: Int = 2500,
+			val minorKothradius: Int = 1500,
 			val minorKOTHMaxDuration: Long = 30,
 			val majorKOTHMaxDuration: Long = 45,
 		)
@@ -63,5 +64,4 @@ object NationsBalancing : IonServerComponent() {
 	fun reload() {
 		NATIONS_BALANCE = Configuration.load(sharedDataFolder, "nations_balancing.json")
 	}
-
 }

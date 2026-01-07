@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.misc
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.core.IonServerComponent
@@ -28,4 +29,4 @@ object KothStationCache : IonServerComponent() {
     }
 }
 
-data class CachedKothStation(val name: String, val nation: Oid<Nation>?, val loc: Location)
+data class CachedKothStation(val name: String, val nation: Oid<FrontierNation>?, val loc: Location)

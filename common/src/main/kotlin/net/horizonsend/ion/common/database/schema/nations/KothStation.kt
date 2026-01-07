@@ -18,6 +18,8 @@ data class KothStation(
     override val _id: Oid<KothStation>,
     /** The name of the KOTH */
 	var name: String,
+	/** The type of KOTH */
+	val type: Boolean,
     /** The world the KOTH is in */
 	var world: String,
     /** The X-coordinate of the center of the KOTH */
@@ -29,9 +31,9 @@ data class KothStation(
     /** The days of the week the KOTH activates */
 	var kothDays: Set<DayOfWeek> = setOf(),
 	/** The list where scores are kept **/
-	var kothPoints: MutableMap<Oid<Nation>, Int>,
+	var kothPoints: MutableMap<Oid<FrontierNation>, Int>,
 	/** The nation currently controlling a KOTH **/
-	var nation: Oid<Nation>? = null,
+	var nation: Oid<FrontierNation>? = null,
 	/** The quarter of the day the station can be sieged in (1-4)**/
 	var kothTimeFrame: Int = 1
 
@@ -42,17 +44,18 @@ data class KothStation(
 		ensureUniqueIndex(KothStation::world, KothStation::x, KothStation::z)
 	}) {
 		fun create(
+			type: Boolean,
 			name: String,
 			world: String,
 			x: Int,
 			z: Int,
 			siegeHour: Int,
 			siegeDays: Set<DayOfWeek>,
-			kothPoints: MutableMap<Oid<Nation>, Int>
+			kothPoints: MutableMap<Oid<FrontierNation>, Int>,
 		): Oid<KothStation> {
 			val id: Oid<KothStation> =
                 objId()
-			col.insertOne(KothStation(id, name, world, x, z, siegeHour, siegeDays, kothPoints))
+			col.insertOne(KothStation(id, name, type, world, x, z, siegeHour, siegeDays, kothPoints))
 			return id
 		}
 
@@ -70,7 +73,6 @@ data class KothSiege(
     /** When it was sieged */
 	val time: Date,
 	/** Specific score */
-	//var kothPoints: MutableMap<Oid<Nation>, Int>
 ) : DbObject {
 	companion object : OidDbObjectCompanion<KothSiege>(KothSiege::class, setup = {
 		ensureIndex(KothSiege::station)

@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
@@ -71,21 +72,30 @@ object CapturableStationsCommand : SLCommand() {
 @CommandPermission("ion.core.capturablestation.create")
 object KothStationCommand : SLCommand() {
 	@Subcommand("create")
-	fun kothStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
+	@CommandCompletion("minor|major")
+	fun kothStationCreation(sender: Player, type: String, stationName: String, x: Int, z: Int, siegehour: Int) {
+		val validKothTypes = listOf("major", "minor")
+		failIf(validKothTypes.contains(type))  {"Unknown koth type"}
+		val kothType = when (type) {
+			"major" -> true
+			"minor" -> false
+			else -> return
+		}
 		KothStation.findById(
 			KothStation.create(
+				kothType,
 				stationName,
 				sender.world.name,
 				x,
 				z,
 				siegehour,
 				DayOfWeek.values().toSet(),
-				mutableMapOf<Oid<Nation>, Int>()
+				mutableMapOf<Oid<FrontierNation>, Int>()
 			)
 		)
 			?.let { RegionKothZone(it) }?.let { NationsMap.addKingOfTheHill(it) }
 		sender.success(
-			"Successfully created King of the Hill ($stationName), At {$x}, {$z}, SiegeHour is {$siegehour}"
+			"Successfully created $type King of the Hill $stationName, At $x, $z, SiegeHour is $siegehour"
 		)
 	}
 

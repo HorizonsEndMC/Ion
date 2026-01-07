@@ -439,7 +439,7 @@ object NationsMap : IonServerComponent(true) {
 		val x = station.x
 		val y = 128.0
 		val z = station.z.toDouble()
-		val radius = NATIONS_BALANCE.koths.radius.toDouble()
+		val radius = if (station.type) NATIONS_BALANCE.koths.majorKothradius.toDouble() else NATIONS_BALANCE.koths.minorKothradius.toDouble()
 
 		markerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
 

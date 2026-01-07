@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
 import net.horizonsend.ion.common.database.mappedSet
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.string
@@ -25,15 +26,17 @@ class RegionKothZone(station: KothStation) :
 
 	override var world: String = station.world
 	var name: String = station.name; private set
+	val type: Boolean = station.type
 	var x: Int = station.x; private set
 	var z: Int = station.z; private set
 	var siegeHour: Int = station.kothHour; private set
 	var siegeDays: Set<DayOfWeek> = station.kothDays; private set
 	var kothTimeFrame: Int = station.kothTimeFrame; private set
-	var dominantNation: Oid<Nation>? = station.nation; private set
+	var dominantNation: Oid<FrontierNation>? = station.nation; private set
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
-		val radiusSquared = NATIONS_BALANCE.koths.radius.squared()
+
+		val radiusSquared = if (type) NATIONS_BALANCE.koths.majorKothradius.squared() else NATIONS_BALANCE.koths.majorKothradius.squared()
 		return distanceSquared(x.d(), 0.0, z.d(), this.x.d(), 0.0, this.z.d()) <= radiusSquared
 	}
 
