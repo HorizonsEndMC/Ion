@@ -27,7 +27,7 @@ class DoomsdayDeviceWeaponSubsystem(
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
     companion object {
-        private const val WARM_UP_TIME_SECONDS = 3
+        private const val WARM_UP_TIME_SECONDS = 4
     }
 
     override val length: Int = 11

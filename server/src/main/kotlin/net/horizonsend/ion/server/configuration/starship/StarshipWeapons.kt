@@ -1171,8 +1171,8 @@ data class InterceptorCannonBalancing(
 @Serializable
 data class DoomsdayDeviceBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override val firePowerConsumption: Int = 1,
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(450),
+	override val firePowerConsumption: Int = 85000,
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int = 1,
 	override val applyCooldownToAll: Boolean = true,
@@ -1181,7 +1181,7 @@ data class DoomsdayDeviceBalancing(
 	override val projectileSpawnDistance: Int = 4,
 	override val angleRadiansHorizontal: Double = 70.0,
 	override val angleRadiansVertical: Double = 70.0,
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(25),
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(45),
 
 	override val projectile: DoomsdayDeviceProjectileBalancing = DoomsdayDeviceProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<DoomsdayDeviceProjectileBalancing>, StarshipHeavyWeaponBalancing<DoomsdayDeviceProjectileBalancing> {
@@ -1196,8 +1196,8 @@ data class DoomsdayDeviceBalancing(
         override val starshipShieldDamageMultiplier: Double = 150.0,
         override val areaShieldDamageMultiplier: Double = 100.0,
         override val entityDamage: EntityDamage = RegularDamage(100.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override val particleThickness: Double = 5.0
 	) : StarshipParticleProjectileBalancing {
 		@Transient
