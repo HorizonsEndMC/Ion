@@ -14,6 +14,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
@@ -101,7 +103,6 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
@@ -839,21 +840,22 @@ class Starship(
 			statusEffects[type] = mutableListOf()
 		}
 
-		val sameStrenthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
+		val sameStrengthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
 		// there is an effect with the same strength value as the new one. refresh the duration
-		if (sameStrenthEffect != null) {
-			sameStrenthEffect.durationSeconds = max(sameStrenthEffect.durationSeconds, newStatusEffect.durationSeconds)
+		if (sameStrengthEffect != null) {
+			sameStrengthEffect.durationSeconds = max(sameStrengthEffect.durationSeconds, newStatusEffect.durationSeconds)
 
 			this.playerPilot?.information("Refreshed status effect:")
 			this.playerPilot?.sendMessage(ofChildren(
-				sameStrenthEffect.type.displayName,
+				sameStrengthEffect.type.displayName,
 				Component.newline(),
-				text("Strength: ${sameStrenthEffect.strength}", NamedTextColor.YELLOW),
+				text("Strength: ${sameStrengthEffect.strength}", HE_MEDIUM_GRAY),
 				Component.newline(),
-				text("Duration: ${sameStrenthEffect.durationSeconds}s", NamedTextColor.YELLOW),
+				text("Duration: ${sameStrengthEffect.durationSeconds}s", HE_MEDIUM_GRAY),
 				Component.newline(),
-				text("[Hover for description]", NamedTextColor.GRAY)
-					.hoverEvent(sameStrenthEffect.type.description.color(NamedTextColor.WHITE))
+				text("[Effect]", HE_LIGHT_ORANGE)
+					.hoverEvent(sameStrengthEffect.type.description),
+
 			))
 			return
 		}
@@ -865,12 +867,12 @@ class Starship(
 		this.playerPilot?.sendMessage(ofChildren(
 			newStatusEffect.type.displayName,
 			Component.newline(),
-			text("Strength: ${newStatusEffect.strength}", NamedTextColor.YELLOW),
+			text("Strength: ${newStatusEffect.strength}", HE_MEDIUM_GRAY),
 			Component.newline(),
-			text("Duration: ${newStatusEffect.durationSeconds}s", NamedTextColor.YELLOW),
+			text("Duration: ${newStatusEffect.durationSeconds}s", HE_MEDIUM_GRAY),
 			Component.newline(),
-			text("[Hover for description]", NamedTextColor.GRAY)
-				.hoverEvent(newStatusEffect.type.description.color(NamedTextColor.WHITE))
+			text("[Effect]", HE_LIGHT_ORANGE)
+				.hoverEvent(newStatusEffect.type.description),
 		))
 	}
 

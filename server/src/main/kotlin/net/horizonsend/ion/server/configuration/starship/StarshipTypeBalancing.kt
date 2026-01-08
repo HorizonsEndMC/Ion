@@ -1720,3 +1720,8 @@ sealed interface StarshipCommandBurstBalancing {
 		val incompatibleMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
 	)
 }
+
+@Serializable
+sealed interface StarshipMultiplierCommandBurstBalancing : StarshipCommandBurstBalancing {
+	val strength: Double
+}

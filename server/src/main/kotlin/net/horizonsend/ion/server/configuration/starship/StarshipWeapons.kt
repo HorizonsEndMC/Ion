@@ -1781,5 +1781,7 @@ data class ShieldCommandBurstBalancing(
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val range: Double = 200.0,
 	override val durationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
-) : StarshipCommandBurstBalancing
+
+	override val strength: Double = 1.5,
+) : StarshipMultiplierCommandBurstBalancing
 // End Command Bursts
