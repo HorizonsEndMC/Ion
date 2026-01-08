@@ -55,6 +55,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
@@ -233,8 +234,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("jump")
-	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@onlineNationMembers")
-	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, or a member of your nation")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@players")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, or a member of your nation/fleet")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val separated = destination.split(",")
 		if (separated.size == 2 && separated.all { runCatching { it.toInt() }.isSuccess }) {
@@ -270,7 +271,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val otherPlayer = Bukkit.getPlayer(destination)
+		val otherFleet = if (otherPlayer != null) Fleets.findByMember(otherPlayer) else null
+
 		val destinationPos = Space.getPlanet(destination)?.let {
+			// Check if the destination is a planet
 			Pos(
 				it.spaceWorldName,
 				it.location.x,
@@ -278,9 +282,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.location.z
 			)
 		} ?: ConfigurationFiles.serverConfiguration().beacons.firstOrNull {
+			// Check if the destination is a beacon
 			it.name.replace(" ", "_") == destination
 		}?.spaceLocation
 		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
+			// Check if the destination is a saved player bookmark
 			Pos(
 				it.worldName,
 				it.x,
@@ -288,6 +294,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.z
 			)
 		} ?: if (otherPlayer != null && PlayerCache[otherPlayer].nationOid == PlayerCache[sender].nationOid) {
+			// Check if the destination is a nation member
+			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
+		} else if (otherPlayer != null && otherFleet != null && otherFleet == Fleets.findByMember(sender)) {
+			// Check if the destination is a fleet member
 			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
 		} else null
 
