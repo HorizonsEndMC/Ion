@@ -588,7 +588,7 @@ data class RapidHeavyMissileLauncherBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2500),
 	override val firePowerConsumption: Int = 500,
 	override val isForwardOnly: Boolean = false,
-	override val maxPerShot: Int? = 2,
+	override val maxPerShot: Int? = 3,
 	override val applyCooldownToAll: Boolean = false,
 	override val aimDistance: Int = 5,
 	override val convergeDistance: Double = 10.0,
