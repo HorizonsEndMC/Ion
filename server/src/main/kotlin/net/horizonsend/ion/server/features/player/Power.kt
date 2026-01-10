@@ -12,7 +12,7 @@ object Power : IonServerComponent() {
 	override fun onEnable() {
 		// award power to online players every 30 minutes
 		// 20 ticks * 30 minutes converted to seconds
-		Tasks.syncRepeat(0L, 20L * TimeUnit.MINUTES.toSeconds(30)) {
+		Tasks.syncRepeat(0L, 20L * TimeUnit.MINUTES.toSeconds(15)) {
 			for (player in Bukkit.getOnlinePlayers()) {
 				SLXP.addPowerAsync(player.uniqueId, 2)
 			}
@@ -24,7 +24,7 @@ object Power : IonServerComponent() {
 		val victim = event.player
 		val killer = event.entity.killer ?: return // only player vs. player kills should modify power
 
-		SLXP.addPowerAsync(victim.uniqueId, -5)
-		SLXP.addPowerAsync(killer.uniqueId, 3)
+		SLXP.addPowerAsync(victim.uniqueId, -4)
+		SLXP.addPowerAsync(killer.uniqueId, 4)
 	}
 }
