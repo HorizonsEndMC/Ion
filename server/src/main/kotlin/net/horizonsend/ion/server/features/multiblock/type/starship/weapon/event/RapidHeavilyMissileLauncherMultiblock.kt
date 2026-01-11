@@ -11,8 +11,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.RapidHeavyMissileProjectile
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.RapidHeavyMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

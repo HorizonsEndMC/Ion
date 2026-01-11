@@ -9,32 +9,32 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
-import org.bukkit.damage.DamageType
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
-class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
-	source: ProjectileSource,
-	name: Component,
-	loc: Location,
-	val dir: Vector,
-	val initialDir: Vector,
-	override val balancing: B,
-	shooter: Damager,
-	var face: BlockFace, //Up = true, down = false
-	originalTarget: Vector,
-	baseAimDistance: Int
+class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
+    source: ProjectileSource,
+    name: Component,
+    loc: Location,
+    val dir: Vector,
+    val initialDir: Vector,
+    override val balancing: B,
+    shooter: Damager,
+    var face: BlockFace, //Up = true, down = false
+    originalTarget: Vector,
+    baseAimDistance: Int
 ) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
 	var flightPath1Completed = false
 	var flightPath2Completed = false
 	var age = 0
+	val delayMillis: Int = 150
 
-	val item = ItemFactory.unStackableCustomItem("projectile/thermonuclear_missile").construct()
+	val item = ItemFactory.Preset.unStackableCustomItem("projectile/heavy_missile").construct()
 	override val color: Color = Color.ORANGE
 
 	init {
@@ -42,13 +42,13 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	}
 
 	private val container = ItemDisplayContainer(
-		source.getWorld(),
-		6.0F,
-		loc.toVector(),
-		dir,
-		item,
-		interpolation = 2
-	).apply {
+        source.getWorld(),
+        4.0F,
+        loc.toVector(),
+        dir,
+        item,
+        interpolation = 2
+    ).apply {
 		getEntity().transformationInterpolationDuration = 2
 		getEntity().teleportDuration = 2
 	}
@@ -124,6 +124,9 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 		}
 	}
 
+
+	override var speed = balancing.speed
+
 	override fun onDespawn() {
 		container.remove()
 	}
@@ -138,25 +141,10 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	}
 
 	override fun onImpact() {
-		for (loc in location.circlePoints(4.0, 50, direction)) {
+		for (loc in location.circlePoints(2.0, 30, direction)) {
 			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
 			loc.world.spawnParticle(
 				Particle.CLOUD,
-				location,
-				0,
-				radialVector.x,
-				radialVector.y,
-				radialVector.z,
-				1.0,
-				null,
-				true
-			)
-		}
-
-		for (loc in location.spherePoints(4.0, 50)) {
-			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
-			loc.world.spawnParticle(
-				Particle.FLAME,
 				location,
 				0,
 				radialVector.x,

@@ -1,22 +1,12 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.extensions.informationAction
-import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
-import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing.HeavyLaserProjectileBalancing
-import net.horizonsend.ion.server.configuration.starship.LightMissileLauncherBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyLaserStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
@@ -26,10 +16,8 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
-import java.time.Duration
-import java.util.concurrent.TimeUnit
 
-class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
+class LightMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
@@ -44,9 +32,8 @@ class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	var flightPath1Completed = false
 	var flightPath2Completed = false
 	var age = 0
-	val delayMillis: Int = 150
 
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
+	val item = ItemFactory.unStackableCustomItem("projectile/light_missile").construct()
 	override val color: Color = Color.ORANGE
 
 	init {
@@ -55,7 +42,7 @@ class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	private val container = ItemDisplayContainer(
 		source.getWorld(),
-		4.0F,
+		3.0F,
 		loc.toVector(),
 		dir,
 		item,
@@ -135,9 +122,6 @@ class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 			)
 		}
 	}
-
-
-	override var speed = balancing.speed
 
 	override fun onDespawn() {
 		container.remove()

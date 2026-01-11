@@ -27,7 +27,7 @@ class ProbeProjectile(
 
 	private val container = ItemDisplayContainer(
 		source.getWorld(),
-		4.0F,
+		1.0F,
 		loc.toVector(),
 		dir,
 		item,

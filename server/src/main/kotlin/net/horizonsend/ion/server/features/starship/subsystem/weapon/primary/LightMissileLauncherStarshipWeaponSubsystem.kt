@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LightMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -88,7 +88,7 @@ class LightMissileLauncherStarshipWeaponSubsystem(
                 val randomLoc = getFirePos().toCenterVector().clone()
                     .add(randomInitialDir.clone().normalize().multiply(0.1))
 
-				TrackingMissileProjectile(
+				LightMissileProjectile(
                     StarshipProjectileSource(starship),
                     getName(),
                     randomLoc.toLocation(starship.world),
