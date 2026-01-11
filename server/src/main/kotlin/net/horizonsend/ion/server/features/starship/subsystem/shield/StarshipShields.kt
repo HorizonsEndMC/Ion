@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -23,7 +24,6 @@ import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.boss.BarColor
-import org.bukkit.boss.BossBar
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -296,6 +296,9 @@ object StarshipShields : IonServerComponent() {
 		if (shield.isReinforcementActive()) {
 			usage = (usage * 0.1f).toInt()
 		}
+
+		val resistanceFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_RESISTANCE)?.strength ?: 0.0
+		usage = (usage * (1 - resistanceFactor)).toInt()
 
 		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power -= usage

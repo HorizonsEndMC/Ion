@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -158,4 +160,6 @@ abstract class AbstractCommandBurstMultiblock(val core: Material) : Multiblock()
 			}
 		}
 	}
+
+	abstract fun createSubsystem(starship: Starship, sign: Sign, multiblock: Multiblock): AbstractCommandBurstSubsystem<*>
 }

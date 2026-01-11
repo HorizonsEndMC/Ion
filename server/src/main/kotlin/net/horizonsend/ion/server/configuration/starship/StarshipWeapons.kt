@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.AbyssalGazeSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.CapitalBeamWeaponSubsystem
@@ -206,8 +207,10 @@ data class HeavyLaserBalancing(
 		override val particleThickness: Double = 1.0,
 		override val maxDegrees: Double = 25.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
-	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val effectStrength: Double = 0.85,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(20L)
+	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = HeavyLaserProjectile::class
 	}
@@ -410,7 +413,9 @@ data class WebifierBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val particleThickness: Double = 2.0,
-	) : StarshipParticleProjectileBalancing {
+		override val effectStrength: Double = 0.45,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(5L)
+	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = WebifierProjectile::class
 	}
@@ -906,16 +911,18 @@ data class IonTurretBalancing(
 
 	@Serializable
 	data class IonTurretProjectileBalancing(
-        override val range: Double = 500.0,
-        override val speed: Double = 105.0,
-        override val explosionPower: Float = 3f,
-        override val starshipShieldDamageMultiplier: Double = 3.7,
-        override val areaShieldDamageMultiplier: Double = 60.0,
-        override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val range: Double = 500.0,
+		override val speed: Double = 105.0,
+		override val explosionPower: Float = 3f,
+		override val starshipShieldDamageMultiplier: Double = 3.7,
+		override val areaShieldDamageMultiplier: Double = 60.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-        override val particleThickness: Double = 0.6
-	) : StarshipParticleProjectileBalancing {
+		override val particleThickness: Double = 0.6,
+		override val effectStrength: Double = 0.1,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(7L),
+	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = IonTurretProjectile::class
 	}
@@ -1018,8 +1025,10 @@ data class ScramblerBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override val particleThickness: Double = 2.0
-	) : StarshipParticleProjectileBalancing {
+		override val particleThickness: Double = 2.0,
+		override val effectStrength: Double = 0.9,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(20L)
+	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = ScramblerProjectile::class
 	}
@@ -1780,8 +1789,21 @@ data class ShieldCommandBurstBalancing(
 	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val range: Double = 200.0,
-	override val durationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
+	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
 
-	override val strength: Double = 1.5,
+	override val effectStrength: Double = 1.0,
+) : StarshipMultiplierCommandBurstBalancing
+
+@Serializable
+data class SkirmishCommandBurstBalancing(
+	@Transient
+	override val clazz: KClass<out AbstractCommandBurstSubsystem<*>> = SkirmishCommandBurstSubsystem::class,
+
+	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(),
+	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
+	override val range: Double = 200.0,
+	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
+
+	override val effectStrength: Double = 1.0,
 ) : StarshipMultiplierCommandBurstBalancing
 // End Command Bursts

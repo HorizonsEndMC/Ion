@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipStart
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -53,7 +54,10 @@ object StarshipCruising : IonServerComponent() {
 		var lastBlockCount = starship.initialBlockCount
 
 		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
-			val limitedTarget = (targetSpeed * starship.disabledThrusterRatio * starship.webifierCruiseSpeedMod).toInt()
+			val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
+			val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+
+			val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio).toInt()
 
 			val dir = this.targetDir ?: Vector()
 			val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)
@@ -103,13 +107,16 @@ object StarshipCruising : IonServerComponent() {
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
+		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+
 		starship.cruiseData.accelerate(starship.speedLimit, starship.reactor.powerDistributor.thrusterPortion)
 		val velocity = starship.cruiseData.velocity
 		val speed = velocity.length()
 
 		if (oldVelocity.distance(velocity) > 0.01) {
 			// velocity has changed
-			val targetSpeed = starship.cruiseData.targetSpeed
+			val targetSpeed = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier)).toInt()
 
 			starship.sendActionBar(ofChildren(
 				text("Cruise Speed: ", color(Colors.INFORMATION)),

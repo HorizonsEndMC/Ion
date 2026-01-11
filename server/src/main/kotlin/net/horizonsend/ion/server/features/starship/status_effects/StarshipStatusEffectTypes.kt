@@ -5,33 +5,45 @@ import net.horizonsend.ion.server.core.registration.keys.StarshipStatusEffectTyp
 import net.kyori.adventure.text.Component
 
 object StarshipStatusEffectTypes {
+	// 1 + strength = speed increase, default 0
 	val CRUISE_SPEED = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.CRUISE_SPEED,
 		displayName = Component.text("Cruise Speed Boost", HE_LIGHT_BLUE),
 		description = Component.text("Increases cruise speed", HE_LIGHT_BLUE)
 	)
 
+	// 1 - strength = speed reduction, default 0
 	val CRUISE_SLOW = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.CRUISE_SLOW,
 		displayName = Component.text("Cruise Slow", HE_LIGHT_BLUE),
 		description = Component.text("Decreases cruise speed", HE_LIGHT_BLUE)
 	)
 
+	// 1 + strength = speed increase, default 0
 	val DIRECT_CONTROL_SPEED = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.DIRECT_CONTROL_SPEED,
 		displayName = Component.text("Direct Control Speed Boost", HE_LIGHT_BLUE),
 		description = Component.text("Increases direct control speed", HE_LIGHT_BLUE)
 	)
 
+	// 1 - strength = speed reduction, default 0
 	val DIRECT_CONTROL_SLOW = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.DIRECT_CONTROL_SLOW,
 		displayName = Component.text("Direct Control Slow", HE_LIGHT_BLUE),
 		description = Component.text("Decreases direct control speed", HE_LIGHT_BLUE)
 	)
 
+	// base regen rate * (1 + strength) = buffed shield regen, default 0
 	val SHIELD_REGENERATION_SPEED = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.SHIELD_REGENERATION_SPEED,
 		displayName = Component.text("Shield Regeneration Speed Boost", HE_LIGHT_BLUE),
 		description = Component.text("Increases shield regeneration rate", HE_LIGHT_BLUE)
+	)
+
+	// 1 - strength = damage mitigation on damage, default 0
+	val SHIELD_RESISTANCE = StarshipStatusEffectType(
+		key = StarshipStatusEffectTypeKeys.SHIELD_RESISTANCE,
+		displayName = Component.text("Shield Resistance", HE_LIGHT_BLUE),
+		description = Component.text("Increases shield resistance", HE_LIGHT_BLUE)
 	)
 }

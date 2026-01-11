@@ -1,13 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.starship.IonTurretBalancing.IonTurretProjectileBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
@@ -15,7 +14,6 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
-import java.time.Duration
 
 class IonTurretProjectile(
 	source: ProjectileSource,
@@ -57,30 +55,15 @@ class IonTurretProjectile(
 			thruster.lastIonTurretLimited = System.currentTimeMillis()
 		}
 
-		starship.userErrorAction("Direct Control speed slowed by ${(SLOW_FACTOR * 100).toInt()}%!")
-		// starship was not slowed by ion turrets recently
-		if (starship.directControlSlowExpiryFromIonTurrets < System.currentTimeMillis()) {
-			// Only start the timer based on the first hit
-			starship.directControlSlowExpiryFromIonTurrets = System.currentTimeMillis() + Duration.ofSeconds(SLOW_DURATION_SECONDS).toMillis()
-		}
-		// Only apply slow if this ship has not been hit within the last 1 second
-		if (starship.lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened + Duration.ofSeconds(1L).toMillis() <= System.currentTimeMillis()) {
-			// Reduce starship speed by the slow factor
-			starship.directControlSpeedModifierFromIonTurrets *= (1 - SLOW_FACTOR)
-			starship.lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened = System.currentTimeMillis()
-		}
+		val speedPenalty = 1 - balancing.effectStrength
 
-		Tasks.syncDelay(Duration.ofSeconds(SLOW_DURATION_SECONDS).toSeconds() * 20L) {
-			// reset for individual shots
-			// starship.directControlSpeedModifier /= (1 - SLOW_FACTOR)
-			if (ActiveStarships.isActive(starship) && starship.directControlSlowExpiryFromIonTurrets - 100 <= System.currentTimeMillis()) {
-				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
-				starship.directControlSpeedModifierFromIonTurrets = 1.0
-				starship.directControlSlowExpiryFromIonTurrets = 0L
-				starship.lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened = 0L
-				starship.informationAction("Direct Control speed restored")
-			}
-		}
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
+			speedPenalty,
+			balancing.effectDurationNanos
+		))
+
+		starship.userErrorAction("Direct Control speed slowed by ${(SLOW_FACTOR * 100).toInt()}%!")
 	}
 
 	companion object {

@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.navigationco
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurstMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ShieldCommandBurstMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
@@ -292,6 +293,10 @@ object SubsystemDetector {
 			is ShieldCommandBurstMultiblock -> {
 				starship.subsystems += ShieldCommandBurstSubsystem(starship, sign, multiblock)
 			}
+
+			is AbstractCommandBurstMultiblock -> {
+				detectCommandBurst(starship, sign, multiblock)
+			}
 		}
 	}
 
@@ -338,6 +343,15 @@ object SubsystemDetector {
 
 			starship.subsystems += subsystem
 		}
+	}
+
+	private fun detectCommandBurst(starship: ActiveStarship, sign: Sign, multiblock: AbstractCommandBurstMultiblock) {
+		val subsystem = multiblock.createSubsystem(starship, sign, multiblock)
+
+		if (isDuplicate(starship, subsystem)) return
+		if (!subsystem.canCreateSubsystem()) return
+
+		starship.subsystems += subsystem
 	}
 
 	private fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {

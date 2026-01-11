@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.control.input.DirectControlI
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import org.bukkit.util.Vector
@@ -81,9 +82,10 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 
 		// The starship's direction
 		val direction = starship.getTargetForward()
-		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
-		val targetSpeed = (calculateSpeed(data.selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets * starship.directControlSpeedModifierFromWebifiers *
-				starship.directControlSpeedModifierFromHeavyLasers) * oversizeModifier
+        val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
+		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		val targetSpeed = (calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier
 
 		if (data.isBoosting) {
 			// Initialize forward movement

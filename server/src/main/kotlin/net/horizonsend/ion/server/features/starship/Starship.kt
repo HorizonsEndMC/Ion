@@ -459,18 +459,8 @@ class Starship(
 		set(value) {
 			field = value.coerceIn(0.85, 1.0)
 		}
-	var directControlSpeedModifierFromHeavyLasers = 1.0
-		set(value) {
-			field = value.coerceIn(0.0, 1.0)
-		}
-	var directControlSpeedModifierFromWebifiers = 1.0
-		set(value) {
-			field = value.coerceIn(0.4, 1.0)
-		}
 	var directControlSlowExpiryFromIonTurrets = 0L
 	var lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened = 0L
-	var directControlSlowExpiryFromHeavyLasers = 0L
-	var directControlSlowExpiryFromWebifier = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
 		when(controller) {
@@ -607,8 +597,6 @@ class Starship(
 
 	val disabledThrusterRatio: Double get() =
 		thrusters.count { it.lastIonTurretLimited < (System.currentTimeMillis() - 5000L) } / thrusters.size.toDouble()
-
-	var webifierCruiseSpeedMod: Double = 1.0
 
 	fun generateThrusterMap() {
 		for (face in CARDINAL_BLOCK_FACES) {
@@ -843,7 +831,7 @@ class Starship(
 		val sameStrengthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
 		// there is an effect with the same strength value as the new one. refresh the duration
 		if (sameStrengthEffect != null) {
-			sameStrengthEffect.durationSeconds = max(sameStrengthEffect.durationSeconds, newStatusEffect.durationSeconds)
+			sameStrengthEffect.durationNanos = max(sameStrengthEffect.durationNanos, newStatusEffect.durationNanos)
 
 			this.playerPilot?.information("Refreshed status effect:")
 			this.playerPilot?.sendMessage(ofChildren(
@@ -851,7 +839,7 @@ class Starship(
 				Component.newline(),
 				text("Strength: ${sameStrengthEffect.strength}", HE_MEDIUM_GRAY),
 				Component.newline(),
-				text("Duration: ${sameStrengthEffect.durationSeconds}s", HE_MEDIUM_GRAY),
+				text("Duration: ${sameStrengthEffect.durationNanos}s", HE_MEDIUM_GRAY),
 				Component.newline(),
 				text("[Effect]", HE_LIGHT_ORANGE)
 					.hoverEvent(sameStrengthEffect.type.description),
@@ -869,7 +857,7 @@ class Starship(
 			Component.newline(),
 			text("Strength: ${newStatusEffect.strength}", HE_MEDIUM_GRAY),
 			Component.newline(),
-			text("Duration: ${newStatusEffect.durationSeconds}s", HE_MEDIUM_GRAY),
+			text("Duration: ${newStatusEffect.durationNanos}s", HE_MEDIUM_GRAY),
 			Component.newline(),
 			text("[Effect]", HE_LIGHT_ORANGE)
 				.hoverEvent(newStatusEffect.type.description),
@@ -877,7 +865,7 @@ class Starship(
 	}
 
 	fun getActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {
-		return statusEffects[statusEffectType]?.firstOrNull { it.type == statusEffectType }
+		return statusEffects[statusEffectType]?.filter { statusEffect -> statusEffect.type == statusEffectType }?.maxByOrNull { statusEffect -> statusEffect.strength }
 	}
 
 	fun removeStatusEffectType(statusEffectType: StarshipStatusEffectType) {

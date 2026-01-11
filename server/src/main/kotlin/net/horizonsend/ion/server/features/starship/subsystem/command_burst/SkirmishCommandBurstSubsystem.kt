@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.command_burst
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.configuration.starship.ShieldCommandBurstBalancing
+import net.horizonsend.ion.server.configuration.starship.SkirmishCommandBurstBalancing
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ShieldCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.SkirmishCommandBurstMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
@@ -12,16 +12,16 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Sign
 import java.util.concurrent.TimeUnit
 
-class ShieldCommandBurstSubsystem(
+class SkirmishCommandBurstSubsystem(
 	starship: Starship,
 	sign: Sign,
-	multiblock: ShieldCommandBurstMultiblock,
-	) : AbstractCommandBurstSubsystem<ShieldCommandBurstBalancing>(
+	multiblock: SkirmishCommandBurstMultiblock,
+	) : AbstractCommandBurstSubsystem<SkirmishCommandBurstBalancing>(
 	starship,
 	sign,
 	multiblock,
-	starship.balancingManager.getCommandBurstSupplier(ShieldCommandBurstSubsystem::class)) {
-
+	starship.balancingManager.getCommandBurstSupplier(SkirmishCommandBurstSubsystem::class)
+	) {
 	override fun activateEffect(starships: Set<Starship>) {
 		val playerPilot = starship.playerPilot ?: return
 		val frontierNationId = PlayerCache[playerPilot].frontierNationOid
@@ -33,7 +33,15 @@ class ShieldCommandBurstSubsystem(
 
 		starship.addStatusEffect(
 			StarshipStatusEffect(
-				StarshipStatusEffectTypes.SHIELD_RESISTANCE,
+				StarshipStatusEffectTypes.CRUISE_SPEED,
+				balancing.effectStrength,
+				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+			)
+		)
+
+		starship.addStatusEffect(
+			StarshipStatusEffect(
+				StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED,
 				balancing.effectStrength,
 				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
 			)
@@ -47,7 +55,13 @@ class ShieldCommandBurstSubsystem(
 			if (frontierNationId != otherNationId) continue
 
 			otherStarship.addStatusEffect(StarshipStatusEffect(
-				StarshipStatusEffectTypes.SHIELD_RESISTANCE,
+				StarshipStatusEffectTypes.CRUISE_SPEED,
+				balancing.effectStrength,
+				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+			))
+
+			otherStarship.addStatusEffect(StarshipStatusEffect(
+				StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED,
 				balancing.effectStrength,
 				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
 			))
@@ -55,6 +69,6 @@ class ShieldCommandBurstSubsystem(
 	}
 
 	override fun getName(): Component {
-		return text("Shield Command Burst")
+		return text("Skirmish Command Burst")
 	}
 }

@@ -102,7 +102,8 @@ data class NewStarshipBalancing(
 	@Serializable
 	data class CommandBurstDefaults(
 		val commandBursts: List<StarshipCommandBurstBalancing> = listOf(
-			ShieldCommandBurstBalancing()
+			ShieldCommandBurstBalancing(),
+			SkirmishCommandBurstBalancing(),
 		)
 	)
 
@@ -1612,6 +1613,12 @@ sealed interface StarshipShieldDrainingProjectileBalancing : StarshipProjectileB
 }
 
 @Serializable
+sealed interface StarshipStatusEffectProjectileBalancing : StarshipProjectileBalancing {
+	val effectStrength: Double
+	val effectDurationNanos: Long
+}
+
+@Serializable
 sealed interface StarshipArcedProjectileBalancing : StarshipParticleProjectileBalancing {
 	val gravityMultiplier: Double
 	val decelerationAmount: Double
@@ -1705,7 +1712,7 @@ sealed interface StarshipCommandBurstBalancing {
 
 	val activateCooldownNanos: Long
 	val range: Double
-	val durationNanos: Long
+	val effectDurationNanos: Long
 
 	/**
 	 * @param canActivate Whether this weapon can be fired.
@@ -1723,5 +1730,5 @@ sealed interface StarshipCommandBurstBalancing {
 
 @Serializable
 sealed interface StarshipMultiplierCommandBurstBalancing : StarshipCommandBurstBalancing {
-	val strength: Double
+	val effectStrength: Double
 }

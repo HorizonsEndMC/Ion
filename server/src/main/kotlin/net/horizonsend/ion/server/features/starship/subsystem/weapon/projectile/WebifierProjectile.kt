@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.starship.WebifierBalancing.WebifierProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.WebifierStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.WebifierWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -18,7 +18,6 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
-import java.time.Duration
 import kotlin.math.pow
 
 class WebifierProjectile(
@@ -58,25 +57,21 @@ class WebifierProjectile(
 		Tasks.syncDelay(60L) {
 			task.cancel()
 		}
-		val speedPenalty = 0.55
+		val speedPenalty = 1 - balancing.effectStrength
 
-		starship.userErrorAction("Ship speed slowed by ${(0.55 * 100).toInt()}%!")
-		starship.directControlSlowExpiryFromWebifier = System.currentTimeMillis() + Duration.ofSeconds(5).toMillis()
-		starship.directControlSpeedModifierFromWebifiers *= (1 - speedPenalty)
-		starship.webifierCruiseSpeedMod *= (1-speedPenalty)
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
+			speedPenalty,
+			balancing.effectDurationNanos
+		))
 
-		Tasks.syncDelay(Duration.ofSeconds(5).toSeconds() * 20L) {
-			// reset for individual shots
-			starship.directControlSpeedModifierFromWebifiers /= (1 - speedPenalty)
-			starship.webifierCruiseSpeedMod /= (1 - speedPenalty)
-			if (ActiveStarships.isActive(starship) && starship.directControlSlowExpiryFromWebifier - 100 < System.currentTimeMillis()) {
-				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
-				starship.directControlSpeedModifierFromWebifiers = 1.0
-				starship.webifierCruiseSpeedMod = 1.0
-				starship.directControlSlowExpiryFromWebifier = 0L
-				starship.informationAction("Ship speed restored")
-			}
-		}
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.CRUISE_SLOW,
+			speedPenalty,
+			balancing.effectDurationNanos
+		))
+
+		starship.userErrorAction("Ship speed slowed by ${(speedPenalty * 100).toInt()}%!")
 	}
 
 	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
