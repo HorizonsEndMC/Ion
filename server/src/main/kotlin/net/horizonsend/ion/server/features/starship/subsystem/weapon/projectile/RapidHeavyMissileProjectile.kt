@@ -34,7 +34,7 @@ class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	var age = 0
 	val delayMillis: Int = 150
 
-	val item = ItemFactory.Preset.unStackableCustomItem("projectile/heavy_missile").construct()
+	val item = ItemFactory.Preset.unStackableCustomItem("projectile/activated_heavy_missile").construct()
 	override val color: Color = Color.ORANGE
 
 	init {

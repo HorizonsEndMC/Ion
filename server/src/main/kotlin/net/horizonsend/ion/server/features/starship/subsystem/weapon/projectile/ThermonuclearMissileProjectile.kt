@@ -34,7 +34,7 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	var flightPath2Completed = false
 	var age = 0
 
-	val item = ItemFactory.unStackableCustomItem("projectile/thermonuclear_missile").construct()
+	val item = ItemFactory.unStackableCustomItem("projectile/activated_thermonuclear_missile").construct()
 	override val color: Color = Color.ORANGE
 
 	init {
