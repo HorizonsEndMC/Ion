@@ -44,7 +44,7 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 		source.getWorld(),
 		4.0F,
 		loc.toVector(),
-		dir,
+		dir.clone().multiply(-1),
 		item,
 		interpolation = 2
 	).apply {
