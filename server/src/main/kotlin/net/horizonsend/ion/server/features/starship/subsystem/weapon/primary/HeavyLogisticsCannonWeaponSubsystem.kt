@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
-import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class HeavyLogisticsCannonWeaponSubsystem(
@@ -32,7 +31,7 @@ class HeavyLogisticsCannonWeaponSubsystem(
 		shooter: Damager,
 		target: Vector
 	) {
-		HeavyLogisticsProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter)
+		HeavyLogisticsProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 	}
 }
 

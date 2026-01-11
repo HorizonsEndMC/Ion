@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
-import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class LightLogisticsCannonWeaponSubsystem(
@@ -27,7 +26,7 @@ class LightLogisticsCannonWeaponSubsystem(
 		shooter: Damager,
 		target: Vector
 	) {
-		LightLogisticsProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter)
+		LightLogisticsProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 	}
 
 	override fun getMaxPerShot(): Int = balancing.maxPerShot
