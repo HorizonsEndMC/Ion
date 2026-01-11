@@ -62,6 +62,12 @@ class IonTurretProjectile(
 			speedPenalty,
 			balancing.effectDurationNanos
 		))
+/* Dont think this is necessary, seems ion turrets still disable cruise without it
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.CRUISE_SLOW,
+			speedPenalty,
+			balancing.effectDurationNanos
+		)) */
 
 		starship.userErrorAction("Direct Control speed slowed by ${(SLOW_FACTOR * 100).toInt()}%!")
 	}

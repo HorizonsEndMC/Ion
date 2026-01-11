@@ -15,6 +15,7 @@ class StarshipStatusEffectTypeRegistry : Registry<StarshipStatusEffectType>(Regi
 		register(StarshipStatusEffectTypeKeys.DIRECT_CONTROL_SPEED, StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)
 		register(StarshipStatusEffectTypeKeys.DIRECT_CONTROL_SLOW, StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)
 		register(StarshipStatusEffectTypeKeys.SHIELD_REGENERATION_SPEED, StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED)
+		register(StarshipStatusEffectTypeKeys.SHIELD_REGENERATION_SLOW, StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW)
 		register(StarshipStatusEffectTypeKeys.SHIELD_RESISTANCE, StarshipStatusEffectTypes.SHIELD_RESISTANCE)
 	}
 }

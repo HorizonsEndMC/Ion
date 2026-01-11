@@ -8,5 +8,6 @@ object StarshipStatusEffectTypeKeys : KeyRegistry<StarshipStatusEffectType>(Regi
 	val DIRECT_CONTROL_SPEED = registerTypedKey<StarshipStatusEffectType>("DIRECT_CONTROL_SPEED")
 	val DIRECT_CONTROL_SLOW = registerTypedKey<StarshipStatusEffectType>("DIRECT_CONTROL_SLOW")
 	val SHIELD_REGENERATION_SPEED = registerTypedKey<StarshipStatusEffectType>("SHIELD_REGENERATION_SPEED")
+	val SHIELD_REGENERATION_SLOW = registerTypedKey<StarshipStatusEffectType>("SHIELD_REGENERATION_SLOW")
 	val SHIELD_RESISTANCE = registerTypedKey<StarshipStatusEffectType>("SHIELD_RESISTANCE")
 }

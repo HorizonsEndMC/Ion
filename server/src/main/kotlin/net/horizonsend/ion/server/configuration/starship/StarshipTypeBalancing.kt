@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumRe
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
@@ -736,6 +737,10 @@ data class NewStarshipBalancing(
 					1,
 					"tech 2 ships require a fuel tank to pilot!"
 				)),
+			commandBurstOverrides = listOf(
+				SkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true)),
+				ShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true))
+			),
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000)),
 				TriTurretBalancing(
@@ -1124,6 +1129,10 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.92,
 			shieldPowerMultiplier = 1.0,
 			shieldRegenMultiplier = 1.5,
+			commandBurstOverrides = listOf(
+				SkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true)),
+				ShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true))
+			),
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),

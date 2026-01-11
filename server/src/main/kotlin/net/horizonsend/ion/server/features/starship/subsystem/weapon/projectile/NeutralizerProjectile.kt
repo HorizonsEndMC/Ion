@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.configuration.starship.NeutralizerBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.NeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -45,8 +47,16 @@ class NeutralizerProjectile(
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         val shooterStarship = shooter.starship ?: return
-		starship.shieldRegenModifier = 0.8
-		starship.userErrorAction("Ship shield regeneration disrupted!")
+
+		val regenPenalty = 1 - balancing.effectStrength
+
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
+			regenPenalty,
+			balancing.effectDurationNanos
+		))
+
+		starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {
 			val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world).toCenterLocation()

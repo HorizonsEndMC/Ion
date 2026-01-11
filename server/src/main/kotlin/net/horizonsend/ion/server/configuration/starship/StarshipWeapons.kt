@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalan
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.SkirmishCommandBurstMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
@@ -252,8 +253,11 @@ data class HeavyNeutralizerBalancing(
 		override val particleThickness: Double = 1.0,
 		override val maxDegrees: Double = 25.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
-	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val effectStrength: Double = 0.75,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(30L)
+
+	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = HeavyNeutralizerProjectile::class
 	}
@@ -291,8 +295,10 @@ data class NeutralizerBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val particleThickness: Double = 4.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
-	) : StarshipParticleProjectileBalancing {
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val effectStrength: Double = 0.8,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(20L)
+	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = NeutralizerProjectile::class
 	}
@@ -1785,25 +1791,32 @@ data class TestBoidCannonBalancing(
 data class ShieldCommandBurstBalancing(
 	@Transient
 	override val clazz: KClass<out AbstractCommandBurstSubsystem<*>> = ShieldCommandBurstSubsystem::class,
-
-	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(),
+	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = false, incompatibleMultiblocks = listOf(
+		IncompatibleSubsystemInfo(
+			SkirmishCommandBurstSubsystem::class.java,
+			"You cannot have more than one type of command burst!"
+		)
+	)),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val range: Double = 200.0,
-	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
+	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(15000),
 
-	override val effectStrength: Double = 1.0,
+	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
 
 @Serializable
 data class SkirmishCommandBurstBalancing(
 	@Transient
 	override val clazz: KClass<out AbstractCommandBurstSubsystem<*>> = SkirmishCommandBurstSubsystem::class,
-
-	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(),
+	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = false, incompatibleMultiblocks = listOf(
+		IncompatibleSubsystemInfo(
+			ShieldCommandBurstSubsystem::class.java,
+			"You cannot have more than one type of command burst!"
+		)
+	)),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val range: Double = 200.0,
-	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000),
-
-	override val effectStrength: Double = 1.0,
+	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(15000),
+	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
 // End Command Bursts

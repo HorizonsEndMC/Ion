@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.reactor
 
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
@@ -60,7 +62,8 @@ class ReactorSubsystem(
 
 			val fraction = ((missing.toDouble() / totalMissing.toDouble()) * shieldPower).roundToInt()
 			val shieldBoostMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED)?.strength ?: 0.0
-			shield.power += (min(missing, fraction) * (1 + shieldBoostMultiplier)).toInt()
+			val shieldDrainMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW)?.strength ?: 0.0
+			shield.power += (min(missing, fraction) * (1 + shieldBoostMultiplier) * (1 - shieldDrainMultiplier)).toInt()
 		}
 
 		if (starship is ActiveControlledStarship) {
