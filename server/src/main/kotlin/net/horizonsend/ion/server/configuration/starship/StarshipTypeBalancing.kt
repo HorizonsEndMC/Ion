@@ -105,7 +105,9 @@ data class NewStarshipBalancing(
 		val commandBursts: List<StarshipCommandBurstBalancing> = listOf(
 			ShieldCommandBurstBalancing(),
 			SkirmishCommandBurstBalancing(),
-		)
+			CapitalShieldCommandBurstBalancing(),
+			CapitalSkirmishCommandBurstBalancing(),
+			)
 	)
 
 	@Serializable
@@ -1130,8 +1132,8 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 1.0,
 			shieldRegenMultiplier = 1.5,
 			commandBurstOverrides = listOf(
-				SkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true)),
-				ShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true))
+				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true)),
+				CapitalShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true))
 			),
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),

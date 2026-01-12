@@ -32,6 +32,8 @@ import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.SkirmishCommandBurstMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalShieldCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalSkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
@@ -1819,4 +1821,37 @@ data class SkirmishCommandBurstBalancing(
 	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(15000),
 	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
+
+@Serializable
+data class CapitalSkirmishCommandBurstBalancing(
+	@Transient
+	override val clazz: KClass<out AbstractCommandBurstSubsystem<*>> = CapitalSkirmishCommandBurstSubsystem::class,
+	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = false, incompatibleMultiblocks = listOf(
+		IncompatibleSubsystemInfo(
+			CapitalShieldCommandBurstSubsystem::class.java,
+			"You cannot have more than one type of command burst!"
+		)
+	)),
+	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(6000),
+	override val range: Double = 500.0,
+	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(30000),
+	override val effectStrength: Double = 0.5,
+) : StarshipMultiplierCommandBurstBalancing
+
+@Serializable
+data class CapitalShieldCommandBurstBalancing(
+	@Transient
+	override val clazz: KClass<out AbstractCommandBurstSubsystem<*>> = CapitalShieldCommandBurstSubsystem::class,
+	override val activateRestrictions: StarshipCommandBurstBalancing.ActivateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = false, incompatibleMultiblocks = listOf(
+		IncompatibleSubsystemInfo(
+			CapitalSkirmishCommandBurstSubsystem::class.java,
+			"You cannot have more than one type of command burst!"
+		)
+	)),
+	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(6000),
+	override val range: Double = 500.0,
+	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(30000),
+	override val effectStrength: Double = 0.5,
+) : StarshipMultiplierCommandBurstBalancing
+
 // End Command Bursts
