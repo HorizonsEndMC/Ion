@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
@@ -17,7 +18,9 @@ import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -26,11 +29,15 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.command.GlobalCompletions
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.nations.roles.FrontierNationRoleCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
@@ -41,6 +48,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
@@ -48,6 +56,9 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
@@ -146,6 +157,7 @@ object FrontierNationCommand : SLCommand() {
 
 		FrontierNation.create(name, sender.slPlayerId, color.asRGB(), territory.id)
 
+		// scuffed role creation
 		Tasks.syncDelay(60L) {
 			FrontierNationRoleCommand.onCreate(sender, "Leader", SLTextStyle.GOLD, 1000)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.CLAIM_CREATE)
@@ -676,5 +688,63 @@ object FrontierNationCommand : SLCommand() {
 		val playerId = resolveOfflinePlayer(otherPlayer)
 		val power = PlayerXPLevelCache[playerId]?.power ?: fail { "Player $playerId does not exist, or somehow does not have power" }
 		sender.information("$otherPlayer has $power power")
+	}
+
+	@Subcommand("bank deposit")
+	@Description("Deposits the item in your hand into your nation's bank")
+	fun onBankDeposit(sender: Player) = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		val territory = requireFrontierTerritoryIn(sender)
+		if (territory.frontierNation != nationId) {
+			sender.userError("You are not in a territory owned by your nation")
+			return@asyncCommand
+		}
+
+		Tasks.sync {
+			val item = sender.inventory.itemInMainHand
+			if (item.isEmpty) {
+				sender.userError("You are not holding an item to deposit")
+				return@sync
+			}
+
+			val string = GlobalCompletions.toItemString(item)
+			sender.inventory.setItemInMainHand(null)
+
+			Tasks.async {
+				BankedItem.create(nationId, string)
+			}
+
+			sender.success("Successfully deposited $string in your nation bank")
+		}
+	}
+
+	@Subcommand("bank list")
+	@Description("Lists the items in your nation's bank")
+	fun onBankList(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		val items = BankedItem.find(BankedItem::frontierNation eq nationId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("Your nation does not have any items deposited")
+
+		val builder = text()
+
+		builder.append(text("Your Nation's Items (${items.size})"), newline())
+		builder.append(lineBreak(45), newline())
+
+		val body = formatPaginatedMenu(
+			items.size,
+			"/frontiernation bank list",
+			page ?: 1
+		) { index ->
+			val item = items[index]
+			val itemDisplayName = fromItemString(item.itemString).displayNameComponent
+
+			ofChildren(itemDisplayName)
+		}
+
+		builder.append(body, newline())
+		builder.append(lineBreak(45), newline())
+
+		sender.sendMessage(builder.build())
 	}
 }

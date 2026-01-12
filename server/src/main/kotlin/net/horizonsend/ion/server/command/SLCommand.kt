@@ -220,7 +220,7 @@ abstract class SLCommand : BaseCommand() {
 	}
 
 	protected fun requireFrontierTerritoryIn(sender: Player): RegionFrontierTerritory = Regions.findFirstOf(sender.location)
-		?: fail { "You're not in a territory in space" }
+		?: fail { "You're not in a territory in space or on a moon" }
 
 	protected fun requireFrontierTerritoryUnclaimed(territory: RegionFrontierTerritory) {
 		territory.frontierNation?.fail { "${territory.name} is claimed by ${getFrontierNationName(it)}" }

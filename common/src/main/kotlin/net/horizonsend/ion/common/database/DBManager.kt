@@ -8,6 +8,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
@@ -177,6 +178,7 @@ object DBManager : IonComponent() {
 		FrontierNation.init()
 		FrontierNationRole.init()
 		FrontierTerritory.init()
+		BankedItem.init()
 	}
 
 	override fun onDisable() {

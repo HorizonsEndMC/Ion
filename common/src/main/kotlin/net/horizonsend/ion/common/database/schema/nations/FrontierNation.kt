@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.trx
@@ -71,6 +72,8 @@ data class FrontierNation(
 				setValue(FrontierTerritory::isCapital, false))
 
 			FrontierNationRole.col.deleteMany(sess, FrontierNationRole::parent eq frontierNationId)
+
+			BankedItem.col.deleteMany(sess, BankedItem::frontierNation eq frontierNationId)
 
 			updateMembers(sess, frontierNationId, setValue(SLPlayer::frontierNation, null))
 
