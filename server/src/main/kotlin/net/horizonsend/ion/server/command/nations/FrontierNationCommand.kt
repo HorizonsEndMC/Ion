@@ -43,6 +43,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
+import net.horizonsend.ion.server.gui.invui.misc.FrontierNationBankMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -731,6 +732,19 @@ object FrontierNationCommand : SLCommand() {
 		sender.information("$otherPlayer has $power power")
 	}
 
+	@Subcommand("bank menu")
+	@Description("Displays items stored in your nation's bank")
+	fun onBankMenu(sender: Player) = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		val territory = requireFrontierTerritoryIn(sender)
+		if (territory.frontierNation != nationId) {
+			sender.userError("You are not in a territory owned by your nation")
+			return@asyncCommand
+		}
+
+		FrontierNationBankMenu(sender, nationId).openGui()
+	}
+
 	@Subcommand("bank deposit")
 	@Description("Deposits the item in your hand into your nation's bank")
 	fun onBankDeposit(sender: Player) = asyncCommand(sender) {
@@ -749,13 +763,14 @@ object FrontierNationCommand : SLCommand() {
 			}
 
 			val string = GlobalCompletions.toItemString(item)
+			val amount = item.amount
 			sender.inventory.setItemInMainHand(null)
 
 			Tasks.async {
-				BankedItem.create(nationId, string)
+				BankedItem.create(nationId, string, amount)
 			}
 
-			sender.success("Successfully deposited $string in your nation bank")
+			sender.success("Successfully deposited $string x$amount in your nation bank")
 		}
 	}
 

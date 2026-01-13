@@ -12,15 +12,16 @@ import org.litote.kmongo.ensureIndex
 data class BankedItem(
 	override val _id: Oid<BankedItem>,
 	val frontierNation: Oid<FrontierNation>,
-	var itemString: String
+	var itemString: String,
+	var quantity: Int
 ) : DbObject {
 	companion object : OidDbObjectCompanion<BankedItem>(BankedItem::class, setup = {
 		ensureIndex(BankedItem::frontierNation)
 		ensureIndex(BankedItem::itemString)
 	}) {
-		fun create(frontierNation: Oid<FrontierNation>, itemString: String): Oid<BankedItem> = trx { sess ->
+		fun create(frontierNation: Oid<FrontierNation>, itemString: String, quantity: Int): Oid<BankedItem> = trx { sess ->
 			val id = objId<BankedItem>()
-			val item = BankedItem(id, frontierNation, itemString)
+			val item = BankedItem(id, frontierNation, itemString, quantity)
 			col.insertOne(sess, item)
 			return@trx id
 		}
