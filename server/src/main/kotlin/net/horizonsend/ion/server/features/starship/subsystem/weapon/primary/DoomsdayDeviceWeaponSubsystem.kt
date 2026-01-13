@@ -2,12 +2,14 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
@@ -33,7 +35,10 @@ class DoomsdayDeviceWeaponSubsystem(
     override val length: Int = 11
 
     override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-        var tick = 0
+		toPlayersInRadius(loc, balancing.projectile.range * 20.0) { player ->
+			playDirectionalStarshipSound(loc, player, balancing.projectile.fireSoundNear, balancing.projectile.fireSoundNear, balancing.projectile.range)
+		}
+		var tick = 0
         runnable {
 
             if (tick > (WARM_UP_TIME_SECONDS * 20 / 5)) cancel()
