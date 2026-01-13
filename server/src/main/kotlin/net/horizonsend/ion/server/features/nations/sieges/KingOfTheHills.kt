@@ -2,13 +2,18 @@ package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.HORIZONS_END_BRACKETED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatFrontierNationName
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -17,7 +22,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -28,7 +32,12 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloting
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextColor.color
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -36,7 +45,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.lang.System.currentTimeMillis
-import java.sql.Time
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
@@ -68,6 +76,9 @@ object KingOfTheHills : IonServerComponent() {
 			updateQuarter()
 			beginKoth()
 		}
+		Tasks.syncRepeat(0L, 20L * TimeUnit.MINUTES.toSeconds(10)) {
+			displayKothLeaderboard()
+		}
 	}
 
 	private fun updateKOTHs() {
@@ -83,44 +94,31 @@ object KingOfTheHills : IonServerComponent() {
 				if (!kothRegion.contains(player.location)) continue
 				val playerNation = PlayerCache[player].frontierNationOid
 				if (playerNation == null || !isPiloting(player)) continue
-				println(memberCount)
 				//If the player's nation hasnt gotten a player in the koth this loop yet:
 				if (!memberCount.contains(playerNation)) {
-					println("we made it")
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
 					memberCount[playerNation] = 1
-					println("2nd $memberCount")
 					//If the player's nation hasnt gotten a player in the koth at all this siege:
 					if (!kothScores[kothId]!!.contains(playerNation)) {
-						println("3rd checkpoint ${kothScores[kothId]}")
 						kothScores[kothId]!![playerNation] = 1
-						println("4th checkpoint ${kothScores[kothId]}")
 					}
 				}
 				//If the player isnt the first of his nation to be in the koth, add 1 to his nation's member count
 				else {
-					println("went to else statement instead")
 					val personalNationCount = memberCount[playerNation]!!
-					println(personalNationCount)
 					val newCount = personalNationCount.plus(1)
-					println(memberCount)
 					memberCount[playerNation] = newCount
-					println(memberCount)
 				}
-				println("we made it to here")
-				println(nation)
 
 				//if there are people in the Koth, find the nation with the most people
 				if (!memberCount.isEmpty()) {
 					//if there has been no nations in this koth, just set it to the first nation in the member count
 					if (nation == null) {nation = memberCount.keys.firstNotNullOf { it }}
-					println(nation)
 					//Find the nation with the highest member count, if nobody participated return the nation from the line above
 					val dominantNation = findDominantNation(memberCount, nation!!)
-					println(dominantNation)
+					FrontierNation.updatePoints(dominantNation, 1)
 					//If the dominant nation this time isnt the same as last loop
 					if (dominantNation != nation) {
-						println("made it to here to change the dominator")
 						log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
 						Notify.chatAndGlobal(
 							MiniMessage.miniMessage()
@@ -169,12 +167,37 @@ object KingOfTheHills : IonServerComponent() {
 		return dominantNation
 	}
 
+	fun displayKothLeaderboard() {
+		for (koth: Koths in getKOTHS()) {
+			val kothRegion: RegionKothZone = Regions[koth.kothId]
+			val message = text("Scores for KOTH ${kothRegion.name}:").color(TextColor.fromHexString("#FFD700"))
+				.decorate(TextDecoration.BOLD)
+			val lineBreak = lineBreak(45)
+			message.append(lineBreak)
+			val scores = kothScores[koth.kothId] ?: return
+			val orderedScores = scores.entries
+				.sortedByDescending { it.value }
+				.associate { it.key to it.value }
+			for ((index, score) in orderedScores.entries.withIndex()) {
+				if (score.value == null) continue
+				val nation = FrontierNation.findById(score.key) ?: continue
+				val position = index + 1
+				message.append(
+					text("$position. ${nation.name} with ${score.value} points.").color(color(nation.color))
+				)
+				message.append(newline())
+			}
+			Notify.chatAndGlobal(message)
+		}
+	}
+
 
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val controller = event.previousController as? PlayerController ?: return
 		val damager = event.starship.damagers
 			.filter { it.key is PlayerDamager }
+			.filter { SLPlayer[(it.key as PlayerDamager).player.name]?.frontierNation != SLPlayer[controller.player.name]?.frontierNation }
 			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
 
 		for (koth: Koths in getKOTHS()) {
@@ -283,39 +306,51 @@ object KingOfTheHills : IonServerComponent() {
 
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
 
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill $kothName has ended!\n" +
-			if (topThree[0] != "None") {
-				"<gold><bold>First place: ${topThree[0]}\n"} else {""}+
-				if (topThree[1] != "None") {
-			"<grey><bold>Second place: ${topThree[1]}\n"} else {""} +
-				if (topThree[2] != "None") {
-			"<red><bold>Third place: ${topThree[2]}"} else {""}
-		))
-		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The King of the Hill $kothName has ended!\n" +
-			if (topThree[0] != "None") {
-				"First place: ${topThree[0]}\n"} else {""}+
-			if (topThree[1] != "None") {
-				"Second place: ${topThree[1]}\n"} else {""} +
-			if (topThree[2] != "None") {
-				"Third place: ${topThree[2]}"} else {""}
+		val message = ofChildren(
+			text("The King of the Hill $kothName has ended!", HE_MEDIUM_GRAY), Component.newline(),
+			if (topThree[0] != null) {text("First place: ${topThree[0]}").color(TextColor.fromHexString("#D4AF37"))} else Component.empty(), Component.newline(), //Gold
+			if (topThree[1] != null) {text("Second place: ${topThree[1]}").color(TextColor.fromHexString("#C0C0C0"))} else Component.empty(), Component.newline(), //Silver
+			if (topThree[2] != null) {text("Third place: ${topThree[2]}\"}").color(TextColor.fromHexString("#CD7F32"))} else Component.empty(), Component.newline() //Bronze)
 		)
+		Notify.chatAndGlobal(message)
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)
 	}
 
-	private fun determineWinner(koths: Koths): MutableList<String> {
-		val rawScores = kothScores[koths.kothId] ?: return mutableListOf("why")
+	private fun determineWinner(koths: Koths): List<String?> {
+		val rawScores = kothScores[koths.kothId] ?: return listOf(null, null, null)
+		val kothType = koths.type
+		val pointsToGive = when {
+			kothType -> listOf(75, 50, 25)
+			else -> listOf(35, 20, 10)
+		}
 
 		if (rawScores.isEmpty()) {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended, nobody participated!"))
 			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "King of the Hill event has ended, nobody participated!")
+			return listOf(null, null, null)
 		}
 		val leaderboard = rawScores.entries
 			.sortedByDescending { it.value }
 			.associate { it.key to it.value }
 		val numNationsParticipated = leaderboard.size
-		val firstPlace = if (numNationsParticipated > 0) FrontierNationCache[leaderboard.entries.elementAt(0).key].name else "None"
-		val secondPlace = if (numNationsParticipated > 1) FrontierNationCache[leaderboard.entries.elementAt(1).key].name else "None"
-		val thirdPlace = if (numNationsParticipated > 2) FrontierNationCache[leaderboard.entries.elementAt(2).key].name else "None"
-		val topThree = mutableListOf(firstPlace, secondPlace, thirdPlace)
+		//replace with minOf?
+		var firstPlace: String? = null
+		var secondPlace: String? = null
+		var thirdPlace: String? = null
+		if (numNationsParticipated > 0) {
+			FrontierNation.updatePoints(leaderboard.entries.elementAt(0).key, pointsToGive[0])
+			firstPlace = FrontierNationCache[leaderboard.entries.elementAt(0).key].name
+		}
+		if (numNationsParticipated > 1) {
+			FrontierNation.updatePoints(leaderboard.entries.elementAt(1).key, pointsToGive[1])
+			secondPlace = FrontierNationCache[leaderboard.entries.elementAt(1).key].name
+		}
+		if (numNationsParticipated > 2) {
+			FrontierNation.updatePoints(leaderboard.entries.elementAt(2).key, pointsToGive[2])
+			thirdPlace = FrontierNationCache[leaderboard.entries.elementAt(2).key].name
+		}
+
+		val topThree = listOf(firstPlace, secondPlace, thirdPlace)
 		return topThree
 	}
 

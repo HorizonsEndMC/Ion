@@ -454,8 +454,15 @@ object FrontierNationCommand : SLCommand() {
 		val nationMembers: Map<Oid<FrontierNation>, List<SLPlayerId>> =
 			nations.associateWith { FrontierNation.getMembers(it).toList() }
 
+		/*val sortedNations: List<Oid<FrontierNation>> = nations.toList()
+			.sortedByDescending { nationMembers[it]?.size ?: 0 } */
+
+
+		val nationPoints: Map<Oid<FrontierNation>, Int> =
+			nations.associateWith { FrontierNation.findById(it)?.points ?: 0 }
+
 		val sortedNations: List<Oid<FrontierNation>> = nations.toList()
-			.sortedByDescending { nationMembers[it]?.size ?: 0 }
+			.sortedByDescending { nationPoints[it] }
 
 		val nameColor = NamedTextColor.GOLD
 		val leaderColor = NamedTextColor.AQUA
@@ -513,7 +520,7 @@ object FrontierNationCommand : SLCommand() {
 			is Player -> {
 				when (nation) {
 					null -> PlayerCache[sender].frontierNationOid
-						?: fail { "You need to specify a nation. /n info <nation>" }
+						?: fail { "You need to specify a nation. /fn info <nation>" }
 
 					else -> resolveFrontierNation(nation)
 				}
@@ -594,6 +601,14 @@ object FrontierNationCommand : SLCommand() {
 			ofChildren(
 				text("Balance: "),
 				text(data.balance).color(NamedTextColor.WHITE),
+				newline()
+			)
+		)
+
+		message.append(
+			ofChildren(
+				text("Points: "),
+				text(data.points).color(NamedTextColor.GREEN),
 				newline()
 			)
 		)
@@ -681,6 +696,32 @@ object FrontierNationCommand : SLCommand() {
 		requireFrontierNationPermission(sender, nationId, FrontierNationRole.Permission.BROADCAST)
 		ServerInboxes.sendToFrontierNationMembers(nationId, message.miniMessage())
 	}
+
+	@Subcommand("points")
+	@CommandCompletion("@frontierNations")
+	fun getPoints(sender: CommandSender, @Optional nation: String?): Unit = asyncCommand(sender) {
+		val nationId: Oid<FrontierNation> = when (sender) {
+			is Player -> {
+				when (nation) {
+					null -> PlayerCache[sender].frontierNationOid
+						?: fail { "You need to specify a nation. /fn info <nation>" }
+
+					else -> resolveFrontierNation(nation)
+				}
+			}
+
+			else -> resolveFrontierNation(nation ?: fail { "Non-players must specify a nation" })
+		}
+		val data = FrontierNation.findById(nationId) ?: fail { "Failed to load data" }
+
+		sender.sendMessage(
+			ofChildren(
+				text("${data.name}'s Points: "),
+				text(data.points).color(NamedTextColor.GREEN),
+			)
+		)
+	}
+
 
 	@Subcommand("power")
 	@CommandCompletion("@players")

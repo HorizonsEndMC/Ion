@@ -3,11 +3,14 @@ package net.horizonsend.ion.server.features.nations
 import com.mongodb.client.MongoIterable
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -16,6 +19,7 @@ import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
@@ -25,9 +29,12 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.Koths
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.getKOTHS
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -36,15 +43,22 @@ import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpace
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDeathEvent
 import org.litote.kmongo.and
 import org.litote.kmongo.contains
 import org.litote.kmongo.eq
@@ -78,10 +92,10 @@ object NationsMasterTasks : IonServerComponent() {
 	}
 
 	fun getPower() {
-		for (nationId: Oid<Nation> in Nation.allIds()) {
-			val nation: NationCache.NationData = NationCache[nationId]
+		for (frontierNationId: Oid<FrontierNation> in FrontierNation.allIds()) {
+			val nation: FrontierNationCache.FrontierNationData = FrontierNationCache[frontierNationId]
 			val members: List<SLPlayerId> = SLPlayer
-				.find(SLPlayer::nation eq nationId)
+				.find(SLPlayer::frontierNation eq frontierNationId)
 				.map { player -> player._id }.toList()
 
 			var nationPower = 0

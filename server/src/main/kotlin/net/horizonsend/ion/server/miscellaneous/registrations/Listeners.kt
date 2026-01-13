@@ -40,6 +40,7 @@ import net.horizonsend.ion.server.listener.misc.ResourcePackListener
 import net.horizonsend.ion.server.listener.misc.StuckInHyperspaceListener
 import net.horizonsend.ion.server.listener.nations.FriendlyFireListener
 import net.horizonsend.ion.server.listener.nations.MovementListener
+import net.horizonsend.ion.server.listener.nations.PointsGainListener
 import org.bukkit.event.Listener
 
 val listeners: List<Listener> = listOf(
@@ -47,6 +48,7 @@ val listeners: List<Listener> = listOf(
 	JoinLeaveListener,
 	MovementListener,
 	FriendlyFireListener,
+	PointsGainListener,
 	ProtectionListener,
 	ChatListener,
 

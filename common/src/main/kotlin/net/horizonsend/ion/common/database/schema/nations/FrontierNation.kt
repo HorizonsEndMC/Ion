@@ -34,8 +34,9 @@ data class FrontierNation(
 	var color: Int,
 	var territory: Oid<FrontierTerritory>,
 	override var balance: Int = 0,
+	override var points: Int = 0,
 	val invites: MutableSet<SLPlayerId> = mutableSetOf()
-) : DbObject, MoneyHolder {
+) : DbObject, MoneyHolder, PointsHolder {
 	companion object : OidDbObjectCompanion<FrontierNation>(FrontierNation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(FrontierNation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(FrontierNation::leader)
@@ -86,6 +87,10 @@ data class FrontierNation(
 
 		fun withdraw(frontierNationId: Oid<FrontierNation>, amount: Int) {
 			updateById(frontierNationId, inc(FrontierNation::balance, -amount))
+		}
+
+		fun updatePoints(frontierNationId: Oid<FrontierNation>, amount: Int) {
+			updateById(frontierNationId, inc(FrontierNation::points, amount))
 		}
 
 		fun isInvited(frontierNationId: Oid<FrontierNation>, playerId: SLPlayerId): Boolean {

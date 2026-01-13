@@ -321,7 +321,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.y,
 				it.z
 			)
-		} ?: if (otherPlayer != null && PlayerCache[otherPlayer].nationOid == PlayerCache[sender].nationOid) {
+		} ?: if (otherPlayer != null && PlayerCache[otherPlayer].frontierNationOid == PlayerCache[sender].frontierNationOid) {
 			// Check if the destination is a nation member
 			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
 		} else if (otherPlayer != null && otherFleet != null && otherFleet == Fleets.findByMember(sender)) {
