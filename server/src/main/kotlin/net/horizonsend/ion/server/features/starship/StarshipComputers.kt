@@ -1,14 +1,17 @@
 package net.horizonsend.ion.server.features.starship
 
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfNation
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfSettlement
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.uuid
@@ -18,9 +21,15 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
@@ -177,7 +186,8 @@ object StarshipComputers : IonServerComponent() {
 			&& (player.hasPermission("ion.core.starship.override")
 			|| isSettlementOwner(player, data)
 			|| (isMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))   // passing this implies the player is a member of the settlement
-			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP))) // passing this implies the player is part of the nation
+			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP)) // passing this implies the player is part of the nation
+			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true)) // passing this implies the player has access to a station
 	}
 
 	fun takeOwnership(player: Player, data: PlayerStarshipData) {
@@ -195,6 +205,14 @@ object StarshipComputers : IonServerComponent() {
 			.firstOrNull() ?: return null
 
 		return Territory.findById(territoryId.id)
+	}
+
+	private fun getComputerStation(data: PlayerStarshipData): CachedSpaceStation<*, *, *>? {
+		val location = Vec3i(data.blockKey).toLocation(data.bukkitWorld())
+
+		val stationRegion = Regions.findFirstOf<RegionSpaceStation<*, *>>(location) ?: return null
+
+		return SpaceStationCache[stationRegion.name]
 	}
 
 	private fun isSettlementOwner(player: Player, data: PlayerStarshipData): Boolean {
@@ -225,5 +243,28 @@ object StarshipComputers : IonServerComponent() {
 
 	fun hasPermission(player: SLPlayerId, permission: NationRole.Permission): Boolean {
 		return NationRole.hasPermission(player, permission)
+	}
+
+	private fun isMemberOfStation(player: Player, data: PlayerStarshipData): CachedSpaceStation<*, *, *>? {
+		val station = getComputerStation(data) ?: return null
+
+		if (station.hasOwnershipContext(player.slPlayerId)) return station
+
+		if (station.trustedPlayers.contains(player.slPlayerId)) return station
+
+		val playerData = PlayerCache[player]
+		val playerSettlement = playerData.settlementOid
+		if (station.trustedSettlements.contains(playerSettlement) ||
+			(station.trustLevel == SpaceStationCompanion.TrustLevel.SETTLEMENT_MEMBER &&
+					station is CachedSettlementSpaceStation &&
+					station.owner == playerSettlement)) return station
+
+		val playerNation = playerData.nationOid ?: return null
+		if (station !is CachedNationSpaceStation) return null
+		if (station.trustedNations.contains(PlayerCache[player].nationOid) ||
+			(station.trustLevel == SpaceStationCompanion.TrustLevel.NATION_MEMBER && station.owner == playerNation) ||
+			(RelationCache[station.owner, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal)) return station
+
+		return null
 	}
 }
