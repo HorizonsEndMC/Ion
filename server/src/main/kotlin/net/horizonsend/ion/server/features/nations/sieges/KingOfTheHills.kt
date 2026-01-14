@@ -2,12 +2,14 @@ package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.text.HORIZONS_END_BRACKETED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -16,13 +18,17 @@ import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.KOTH_BLOCK
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHillRewards.KothRewards
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHillRewards.RewardType
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -32,6 +38,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloting
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -44,6 +51,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
@@ -302,6 +310,7 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun endKoth(koths: Koths) = asyncLocked {
 		val topThree = determineWinner(koths)
+		giveRewards(topThree, koths)
 		activeKoths.remove(koths)
 
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
@@ -352,6 +361,97 @@ object KingOfTheHills : IonServerComponent() {
 
 		val topThree = listOf(firstPlace, secondPlace, thirdPlace)
 		return topThree
+	}
+
+	private fun giveRewards(topThree: List<String?>, koth: Koths) {
+		val kothType = if (koth.type) KingOfTheHillRewards.KothType.MAJOR else KingOfTheHillRewards.KothType.MINOR
+		val stage = 0
+		//TODO: val stage = getServerStage
+
+		//Get the right table and its rewards
+
+		val rewards = KothRewards.first { it.kothType == kothType && it.stage == stage }
+		val ores = rewards.rewards.filter{it.rewardType == RewardType.MATERIALS}
+		val cores = rewards.rewards.filter{it.rewardType == RewardType.CORES}
+		val kothBlocks = rewards.rewards.filter{it.rewardType == RewardType.KOTHBLOCK}
+		//val buffs = rewards.rewards.filter{it.rewardType == RewardType.BUFFS}
+
+		val oreRewards = WeightedRandomList<ItemStack>().apply{
+			for (ore in ores) {
+				this.addEntry(ore.item.add(randomInt(ore.amount.first, ore.amount.last)), ore.chance)
+			}
+		}
+
+		val coreRewards = WeightedRandomList<ItemStack>().apply{
+			for (core in cores) {
+				this.addEntry(core.item.add(randomInt(core.amount.first, core.amount.last)), core.chance)
+			}
+		}
+
+		//FIRST PLACE REWARDS
+
+		val firstPlaceName = topThree[0] ?: return
+		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return
+
+
+		//TODO: Buff rewards
+
+		for (i in 1..3) {
+			val item = oreRewards.random()
+			val itemString = GlobalCompletions.toItemString(item)
+			BankedItem.create(firstPlaceNation, itemString)
+		}
+
+		for (i in 1..6) {
+			val item = coreRewards.random()
+			val itemString = GlobalCompletions.toItemString(item)
+			BankedItem.create(firstPlaceNation, itemString)
+		}
+
+		val kothBlock = KOTH_BLOCK.getValue().constructItemStack(randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
+		val kothBlockItemString = GlobalCompletions.toItemString(kothBlock)
+		for (i in 1..3) BankedItem.create(firstPlaceNation, kothBlockItemString)
+
+
+		//SECOND PLACE REWARDS
+
+		val secondPlaceName = topThree[1] ?: return
+		val secondPlaceNation = FrontierNationCache.getByName(secondPlaceName) ?: return
+
+		//TODO: Buff rewards
+
+		for (i in 1..2) {
+			val item = oreRewards.random()
+			val itemString = GlobalCompletions.toItemString(item)
+			BankedItem.create(secondPlaceNation, itemString)
+		}
+
+		for (i in 1..4) {
+			val item = coreRewards.random()
+			val itemString = GlobalCompletions.toItemString(item)
+			BankedItem.create(secondPlaceNation, itemString)
+		}
+		for (i in 1..2) BankedItem.create(secondPlaceNation, kothBlockItemString)
+
+		//THIRD PLACE REWARDS
+
+		val thirdPlaceName = topThree[2] ?: return
+		val thirdPlaceNation = FrontierNationCache.getByName(thirdPlaceName) ?: return
+
+		//TODO: Buff rewards
+
+		for (i in 1..1) {
+			val item = oreRewards.random()
+			val itemString = GlobalCompletions.toItemString(item)
+			BankedItem.create(thirdPlaceNation, itemString)
+		}
+
+		for (i in 1..2) {
+			val item = coreRewards.random()
+			val itemString = GlobalCompletions.toItemString(item)
+			BankedItem.create(thirdPlaceNation, itemString)
+		}
+		for (i in 1..1) BankedItem.create(thirdPlaceNation, kothBlockItemString)
 	}
 
 	//Starts a 15 minute activating timer before starting

@@ -48,6 +48,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ MINI_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = MINI_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					viewer.closeInventory()
 					openGui(this)
 				}
 			})
@@ -55,6 +56,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ SMALL_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = SMALL_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					viewer.closeInventory()
 					openGui(this)
 				}
 			})
@@ -62,6 +64,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ MEDIUM_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = MEDIUM_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					viewer.closeInventory()
 					openGui(this)
 				}
 			})
@@ -69,6 +72,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ LARGE_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = LARGE_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					viewer.closeInventory()
 					openGui(this)
 				}
 			})
@@ -76,6 +80,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ CRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = CRUISER_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					viewer.closeInventory()
 					openGui(this)
 				}
 			})
@@ -83,6 +88,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				AsyncItem({ BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
+					viewer.closeInventory()
 					openGui(this)
 				}
 			})

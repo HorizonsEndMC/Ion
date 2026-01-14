@@ -366,8 +366,6 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerRawOre(CustomItemKeys.ATAVUM, name = "atavum")
 		registerOreBlock(CustomItemKeys.ATAVUM_ORE, name = "atavum", block = CustomBlockKeys.ATAVUM_ORE)
 		registerIngotBlock(CustomItemKeys.ATAVUM_BLOCK, name = "atavum", block = CustomBlockKeys.ATAVUM_BLOCK)
-
-		registerIngotBlock(CustomItemKeys.KOTH_BLOCK, name = "koth", block = CustomBlockKeys.KOTH_BLOCK)
 	}
 
 	private fun registerIndustry() {
@@ -459,6 +457,11 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			NamedTextColor.WHITE,
 			TextDecoration.BOLD
 		), customBlock = CustomBlockKeys.LARGE_REACTOR_CORE)
+		customBlockItem(CustomItemKeys.KOTH_BLOCK, model = "starship/koth_block", displayName = Component.text(
+			"Koth Block",
+			NamedTextColor.GOLD,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.KOTH_BLOCK)
 	}
 
 	fun registerPipes() {
