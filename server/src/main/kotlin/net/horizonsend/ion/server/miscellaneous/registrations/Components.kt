@@ -106,6 +106,7 @@ import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.listener.packets.PacketListeners
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VariableRenderDistance
 
 val components: List<IonComponent> = listOf(
 	GameplayTweaks,
@@ -123,6 +124,7 @@ val components: List<IonComponent> = listOf(
 	AsteroidConfigurations,
 	IonWorld,
 	PacketListeners,
+	VariableRenderDistance,
 
 	PlayerXPLevelCache,
 	Levels,
