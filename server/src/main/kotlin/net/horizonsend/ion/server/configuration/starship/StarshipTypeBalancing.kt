@@ -54,6 +54,7 @@ data class NewStarshipBalancing(
 	data class WeaponDefaults(
 		val weapons: List<StarshipWeaponBalancing<*>> = listOf(
 			TorpedoBalancing(),
+			EMPMissileBalancing(),
 			HeavyLaserBalancing(),
 			PhaserBalancing(),
 			ArsenalRocketBalancing(),
@@ -493,7 +494,8 @@ data class NewStarshipBalancing(
 				HeavyLaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
-				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
+				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
+				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 				),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(

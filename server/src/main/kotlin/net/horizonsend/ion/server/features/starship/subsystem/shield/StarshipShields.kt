@@ -298,7 +298,8 @@ object StarshipShields : IonServerComponent() {
 		}
 
 		val resistanceFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_RESISTANCE)?.strength ?: 0.0
-		usage = (usage * (1 - resistanceFactor)).toInt()
+		val weaknessFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_WEAKNESS)?.strength ?: 0.0
+		usage = (usage * (1 - resistanceFactor) * (1 + weaknessFactor)).toInt()
 
 		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power -= usage

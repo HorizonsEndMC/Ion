@@ -53,4 +53,11 @@ object StarshipStatusEffectTypes {
 		displayName = Component.text("Shield Resistance", HE_LIGHT_BLUE),
 		description = Component.text("Increases shield resistance", HE_LIGHT_BLUE)
 	)
+
+	// 1 - strength = damage mitigation on damage, default 0
+	val SHIELD_WEAKNESS = StarshipStatusEffectType(
+		key = StarshipStatusEffectTypeKeys.SHIELD_WEAKNESS,
+		displayName = Component.text("Shield Weakness", HE_LIGHT_BLUE),
+		description = Component.text("Decreases shield resistance", HE_LIGHT_BLUE)
+	)
 }

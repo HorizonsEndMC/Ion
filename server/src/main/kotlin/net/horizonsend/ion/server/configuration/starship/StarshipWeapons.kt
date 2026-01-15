@@ -79,6 +79,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.EMPMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLogisticsProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyNeutralizerProjectile
@@ -103,6 +104,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.WebifierProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.EMPMissileStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyLaserWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyNeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
@@ -457,12 +459,48 @@ data class ArsenalRocketBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override val maxDegrees: Double = 180.0 ,
 		override val particleThickness: Double = 0.1,
-		//override val proximityRange: Double = 75.0,
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
 	}
 }
+
+@Serializable
+data class EMPMissileBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override val firePowerConsumption: Int = 5000,
+	override val isForwardOnly: Boolean = false,
+	override val maxPerShot: Int? = null,
+	override val applyCooldownToAll: Boolean = false,
+
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(7),
+
+	override val projectile: EMPMissileProjectileBalancing = EMPMissileProjectileBalancing()
+) : StarshipHeavyWeaponBalancing<EMPMissileBalancing.EMPMissileProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = EMPMissileStarshipWeaponSubsystem::class
+
+	@Serializable
+	data class EMPMissileProjectileBalancing(
+		override val range: Double = 200.0,
+		override val speed: Double = 100.0,
+		override val explosionPower: Float = 3f,
+		override val starshipShieldDamageMultiplier: Double = 1.0,
+		override val areaShieldDamageMultiplier: Double = 5.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+		override val maxDegrees: Double = 180.0,
+		override val particleThickness: Double = 0.1,
+		override val effectStrength: Double = 0.2,
+		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(30L),
+	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = EMPMissileProjectile::class
+	}
+}
+
 
 @Serializable
 data class ThermonuclearMissileBalancing(
