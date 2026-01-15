@@ -68,6 +68,20 @@ object ConfigurationCommands : SLCommand() {
 		}
 	}
 
+	@Subcommand("server start")
+	fun startServer(sender: CommandSender) = asyncCommand(sender) {
+		val serverConfiguration = ConfigurationFiles.serverConfiguration.get()
+		failIf(serverConfiguration.serverStartDate != null) {"The server has already been started!"}
+		val time = System.currentTimeMillis()
+		sender.success("Input this timestamp into the configuration: $time")
+	}
+
+	@Subcommand("server startdate change")
+	fun changeServerStartDate(sender: CommandSender) = asyncCommand(sender) {
+		val time = System.currentTimeMillis()
+		sender.success("Input this timestamp into the configuration: $time")
+	}
+
 	@Subcommand("config set meleeWeapons properties")
 	@CommandCompletion("@meleeWeaponTypes property value")
 	fun setMeleeWeaponProperties(sender: CommandSender, meleeWeaponName: String, fieldName: String, value: String) = asyncCommand(sender) {

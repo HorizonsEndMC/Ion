@@ -34,6 +34,21 @@ object CreditPrintBlackList {
 			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return true
 			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return true
 			CustomBlockKeys.RAW_URANIUM_BLOCK -> return true
+			CustomBlockKeys.ATAVUM_BLOCK -> return true
+			CustomBlockKeys.ATAVUM_ORE -> return true
+			CustomBlockKeys.ZIRCON_BLOCK -> return true
+			CustomBlockKeys.ZIRCON_ORE -> return true
+			CustomBlockKeys.SCORDITE_BLOCK -> return true
+			CustomBlockKeys.SCORDITE_ORE -> return true
+			CustomBlockKeys.VANADIUM_BLOCK -> return true
+			CustomBlockKeys.VANADIUM_ORE -> return true
+			CustomBlockKeys.KOTH_BLOCK -> return true
+			CustomBlockKeys.BATTLECRUISER_REACTOR_CORE -> return true
+			CustomBlockKeys.CRUISER_REACTOR_CORE -> return true
+			CustomBlockKeys.MINI_REACTOR_CORE -> return true
+			CustomBlockKeys.SMALL_REACTOR_CORE -> return true
+			CustomBlockKeys.MEDIUM_REACTOR_CORE -> return true
+			CustomBlockKeys.LARGE_REACTOR_CORE -> return true
 		}
 		return false
 	}

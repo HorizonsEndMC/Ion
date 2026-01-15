@@ -80,15 +80,19 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SCORDITE_ORE = registerKey("SCORDITE_ORE")
 	val SCORDITE = registerKey("SCORDITE")
 	val SCORDITE_BLOCK = registerKey("SCORDITE_BLOCK")
+
 	val VANADIUM_ORE = registerKey("VANADIUM_ORE")
 	val VANADIUM = registerKey("VANADIUM")
 	val VANADIUM_BLOCK = registerKey("VANADIUM_BLOCK")
+
 	val ZIRCON_ORE = registerKey("ZIRCON_ORE")
 	val ZIRCON = registerKey("ZIRCON")
 	val ZIRCON_BLOCK = registerKey("ZIRCON_BLOCK")
+
 	val ATAVUM_ORE = registerKey("ATAVUM_ORE")
 	val ATAVUM = registerKey("ATAVUM")
 	val ATAVUM_BLOCK = registerKey("ATAVUM_BLOCK")
+
 	val KOTH_BLOCK = registerKey("KOTH_BLOCK")
 
 	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")

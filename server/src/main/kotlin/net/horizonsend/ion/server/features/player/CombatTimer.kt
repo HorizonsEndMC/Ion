@@ -264,12 +264,14 @@ object CombatTimer : IonServerComponent() {
 		if (attackerFleet != null && attackerFleet == defenderFleet ) return
 
 		val attackerData = PlayerCache.getIfOnline(attacker) ?: return
-		val attackerNation = attackerData.nationOid
+		val attackerNation = attackerData.frontierNationOid
 
 		val defenderData = PlayerCache.getIfOnline(defender)
-		val defenderNation = defenderData?.nationOid
+		val defenderNation = defenderData?.frontierNationOid
 
 		if (attackerNation == defenderNation) return
+
+		/*
 
 		if (neutralTriggersCombat) {
 			if (attackerNation != null && defenderNation != null &&
@@ -286,7 +288,7 @@ object CombatTimer : IonServerComponent() {
 				// Primarily for proximity trigger
 				return
 			}
-		}
+		}*/
 
 		// Fell through relation checks; refresh PvP timer
 		if (tagAttacker) refreshPvpTimer(attacker, reason)

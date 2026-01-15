@@ -41,7 +41,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 				". . . . . . . . .",
 				". m a n . g o 4 .",
 				". . . . . . . . .",
-				". 6 7 . . . 1 . .",
+				". 6 7 . . . . 1 .",
 				". . . . . . . . ."
 			)
 			.addIngredient('m', tracked { id ->
@@ -49,6 +49,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 					entity.targetCore = MINI_REACTOR_CORE.getValue().constructItemStack()
 					refreshButtons(id)
 					viewer.closeInventory()
+					buildWindow()
 					openGui(this)
 				}
 			})

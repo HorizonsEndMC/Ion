@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloting
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.kyori.adventure.text.Component
@@ -267,6 +268,8 @@ object KingOfTheHills : IonServerComponent() {
 			return
 		}
 		lastQuarter = newQuarter
+		val stage = getServerStage()
+		if (stage < 2) return
 		val koths = Regions.getAllOf<RegionKothZone>()
 			.filter { station -> station.siegeHour == lastQuarter }
 
@@ -368,8 +371,7 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun giveRewards(topThree: List<String?>, koth: Koths) {
 		val kothType = if (koth.type) KingOfTheHillRewards.KothType.MAJOR else KingOfTheHillRewards.KothType.MINOR
-		val stage = 0
-		//TODO: val stage = getServerStage
+		val stage = getServerStage()
 
 
 		//Check first place is a thing, reward them lower, this is just to stop unnecessary code running
