@@ -378,7 +378,7 @@ object KingOfTheHills : IonServerComponent() {
 
 		//Get the right table and its rewards
 
-		if (stage !in 1..4) return log.error("Server age is wrong somehow!") //Check to make sure server age and stage is Okay
+		if (stage !in 2..4) return log.error("Server age is wrong somehow!") //Check to make sure server age and stage is Okay
 		val rewards = KothRewards.first { it.kothType == kothType && it.stage == stage }
 		val ores = rewards.rewards.filter{it.rewardType == RewardType.MATERIALS}
 		val cores = rewards.rewards.filter{it.rewardType == RewardType.CORES}
