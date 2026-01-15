@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
-import net.horizonsend.ion.common.utils.text.HORIZONS_END_BRACKETED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatFrontierNationName
@@ -316,10 +315,14 @@ object KingOfTheHills : IonServerComponent() {
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
 
 		val message = ofChildren(
-			text("The King of the Hill $kothName has ended!", HE_MEDIUM_GRAY), Component.newline(),
-			if (topThree[0] != null) {text("First place: ${topThree[0]}").color(TextColor.fromHexString("#D4AF37"))} else Component.empty(), Component.newline(), //Gold
-			if (topThree[1] != null) {text("Second place: ${topThree[1]}").color(TextColor.fromHexString("#C0C0C0"))} else Component.empty(), Component.newline(), //Silver
-			if (topThree[2] != null) {text("Third place: ${topThree[2]}\"}").color(TextColor.fromHexString("#CD7F32"))} else Component.empty(), Component.newline() //Bronze)
+			text("The King of the Hill $kothName has ended!", HE_MEDIUM_GRAY),
+			newline(),
+			if (topThree[0] != null) {text("First place: ${topThree[0]}").color(TextColor.fromHexString("#D4AF37"))} else Component.empty(),
+			newline(), //Gold
+			if (topThree[1] != null) {text("Second place: ${topThree[1]}").color(TextColor.fromHexString("#C0C0C0"))} else Component.empty(),
+			newline(), //Silver
+			if (topThree[2] != null) {text("Third place: ${topThree[2]}\"}").color(TextColor.fromHexString("#CD7F32"))} else Component.empty(),
+			newline() //Bronze)
 		)
 		Notify.chatAndGlobal(message)
 		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)
@@ -368,6 +371,11 @@ object KingOfTheHills : IonServerComponent() {
 		val stage = 0
 		//TODO: val stage = getServerStage
 
+
+		//Check first place is a thing, reward them lower, this is just to stop unnecessary code running
+		val firstPlaceName = topThree[0] ?: return
+		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return
+
 		//Get the right table and its rewards
 
 		val rewards = KothRewards.first { it.kothType == kothType && it.stage == stage }
@@ -378,39 +386,41 @@ object KingOfTheHills : IonServerComponent() {
 
 		val oreRewards = WeightedRandomList<ItemStack>().apply{
 			for (ore in ores) {
-				this.addEntry(ore.item.add(randomInt(ore.amount.first, ore.amount.last)), ore.chance)
+				this.addEntry(ore.item, ore.chance)
 			}
 		}
 
 		val coreRewards = WeightedRandomList<ItemStack>().apply{
 			for (core in cores) {
-				this.addEntry(core.item.add(randomInt(core.amount.first, core.amount.last)), core.chance)
+				this.addEntry(core.item, core.chance)
 			}
 		}
 
 		//FIRST PLACE REWARDS
-
-		val firstPlaceName = topThree[0] ?: return
-		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return
 
 
 		//TODO: Buff rewards
 
 		for (i in 1..3) {
 			val item = oreRewards.random()
+			val itemIndex = ores.find { it.item == item }
+			val quantity = itemIndex?.amount ?: 1..1
 			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(firstPlaceNation, itemString)
+			BankedItem.create(
+				firstPlaceNation, itemString, randomInt(quantity.first, quantity.last))
 		}
 
 		for (i in 1..6) {
 			val item = coreRewards.random()
+			val itemIndex = ores.find { it.item == item }
+			val quantity = itemIndex?.amount ?: 1..1
 			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(firstPlaceNation, itemString)
+			BankedItem.create(firstPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
 		}
 
-		val kothBlock = KOTH_BLOCK.getValue().constructItemStack(randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
+		val kothBlock = KOTH_BLOCK.getValue().constructItemStack()
 		val kothBlockItemString = GlobalCompletions.toItemString(kothBlock)
-		for (i in 1..3) BankedItem.create(firstPlaceNation, kothBlockItemString)
+		for (i in 1..3) BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
 
 
 		//SECOND PLACE REWARDS
@@ -422,16 +432,22 @@ object KingOfTheHills : IonServerComponent() {
 
 		for (i in 1..2) {
 			val item = oreRewards.random()
+			val itemIndex = ores.find { it.item == item }
+			val quantity = itemIndex?.amount ?: 1..1
 			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(secondPlaceNation, itemString)
+			BankedItem.create(
+				secondPlaceNation, itemString, randomInt(quantity.first, quantity.last))
 		}
 
 		for (i in 1..4) {
 			val item = coreRewards.random()
+			val itemIndex = ores.find { it.item == item }
+			val quantity = itemIndex?.amount ?: 1..1
 			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(secondPlaceNation, itemString)
+			BankedItem.create(secondPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
 		}
-		for (i in 1..2) BankedItem.create(secondPlaceNation, kothBlockItemString)
+
+		for (i in 1..2) BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
 
 		//THIRD PLACE REWARDS
 
@@ -442,16 +458,21 @@ object KingOfTheHills : IonServerComponent() {
 
 		for (i in 1..1) {
 			val item = oreRewards.random()
+			val itemIndex = ores.find { it.item == item }
+			val quantity = itemIndex?.amount ?: 1..1
 			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(thirdPlaceNation, itemString)
+			BankedItem.create(
+				thirdPlaceNation, itemString, randomInt(quantity.first, quantity.last))
 		}
 
 		for (i in 1..2) {
 			val item = coreRewards.random()
+			val itemIndex = ores.find { it.item == item }
+			val quantity = itemIndex?.amount ?: 1..1
 			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(thirdPlaceNation, itemString)
+			BankedItem.create(thirdPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
 		}
-		for (i in 1..1) BankedItem.create(thirdPlaceNation, kothBlockItemString)
+		for (i in 1..1) BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
 	}
 
 	//Starts a 15 minute activating timer before starting
@@ -460,7 +481,7 @@ object KingOfTheHills : IonServerComponent() {
 		activatingKoths[koth] = System.nanoTime()
 		val message = template(
 			"KOTH {0} is starting in 15 minutes at ${koth.x}, ${koth.z}, (/jump ${koth.x} ${koth.z})!",
-			color = HEColorScheme.HE_MEDIUM_GRAY,
+			color = HE_MEDIUM_GRAY,
 			paramColor = HEColorScheme.HE_LIGHT_BLUE,
 			useQuotesAroundObjects = false,
 			koth.name
