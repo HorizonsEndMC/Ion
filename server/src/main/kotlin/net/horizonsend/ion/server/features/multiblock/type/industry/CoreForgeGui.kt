@@ -111,7 +111,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 
 	val enableButton: FeedbackItem = FeedbackItem
 		.builder({
-			if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(text("Start")) else GuiItem.CHECKMARK.makeItem(
+			if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(text("Start")) else GuiItem.EMPTY.makeItem(
 				text("Start")
 			)
 		}) { _, player ->
