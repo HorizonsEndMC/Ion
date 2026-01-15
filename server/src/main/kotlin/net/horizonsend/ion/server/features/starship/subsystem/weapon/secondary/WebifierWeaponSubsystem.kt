@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.starship.WebifierBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -65,10 +66,10 @@ class WebifierWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireMaterial(item, Material.PRISMARINE_CRYSTALS, 4)
+		return requireCustomItem(item, CustomItemKeys.CHARGED_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
-		consumeItem(itemStack, 4)
+		consumeItem(itemStack, 1)
 	}
 }

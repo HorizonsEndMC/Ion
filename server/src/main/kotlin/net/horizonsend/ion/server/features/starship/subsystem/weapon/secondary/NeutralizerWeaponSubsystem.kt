@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing
 import net.horizonsend.ion.server.configuration.starship.NeutralizerBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -37,10 +38,10 @@ class NeutralizerWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireMaterial(item, Material.REDSTONE, 2)
+		return requireCustomItem(item, CustomItemKeys.CHARGED_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
-		consumeItem(itemStack, 2)
+		consumeItem(itemStack, 1)
 	}
 }

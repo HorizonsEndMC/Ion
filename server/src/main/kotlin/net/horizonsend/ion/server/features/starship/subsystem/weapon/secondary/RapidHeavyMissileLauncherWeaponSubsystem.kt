@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.starship.RapidHeavyMissileLauncherBalancing
 import net.horizonsend.ion.server.configuration.starship.RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.RapidHeavyMissileLauncherMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -28,16 +29,11 @@ class RapidHeavyMissileLauncherWeaponSubsystem(
 		return Component.text("RHML")
 	}
 
-	override fun isRequiredAmmo(item: ItemStack): Boolean = requireMaterial(item, Material.COAL_BLOCK, 2) ||
-		requireMaterial(item, Material.COAL, 18) ||
-		requireMaterial(item, Material.CHARCOAL, 36)
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireCustomItem(item, CustomItemKeys.HEAVY_MISSILE.getValue(), 1)
+	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
-		when (itemStack.type) {
-			Material.COAL_BLOCK -> consumeItem(itemStack, 2)
-			Material.COAL -> consumeItem(itemStack, 18)
-			Material.CHARCOAL -> consumeItem(itemStack, 36)
-			else -> throw IllegalArgumentException("Unsupported material type")
-		}
+		consumeItem(itemStack, 1)
 	}
 }

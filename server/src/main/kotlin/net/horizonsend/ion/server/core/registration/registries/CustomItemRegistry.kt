@@ -418,6 +418,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		stackable(key = CustomItemKeys.CHARGED_SHELL, model = "industry/charged_shell", displayName = Component.text("Charged Shell"))
 
 		stackable(key = CustomItemKeys.ARSENAL_MISSILE, model = "projectile/arsenal_missile", displayName = Component.text("Arsenal Missile"))
+		stackable(key = CustomItemKeys.LIGHT_MISSILE, model = "projectile/light_missile", displayName = Component.text("Light Missile"))
+		stackable(key = CustomItemKeys.HEAVY_MISSILE, model = "projectile/heavy_missile", displayName = Component.text("Heavy Missile"))
+		stackable(key = CustomItemKeys.THERMONUCLEAR_MISSILE, model = "projectile/thermonuclear_missile", displayName = Component.text("Thermonuclear Missile"))
+
 		unStackable(key = CustomItemKeys.UNLOADED_ARSENAL_MISSILE, model = "projectile/unloaded_arsenal_missile", displayName = Component.text("Unloaded Arsenal Missile"))
 		unStackable(key = CustomItemKeys.ACTIVATED_ARSENAL_MISSILE, model = "projectile/activated_arsenal_missile", displayName = Component.text("Activated Arsenal Missile", NamedTextColor.RED))
 

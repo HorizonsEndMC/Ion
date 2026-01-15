@@ -116,7 +116,7 @@ class ThermonuclearMissileStarshipWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.ARSENAL_MISSILE.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.THERMONUCLEAR_MISSILE.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
