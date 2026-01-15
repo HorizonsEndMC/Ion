@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.player.CombatTimer.isNpcCombatTagged
 import net.horizonsend.ion.server.features.player.CombatTimer.isPvpCombatTagged
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloting
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import org.bukkit.Bukkit
 
 object VariableRenderDistance: IonServerComponent() {
@@ -19,6 +21,8 @@ object VariableRenderDistance: IonServerComponent() {
 			val renderDistance = when {
 				//When dead
 				player.isDead -> 4
+				//When on planet
+				!player.world.hasFlag(WorldFlag.SPACE_WORLD) && !player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) -> 8
 				//When in combat but not piloting
 				isPvpCombatTagged(player) && !isPiloting(player) -> 8
 				//When in combat and piloting
