@@ -313,8 +313,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.SCORDITE_ORE,
                 blockData = redMushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.NORTH)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.SCORDITE)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.SCORDITE),
+					silkTouchDrops = customItemDrop(CustomItemKeys.SCORDITE_ORE)
                 ),
                 CustomItemKeys.SCORDITE_ORE
             )
@@ -324,7 +325,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.SCORDITE_BLOCK,
                 blockData = redMushroomBlockData(setOf(BlockFace.UP)),
                 drops = BlockLoot(
-                    requiredTool = null,
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
                     drops = customItemDrop(CustomItemKeys.SCORDITE_BLOCK)
                 ),
                 CustomItemKeys.SCORDITE_BLOCK
@@ -335,8 +336,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.VANADIUM_ORE,
                 blockData = redMushroomBlockData(setOf(BlockFace.DOWN)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.VANADIUM)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.VANADIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.VANADIUM_ORE)
                 ),
                 CustomItemKeys.VANADIUM_ORE
             )
@@ -346,8 +348,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.VANADIUM_BLOCK,
                 blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK),
+					silkTouchDrops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK)
                 ),
                 CustomItemKeys.VANADIUM_BLOCK
             )
@@ -357,8 +360,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.ZIRCON_ORE,
                 blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.ZIRCON)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.ZIRCON),
+					silkTouchDrops = customItemDrop(CustomItemKeys.ZIRCON_ORE)
                 ),
                 CustomItemKeys.ZIRCON_ORE
             )
@@ -368,8 +372,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.ZIRCON_BLOCK,
                 blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK),
+					silkTouchDrops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK)
                 ),
                 CustomItemKeys.ZIRCON_BLOCK
             )
@@ -379,8 +384,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.ATAVUM_ORE,
                 blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.ATAVUM)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.ATAVUM),
+					customItemDrop(CustomItemKeys.ATAVUM_ORE)
                 ),
                 CustomItemKeys.ATAVUM_ORE
             )
@@ -390,8 +396,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 key = CustomBlockKeys.ATAVUM_BLOCK,
                 blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH)),
                 drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK)
+                    requiredTool = {BlockLoot.Tool.PICKAXE},
+                    drops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK),
+					silkTouchDrops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK)
                 ),
                 CustomItemKeys.ATAVUM_BLOCK
             )
