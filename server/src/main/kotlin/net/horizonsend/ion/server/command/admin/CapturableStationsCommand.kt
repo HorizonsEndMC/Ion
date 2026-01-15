@@ -35,6 +35,10 @@ object CapturableStationsCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("koths") {
 			return@registerAsyncCompletion KothStationCache.stations.map { it.name }
 		}
+
+		manager.commandCompletions.registerAsyncCompletion("kothtype") {
+			return@registerAsyncCompletion KothType.entries.map { it.name }
+		}
 	}
 
 	@Subcommand("create normal")
@@ -72,15 +76,13 @@ object CapturableStationsCommand : SLCommand() {
 @CommandPermission("ion.core.capturablestation.create")
 object KothStationCommand : SLCommand() {
 	@Subcommand("create")
-	@CommandCompletion("minor|major")
-	fun kothStationCreation(sender: Player, type: String, stationName: String, x: Int, z: Int, siegehour: Int) {
-		val validKothTypes = listOf("major", "minor")
-		failIf(validKothTypes.contains(type))  {"Unknown koth type"}
+	@CommandCompletion("@kothtype")
+	fun kothStationCreation(sender: Player, type: KothType, stationName: String, x: Int, z: Int, siegehour: Int) = asyncCommand(sender) {
 		val kothType = when (type) {
-			"major" -> true
-			"minor" -> false
-			else -> return
+			KothType.MAJOR -> true
+			KothType.MINOR -> false
 		}
+
 		KothStation.findById(
 			KothStation.create(
 				kothType,
@@ -90,10 +92,10 @@ object KothStationCommand : SLCommand() {
 				z,
 				siegehour,
 				DayOfWeek.values().toSet(),
-				mutableMapOf<Oid<FrontierNation>, Int>()
+				mutableMapOf()
 			)
-		)
-			?.let { RegionKothZone(it) }?.let { NationsMap.addKingOfTheHill(it) }
+		)?.let { RegionKothZone(it) }?.let { NationsMap.addKingOfTheHill(it) }
+
 		sender.success(
 			"Successfully created $type King of the Hill $stationName, At $x, $z, SiegeHour is $siegehour"
 		)
@@ -133,6 +135,11 @@ object KothStationCommand : SLCommand() {
 		KothStation.delete(station._id)
 		sender.success("Successfully deleted $stationName")
 	}
+}
+
+enum class KothType {
+	MAJOR,
+	MINOR
 }
 
 @CommandAlias("graceperiodtoggle")
