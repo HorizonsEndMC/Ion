@@ -47,54 +47,43 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 			.addIngredient('m', tracked { id ->
 				AsyncItem({ MINI_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = MINI_REACTOR_CORE.getValue().constructItemStack()
-					refreshButtons(id)
-					viewer.closeInventory()
-					buildWindow()
-					openGui(this)
+					refreshButtons()
 				}
 			})
 			.addIngredient('a', tracked { id ->
 				AsyncItem({ SMALL_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = SMALL_REACTOR_CORE.getValue().constructItemStack()
-					refreshButtons(id)
-					viewer.closeInventory()
-					openGui(this)
+					refreshButtons()
 				}
 			})
 			.addIngredient('n', tracked { id ->
 				AsyncItem({ MEDIUM_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = MEDIUM_REACTOR_CORE.getValue().constructItemStack()
-					refreshButtons(id)
-					viewer.closeInventory()
-					openGui(this)
+					refreshButtons()
 				}
 			})
 			.addIngredient('g', tracked { id ->
 				AsyncItem({ LARGE_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = LARGE_REACTOR_CORE.getValue().constructItemStack()
-					refreshButtons(id)
-					viewer.closeInventory()
-					openGui(this)
+					refreshButtons()
 				}
 			})
 			.addIngredient('o', tracked { id ->
 				AsyncItem({ CRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = CRUISER_REACTOR_CORE.getValue().constructItemStack()
-					refreshButtons(id)
-					viewer.closeInventory()
-					openGui(this)
+					refreshButtons()
 				}
 			})
 			.addIngredient('4', tracked { id ->
 				AsyncItem({ BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack()
-					refreshButtons(id)
-					viewer.closeInventory()
-					openGui(this)
+					refreshButtons()
 				}
 			})
 			.addIngredient('6', GuiItems.CustomControlItem(text("Selected Core:"), GuiItem.RIGHT))
-			.addIngredient('7', targetCore)
+			.addIngredient('7', tracked {id ->
+				AsyncItem({targetCore} ) {} })
+
 			.addIngredient('1', enableButton)
 			.build()
 

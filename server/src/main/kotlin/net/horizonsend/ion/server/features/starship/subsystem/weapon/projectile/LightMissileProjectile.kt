@@ -42,7 +42,7 @@ class LightMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	private val container = ItemDisplayContainer(
 		source.getWorld(),
-		3.0F,
+		2.0F,
 		loc.toVector(),
 		dir,
 		item,

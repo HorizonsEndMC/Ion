@@ -85,21 +85,21 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 			y(1) {
 				x(2).extractor()
 				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
-				x(0).thrusterBlock()
+				x(0).type(Material.MAGMA_BLOCK)
 				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
 				x(-2).anyGlass()
 			}
 			y(2) {
 				x(2).anyGlass()
 				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
-				x(0).thrusterBlock()
+				x(0).type(Material.MAGMA_BLOCK)
 				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
 				x(-2).anyGlass()
 			}
 			y(3) {
 				x(2).anyGlass()
 				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
-				x(0).thrusterBlock()
+				x(0).type(Material.MAGMA_BLOCK)
 				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
 				x(-2).anyGlass()
 			}
@@ -121,23 +121,23 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 			}
 			y(1) {
 				x(2).titaniumBlock()
-				x(1).thrusterBlock()
+				x(1).type(Material.MAGMA_BLOCK)
 				x(0).redstoneBlock()
-				x(-1).thrusterBlock()
+				x(-1).type(Material.MAGMA_BLOCK)
 				x(-2).titaniumBlock()
 			}
 			y(2) {
 				x(2).titaniumBlock()
-				x(1).thrusterBlock()
+				x(1).type(Material.MAGMA_BLOCK)
 				x(0).redstoneBlock()
-				x(-1).thrusterBlock()
+				x(-1).type(Material.MAGMA_BLOCK)
 				x(-2).titaniumBlock()
 			}
 			y(3) {
 				x(2).titaniumBlock()
-				x(1).thrusterBlock()
+				x(1).type(Material.MAGMA_BLOCK)
 				x(0).redstoneBlock()
-				x(-1).thrusterBlock()
+				x(-1).type(Material.MAGMA_BLOCK)
 				x(-2).titaniumBlock()
 			}
 			y(4) {
@@ -159,21 +159,21 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 			y(1) {
 				x(2).anyGlass()
 				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
-				x(0).thrusterBlock()
+				x(0).type(Material.MAGMA_BLOCK)
 				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
 				x(-2).anyGlass()
 			}
 			y(2) {
 				x(2).anyGlass()
 				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
-				x(0).thrusterBlock()
+				x(0).type(Material.MAGMA_BLOCK)
 				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
 				x(-2).anyGlass()
 			}
 			y(3) {
 				x(2).anyGlass()
 				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
-				x(0).thrusterBlock()
+				x(0).type(Material.MAGMA_BLOCK)
 				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
 				x(-2).anyGlass()
 			}
