@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDa
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializers
 import java.util.Optional
 
-class SequenceDataStore(val keyedData: MutableMap<String, Any> = mutableMapOf<String, Any>()) {
+class SequenceDataStore(val keyedData: MutableMap<String, Any> = mutableMapOf(), val context: SequenceContext) {
 	val metaDataMirror = mutableMapOf<String, MetaDataContainer<*, *>>()
 
 	operator fun <T : Any> get(key: String): Optional<T> {
