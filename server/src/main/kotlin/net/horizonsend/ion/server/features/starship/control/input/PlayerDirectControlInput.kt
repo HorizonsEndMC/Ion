@@ -90,8 +90,10 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		val baseSpeed = DirectControlHandler.calculateSpeed(newSlot.toDouble())
 		val cooldown: Long = DirectControlHandler
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
+		// ratio of current cruise speed to max cruise speed, times 0.8 (at max cruise speed, DC is 20% fast)
+		val cruiseModifier = (1 - (starship.cruiseData.velocity.length() / starship.cruiseData.targetSpeed * 0.8))
 		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets *
-				starship.directControlSpeedModifierFromHeavyLasers * (1000.0f / cooldown)).roundToInt() / 10.0f
+				starship.directControlSpeedModifierFromHeavyLasers * cruiseModifier * (1000.0f / cooldown)).roundToInt() / 10.0f
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}

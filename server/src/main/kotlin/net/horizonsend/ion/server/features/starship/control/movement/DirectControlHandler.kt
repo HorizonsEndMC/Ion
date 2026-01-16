@@ -81,8 +81,10 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 
 		// The starship's direction
 		val direction = starship.getTargetForward()
+		// ratio of current cruise speed to max cruise speed, times 0.8 (at max cruise speed, DC is 20% fast)
+		val cruiseModifier = (1 - (starship.cruiseData.velocity.length() / starship.cruiseData.targetSpeed * 0.8))
 		val targetSpeed = (calculateSpeed(data.selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets *
-				starship.directControlSpeedModifierFromHeavyLasers)
+				starship.directControlSpeedModifierFromHeavyLasers * cruiseModifier)
 
 		if (data.isBoosting) {
 			// Initialize forward movement
