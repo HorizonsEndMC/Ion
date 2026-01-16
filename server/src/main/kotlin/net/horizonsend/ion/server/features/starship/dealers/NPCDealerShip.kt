@@ -43,6 +43,7 @@ class NPCDealerShip(
 	}
 
 	override fun onPurchase(purchaser: Player) {
+		super.onPurchase(purchaser)
 		val shipLastBuy: MutableMap<DealerShip, Long> = lastBuyTimes.getOrPut(purchaser.uniqueId) { mutableMapOf() }
 		shipLastBuy[this] = currentTimeMillis()
 	}
