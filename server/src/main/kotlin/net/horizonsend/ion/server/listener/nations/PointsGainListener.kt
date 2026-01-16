@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.listener.nations
 
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
@@ -16,20 +16,17 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.PlayerDeathEvent
 
 object PointsGainListener: SLEventListener() {
-	override fun supportsVanilla(): Boolean {
-		return true
-	}
 
 	@EventHandler
-	fun onPlayerDeath(entity: EntityDeathEvent) {
-		if (entity.entity !is Player || entity.entity.killer !is Player) return
-		val victim = entity.entity as Player
-		val killer = entity.entity as Player
-		val killerNationId: Oid<FrontierNation> = SLPlayer[killer.name]?.frontierNation ?: return
-		val victimNationId: Oid<FrontierNation> = SLPlayer[victim.name]?.frontierNation ?: return
+	fun onPlayerDeath(entity: PlayerDeathEvent) {
+		if (entity.player.killer !is Player) return
+		val victim = entity.player
+		val killer = entity.player.killer?: return
+		val killerNationId: Oid<FrontierNation> = PlayerCache[killer].frontierNationOid ?: return
+		val victimNationId: Oid<FrontierNation> = PlayerCache[victim].frontierNationOid ?: return
 		if (killerNationId == victimNationId) return
 		FrontierNation.updatePoints(killerNationId, 1)
 		killer.success("Gained 1 point")
@@ -39,17 +36,18 @@ object PointsGainListener: SLEventListener() {
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val victim = event.starship
 		val controller = event.previousController as? PlayerController ?: return
-		val damagers = event.starship.damagers
+		val controllerId = controller.player
+		val damagers = victim.damagers
 			.filter { it.key is PlayerDamager }
-			.filter { SLPlayer[(it.key as PlayerDamager).player.name]?.frontierNation != SLPlayer[controller.player.name]?.frontierNation }
+
 		val highestDamager = damagers
 			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
+		val highestDamagerId = highestDamager.player
 
 		var points = when {
 			victim.initialBlockCount <= 4000 -> 3
 			victim.initialBlockCount in 4001..12000 -> 5
-			victim.initialBlockCount > 12000 -> 10
-			else -> 1 //Shouldn't happen
+			else -> 10
 		}
 		//2x if a tech 2 ship, 2x if in a siege ring
 		if (victim.type.tech2) points *= 2
@@ -61,19 +59,19 @@ object PointsGainListener: SLEventListener() {
 			if (kothRegion.contains(victim.centerOfMass.toLocation(world))) points *= 2
 		}
 
-		val killerNationId: Oid<FrontierNation>? = SLPlayer[highestDamager.player.name]?.frontierNation
-		val victimNationId: Oid<FrontierNation>? = SLPlayer[controller.player.name]?.frontierNation
-		if (killerNationId != null /*&& victimNationId != killerNationId*/) {
+		val killerNationId: Oid<FrontierNation>? = PlayerCache[highestDamagerId].frontierNationOid
+		val victimNationId: Oid<FrontierNation>? = PlayerCache[controllerId].frontierNationOid
+		if (killerNationId != null && victimNationId != killerNationId) {
 			FrontierNation.updatePoints(killerNationId, points)
 			highestDamager.player.success("Gained $points points")
 		}
 
 		for (damager in damagers) {
 			if (damager.key.starship?.controller !is PlayerController) continue
-			val controller = damager.key.starship!!.controller as PlayerController
+			val controller = damager.key.starship?.controller as PlayerController
 			val player = controller.player
-			val frontierNation = SLPlayer[player.name]?.frontierNation
-			if (frontierNation == null /*|| frontierNation == victimNationId*/) continue
+			val frontierNation = PlayerCache[player].frontierNationOid
+			if (frontierNation == null || frontierNation == victimNationId) continue
 			else {
 				FrontierNation.updatePoints(frontierNation, 1)
 				player.success("Gained 1 point")
