@@ -16,7 +16,7 @@ data class QuestData(
 	val sequenceData: Map<String, MetaDataContainer<*, *>>
 ) {
 	fun unpackDataStore(): SequenceDataStore {
-		return SequenceDataStore(sequenceData.mapValuesTo(mutableMapOf()) { PDCSerializers.unpack(it.value) })
+		return SequenceDataStore(sequenceData.mapValuesTo(mutableMapOf()) { PDCSerializers.unpack(it.value) }, currentPhase.getValue().sequenceKey.getValue().getContext())
 	}
 
 	companion object : PersistentDataType<PersistentDataContainer, QuestData> {
