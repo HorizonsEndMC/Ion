@@ -108,7 +108,7 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 			primitive: String,
 			context: PersistentDataAdapterContext,
 		): IonRegistryKey<T, out T> {
-			return keyRegistry[primitive]!!
+			return keyRegistry[primitive] ?: throw NullPointerException("Registry key $primitive not found for key registry ${keyRegistry.registry.id}!")
 		}
 	}
 }
