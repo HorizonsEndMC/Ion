@@ -556,6 +556,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(!starship.isDirectControlEnabled && !isHoldingController(sender)) {
 			"You need to hold a starship controller to enable direct control"
 		}
+		/*
 		if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) {
 			sender.serverError(
 				"Only ships of size ${StarshipType.DESTROYER.maxSize} or less can use direct control, " +
@@ -563,6 +564,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			)
 			return
 		}
+		 */
 
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.utils.getPing
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -88,10 +89,11 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		inventory.setItem(previousSlot, newItem)
 
 		val baseSpeed = DirectControlHandler.calculateSpeed(newSlot.toDouble())
+		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
 		val cooldown: Long = DirectControlHandler
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
 		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets *
-				starship.directControlSpeedModifierFromHeavyLasers * (1000.0f / cooldown)).roundToInt() / 10.0f
+				starship.directControlSpeedModifierFromHeavyLasers * oversizeModifier * (1000.0f / cooldown)).roundToInt() / 10.0f
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}
