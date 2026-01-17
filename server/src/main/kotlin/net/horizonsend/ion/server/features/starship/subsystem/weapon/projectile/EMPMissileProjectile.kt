@@ -89,7 +89,7 @@ class EMPMissileProjectile(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		container.position = location.toVector()
-		container.heading = direction.clone().multiply(-1)
+		container.heading = direction.clone().multiply(1)
 		container.update()
 
 		/*for (lineLoc in oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 5)) {
