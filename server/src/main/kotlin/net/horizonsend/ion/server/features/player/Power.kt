@@ -2,11 +2,8 @@ package net.horizonsend.ion.server.features.player
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation.Companion.getTotalPower
-import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.formatFrontierNationName
 import net.horizonsend.ion.common.utils.text.ofChildren
