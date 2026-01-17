@@ -7,7 +7,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.extensions.userError
@@ -18,10 +20,14 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.NationsConfiguration
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
+import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSiege
+import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSieges
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.nations.sieges.SiegeRewardsGui
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
@@ -56,6 +62,18 @@ object SiegeCommand : SLCommand() {
 			SolarSieges.getAllSieges().firstOrNull { it.region.name.replace(' ', '_').equals(name, ignoreCase = true) } ?: throw InvalidCommandArgument("Active siege in $name not found!")
 		}
 		manager.commandCompletions.setDefaultCompletion("solarSieges", SolarSiege::class.java)
+
+		manager.commandCompletions.registerAsyncCompletion("frontierSieges") {
+			return@registerAsyncCompletion FrontierNationSieges.getAllSieges().map { it.region.name.replace(' ', '_') }
+		}
+		manager.commandCompletions.registerAsyncCompletion("pastFrontierSieges") {
+			return@registerAsyncCompletion FrontierNationSiegeData.findProp(EMPTY_BSON, FrontierNationSiegeData::zone).mapTo(mutableListOf()) { Regions.get<RegionFrontierTerritory>(it).name.replace(' ', '_') }
+		}
+		manager.commandContexts.registerContext(FrontierNationSiege::class.java) { c ->
+			val name = c.popFirstArg()
+			FrontierNationSieges.getAllSieges().firstOrNull { it.region.name.replace(' ', '_').equals(name, ignoreCase = true) } ?: throw InvalidCommandArgument("Active siege in $name not found!")
+		}
+		manager.commandCompletions.setDefaultCompletion("frontierSieges", FrontierNationSiege::class.java)
 	}
 
 	@Default
@@ -105,29 +123,92 @@ object SiegeCommand : SLCommand() {
 	}
 
 	private fun beginSiege(sender: Player) {
-		requireNationIn(sender)
+		requireFrontierNationIn(sender)
 		if (!NationRole.hasPermission(sender.slPlayerId, NationRole.Permission.START_NATION_SIEGE)) {
 			sender.userError("Your nation prevents you from starting station sieges!")
 			return
 		}
 
 		if (Regions.findFirstOf<RegionCapturableStation>(sender.location) != null) return StationSieges.beginSiege(sender)
-		if (Regions.findFirstOf<RegionSolarSiegeZone>(sender.location) != null) return SolarSieges.initSiege(sender)
-	}
-
-	@Subcommand("abandon")
-	@CommandCompletion("@solarSieges")
-	fun onAbandon(sender: Player, siege: SolarSiege) {
-		if (siege.isAttacker(sender.slPlayerId)) return SolarSieges.attackerAbandonSiege(sender, siege)
-		if (siege.isDefender(sender.slPlayerId)) return SolarSieges.defenderAbandonSiege(sender, siege)
-		fail { "You aren't a participant of this siege!" }
+		//if (Regions.findFirstOf<RegionSolarSiegeZone>(sender.location) != null) return SolarSieges.initSiege(sender)
+		if (Regions.findFirstOf<RegionFrontierTerritory>(sender.location) != null) return FrontierNationSieges.initSiege(sender)
 	}
 
 	val SIEGE_INFO_WIDTH get() = 48
+	/*
+		@Subcommand("abandonSolar")
+		@CommandCompletion("@solarSieges")
+		fun onAbandonSolar(sender: Player, siege: SolarSiege) {
+			if (siege.isAttacker(sender.slPlayerId)) return SolarSieges.attackerAbandonSiege(sender, siege)
+			if (siege.isDefender(sender.slPlayerId)) return SolarSieges.defenderAbandonSiege(sender, siege)
+			fail { "You aren't a participant of this siege!" }
+		}
+
+		@Subcommand("abandon")
+		@CommandCompletion("@frontierSieges")
+		fun onAbandon(sender: Player, siege: FrontierNationSiege) {
+			if (siege.isAttacker(sender.slPlayerId)) return FrontierNationSieges.attackerAbandonSiege(sender, siege)
+			if (siege.isDefender(sender.slPlayerId)) return FrontierNationSieges.defenderAbandonSiege(sender, siege)
+			fail { "You aren't a participant of this siege!" }
+		}
+		@Subcommand("solarstatus")
+		@CommandCompletion("@solarSieges")
+		fun onSolarStatus(sender: Player, siege: SolarSiege) {
+			failIf(siege.isPreparationPeriod()) {
+				val (_, hours, minutes, seconds) = getDurationBreakdown(siege.getActivePeriodStart() - System.currentTimeMillis())
+				"That siege has not yet started! It will be begin in $hours hours, $minutes minutes, and $seconds seconds."
+			}
+
+			failIf(siege.isAbandoned) { "That siege has ended!" }
+
+			val lineBreak = lineBreak(48)
+			val totalWidth = lineBreak.minecraftLength + 8
+
+			val totalPoints = (siege.defenderPoints + siege.attackerPoints).toDouble()
+			val attackerWidth = ((siege.attackerPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+			val defenderWidth = ((siege.defenderPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+
+			val attackerColor = NationCache[siege.attacker].textColor
+			val defenderColor = NationCache[siege.defender].textColor
+
+			val guiText = GuiText("", guiWidth = totalWidth, initialShiftDown = -1)
+
+			guiText.add(text(repeatString("=", attackerWidth), attackerColor), 0, GuiText.TextAlignment.LEFT)
+			guiText.add(text(repeatString("=", defenderWidth), defenderColor), 0, GuiText.TextAlignment.RIGHT)
+
+			guiText.add(siege.attackerNameFormatted, 1, GuiText.TextAlignment.LEFT)
+			guiText.add(siege.defenderNameFormatted, 1, GuiText.TextAlignment.RIGHT)
+
+			guiText.add(text(siege.attackerPoints, attackerColor), 2, GuiText.TextAlignment.LEFT)
+			guiText.add(text(siege.defenderPoints, defenderColor), 2, GuiText.TextAlignment.RIGHT)
+
+			val remaining = siege
+				.getRemainingTime()
+				.toSeconds() // Get seconds value
+				.seconds // Convert to kotlin duration
+				.toComponents { hours, minutes, seconds, _ -> // Format string
+					"$hours Hour${if (hours == 1L) "" else "s"} $minutes Minute${if (minutes == 1) "" else "s"} $seconds Second${if (seconds == 1) "" else "s"}"
+				}
+
+			guiText.add(text("$remaining remaining", YELLOW), 3, GuiText.TextAlignment.CENTER)
+			guiText.add(template(text("{0}'s siege of {1}'s Solar Siege Zone {2}", YELLOW), siege.attackerNameFormatted, siege.defenderNameFormatted, siege.region.name), -1, GuiText.TextAlignment.CENTER)
+
+			sender.sendMessage(ofChildren(
+				lineBreak, newline(),
+				guiText.build(),
+				newline(),
+				newline(),
+				newline(),
+				newline(),
+				newline(),
+				lineBreak
+			))
+		}
+	 */
 
 	@Subcommand("status")
-	@CommandCompletion("@solarSieges")
-	fun onStatus(sender: Player, siege: SolarSiege) {
+	@CommandCompletion("@frontierSieges")
+	fun onStatus(sender: Player, siege: FrontierNationSiege) {
 		failIf(siege.isPreparationPeriod()) {
 			val (_, hours, minutes, seconds) = getDurationBreakdown(siege.getActivePeriodStart() - System.currentTimeMillis())
 			"That siege has not yet started! It will be begin in $hours hours, $minutes minutes, and $seconds seconds."
@@ -142,8 +223,8 @@ object SiegeCommand : SLCommand() {
 		val attackerWidth = ((siege.attackerPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
 		val defenderWidth = ((siege.defenderPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
 
-		val attackerColor = NationCache[siege.attacker].textColor
-		val defenderColor = NationCache[siege.defender].textColor
+		val attackerColor = FrontierNationCache[siege.attacker].textColor
+		val defenderColor = FrontierNationCache[siege.defender].textColor
 
 		val guiText = GuiText("", guiWidth = totalWidth, initialShiftDown = -1)
 
@@ -165,7 +246,7 @@ object SiegeCommand : SLCommand() {
 			}
 
 		guiText.add(text("$remaining remaining", YELLOW), 3, GuiText.TextAlignment.CENTER)
-		guiText.add(template(text("{0}'s siege of {1}'s Solar Siege Zone {2}", YELLOW), siege.attackerNameFormatted, siege.defenderNameFormatted, siege.region.name), -1, GuiText.TextAlignment.CENTER)
+		guiText.add(template(text("{0}'s siege of {1}'s Frontier Nation region {2}", YELLOW), siege.attackerNameFormatted, siege.defenderNameFormatted, siege.region.name), -1, GuiText.TextAlignment.CENTER)
 
 		sender.sendMessage(ofChildren(
 			lineBreak, newline(),
@@ -178,6 +259,7 @@ object SiegeCommand : SLCommand() {
 			lineBreak
 		))
 	}
+
 
 	@Subcommand("rewards")
 	fun onRewards(sender: Player) {

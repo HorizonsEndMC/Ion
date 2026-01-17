@@ -1,6 +1,7 @@
 package net.horizonsend.ion.common.database.cache.nations
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
@@ -23,7 +24,8 @@ object FrontierNationCache : ManualCache() {
 		var color: Int,
 		var territory: Oid<FrontierTerritory>,
 		var invites: Set<SLPlayerId>,
-		var points: Int
+		var points: Int,
+		var siegable: Boolean
 	) {
 		val textColor: TextColor get() = TextColor.color(color)
 	}
@@ -47,6 +49,7 @@ object FrontierNationCache : ManualCache() {
 			FrontierNation::territory,
 			FrontierNation::invites,
 			FrontierNation::points,
+			FrontierNation::siegable,
 		)
 	}
 
@@ -65,7 +68,8 @@ object FrontierNationCache : ManualCache() {
 			frontierNation.color,
 			frontierNation.territory,
 			frontierNation.invites,
-			frontierNation.points
+			frontierNation.points,
+			frontierNation.siegable
 		)
 
 		FRONTIER_NATION_DATA[frontierNation._id] = cachedNation
@@ -82,6 +86,7 @@ object FrontierNationCache : ManualCache() {
 		territoryProperty: KProperty<Oid<FrontierTerritory>>,
 		invitesProperty: KProperty<Set<SLPlayerId>>,
 		pointsProperty: KProperty<Int>,
+		siegableProperty: KProperty<Boolean>,
 	) {
 		companion.watchInserts { change ->
 			change.fullDocument?.let { createCached(it) }
@@ -165,8 +170,21 @@ object FrontierNationCache : ManualCache() {
 				val data = FRONTIER_NATION_DATA[id] ?: return@synced
 
 				change[pointsProperty]?.let {
-					data.points = it.int()}
+					data.points = it.int()
+				}
+			}
+		}
+
+		companion.watchUpdates { change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[siegableProperty]?.let {
+					data.siegable = it.boolean()
 				}
 			}
 		}
 	}
+}

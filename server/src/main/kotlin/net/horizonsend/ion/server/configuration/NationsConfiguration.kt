@@ -6,7 +6,8 @@ import java.util.concurrent.TimeUnit
 
 @Serializable
 data class NationsConfiguration(
-	val solarSiegeConfiguration: SolarSieges = SolarSieges()
+	val solarSiegeConfiguration: SolarSieges = SolarSieges(),
+	val frontierNationSiegeConfiguration: FrontierNationSieges = FrontierNationSieges()
 ) {
 	@Serializable
 	data class SolarSieges(
@@ -19,6 +20,18 @@ data class NationsConfiguration(
 		val shipCostMultiplier: Double = 1.0,
 		val referenceDestroyerPrice: Int = 19_765,
 		val ignoreSiegeWindow: Boolean = false,
+		val rewardPointCap: Int = 100_000,
+		val minimumPassivePointsShipSize: Int = 350
+	)
+
+	@Serializable
+	data class FrontierNationSieges(
+		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.HOURS, 1),
+		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 20),
+		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 3),
+		val playerKillPoints: Int = 5_000,
+		val shipCostMultiplier: Double = 1.0,
+		val referenceDestroyerPrice: Int = 19_765,
 		val rewardPointCap: Int = 100_000,
 		val minimumPassivePointsShipSize: Int = 350
 	)

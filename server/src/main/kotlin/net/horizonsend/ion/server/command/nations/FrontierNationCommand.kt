@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation.Companion.getTotalPower
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.slPlayerId
@@ -380,7 +381,11 @@ object FrontierNationCommand : SLCommand() {
 		val territory = requireFrontierTerritoryIn(sender)
 		requireFrontierTerritoryUnclaimed(territory)
 
+		val power = getTotalPower(nationId)
+
+		failIf(power < 40) { "Your nation doesn't have enough power to claim an outpost!" }
 		failIf(Regions.getAllOf<RegionFrontierTerritory>().any { it.frontierNation == nationId && !it.isCapital }) { "Nations can only have one outpost (besides the capital)" }
+
 
 		FrontierTerritory.setFrontierNation(territory.id, nationId)
 
@@ -805,4 +810,7 @@ object FrontierNationCommand : SLCommand() {
 
 		sender.sendMessage(builder.build())
 	}
+
+
+
 }

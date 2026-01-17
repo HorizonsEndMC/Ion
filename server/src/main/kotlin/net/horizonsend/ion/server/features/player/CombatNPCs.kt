@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait
+import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
@@ -140,6 +141,8 @@ object CombatNPCs : IonServerComponent(true) {
 			event.drops.addAll(drops)
 
 			destroyNPC(npc)
+			SLXP.addPowerAsync(playerId, -4)
+			if (killer is Player) SLXP.addPowerAsync(killer.uniqueId, 2)
 
 			Tasks.async {
 				SLPlayer.updateById(playerId.slPlayerId, push(SLPlayer::wasKilledOn, ConfigurationFiles.serverConfiguration().serverName))

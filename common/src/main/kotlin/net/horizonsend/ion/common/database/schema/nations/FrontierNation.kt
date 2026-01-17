@@ -35,8 +35,9 @@ data class FrontierNation(
 	var territory: Oid<FrontierTerritory>,
 	override var balance: Int = 0,
 	override var points: Int = 0,
+	override var siegable: Boolean = false,
 	val invites: MutableSet<SLPlayerId> = mutableSetOf()
-) : DbObject, MoneyHolder, PointsHolder {
+) : DbObject, MoneyHolder, PointsHolder, Siegable {
 	companion object : OidDbObjectCompanion<FrontierNation>(FrontierNation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(FrontierNation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(FrontierNation::leader)
@@ -121,5 +122,9 @@ data class FrontierNation(
 		fun getTotalPower(frontierNationId: Oid<FrontierNation>): Int = SLPlayer
 			.findProp(SLPlayer::frontierNation eq frontierNationId, SLPlayer::power)
 			.sum()
+
+		fun setSiegable(frontierNationId: Oid<FrontierNation>, siegable: Boolean) {
+			updateById(frontierNationId, setValue(FrontierNation::siegable, siegable))
+		}
 	}
 }

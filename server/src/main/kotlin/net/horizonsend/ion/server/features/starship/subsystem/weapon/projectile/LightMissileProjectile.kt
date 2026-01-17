@@ -60,7 +60,7 @@ class LightMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 
 				initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
 
-			if (distance > 30) {
+			if (distance > 10) {
 				distance = 0.0
 				flightPath1Completed = true
 				track = true
