@@ -22,7 +22,8 @@ object FrontierNationCache : ManualCache() {
 		var leader: SLPlayerId,
 		var color: Int,
 		var territory: Oid<FrontierTerritory>,
-		var invites: Set<SLPlayerId>
+		var invites: Set<SLPlayerId>,
+		var points: Int
 	) {
 		val textColor: TextColor get() = TextColor.color(color)
 	}
@@ -45,6 +46,7 @@ object FrontierNationCache : ManualCache() {
 			FrontierNation::color,
 			FrontierNation::territory,
 			FrontierNation::invites,
+			FrontierNation::points,
 		)
 	}
 
@@ -62,7 +64,8 @@ object FrontierNationCache : ManualCache() {
 			frontierNation.leader,
 			frontierNation.color,
 			frontierNation.territory,
-			frontierNation.invites
+			frontierNation.invites,
+			frontierNation.points
 		)
 
 		FRONTIER_NATION_DATA[frontierNation._id] = cachedNation
@@ -78,6 +81,7 @@ object FrontierNationCache : ManualCache() {
 		colorProperty: KProperty<Int>,
 		territoryProperty: KProperty<Oid<FrontierTerritory>>,
 		invitesProperty: KProperty<Set<SLPlayerId>>,
+		pointsProperty: KProperty<Int>,
 	) {
 		companion.watchInserts { change ->
 			change.fullDocument?.let { createCached(it) }
@@ -153,5 +157,16 @@ object FrontierNationCache : ManualCache() {
 				}
 			}
 		}
+
+		companion.watchUpdates { change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[pointsProperty]?.let {
+					data.points = it.int()}
+				}
+			}
+		}
 	}
-}

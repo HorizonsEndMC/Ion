@@ -59,6 +59,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
@@ -469,7 +470,7 @@ object FrontierNationCommand : SLCommand() {
 		val leaderColor = NamedTextColor.AQUA
 		val membersColor = NamedTextColor.BLUE
 		val settlementsColor = DARK_AQUA
-		val outpostsColor = YELLOW
+		val pointsColor = NamedTextColor.GREEN
 		val split = text(" | ", HEColorScheme.HE_MEDIUM_GRAY)
 
 		val headerLine = (ofChildren(
@@ -477,7 +478,7 @@ object FrontierNationCommand : SLCommand() {
 			split, text("Leader", leaderColor),
 			split, text("Members", membersColor),
 			split, text("Settlements", settlementsColor),
-			split, text("Outposts", outpostsColor),
+			split, text("Points", pointsColor),
 		))
 
 		val menu = formatPaginatedMenu(
@@ -500,6 +501,7 @@ object FrontierNationCommand : SLCommand() {
 				.append(text("    $name ", nameColor))
 				.append(text(leaderName, leaderColor))
 				.append(text(" ${members.count()} ", membersColor))
+				.append(text("${data.points}", pointsColor))
 				.build()
 
 		}

@@ -210,7 +210,8 @@ class PowerArmorItem(
 		if (HoverMod.hoverEnabledPlayers.contains(entity.uniqueId)) {
 			entity.isFlying = true
 			entity.allowFlight = true
-			entity.flySpeed = 0.5.toFloat()
+			entity.flySpeed = 0.025f
+			entity.velocity.y = 0.0
 		}
 	}
 

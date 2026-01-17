@@ -39,14 +39,14 @@ object HoverMod : ItemModification {
 	fun setHover(player : Player) {
 		if ((player.world.hasFlag(WorldFlag.SPACE_WORLD) || player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)))  {
 			hoverEnabledPlayers.remove(player.uniqueId)
-			player.flySpeed = 1.toFloat()
+			player.flySpeed = 0.025f
 			player.isFlying = false
 			return
 		}
 		val isEnabled = hoverEnabledPlayers.contains(player.uniqueId)
 		if (isEnabled) {
 			hoverEnabledPlayers.remove(player.uniqueId)
-			player.flySpeed = 1.toFloat()
+			player.flySpeed = 0.05f
 			player.isFlying = false
 		}
 		else hoverEnabledPlayers.add(player.uniqueId)

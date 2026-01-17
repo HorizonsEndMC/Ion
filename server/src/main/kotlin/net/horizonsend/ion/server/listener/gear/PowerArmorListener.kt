@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.listener.gear
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
+import io.papermc.paper.event.player.PlayerStopUsingItemEvent
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -35,7 +37,9 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityToggleGlideEvent
+import org.bukkit.event.player.PlayerChangedMainHandEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
@@ -362,6 +366,10 @@ object PowerArmorListener : SLEventListener() {
 	fun onPlayerInteract(event: PlayerInteractEvent) {
 		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
 		return
+	}
+	@EventHandler
+	fun onPlayerHotbarMove(event: PlayerItemHeldEvent) {
+		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
 	}
 	@EventHandler
 	fun onPlayerWalk(event: PlayerMoveEvent) {

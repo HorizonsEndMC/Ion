@@ -660,6 +660,10 @@ object Crafting : IonServerComponent() {
 		materialBlockRecipes(ALUMINUM_BLOCK, ALUMINUM_INGOT)
 		materialBlockRecipes(RAW_ALUMINUM_BLOCK, RAW_ALUMINUM)
 		materialBlockRecipes(CHETHERITE_BLOCK, CHETHERITE)
+		materialBlockRecipes(SCORDITE_BLOCK, SCORDITE)
+		materialBlockRecipes(VANADIUM_BLOCK, VANADIUM)
+		materialBlockRecipes(ZIRCON_BLOCK, ZIRCON)
+		materialBlockRecipes(ATAVUM_BLOCK, ATAVUM)
 		materialBlockRecipes(TITANIUM_BLOCK, TITANIUM_INGOT)
 		materialBlockRecipes(RAW_TITANIUM_BLOCK, RAW_TITANIUM)
 		materialBlockRecipes(URANIUM_BLOCK, URANIUM)
@@ -1164,6 +1168,10 @@ object Crafting : IonServerComponent() {
 		registerOreType(rawType = RAW_TITANIUM, oreType = TITANIUM_ORE, smeltedType = TITANIUM_INGOT)
 		registerOreType(rawType = RAW_URANIUM, oreType = URANIUM_ORE, smeltedType = URANIUM)
 		registerFurnaceRecipe(smelted = CHETHERITE_BLOCK, result = CHETHERITE)
+		registerFurnaceRecipe(smelted = SCORDITE_BLOCK, result = SCORDITE)
+		registerFurnaceRecipe(smelted = VANADIUM_BLOCK, result = VANADIUM)
+		registerFurnaceRecipe(smelted = ZIRCON_BLOCK, result = ZIRCON)
+		registerFurnaceRecipe(smelted = ATAVUM_BLOCK, result = ATAVUM)
 	}
 
 	private fun registerFoodFurnaceRecipes() {

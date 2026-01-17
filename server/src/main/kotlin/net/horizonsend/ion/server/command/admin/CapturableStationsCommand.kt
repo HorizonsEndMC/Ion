@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
+import net.kyori.adventure.text.Component.newline
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
@@ -23,6 +24,8 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionCapturable
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -111,19 +114,28 @@ object KothStationCommand : SLCommand() {
 
 	@Subcommand("listactive")
 	fun listActiveKoths(sender: Player) {
-		val kothLocations = Regions.getAllOf<RegionKothZone>()
-			.filter { it.siegeHour == ZonedDateTime.now().hour }
-		for (koth in kothLocations) {
-			sender.success("Active Koth ${koth.name} at: ${koth.x}, ${koth.z}")
+		val koths = KingOfTheHills.getKOTHS()
+		val kothLocations = mutableSetOf<RegionKothZone>()
+		val message = text("Active Koths:")
+		message.append(newline())
+		for (koth in koths) {
+			val region: RegionKothZone = Regions[koth.kothId]
+			kothLocations.add(region)
 		}
-		sender.success("WARNING: Above list will not include manually activated Koths! All active koth IDs: ${KingOfTheHills.getKOTHS()}")
+		for (koth in kothLocations) {
+			message.append(text("Active Koth ${koth.name} at: ${koth.x}, ${koth.z}"))
+			message.append(newline())
+		}
+		sender.sendMessage(message)
 	}
 
 	@Subcommand("listall")
 	fun listAllKoths(sender: Player) {
 		val allKoths = Regions.getAllOf<RegionKothZone>()
-		val allKothNames = allKoths.forEach { it.name }
-		sender.success("All Koths: $allKothNames")
+		val allKothNames = mutableSetOf<String>()
+		for (koth in allKoths) {allKothNames.add(koth.name)}
+		if (allKothNames.isEmpty()) sender.success("No KOTHs")
+		else sender.success("All Koths: $allKothNames")
 	}
 
 	@Subcommand("delete")
