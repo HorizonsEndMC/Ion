@@ -731,12 +731,6 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', SUPERCONDUCTOR_CORE.getValue().constructItemStack())
 			setIngredient('z', FUEL_CONTROL.getValue().constructItemStack())
 		}
-
-		shapeless("scordite_block", SCORDITE_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, SCORDITE.getValue().constructItemStack(9))
-		shapeless("vanadium_block", VANADIUM_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, VANADIUM.getValue().constructItemStack(9))
-		shapeless("zircon_block", ZIRCON_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, ZIRCON.getValue().constructItemStack(9))
-		shapeless("atavum_block", ATAVUM_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, ATAVUM.getValue().constructItemStack(9))
-
 		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("i", "c")
 

@@ -13,7 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.BlockFace
 
-class EMPMissileStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<EMPMissileStarshipWeaponSubsystem>(), DisplayNameMultilblock {
+object EMPMissileStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<EMPMissileStarshipWeaponSubsystem>(), DisplayNameMultilblock {
 	override val key: String = "emp_missile"
 	override fun createSubsystem(
 		starship: ActiveStarship,
