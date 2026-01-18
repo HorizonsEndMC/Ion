@@ -28,7 +28,7 @@ object CapitalSkirmishCommandBurstMultiblock : AbstractCommandBurstMultiblock(Ma
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		z(5) {
+		z(4) {
 			y(-1) {
 				x(3).anyStairs(
 					PrepackagedPreset.stairs(
@@ -105,7 +105,7 @@ object CapitalSkirmishCommandBurstMultiblock : AbstractCommandBurstMultiblock(Ma
 				)
 			}
 		}
-		z(4) {
+		z(3) {
 			y(-1) {
 				x(3).titaniumBlock()
 				x(2).sponge()
@@ -134,7 +134,7 @@ object CapitalSkirmishCommandBurstMultiblock : AbstractCommandBurstMultiblock(Ma
 				x(-3).titaniumBlock()
 			}
 		}
-		z(3) {
+		z(2) {
 			y(-1) {
 				x(3).sponge()
 				x(2).endRod(
@@ -203,7 +203,7 @@ object CapitalSkirmishCommandBurstMultiblock : AbstractCommandBurstMultiblock(Ma
 				x(-3).sponge()
 			}
 		}
-		z(2) {
+		z(1) {
 			y(-1) {
 				x(3).titaniumBlock()
 				x(2).sponge()
@@ -232,7 +232,7 @@ object CapitalSkirmishCommandBurstMultiblock : AbstractCommandBurstMultiblock(Ma
 				x(-3).titaniumBlock()
 			}
 		}
-		z(1) {
+		z(0) {
 			y(-1) {
 				x(3).anyStairs(
 					PrepackagedPreset.stairs(
