@@ -58,6 +58,8 @@ import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.potion.PotionEffectType
 import java.util.Optional
 import java.util.function.Predicate
 
@@ -130,6 +132,11 @@ class CancelListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPotionSplashEvent(event: PotionSplashEvent) {
+		for (effect in event.potion.effects) {
+			if (effect.type == PotionEffectType.HEALTH_BOOST) {
+				return
+			}
+		}
 		event.isCancelled = true
 	}
 

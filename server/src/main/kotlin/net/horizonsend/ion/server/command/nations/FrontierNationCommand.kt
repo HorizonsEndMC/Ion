@@ -295,6 +295,7 @@ object FrontierNationCommand : SLCommand() {
 		val nationName = getFrontierNationName(nationId)
 
 		failIf(!FrontierNation.isInvited(nationId, sender.slPlayerId)) { "You are not invited to $nationName" }
+		failIf(FrontierNation.getMembers(nationId).count() > 5) {"This nation has already reached its maximum member count of 6!"}
 
 		FrontierNation.removeInvite(nationId, sender.slPlayerId)
 		SLPlayer.joinFrontierNation(sender.slPlayerId, nationId)
