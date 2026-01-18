@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.starship.ProbeBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -112,10 +113,10 @@ class ProbeWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireMaterial(item, Material.REDSTONE, 2)
+		return requireCustomItem(item, CustomItemKeys.SCANNER_PROBE.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
-		consumeItem(itemStack, 2)
+		consumeItem(itemStack, 1)
 	}
 }

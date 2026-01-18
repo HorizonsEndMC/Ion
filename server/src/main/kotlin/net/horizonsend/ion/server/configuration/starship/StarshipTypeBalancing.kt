@@ -365,7 +365,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
 			shieldPowerMultiplier = 0.75,
