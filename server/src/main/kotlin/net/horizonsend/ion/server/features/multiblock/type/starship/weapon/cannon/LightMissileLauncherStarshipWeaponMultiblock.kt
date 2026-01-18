@@ -39,94 +39,81 @@ object TopLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncherSta
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {
-				x(-1).ironBlock()
-				x(0).ironBlock()
-				x(+1).ironBlock()
-			}
-			y(1) {
-				x(0).sponge()
-			}
-			y(2) {
-				x(0).titaniumBlock()
-			}
-			y(3) {
-				x(0).dispenser()
-			}
-			y(4) {
-				x(-1).ironBlock()
-				x(+1).ironBlock()
-			}
-		}
-		z(1) {
-			y(0) {
-				x(-1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.TOP,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
+				x(1).ironBlock()
 				x(0).powerInput()
-				x(1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.TOP,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
+				x(-1).ironBlock()
 			}
 			y(1) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(2) {
-				x(-1).titaniumBlock()
 				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(3) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(4) {
-				x(-1).anyStairs()
-				x(1).anyStairs()
+				x(1).ironBlock()
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).ironBlock()
+			}	}
+		z(1)
+		{		y(0) {
+			x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+			x(0).sponge()
+			x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))		}
+			y(1) {
+				x(1).anyGlass()
+				x(0).sponge()
+				x(-1).anyGlass()
 			}
-		}
-		z(-1) {
+			y(2) {
+				x(1).anyGlass()
+				x(0).sponge()
+				x(-1).anyGlass()
+			}
+			y(3) {
+				x(1).anyGlass()
+				x(0).dispenser()
+				x(-1).anyGlass()
+			}
+			y(4) {
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+			}	}
+		z(2) {
 			y(0) {
-				x(-1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.TOP,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-				x(1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.TOP,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
+				x(1).ironBlock()
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-1).ironBlock()
 			}
 			y(1) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(2) {
-				x(-1).titaniumBlock()
 				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(3) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(4) {
-				x(-1).anyStairs()
-				x(1).anyStairs()
+				x(1).ironBlock()
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).ironBlock()
 			}
-		}
-	}
+		}}
 }
 
 object BottomLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncherStarshipWeaponMultiblock() {
@@ -138,116 +125,79 @@ object BottomLightMissileLauncherStarshipWeaponMultiblock : LightMissileLauncher
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(-4) {
-				x(-1).ironBlock()
 				x(1).ironBlock()
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-1).ironBlock()
 			}
 			y(-3) {
-				x(0).dispenser()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(-2) {
-				x(0).titaniumBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(-1) {
-				x(0).sponge()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(0) {
+				x(1).ironBlock()
+				x(0).powerInput()
 				x(-1).ironBlock()
-				x(0).ironBlock()
-				x(+1).ironBlock()
-			}
-		}
+			}	}
 		z(1) {
 			y(-4) {
-				x(-1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-				x(+1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(-3) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).anyGlass()
+				x(0).dispenser()
+				x(-1).anyGlass()
 			}
 			y(-2) {
-				x(-1).titaniumBlock()
-				x(1).titaniumBlock()
+				x(1).anyGlass()
+				x(0).sponge()
+				x(-1).anyGlass()
 			}
 			y(-1) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).anyGlass()
+				x(0).sponge()
+				x(-1).anyGlass()
 			}
 			y(0) {
-				x(-1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-				x(0).powerInput()
-				x(+1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-			}
-		}
-		z(-1) {
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(0).sponge()
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+			}	}
+		z(2) {
 			y(-4) {
-				x(-1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-				x(+1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
+				x(1).ironBlock()
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-1).ironBlock()
 			}
 			y(-3) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(-2) {
-				x(-1).titaniumBlock()
 				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(-1) {
-				x(-1).ironBlock()
-				x(1).ironBlock()
+				x(1).titaniumBlock()
+				x(0).anyGlass()
+				x(-1).titaniumBlock()
 			}
 			y(0) {
-				x(-1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-				x(+1).anyStairs(
-					PrepackagedPreset.stairs(
-						RelativeFace.BACKWARD,
-						Bisected.Half.BOTTOM,
-						shape = Stairs.Shape.STRAIGHT
-					)
-				)
-			}
-		}
-	}
+				x(1).ironBlock()
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).ironBlock()
+			}	}}
 }
