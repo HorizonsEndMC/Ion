@@ -196,19 +196,17 @@ class EMPMissileProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if ((shooter.starship?.initialBlockCount ?: 0) > 4000) return
+		if (starship.initialBlockCount > 4500) return
+		val shieldPenalty = balancing.effectStrength
 
-		var shieldPenalty = balancing.effectStrength
-		// ships above 4000 half affected
-		if (starship.initialBlockCount > 4000) shieldPenalty = balancing.effectStrength * 0.5
-
-		starship.addStatusEffect(StarshipStatusEffect(
-			StarshipStatusEffectTypes.SHIELD_WEAKNESS,
-			shieldPenalty,
-			balancing.effectDurationNanos
-		))
-
+		starship.addStatusEffect(
+			StarshipStatusEffect(
+				StarshipStatusEffectTypes.SHIELD_WEAKNESS,
+				shieldPenalty,
+				balancing.effectDurationNanos
+			)
+		)
 		starship.userErrorAction("Shields weakened by ${(shieldPenalty * 100).toInt()}%!")
-
 	}
 }
+

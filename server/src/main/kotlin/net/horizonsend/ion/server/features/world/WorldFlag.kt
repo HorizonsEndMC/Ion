@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.world
 
 enum class WorldFlag {
     SPACE_WORLD,
+	EXTRA_RENDER_WORLD,
 	SECONDARY_SPACE_WORLD,
 	ADMIN_ONLY_WORLD,
 	PLANET_WORLD,

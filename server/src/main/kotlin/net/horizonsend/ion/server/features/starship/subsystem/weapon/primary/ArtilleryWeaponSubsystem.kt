@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.starship.ArtilleryBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LOADED_SHELL
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -58,11 +59,11 @@ class ArtilleryWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireMaterial(item, Material.PRISMARINE_CRYSTALS, 4)
+		return requireCustomItem(item, LOADED_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
-		consumeItem(itemStack, 4)
+		consumeItem(itemStack, 1)
 	}
 }
 

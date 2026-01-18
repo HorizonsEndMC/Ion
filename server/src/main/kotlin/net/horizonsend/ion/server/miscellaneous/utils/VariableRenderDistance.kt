@@ -22,7 +22,7 @@ object VariableRenderDistance: IonServerComponent() {
 				//When dead
 				player.isDead -> 4
 				//When on planet
-				!player.world.hasFlag(WorldFlag.SPACE_WORLD) && !player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) -> 7
+				!player.world.hasFlag(WorldFlag.EXTRA_RENDER_WORLD) -> 7
 				//When in combat but not piloting
 				isPvpCombatTagged(player) && !isPiloting(player) -> 8
 				//When in combat and piloting

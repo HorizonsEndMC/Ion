@@ -648,7 +648,7 @@ data class NewStarshipBalancing(
 					"tech 2 ships require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000)),
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
@@ -1052,7 +1052,7 @@ data class NewStarshipBalancing(
 			),
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
-				HeavyNeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				HeavyNeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
 				AssaultTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 9750, ), maxPerShot = 5,),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 360),

@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
@@ -124,7 +125,7 @@ object SiegeCommand : SLCommand() {
 
 	private fun beginSiege(sender: Player) {
 		requireFrontierNationIn(sender)
-		if (!NationRole.hasPermission(sender.slPlayerId, NationRole.Permission.START_NATION_SIEGE)) {
+		if (!FrontierNationRole.hasPermission(sender.slPlayerId, FrontierNationRole.Permission.START_STATION_SIEGE)) {
 			sender.userError("Your nation prevents you from starting station sieges!")
 			return
 		}

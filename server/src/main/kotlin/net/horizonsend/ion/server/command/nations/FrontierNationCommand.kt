@@ -169,6 +169,7 @@ object FrontierNationCommand : SLCommand() {
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_INVITE)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.PLAYER_KICK)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.START_KOTH_SIEGE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.START_STATION_SIEGE)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Leader", FrontierNationRole.Permission.BROADCAST)
 			FrontierNationRoleCommand.onMemberAdd(sender, sender.name, "Leader")
 
@@ -178,6 +179,7 @@ object FrontierNationCommand : SLCommand() {
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_INVITE)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.PLAYER_KICK)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.START_KOTH_SIEGE)
+			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.START_STATION_SIEGE)
 			FrontierNationRoleCommand.onPermissionAdd(sender, "Officer", FrontierNationRole.Permission.BROADCAST)
 
 			FrontierNationRoleCommand.onCreate(sender, "Member", SLTextStyle.GRAY, 100)
