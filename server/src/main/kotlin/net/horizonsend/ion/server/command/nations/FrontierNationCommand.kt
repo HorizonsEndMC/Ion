@@ -475,7 +475,7 @@ object FrontierNationCommand : SLCommand() {
 		val nameColor = NamedTextColor.GOLD
 		val leaderColor = NamedTextColor.AQUA
 		val membersColor = NamedTextColor.BLUE
-		val settlementsColor = DARK_AQUA
+		val powerColor = DARK_AQUA
 		val pointsColor = NamedTextColor.GREEN
 		val split = text(" | ", HEColorScheme.HE_MEDIUM_GRAY)
 
@@ -483,7 +483,7 @@ object FrontierNationCommand : SLCommand() {
 			text("Name", nameColor),
 			split, text("Leader", leaderColor),
 			split, text("Members", membersColor),
-			split, text("Settlements", settlementsColor),
+			split, text("Power", powerColor),
 			split, text("Points", pointsColor),
 		))
 
@@ -507,6 +507,7 @@ object FrontierNationCommand : SLCommand() {
 				.append(text("    $name ", nameColor))
 				.append(text(leaderName, leaderColor))
 				.append(text(" ${members.count()} ", membersColor))
+				.append(text("${getTotalPower(nation)} / ${members.count()*20}}", powerColor))
 				.append(text("${data.points}", pointsColor))
 				.build()
 
