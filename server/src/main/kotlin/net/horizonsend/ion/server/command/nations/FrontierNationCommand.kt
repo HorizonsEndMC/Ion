@@ -509,7 +509,7 @@ object FrontierNationCommand : SLCommand() {
 				.append(text("    $name ", nameColor))
 				.append(text(leaderName, leaderColor))
 				.append(text(" ${members.count()} ", membersColor))
-				.append(text("${getTotalPower(nation)} / ${members.count()*20}", powerColor))
+				.append(text("${getTotalPower(nation)} / ${members.count()*20} ", powerColor))
 				.append(text("${data.points}", pointsColor))
 				.build()
 
