@@ -5,14 +5,21 @@ import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 
 object DisruptorMultiblock : GravityWellMultiblock() {
 	override val name = "disruptor"
 
 	override val displayName: Component get() = text("Disruptor")
 	override val description: Component get() = text("Disrupts a targeted ship's hyperdrive.")
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		return
+	}
 
 	override val signText = createSignText(
 		line1 = "&2Disruptor",
