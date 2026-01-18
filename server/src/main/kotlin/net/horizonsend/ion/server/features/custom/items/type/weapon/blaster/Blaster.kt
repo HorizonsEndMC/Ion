@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.entity.LookAnchor
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
@@ -323,7 +324,7 @@ open class Blaster<T : Balancing>(
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return Color.RED // Not Player
-		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
+		SLPlayer[entity.uniqueId]?.frontierNation?.let { return fromRGB(FrontierNationCache[it].color) } // Nation
 		return Color.RED // Not Player
 	}
 
