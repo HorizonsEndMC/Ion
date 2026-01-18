@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.world.generation.generators.configura
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.filterIsInstance
 import org.bukkit.command.CommandSender
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMemberProperties
@@ -72,13 +73,13 @@ object ConfigurationCommands : SLCommand() {
 	fun startServer(sender: CommandSender) = asyncCommand(sender) {
 		val serverConfiguration = ConfigurationFiles.serverConfiguration.get()
 		failIf(serverConfiguration.serverStartDate != null) {"The server has already been started!"}
-		val time = System.currentTimeMillis()
+		val time = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
 		sender.success("Input this timestamp into the configuration: $time")
 	}
 
 	@Subcommand("server startdate change")
 	fun changeServerStartDate(sender: CommandSender) = asyncCommand(sender) {
-		val time = System.currentTimeMillis()
+		val time = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
 		sender.success("Input this timestamp into the configuration: $time")
 	}
 

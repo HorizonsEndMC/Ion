@@ -36,15 +36,15 @@ object StarshipStatusEffectTypes {
 	// base regen rate * (1 + strength) = buffed shield regen, default 0
 	val SHIELD_REGENERATION_SPEED = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.SHIELD_REGENERATION_SLOW,
-		displayName = Component.text("Shield Regeneration Speed Reduction", HE_LIGHT_BLUE),
-		description = Component.text("Decreases shield regeneration rate", HE_LIGHT_BLUE)
+		displayName = Component.text("Shield Regeneration Speed Boost", HE_LIGHT_BLUE),
+		description = Component.text("Increases shield regeneration rate", HE_LIGHT_BLUE)
 	)
 
 	// base regen rate * (1 - strength) = shield regen reduction, default 0
 	val SHIELD_REGENERATION_SLOW = StarshipStatusEffectType(
 		key = StarshipStatusEffectTypeKeys.SHIELD_REGENERATION_SPEED,
-		displayName = Component.text("Shield Regeneration Speed Boost", HE_LIGHT_BLUE),
-		description = Component.text("Increases shield regeneration rate", HE_LIGHT_BLUE)
+		displayName = Component.text("Shield Regeneration Speed Reduction", HE_LIGHT_BLUE),
+		description = Component.text("Decreases shield regeneration rate", HE_LIGHT_BLUE)
 	)
 
 	// 1 - strength = damage mitigation on damage, default 0
