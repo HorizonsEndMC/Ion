@@ -1047,7 +1047,7 @@ data class ScramblerBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 2550,
-	override val isForwardOnly: Boolean = false,
+	override val isForwardOnly: Boolean = true,
 	override val maxPerShot: Int? = null,
 	override val applyCooldownToAll: Boolean = true,
 

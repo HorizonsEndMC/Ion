@@ -56,6 +56,17 @@ class NeutralizerProjectile(
 			balancing.effectDurationNanos
 		))
 
+		if (starship.initialBlockCount < 2500 && !starship.type.tech2) {
+			val speedPenalty = 1 - 0.85
+			starship.addStatusEffect(StarshipStatusEffect(
+				StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
+				speedPenalty,
+				balancing.effectDurationNanos
+			))
+
+			starship.userErrorAction("Ship Speed slowed by ${(speedPenalty * 100).toInt()}!")
+		}
+
 		starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {

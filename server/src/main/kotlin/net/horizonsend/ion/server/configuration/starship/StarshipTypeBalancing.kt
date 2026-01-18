@@ -124,7 +124,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -151,7 +151,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -178,7 +178,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -215,7 +215,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -318,7 +318,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -419,7 +419,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -452,7 +452,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -489,11 +489,11 @@ data class NewStarshipBalancing(
 					"Tech 2 gunships require a mini reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyLaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
+				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 				),
@@ -501,6 +501,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -558,7 +562,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -613,10 +617,6 @@ data class NewStarshipBalancing(
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
-					JumpFieldGeneratorSubsystem::class.java,
-					"Only super capitals and black ops frigates can use a jump field generator!"
-				),
-				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
 				)
@@ -665,6 +665,10 @@ data class NewStarshipBalancing(
 					"Only super capitals and black ops frigates can use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
 				)
@@ -703,13 +707,17 @@ data class NewStarshipBalancing(
 				),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
+				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2)
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"Only super capitals and black ops frigates can use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -777,6 +785,10 @@ data class NewStarshipBalancing(
 					"Logistics ships cannot have weapons!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					WebifierWeaponSubsystem::class.java,
 					"Logistics ships cannot have weapons!"
 				)
@@ -797,7 +809,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -854,6 +866,10 @@ data class NewStarshipBalancing(
 					"Only super capitals and black ops frigates can use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
 				)
@@ -892,6 +908,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -940,6 +960,10 @@ data class NewStarshipBalancing(
 					"Only super capitals and black ops frigates can use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
 				),
@@ -976,7 +1000,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -1018,6 +1042,10 @@ data class NewStarshipBalancing(
 					"Only super capitals and black ops frigates can use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
 				)
@@ -1056,10 +1084,6 @@ data class NewStarshipBalancing(
 				)),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
-					JumpFieldGeneratorSubsystem::class.java,
-					"Only super capitals and black ops frigates can use a jump field generator!"
-				),
-				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
 				)
@@ -1092,7 +1116,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -1163,6 +1187,10 @@ data class NewStarshipBalancing(
 					"Only recon starfighters can use jump beacons!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					IonTurretWeaponSubsystem::class.java,
 					"Logistics ships cannot have weapons!"
 				),
@@ -1217,6 +1245,10 @@ data class NewStarshipBalancing(
 					"Only recon starfighters can use jump beacons!"
 				),
 				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
 					TriTurretWeaponSubsystem::class.java,
 					"Missile ships cannot have tri turrets!"
 				)
@@ -1255,7 +1287,7 @@ data class NewStarshipBalancing(
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
-					"Tech 1 ships cannot use gravity wells!"
+					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -1320,6 +1352,10 @@ data class NewStarshipBalancing(
 				)
 			),
 			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"Only recon starfighters can use jump beacons!"
