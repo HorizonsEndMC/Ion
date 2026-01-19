@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.starship.HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -9,6 +11,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class HeavyLogisticsProjectile(
@@ -38,9 +41,15 @@ class HeavyLogisticsProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		for (shield: ShieldSubsystem in starship.shields) {
-			if (shield.isReinforcementEnabled) continue
-			shield.power += balancing.shieldBoostFactor
-		}
+		if (starship.controller !is Player) return
+		val shooter = shooter.starship?.controller ?: return
+		if (shooter.starship.controller !is Player) return
+		if (PlayerCache[starship.controller as Player].frontierNationOid != PlayerCache[shooter.starship.controller as Player].frontierNationOid) return
+		if (starship.type == StarshipType.LOGISTICS_CRUISER || starship.type == StarshipType.LOGISTICS_CORVETTE)
+
+			for (shield: ShieldSubsystem in starship.shields) {
+				if (shield.isReinforcementActive()) continue
+				shield.power += balancing.shieldBoostFactor
+			}
 	}
 }

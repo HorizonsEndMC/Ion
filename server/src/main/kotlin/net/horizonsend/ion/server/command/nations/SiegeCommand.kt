@@ -130,6 +130,11 @@ object SiegeCommand : SLCommand() {
 			return
 		}
 
+		if(getStarshipPiloting(sender).initialBlockCount < 15000) {
+			sender.userError("You must be piloting a ship larger than 15000 blocks to initiate a siege!")
+			return
+		}
+
 		if (Regions.findFirstOf<RegionCapturableStation>(sender.location) != null) return StationSieges.beginSiege(sender)
 		//if (Regions.findFirstOf<RegionSolarSiegeZone>(sender.location) != null) return SolarSieges.initSiege(sender)
 		if (Regions.findFirstOf<RegionFrontierTerritory>(sender.location) != null) return FrontierNationSieges.initSiege(sender)
@@ -145,13 +150,6 @@ object SiegeCommand : SLCommand() {
 			fail { "You aren't a participant of this siege!" }
 		}
 
-		@Subcommand("abandon")
-		@CommandCompletion("@frontierSieges")
-		fun onAbandon(sender: Player, siege: FrontierNationSiege) {
-			if (siege.isAttacker(sender.slPlayerId)) return FrontierNationSieges.attackerAbandonSiege(sender, siege)
-			if (siege.isDefender(sender.slPlayerId)) return FrontierNationSieges.defenderAbandonSiege(sender, siege)
-			fail { "You aren't a participant of this siege!" }
-		}
 		@Subcommand("solarstatus")
 		@CommandCompletion("@solarSieges")
 		fun onSolarStatus(sender: Player, siege: SolarSiege) {
@@ -206,6 +204,14 @@ object SiegeCommand : SLCommand() {
 			))
 		}
 	 */
+
+	@Subcommand("abandon")
+	@CommandCompletion("@frontierSieges")
+	fun onAbandon(sender: Player, siege: FrontierNationSiege) {
+		if (siege.isAttacker(sender.slPlayerId)) return FrontierNationSieges.attackerAbandonSiege(sender, siege)
+		if (siege.isDefender(sender.slPlayerId)) return FrontierNationSieges.defenderAbandonSiege(sender, siege)
+		fail { "You aren't a participant of this siege!" }
+	}
 
 	@Subcommand("status")
 	@CommandCompletion("@frontierSieges")

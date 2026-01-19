@@ -214,7 +214,7 @@ data class HeavyLaserBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val effectStrength: Double = 0.85,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(20L)
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(20L)
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = HeavyLaserProjectile::class
@@ -259,7 +259,7 @@ data class HeavyNeutralizerBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val effectStrength: Double = 0.75,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(30L)
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(30L)
 
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
@@ -301,7 +301,7 @@ data class NeutralizerBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val effectStrength: Double = 0.8,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(20L)
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(20L)
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = NeutralizerProjectile::class
@@ -424,7 +424,7 @@ data class WebifierBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val particleThickness: Double = 2.0,
 		override val effectStrength: Double = 0.45,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(5L)
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(5L)
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = WebifierProjectile::class
@@ -494,7 +494,7 @@ data class EMPMissileBalancing(
 		override val maxDegrees: Double = 180.0,
 		override val particleThickness: Double = 0.1,
 		override val effectStrength: Double = 0.2,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(30L),
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(30L),
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = EMPMissileProjectile::class
@@ -967,7 +967,7 @@ data class IonTurretBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val particleThickness: Double = 0.6,
 		override val effectStrength: Double = 0.1,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(7L),
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(7L),
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = IonTurretProjectile::class
@@ -1073,7 +1073,7 @@ data class ScramblerBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val particleThickness: Double = 2.0,
 		override val effectStrength: Double = 0.9,
-		override val effectDurationNanos: Long = TimeUnit.SECONDS.toNanos(20L)
+		override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(20L)
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = ScramblerProjectile::class
@@ -1839,7 +1839,7 @@ data class ShieldCommandBurstBalancing(
 	)),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val range: Double = 200.0,
-	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(15000),
+	override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(15),
 
 	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
@@ -1856,7 +1856,7 @@ data class SkirmishCommandBurstBalancing(
 	)),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val range: Double = 200.0,
-	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(15000),
+	override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(15),
 	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
 
@@ -1872,7 +1872,7 @@ data class CapitalSkirmishCommandBurstBalancing(
 	)),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(6000),
 	override val range: Double = 500.0,
-	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(30000),
+	override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(30),
 	override val effectStrength: Double = 0.5,
 ) : StarshipMultiplierCommandBurstBalancing
 
@@ -1888,7 +1888,7 @@ data class CapitalShieldCommandBurstBalancing(
 	)),
 	override val activateCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(6000),
 	override val range: Double = 500.0,
-	override val effectDurationNanos: Long = TimeUnit.MILLISECONDS.toNanos(30000),
+	override val effectDurationNanos: Long = TimeUnit.NANOSECONDS.toSeconds(30),
 	override val effectStrength: Double = 0.5,
 ) : StarshipMultiplierCommandBurstBalancing
 

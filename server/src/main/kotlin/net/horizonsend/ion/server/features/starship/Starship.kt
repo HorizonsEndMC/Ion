@@ -831,7 +831,7 @@ class Starship(
 		val sameStrengthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
 		// there is an effect with the same strength value as the new one. refresh the duration
 		if (sameStrengthEffect != null) {
-			sameStrengthEffect.durationNanos = max(sameStrengthEffect.durationNanos, newStatusEffect.durationNanos)
+			sameStrengthEffect.durationSeconds = max(sameStrengthEffect.durationSeconds, newStatusEffect.durationSeconds)
 
 			this.playerPilot?.information("Refreshed status effect:")
 			this.playerPilot?.sendMessage(ofChildren(
@@ -839,7 +839,7 @@ class Starship(
 				Component.newline(),
 				text("Strength: ${sameStrengthEffect.strength}", HE_MEDIUM_GRAY),
 				Component.newline(),
-				text("Duration: ${TimeUnit.NANOSECONDS.toSeconds(sameStrengthEffect.durationNanos)}s", HE_MEDIUM_GRAY),
+				text("Duration: ${TimeUnit.NANOSECONDS.toSeconds(sameStrengthEffect.durationSeconds)}s", HE_MEDIUM_GRAY),
 				Component.newline(),
 				text("[Effect]", HE_LIGHT_ORANGE)
 					.hoverEvent(sameStrengthEffect.type.description),
@@ -857,7 +857,7 @@ class Starship(
 			Component.newline(),
 			text("Strength: ${newStatusEffect.strength}", HE_MEDIUM_GRAY),
 			Component.newline(),
-			text("Duration: ${TimeUnit.NANOSECONDS.toSeconds(newStatusEffect.durationNanos)}s", HE_MEDIUM_GRAY),
+			text("Duration: ${TimeUnit.NANOSECONDS.toSeconds(newStatusEffect.durationSeconds)}s", HE_MEDIUM_GRAY),
 			Component.newline(),
 			text("[Effect]", HE_LIGHT_ORANGE)
 				.hoverEvent(newStatusEffect.type.description),

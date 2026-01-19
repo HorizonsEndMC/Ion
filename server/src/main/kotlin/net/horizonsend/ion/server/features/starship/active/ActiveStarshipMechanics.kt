@@ -235,12 +235,12 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				highestStrengthEffect.isActive = true
 			}
 
-			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.durationNanos -= 1 } }
+			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.durationSeconds -= 1 } }
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.removeAll { statusEffect ->
-				if (statusEffect.durationNanos <= 0) {
+				if (statusEffect.durationSeconds <= 0) {
 					starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${statusEffect.strength} has worn off")
 				}
-				statusEffect.durationNanos <= 0
+				statusEffect.durationSeconds <= 0
 			} }
 		}
 	}
