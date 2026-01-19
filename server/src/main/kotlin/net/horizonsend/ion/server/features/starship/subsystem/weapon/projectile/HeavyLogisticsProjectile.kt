@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -34,10 +35,10 @@ class HeavyLogisticsProjectile(
 		val pointRight = origin.clone().add(rightDirection.clone().multiply(radius))
 		val pointLeft = origin.clone().subtract(rightDirection.clone().multiply(radius))
 
-		super.spawnParticle(pointLeft.x, pointLeft.y, pointLeft.z, force)
-		super.spawnParticle(pointRight.x, pointRight.y, pointRight.z, force)
-		super.spawnParticle(pointBackward.x, pointBackward.y, pointBackward.z, force)
-		super.spawnParticle(pointForward.x, pointForward.y, pointForward.z, force)
+		pointLeft.world.spawnParticle(Particle.SCRAPE, pointLeft.x,pointLeft.y,pointLeft.z, 1, 0.0, 0.0 , 0.0, 0.0, null, true)
+		pointLeft.world.spawnParticle(Particle.SCRAPE, pointRight.x,pointRight.y,pointRight.z, 1, 0.0, 0.0 , 0.0, 0.0, null, true)
+		pointLeft.world.spawnParticle(Particle.GLOW, pointBackward.x,pointBackward.y,pointBackward.z, 1, 0.0, 0.0 , 0.0, 0.0, null, true)
+		pointLeft.world.spawnParticle(Particle.GLOW, pointForward.x,pointForward.y,pointForward.z, 1, 0.0, 0.0 , 0.0, 0.0, null, true)
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
