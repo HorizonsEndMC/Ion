@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumRe
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
@@ -1461,21 +1460,21 @@ sealed interface StarshipTypeBalancing {
 
 @Serializable
 open class StanrdardStarshipTypeBalancing(
-	override val canMove: Boolean = true,
-	override val accelMultiplier: Double = 1.0,
-	override val maxSpeedMultiplier: Double = 1.0,
+	override var canMove: Boolean = true,
+	override var accelMultiplier: Double = 1.0,
+	override var maxSpeedMultiplier: Double = 1.0,
 
 	override val shipSounds: StarshipSounds = StarshipSounds(),
 
-	override val sneakFlyAccelDistance: Int,
-	override val maxSneakFlyAccel: Int,
-	override val interdictionRange: Int,
-	override val jumpStrength: Double,
-	override val wellStrength: Double,
-	override val hyperspaceRangeMultiplier: Double,
-	override val cruiseSpeedMultiplier: Double = 1.0,
-	override val shieldPowerMultiplier: Double = 1.0,
-	override val shieldRegenMultiplier: Double = 1.0,
+	override var sneakFlyAccelDistance: Int,
+	override var maxSneakFlyAccel: Int,
+	override var interdictionRange: Int,
+	override var jumpStrength: Double,
+	override var wellStrength: Double,
+	override var hyperspaceRangeMultiplier: Double,
+	override var cruiseSpeedMultiplier: Double = 1.0,
+	override var shieldPowerMultiplier: Double = 1.0,
+	override var shieldRegenMultiplier: Double = 1.0,
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
 	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
@@ -1486,21 +1485,21 @@ open class StanrdardStarshipTypeBalancing(
 
 @Serializable
 open class GroundStarshipBalancing(
-	override val canMove: Boolean = true,
-	override val accelMultiplier: Double = 1.0,
-	override val maxSpeedMultiplier: Double = 1.0,
+	override var canMove: Boolean = true,
+	override var accelMultiplier: Double = 1.0,
+	override var maxSpeedMultiplier: Double = 1.0,
 
 	override val shipSounds: StarshipSounds = StarshipSounds(),
 
-	override val sneakFlyAccelDistance: Int,
-	override val maxSneakFlyAccel: Int,
-	override val interdictionRange: Int,
-	override val jumpStrength: Double,
-	override val wellStrength: Double,
-	override val hyperspaceRangeMultiplier: Double,
-	override val cruiseSpeedMultiplier: Double = 1.0,
-	override val shieldPowerMultiplier: Double = 1.0,
-	override val shieldRegenMultiplier: Double = 1.0,
+	override var sneakFlyAccelDistance: Int,
+	override var maxSneakFlyAccel: Int,
+	override var interdictionRange: Int,
+	override var jumpStrength: Double,
+	override var wellStrength: Double,
+	override var hyperspaceRangeMultiplier: Double,
+	override var cruiseSpeedMultiplier: Double = 1.0,
+	override var shieldPowerMultiplier: Double = 1.0,
+	override var shieldRegenMultiplier: Double = 1.0,
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
 	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),

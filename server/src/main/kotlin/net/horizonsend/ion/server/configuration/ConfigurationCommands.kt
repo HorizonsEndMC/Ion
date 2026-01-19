@@ -10,11 +10,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
-import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing.WeaponDefaults
-import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
-import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
-import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -32,10 +28,7 @@ import kotlin.reflect.jvm.javaType
 object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = NewStarshipBalancing.ShipClasses::class.memberProperties
 	private val starshipBalancingOptions = StarshipTypeBalancing::class.memberProperties
-	private val weaponDefaults = WeaponDefaults::class.memberProperties
-	private val weaponFields = StarshipWeaponBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
-	private val projectileFields = StarshipProjectileBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
-	private val starshipFields = StarshipTypeBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
+	private val starshipDefaultWeapons = ConfigurationFiles.starshipBalancing.get().weaponDefaults.weapons
 
 	private val meleeWeaponTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
 	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
@@ -52,16 +45,8 @@ object ConfigurationCommands : SLCommand() {
 			starshipBalancingOptions.map { it.name }
 		}
 
-		manager.commandCompletions.registerCompletion("weaponDefaults") {
-			weaponDefaults.map { it.name }
-		}
-
-		manager.commandCompletions.registerCompletion("balancingValues") {
-			weaponFields.map { it.name }
-		}
-
-		manager.commandCompletions.registerCompletion("starshipValues") {
-			starshipFields.map { it.name }
+		manager.commandCompletions.registerCompletion("starshipDefaultWeapons") {
+			starshipDefaultWeapons.map { it::class.simpleName }
 		}
 
 		manager.commandCompletions.registerCompletion("meleeWeaponTypes") {
@@ -224,6 +209,30 @@ object ConfigurationCommands : SLCommand() {
 		)
 	}
 
+	@Subcommand("config set starship weapon default")
+	@CommandCompletion("@starshipDefaultWeapons property value")
+	fun setStarshipWeaponDefaultProperties(sender: CommandSender, weaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		val typeBalancing = starshipDefaultWeapons.find { it::class.simpleName == weaponName } ?: fail { "Type $weaponName not found in configuration" }
+		val fields = typeBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $weaponName's balancing configuration" }
+
+		try { setField(field, typeBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.success("Set $weaponName property $fieldName to $value")
+	}
+
+	@Subcommand("config set starship class")
+	@CommandCompletion("@starshipTypes property value")
+	fun setStarshipClassProperties(sender: CommandSender, starshipClassName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			starshipTypes,
+			ConfigurationFiles.starshipBalancing.get().shipClasses,
+			starshipClassName,
+			fieldName,
+			value
+		)
+	}
+
 	private fun <T : Any> getConfigProperty(sender: CommandSender, collection: Collection<KProperty1<T, *>>, balancingConfiguration: T, typeName: String, fieldName: String) = asyncCommand(sender) {
 		val (typeBalancing, field) = getBalancingAndField(collection, typeName, balancingConfiguration, fieldName)
 
@@ -240,11 +249,9 @@ object ConfigurationCommands : SLCommand() {
 
 	private fun <T : Any> getBalancingAndField(collection: Collection<KProperty1<T, *>>, typeName: String, balancingConfiguration: T, fieldName: String): Pair<Any, KMutableProperty<*>> {
 		val type = collection.find { it.name == typeName } ?: fail { "Type $typeName not found in configuration" }
-		val typeBalancing =
-			type.get(balancingConfiguration) ?: fail { "Balancing configuration for $typeName not found" }
+		val typeBalancing = type.get(balancingConfiguration) ?: fail { "Balancing configuration for $typeName not found" }
 		val fields = typeBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
-		val field = fields.find { it.name == fieldName }
-			?: fail { "Field $fieldName not found in $typeName's balancing configuration" }
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $typeName's balancing configuration" }
 		return Pair(typeBalancing, field)
 	}
 //
