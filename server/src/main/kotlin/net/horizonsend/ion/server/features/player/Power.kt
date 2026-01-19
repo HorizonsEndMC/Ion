@@ -35,7 +35,7 @@ object Power : IonServerComponent() {
 			Tasks.async {
 				for (nation in FrontierNationCache.all()) {
 					val power = getTotalPower(nation.id)
-					if (nation.siegable && power > 20) {
+					if (nation.siegable && power >= 20) {
 						FrontierNation.setSiegable(nation.id, false)
 						Discord.sendEmbed(
 							ConfigurationFiles.discordSettings().eventsChannel,

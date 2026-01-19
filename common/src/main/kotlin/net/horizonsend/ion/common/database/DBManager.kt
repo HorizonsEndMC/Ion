@@ -29,6 +29,7 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
+import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
 import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.database.schema.nations.KothStation
@@ -128,6 +129,7 @@ object DBManager : IonComponent() {
 		// nations
 		CapturableStation.init()
 		KothStation.init()
+
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
 		KothSiege.init()
@@ -142,7 +144,6 @@ object DBManager : IonComponent() {
 		SettlementZone.init()
 		StationZone.init()
 		Territory.init()
-
 		NationSpaceStation.init()
 		SettlementSpaceStation.init()
 		PlayerSpaceStation.init()
@@ -176,6 +177,7 @@ object DBManager : IonComponent() {
 		Bookmark.init()
 
 		FrontierNation.init()
+		FrontierNationSiegeData.init()
 		FrontierNationRole.init()
 		FrontierTerritory.init()
 		BankedItem.init()

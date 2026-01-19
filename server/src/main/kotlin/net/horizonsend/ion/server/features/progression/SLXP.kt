@@ -55,7 +55,7 @@ object SLXP : IonServerComponent() {
 		val player = Bukkit.getPlayer(uuid) ?: return@async
 
 		if (message) {
-			player.success("${if(amount > 0) ("Gained ") else ("Lost ")} $amount power")
+			player.success("${if(amount > 0) ("Gained") else ("Lost")} $amount power")
 		}
 	}
 
