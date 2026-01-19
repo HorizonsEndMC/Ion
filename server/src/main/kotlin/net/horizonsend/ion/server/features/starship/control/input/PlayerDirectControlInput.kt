@@ -95,7 +95,8 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
 		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
 		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
-		val speed = (10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * oversizeModifier * (1000.0f / cooldown)).roundToInt() / 10.0f
+		val speed = if(starship.type.tech2){((10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * oversizeModifier * (1000.0f / cooldown)).roundToInt() / 10.0f)*1.1}
+		else {(10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * oversizeModifier * (1000.0f / cooldown)).roundToInt() / 10.0f}
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}
