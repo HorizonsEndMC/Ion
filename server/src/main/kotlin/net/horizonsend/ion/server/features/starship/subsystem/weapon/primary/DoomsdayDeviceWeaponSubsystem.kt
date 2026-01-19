@@ -56,7 +56,7 @@ class DoomsdayDeviceWeaponSubsystem(
 
             // min radius: 1; max radius: 6
             newFirePos.toLocation(loc.world).spherePoints(((5.0 / WARM_UP_TIME_SECONDS.toDouble() * (tick / 5)) + 1), 20).forEach {
-                it.world.spawnParticle(
+                it.world.spawnParticle( 
                     Particle.DUST_COLOR_TRANSITION,
                     it.x,
                     it.y,
