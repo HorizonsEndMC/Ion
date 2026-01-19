@@ -85,7 +85,8 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
         val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
 		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
 		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
-		val targetSpeed = (calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier
+		val targetSpeed = if(starship.type.tech2) {(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)*1.25) * oversizeModifier}
+		else {(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier}
 
 		if (data.isBoosting) {
 			// Initialize forward movement
