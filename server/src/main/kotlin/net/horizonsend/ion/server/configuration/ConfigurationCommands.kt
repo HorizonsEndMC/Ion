@@ -18,13 +18,12 @@ import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.filterIsInstance
 import org.bukkit.command.CommandSender
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 
@@ -39,7 +38,10 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipFields = StarshipTypeBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 
 	private val meleeWeaponTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
-	private val meleeWeaponFields = PVPBalancingConfiguration.MeleeWeapons::class.typeParameters
+	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
+	private val consumableTypes = PVPBalancingConfiguration.Consumables::class.memberProperties
+	private val armorTypes = PVPBalancingConfiguration.Armor::class.memberProperties
+	private val blasterTypes = PVPBalancingConfiguration.BlasterWeapons::class.memberProperties
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("starshipTypes") {
@@ -62,10 +64,24 @@ object ConfigurationCommands : SLCommand() {
 			starshipFields.map { it.name }
 		}
 
-
-
 		manager.commandCompletions.registerCompletion("meleeWeaponTypes") {
-			meleeWeaponTypes.map { it.name}
+			meleeWeaponTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("throwablesTypes") {
+			throwableTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("consumablesTypes") {
+			consumableTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("armorTypes") {
+			armorTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("blasterTypes") {
+			blasterTypes.map { it.name }
 		}
 	}
 
@@ -83,17 +99,153 @@ object ConfigurationCommands : SLCommand() {
 		sender.success("Input this timestamp into the configuration: $time")
 	}
 
-	@Subcommand("config set meleeWeapons properties")
+	@Subcommand("config get meleeWeapons")
+	@CommandCompletion("@meleeWeaponTypes property")
+	fun getMeleeWeaponProperties(sender: CommandSender, meleeWeaponName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			meleeWeaponTypes,
+			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
+			meleeWeaponName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set meleeWeapons")
 	@CommandCompletion("@meleeWeaponTypes property value")
 	fun setMeleeWeaponProperties(sender: CommandSender, meleeWeaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
-		val weapon = meleeWeaponTypes.find { it.name == meleeWeaponName } ?: fail { "Melee weapon $meleeWeaponName not found" }
-		val meleeWeaponBalancing = weapon.get(ConfigurationFiles.pvpBalancing.get().meleeWeapons) ?: fail { "Melee weapon $meleeWeaponName not found" }
-		val fields = meleeWeaponBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
-		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $meleeWeaponName" }
+		setConfigProperty(
+			sender,
+			meleeWeaponTypes,
+			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
+			meleeWeaponName,
+			fieldName,
+			value
+		)
+	}
 
-		try { setField(field, meleeWeaponBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+	@Subcommand("config get throwables")
+	@CommandCompletion("@throwablesTypes property")
+	fun getThrowablesProperties(sender: CommandSender, throwableName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			throwableTypes,
+			ConfigurationFiles.pvpBalancing.get().throwables,
+			throwableName,
+			fieldName
+		)
+	}
 
-		sender.success("Set $meleeWeaponName property $fieldName to $value")
+	@Subcommand("config set throwables")
+	@CommandCompletion("@throwablesTypes property value")
+	fun setThrowablesProperties(sender: CommandSender, throwableName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			throwableTypes,
+			ConfigurationFiles.pvpBalancing.get().throwables,
+			throwableName,
+			fieldName,
+			value
+		)
+	}
+
+	@Subcommand("config get consumables")
+	@CommandCompletion("@consumablesTypes property")
+	fun getConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			consumableTypes,
+			ConfigurationFiles.pvpBalancing.get().consumables,
+			consumableName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set consumables")
+	@CommandCompletion("@consumablesTypes property value")
+	fun setConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			consumableTypes,
+			ConfigurationFiles.pvpBalancing.get().consumables,
+			consumableName,
+			fieldName,
+			value
+		)
+	}
+
+	@Subcommand("config get armor")
+	@CommandCompletion("@armorTypes property")
+	fun getArmorProperties(sender: CommandSender, armorName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			armorTypes,
+			ConfigurationFiles.pvpBalancing.get().armour,
+			armorName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set armor")
+	@CommandCompletion("@armorTypes property value")
+	fun setArmorProperties(sender: CommandSender, armorName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			armorTypes,
+			ConfigurationFiles.pvpBalancing.get().armour,
+			armorName,
+			fieldName,
+			value
+		)
+	}
+
+	@Subcommand("config get blaster")
+	@CommandCompletion("@blasterTypes property value")
+	fun getBlasterProperties(sender: CommandSender, blasterName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			blasterTypes,
+			ConfigurationFiles.pvpBalancing.get().blasterWeapons,
+			blasterName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set blaster")
+	@CommandCompletion("@blasterTypes property value")
+	fun setBlasterProperties(sender: CommandSender, blasterName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			blasterTypes,
+			ConfigurationFiles.pvpBalancing.get().blasterWeapons,
+			blasterName,
+			fieldName,
+			value
+		)
+	}
+
+	private fun <T : Any> getConfigProperty(sender: CommandSender, collection: Collection<KProperty1<T, *>>, balancingConfiguration: T, typeName: String, fieldName: String) = asyncCommand(sender) {
+		val (typeBalancing, field) = getBalancingAndField(collection, typeName, balancingConfiguration, fieldName)
+
+		val value = try { getField(field, typeBalancing) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.information("$typeName property $fieldName: $value")
+	}
+
+	private fun <T : Any> setConfigProperty(sender: CommandSender, collection: Collection<KProperty1<T, *>>, balancingConfiguration: T, typeName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		val (typeBalancing, field) = getBalancingAndField(collection, typeName, balancingConfiguration, fieldName)
+
+		try { setField(field, typeBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.success("Set $typeName property $fieldName to $value")
+	}
+
+	private fun <T : Any> getBalancingAndField(collection: Collection<KProperty1<T, *>>, typeName: String, balancingConfiguration: T, fieldName: String): Pair<Any, KMutableProperty<*>> {
+		val type = collection.find { it.name == typeName } ?: fail { "Type $typeName not found in configuration" }
+		val typeBalancing =
+			type.get(balancingConfiguration) ?: fail { "Balancing configuration for $typeName not found" }
+		val fields = typeBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName }
+			?: fail { "Field $fieldName not found in $typeName's balancing configuration" }
+		return Pair(typeBalancing, field)
 	}
 //
 //	@Subcommand("config set starship properties")
@@ -246,6 +398,36 @@ object ConfigurationCommands : SLCommand() {
 	private fun reloadOthers() {
 		schematicCache.invalidateAll()
 		AsteroidConfigurations.reload()
+	}
+
+	private fun getField(field: KMutableProperty<*>, containing: Any): Any? {
+		when (field.returnType) {
+			Int::class.createType() -> {
+				return field.getter.call(containing)
+			}
+
+			Double::class.createType() -> {
+				return field.getter.call(containing)
+			}
+
+			Float::class.createType() -> {
+				return field.getter.call(containing)
+			}
+
+			Long::class.createType() -> {
+				return field.getter.call(containing)
+			}
+
+			Boolean::class.createType() -> {
+				return field.getter.call(containing)
+			}
+
+			String::class.createType() -> {
+				return field.getter.call(containing)
+			}
+
+			else -> throw NotImplementedError("type is: ${field.returnType.javaType.typeName}, to add in the switch case")
+		}
 	}
 
 	private fun setField(field: KMutableProperty<*>, containing: Any, value: String) {
