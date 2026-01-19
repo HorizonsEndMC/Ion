@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
-import net.horizonsend.ion.server.features.nations.sieges.SolarSieges.config
+import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSieges.fconfig
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -102,11 +102,11 @@ class FrontierNationSiege(
 	}
 
 	fun getActivePeriodStart(): Long {
-		return declaredTime + config.preparationWindowDuration.toDuration().toMillis()
+		return declaredTime + fconfig.preparationWindowDuration.toDuration().toMillis()
 	}
 
 	fun getSiegeEnd(): Long {
-		return getActivePeriodStart() + config.activeWindowDuration.toDuration().toMillis()
+		return getActivePeriodStart() + fconfig.activeWindowDuration.toDuration().toMillis()
 	}
 
 	fun getRemainingTime(): Duration = Duration.ofMillis(getSiegeEnd() - System.currentTimeMillis())

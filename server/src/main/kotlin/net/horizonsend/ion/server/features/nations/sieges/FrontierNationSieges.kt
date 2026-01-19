@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object FrontierNationSieges : IonServerComponent(true) {
-	val config get() = ConfigurationFiles.nationConfiguration().frontierNationSiegeConfiguration
+	val fconfig get() = ConfigurationFiles.nationConfiguration().frontierNationSiegeConfiguration
 
 	@Synchronized
 	private fun locked(block: () -> Unit) = block()
@@ -201,7 +201,7 @@ object FrontierNationSieges : IonServerComponent(true) {
 			.filter { it.key is PlayerDamager }
 			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
 
-		val initPrintCost = (event.starship.initPrintCost * config.shipCostMultiplier).roundToInt()
+		val initPrintCost = (event.starship.initPrintCost * fconfig.shipCostMultiplier).roundToInt()
 
 		processKill(controller.player, damager.player, initPrintCost)
 	}
@@ -209,7 +209,7 @@ object FrontierNationSieges : IonServerComponent(true) {
 	@EventHandler
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		val killer = event.player.killer ?: return
-		processKill(event.player, killer, config.playerKillPoints)
+		processKill(event.player, killer, fconfig.playerKillPoints)
 	}
 
 	private fun processKill(player: Player, killer: Player, points: Int) {
@@ -250,7 +250,7 @@ object FrontierNationSieges : IonServerComponent(true) {
 		val world = siege.region.bukkitWorld ?: return
 		val starships = ActiveStarships.getInWorld(world)
 		val contained = starships
-			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= config.minimumPassivePointsShipSize }
+			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= fconfig.minimumPassivePointsShipSize }
 			.mapNotNull { it.controller as? PlayerController }
 
 		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
@@ -290,8 +290,8 @@ object FrontierNationSieges : IonServerComponent(true) {
 	private val pointTickValue = calculateTickValue()
 
 	private fun calculateTickValue(): Int {
-		val referenceDestroyerValue = (config.referenceDestroyerPrice * config.shipCostMultiplier).roundToInt()
-		val durationMinutes = config.activeWindowDuration.toDuration().toMinutes().toInt()
+		val referenceDestroyerValue = (fconfig.referenceDestroyerPrice * fconfig.shipCostMultiplier).roundToInt()
+		val durationMinutes = fconfig.activeWindowDuration.toDuration().toMinutes().toInt()
 
 		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of
 		// 3 players contesting should be equal to the reference value of a sunk destroyer
@@ -311,7 +311,7 @@ object FrontierNationSieges : IonServerComponent(true) {
 		val participationData = participationData[player.uniqueId]
 		if (participationData != null) {
 			val now = System.currentTimeMillis()
-			val participationLength = config.participationLength.toDuration()
+			val participationLength = fconfig.participationLength.toDuration()
 			if (participationData.tagTime - now <= participationLength.toMillis()) {
 				if (activeSieges.containsKey(participationData.siege)) return participationData.siege.let(activeSieges::get)
 			}
