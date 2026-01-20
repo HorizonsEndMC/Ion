@@ -209,6 +209,17 @@ object ConfigurationCommands : SLCommand() {
 		)
 	}
 
+	@Subcommand("config get starship weapon default")
+	@CommandCompletion("@starshipDefaultWeapons property")
+	fun getStarshipWeaponDefaultProperties(sender: CommandSender, weaponName: String, fieldName: String) = asyncCommand(sender) {
+		val typeBalancing = starshipDefaultWeapons.find { it::class.simpleName == weaponName } ?: fail { "Type $weaponName not found in configuration" }
+		val fields = typeBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $weaponName's balancing configuration" }
+
+		val value = try { getField(field, typeBalancing) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.information("$weaponName property $fieldName: $value")
+	}
+
 	@Subcommand("config set starship weapon default")
 	@CommandCompletion("@starshipDefaultWeapons property value")
 	fun setStarshipWeaponDefaultProperties(sender: CommandSender, weaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
@@ -218,6 +229,42 @@ object ConfigurationCommands : SLCommand() {
 
 		try { setField(field, typeBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
 		sender.success("Set $weaponName property $fieldName to $value")
+	}
+
+	@Subcommand("config get starship weaponprojectile default")
+	@CommandCompletion("@starshipDefaultWeapons property")
+	fun getStarshipWeaponProjectileDefaultProperties(sender: CommandSender, weaponName: String, fieldName: String) = asyncCommand(sender) {
+		val typeBalancing = starshipDefaultWeapons.find { it::class.simpleName == weaponName } ?: fail { "Type $weaponName not found in configuration" }
+		val projectileBalancing = typeBalancing.projectile
+		val fields = projectileBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $weaponName's projectile balancing configuration" }
+
+		val value = try { getField(field, projectileBalancing) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.information("$weaponName's projectile property $fieldName: $value")
+	}
+
+	@Subcommand("config set starship weaponprojectile default")
+	@CommandCompletion("@starshipDefaultWeapons property value")
+	fun setStarshipWeaponProjectileDefaultProperties(sender: CommandSender, weaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		val typeBalancing = starshipDefaultWeapons.find { it::class.simpleName == weaponName } ?: fail { "Type $weaponName not found in configuration" }
+		val projectileBalancing = typeBalancing.projectile
+		val fields = projectileBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $weaponName's projectile balancing configuration" }
+
+		try { setField(field, projectileBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.success("Set $weaponName's projectile property $fieldName to $value")
+	}
+
+	@Subcommand("config get starship class")
+	@CommandCompletion("@starshipTypes property")
+	fun getStarshipClassProperties(sender: CommandSender, starshipClassName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			starshipTypes,
+			ConfigurationFiles.starshipBalancing.get().shipClasses,
+			starshipClassName,
+			fieldName
+		)
 	}
 
 	@Subcommand("config set starship class")
