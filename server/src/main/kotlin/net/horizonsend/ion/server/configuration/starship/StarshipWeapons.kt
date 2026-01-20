@@ -473,7 +473,7 @@ data class EMPMissileBalancing(
 	override var maxPerShot: Int? = null,
 	override var applyCooldownToAll: Boolean = false,
 
-	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(7),
+	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(5),
 
 	override val projectile: EMPMissileProjectileBalancing = EMPMissileProjectileBalancing()
 ) : StarshipHeavyWeaponBalancing<EMPMissileBalancing.EMPMissileProjectileBalancing> {
