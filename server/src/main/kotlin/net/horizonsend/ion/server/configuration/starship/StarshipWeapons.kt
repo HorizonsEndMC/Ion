@@ -504,13 +504,13 @@ data class EMPMissileBalancing(
 @Serializable
 data class ThermonuclearMissileBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(35000),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override var firePowerConsumption: Int = 8000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = null,
 	override var applyCooldownToAll: Boolean = false,
 
-	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(7),
+	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(30),
 
 	override val projectile: ThermonuclearMissileProjectileBalancing = ThermonuclearMissileProjectileBalancing()
 ) : StarshipHeavyWeaponBalancing<ThermonuclearMissileBalancing.ThermonuclearMissileProjectileBalancing> {
