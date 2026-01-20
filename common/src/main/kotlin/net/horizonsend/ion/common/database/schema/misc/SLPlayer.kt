@@ -45,6 +45,7 @@ typealias SLPlayerId = StringId<SLPlayer>
  * @param settlement The settlement they're current a member of
  * @param nation The nation their settlement is currently in. Needs to be updated whenever the settlement nation updates
  * @param snowflake Their discord unique id
+ * @param lastDeathTimestamp The last time they were killed by a player. Stored in millis
  **/
 data class SLPlayer(
 	override val _id: SLPlayerId,
@@ -64,6 +65,7 @@ data class SLPlayer(
 	var cryopods: Set<Oid<Cryopod>> = setOf(),
 	var selectedCryopod: Oid<Cryopod>? = null,
 	var wasKilled: Boolean = false,
+	var lastDeathTimestamp: Long? = null,
 
 	var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,

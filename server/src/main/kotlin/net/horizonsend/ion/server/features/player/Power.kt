@@ -2,8 +2,10 @@ package net.horizonsend.ion.server.features.player
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation.Companion.getTotalPower
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.formatFrontierNationName
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -15,12 +17,15 @@ import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
+import org.bukkit.Statistic
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.litote.kmongo.setValue
 import java.util.concurrent.TimeUnit
 
 object Power : IonServerComponent() {
@@ -66,12 +71,20 @@ object Power : IonServerComponent() {
 	fun modifyPowerOnPlayerDeath(event: PlayerDeathEvent) {
 		val victim = event.player
 		val killer = event.entity.killer ?: return // only player vs. player kills should modify power
+		val timeStamp = System.currentTimeMillis()
+
+		PlayerCache[victim].lastDeathTimestamp?.let { if ((timeStamp - it) < TimeUnit.MINUTES.toMillis(5L)){
+			killer.information("That player has already been killed in the last 5 minutes, no power gained.")
+			return
+		}}
 
 		SLXP.addPowerAsync(victim.uniqueId, -4)
 		SLXP.addPowerAsync(killer.uniqueId, 2)
 
 		val victimNationId: Oid<FrontierNation> = PlayerCache[victim].frontierNationOid ?: return
 		Tasks.async {
+			val data = SLPlayer[victim]
+			SLPlayer.updateById(data._id, setValue(SLPlayer::lastDeathTimestamp, timeStamp))
 			val power = getTotalPower(victimNationId)
 			if (power < 20 && !FrontierNationCache[victimNationId].siegable) {
 				FrontierNation.setSiegable(victimNationId, true)

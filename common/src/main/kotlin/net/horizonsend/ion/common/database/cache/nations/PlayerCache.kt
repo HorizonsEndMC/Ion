@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.long
 import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
@@ -41,6 +42,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var nationTag: String?,
 		var frontierNationTag: String?,
 		var bounty: Double,
+		var lastDeathTimestamp: Long?,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
@@ -156,6 +158,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 					data.blockedPlayerIDs = it.mappedSet { it.slPlayerId() }
 				}
 			}
+
+			change[SLPlayer::lastDeathTimestamp]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.lastDeathTimestamp = it.long()
+				}
+			}
 		}
 
 		val mutex = Any()
@@ -220,7 +230,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			nationTag = nationTag,
 			frontierNationTag = frontierNationTag,
 			bounty = data.bounty,
-			blockedPlayerIDs = data.blockedPlayerIDs
+			blockedPlayerIDs = data.blockedPlayerIDs,
+			lastDeathTimestamp = data.lastDeathTimestamp
 		)
 	}
 
