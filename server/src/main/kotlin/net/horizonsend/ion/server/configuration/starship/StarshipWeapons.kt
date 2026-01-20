@@ -414,9 +414,9 @@ data class WebifierBalancing(
 	@Serializable
 	data class WebifierProjectileBalancing(
 		override var range: Double = 250.0,
-		override var speed: Double = 100.0,
-		override var explosionPower: Float = 6f,
-		override var starshipShieldDamageMultiplier: Double = 10.0,
+		override var speed: Double = 150.0,
+		override var explosionPower: Float = 3f,
+		override var starshipShieldDamageMultiplier: Double = 7.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -795,8 +795,8 @@ data class AutocannonBalancing(
 
 	@Serializable
 	data class AutocannonProjectileBalancing(
-		override var range: Double = 275.0,
-		override var speed: Double = 175.0,
+		override var range: Double = 255.0,
+		override var speed: Double = 300.0,
 		override var explosionPower: Float = 1.5f,
 		override var starshipShieldDamageMultiplier: Double = 1.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,

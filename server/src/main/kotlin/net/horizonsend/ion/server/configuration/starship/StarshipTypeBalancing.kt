@@ -4,6 +4,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
+import net.horizonsend.ion.server.configuration.starship.EMPMissileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
@@ -365,7 +366,8 @@ data class NewStarshipBalancing(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = true)),
-				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
+				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
+				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
 			shieldPowerMultiplier = 0.75,
 			shieldRegenMultiplier = 1.25,
