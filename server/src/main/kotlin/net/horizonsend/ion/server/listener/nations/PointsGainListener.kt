@@ -70,6 +70,7 @@ object PointsGainListener: SLEventListener() {
 			if (damager.key.starship?.controller !is PlayerController) continue
 			val controller = damager.key.starship?.controller as PlayerController
 			val player = controller.player
+			if (player == highestDamagerId) continue
 			val frontierNation = PlayerCache[player].frontierNationOid
 			if (frontierNation == null || frontierNation == victimNationId) continue
 			else {
