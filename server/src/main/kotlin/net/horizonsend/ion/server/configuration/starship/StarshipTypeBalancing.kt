@@ -1328,7 +1328,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 17500)),
 				TriTurretBalancing(
-					fireRestrictions = FireRestrictions(canFire = false),
+					fireRestrictions = FireRestrictions(canFire = true),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),

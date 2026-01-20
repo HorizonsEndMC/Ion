@@ -598,7 +598,7 @@ data class LightMissileLauncherBalancing(
 	override var firePowerConsumption: Int = 2500,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = 1,
-	override var applyCooldownToAll: Boolean = false,
+	override var applyCooldownToAll: Boolean = true,
 	override val projectile: LightMissileLauncherProjectileBalancing = LightMissileLauncherProjectileBalancing(),
 	override var aimDistance: Int = 5,
 	override var convergeDistance: Double = 10.0,
