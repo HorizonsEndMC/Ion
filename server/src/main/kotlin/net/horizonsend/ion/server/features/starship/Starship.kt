@@ -839,7 +839,7 @@ class Starship(
 				Component.newline(),
 				text("Strength: ${sameStrengthEffect.strength}", HE_MEDIUM_GRAY),
 				Component.newline(),
-				text("Duration: %.2f".format(newStatusEffect.durationSeconds), HE_MEDIUM_GRAY),
+				text("Duration: ${newStatusEffect.durationSeconds}", HE_MEDIUM_GRAY),
 				Component.newline(),
 				text("[Effect]", HE_LIGHT_ORANGE)
 					.hoverEvent(sameStrengthEffect.type.description),
@@ -857,7 +857,7 @@ class Starship(
 			Component.newline(),
 			text("Strength: ${newStatusEffect.strength}", HE_MEDIUM_GRAY),
 			Component.newline(),
-			text( "Duration: %.2f".format(newStatusEffect.durationSeconds), HE_MEDIUM_GRAY),
+			text( "Duration: ${newStatusEffect.durationSeconds}", HE_MEDIUM_GRAY),
 			Component.newline(),
 			text("[Effect]", HE_LIGHT_ORANGE)
 				.hoverEvent(newStatusEffect.type.description),
