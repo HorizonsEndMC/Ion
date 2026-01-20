@@ -290,10 +290,9 @@ object ContactsSidebar {
         val starships: List<ActiveStarship> = if (starshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
-					if (it.type == StarshipType.BLACK_OPS_FRIGATE) {it.centerOfMass.toVector().distanceSquared(sourceVector) <= (getContactsDistanceSq(player))/4}
+					if (it.type == StarshipType.BLACK_OPS_FRIGATE || it.type == StarshipType.RECON_STARFIGHTER) {it.centerOfMass.toVector().distanceSquared(sourceVector) <= (getContactsDistanceSq(player))/4}
                     else{it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)} &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
-						it.type != StarshipType.RECON_STARFIGHTER &&
                         isRelationEnabled(player, it.controller) &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
