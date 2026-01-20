@@ -1323,7 +1323,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 6.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
-			cruiseSpeedMultiplier = 0.75,
+			cruiseSpeedMultiplier = 1.50,
 			shieldPowerMultiplier = 1.90,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 17500)),

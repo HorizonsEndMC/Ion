@@ -749,7 +749,7 @@ data class LightTurretBalancing(
 @Serializable
 data class HeavyTurretBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, maxBlockCount = 12000),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2500),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override var firePowerConsumption: Int = 2667,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
@@ -781,7 +781,7 @@ data class HeavyTurretBalancing(
 @Serializable
 data class AutocannonBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(900),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override var firePowerConsumption: Int = 1000,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
@@ -878,7 +878,7 @@ data class GaussCannonBalancing(
 @Serializable
 data class QuadTurretBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 18500),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(4000),
 	override var firePowerConsumption: Int = 3000,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
@@ -893,7 +893,7 @@ data class QuadTurretBalancing(
 	@Serializable
 	data class QuadTurretProjectileBalancing(
         override var range: Double = 500.0,
-        override var speed: Double = 55.0,
+        override var speed: Double = 25.0,
         override var explosionPower: Float = 5f,
         override var starshipShieldDamageMultiplier: Double = 6.3,
         override var areaShieldDamageMultiplier: Double = 6.0,
@@ -910,7 +910,7 @@ data class QuadTurretBalancing(
 @Serializable
 data class ACAPTurretBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 18500),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(4000),
 	override var firePowerConsumption: Int = 3000,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
@@ -925,7 +925,7 @@ data class ACAPTurretBalancing(
 	@Serializable
 	data class ACAPTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 40.0,
+		override var speed: Double = 20.0,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 9.5,
 		override var areaShieldDamageMultiplier: Double = 6.0,
@@ -1247,9 +1247,9 @@ data class DoomsdayDeviceBalancing(
 	@Serializable
 	data class DoomsdayDeviceProjectileBalancing(
         override var range: Double = 500.0,
-        override var speed: Double = 400.0,
-        override var explosionPower: Float = 20f,
-        override var starshipShieldDamageMultiplier: Double = 200.0,
+        override var speed: Double = 100.0,
+        override var explosionPower: Float = 18f,
+        override var starshipShieldDamageMultiplier: Double = 150.0,
         override var areaShieldDamageMultiplier: Double = 100.0,
         override val entityDamage: EntityDamage = RegularDamage(100.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
