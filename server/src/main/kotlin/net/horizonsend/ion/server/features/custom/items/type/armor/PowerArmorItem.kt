@@ -67,6 +67,7 @@ class PowerArmorItem(
 	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
+	wornModel: String,
 	val slot: EquipmentSlot,
 	val balancing: PVPBalancingConfiguration.Armor.AttributeHolder
 ) : CustomItem(
@@ -88,7 +89,7 @@ class PowerArmorItem(
 			.damageOnHurt(false)
 			.swappable(true)
 			.equipSound(Key.key("minecraft", "item.armor.equip_netherite"))
-			.assetId(NamespacedKeys.packKey("power_armor"))
+			.assetId(NamespacedKeys.packKey(wornModel))
 			.build()
 		)
 		.addData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(PROTECTION to 4), false))

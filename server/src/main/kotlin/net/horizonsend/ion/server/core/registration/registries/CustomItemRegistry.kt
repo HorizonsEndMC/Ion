@@ -657,6 +657,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 CustomItemKeys.POWER_ARMOR_HELMET,
                 ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Helmet", NamedTextColor.GRAY)),
                 "power_armor/power_armor_helmet",
+				"power_armor",
                 EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
@@ -666,7 +667,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 CustomItemKeys.POWER_ARMOR_CHESTPLATE,
                 ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Chestplate", NamedTextColor.GRAY)),
                 "power_armor/power_armor_chestplate",
-                EquipmentSlot.CHEST,
+				"power_armor",
+				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
         )
@@ -675,6 +677,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 CustomItemKeys.POWER_ARMOR_LEGGINGS,
                 ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Leggings", NamedTextColor.GRAY)),
                 "power_armor/power_armor_leggings",
+				"power_armor",
                 EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 
@@ -685,6 +688,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 CustomItemKeys.POWER_ARMOR_BOOTS,
                 ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Boots", NamedTextColor.GRAY)),
                 "power_armor/power_armor_boots",
+				"power_armor",
                 EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
@@ -695,6 +699,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.HEAVY_POWER_ARMOR_HELMET,
 				ofChildren(text("★ Heavy Power ", GOLD), text("Helmet", GRAY)),
 				"power_armor/heavy_power_armor_helmet",
+				"heavy_power_armor",
 				EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
@@ -704,6 +709,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.HEAVY_POWER_ARMOR_CHESTPLATE,
 				ofChildren(text("★ Heavy Power ", GOLD), text("Chest", GRAY)),
 				"power_armor/heavy_power_armor_chestplate",
+				"heavy_power_armor",
 				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
@@ -713,6 +719,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS,
 				ofChildren(text("★ Heavy Power ", GOLD), text("Leggings", GRAY)),
 				"power_armor/heavy_power_armor_leggings",
+				"heavy_power_armor",
 				EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
@@ -722,6 +729,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.HEAVY_POWER_ARMOR_BOOTS,
 				ofChildren(text("★ Heavy Power ", GOLD), text("Boots", GRAY)),
 				"power_armor/heavy_power_armor_boots",
+				"heavy_power_armor",
 				EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::heavyPowerArmor.get()
 			)
@@ -733,6 +741,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.MEDIUM_POWER_ARMOR_HELMET,
 				ofChildren(text("Medium Power ", AQUA), text("Helmet", GRAY)),
 				"power_armor/medium_power_armor_helmet",
+				"medium_power_armor",
 				EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
 			)
@@ -742,6 +751,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.MEDIUM_POWER_ARMOR_CHESTPLATE,
 				ofChildren(text("Medium Power ", AQUA), text("Chest", GRAY)),
 				"power_armor/medium_power_armor_chestplate",
+				"medium_power_armor",
 				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
 			)
@@ -751,6 +761,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.MEDIUM_POWER_ARMOR_LEGGINGS,
 				ofChildren(text("Medium Power ", AQUA), text("Leggings", GRAY)),
 				"power_armor/medium_power_armor_leggings",
+				"medium_power_armor",
 				EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
 			)
@@ -760,6 +771,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.MEDIUM_POWER_ARMOR_BOOTS,
 				ofChildren(text("Medium Power ", AQUA), text("Boots", GRAY)),
 				"power_armor/medium_power_armor_boots",
+				"medium_power_armor",
 				EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor.get()
 			)
@@ -771,6 +783,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.LIGHT_POWER_ARMOR_HELMET,
 				ofChildren(text("Light Power ", RED), text("Helmet", GRAY)),
 				"power_armor/light_power_armor_helmet",
+				"light_power_armor",
 				EquipmentSlot.HEAD,
 				ConfigurationFiles.pvpBalancing().armour::lightPowerArmor.get()
 			)
@@ -780,6 +793,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.LIGHT_POWER_ARMOR_CHESTPLATE,
 				ofChildren(text("Light Power ", RED), text("Chest", GRAY)),
 				"power_armor/light_power_armor_chestplate",
+				"light_power_armor",
 				EquipmentSlot.CHEST,
 				ConfigurationFiles.pvpBalancing().armour::lightPowerArmor.get()
 			)
@@ -789,6 +803,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.LIGHT_POWER_ARMOR_LEGGINGS,
 				ofChildren(text("Light Power ", RED), text("Leggings", GRAY)),
 				"power_armor/light_power_armor_leggings",
+				"light_power_armor",
 				EquipmentSlot.LEGS,
 				ConfigurationFiles.pvpBalancing().armour::lightPowerArmor.get()
 			)
@@ -798,6 +813,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				CustomItemKeys.LIGHT_POWER_ARMOR_BOOTS,
 				ofChildren(text("Light Power ", RED), text("Boots", GRAY)),
 				"power_armor/light_power_armor_boots",
+				"light_power_armor",
 				EquipmentSlot.FEET,
 				ConfigurationFiles.pvpBalancing().armour::lightPowerArmor.get()
 			)
