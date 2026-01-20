@@ -55,6 +55,7 @@ import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
+import kotlin.collections.get
 
 object KingOfTheHills : IonServerComponent() {
 	data class Koths(
@@ -84,7 +85,7 @@ object KingOfTheHills : IonServerComponent() {
 			updateQuarter()
 			beginKoth()
 		}
-		Tasks.syncRepeat(0L, 20L * TimeUnit.MINUTES.toSeconds(10)) {
+		Tasks.syncRepeat(0L, 20L * 60L * 10L) { // Every 10 minutes
 			displayKothLeaderboard()
 		}
 	}
@@ -124,7 +125,6 @@ object KingOfTheHills : IonServerComponent() {
 					if (nation == null) {nation = memberCount.keys.firstNotNullOf { it }}
 					//Find the nation with the highest member count, if nobody participated return the nation from the line above
 					val dominantNation = findDominantNation(memberCount, nation!!)
-					FrontierNation.updatePoints(dominantNation, 1)
 					//If the dominant nation this time isnt the same as last loop
 					if (dominantNation != nation) {
 						log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
@@ -141,11 +141,11 @@ object KingOfTheHills : IonServerComponent() {
 					nation = dominantNation
 				}
 				//Get the scores of this koth
-				val thisKothsScores = kothScores[kothId]
+				val thisKothsScores = kothScores[kothId] ?: return
 				//if there is a dominant nation
 				if (nation != null) {
 					//give them a point
-					thisKothsScores!![nation]!!.plus(1)
+					thisKothsScores[nation]?.plus(1) ?: return
 				}
 
 				when {
@@ -333,11 +333,6 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun determineWinner(koths: Koths): List<String?> {
 		val rawScores = kothScores[koths.kothId] ?: return listOf(null, null, null)
-		val kothType = koths.type
-		val pointsToGive = when {
-			kothType -> listOf(75, 50, 25)
-			else -> listOf(35, 20, 10)
-		}
 
 		if (rawScores.isEmpty()) {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended, nobody participated!"))
@@ -353,15 +348,12 @@ object KingOfTheHills : IonServerComponent() {
 		var secondPlace: String? = null
 		var thirdPlace: String? = null
 		if (numNationsParticipated > 0) {
-			FrontierNation.updatePoints(leaderboard.entries.elementAt(0).key, pointsToGive[0])
 			firstPlace = FrontierNationCache[leaderboard.entries.elementAt(0).key].name
 		}
 		if (numNationsParticipated > 1) {
-			FrontierNation.updatePoints(leaderboard.entries.elementAt(1).key, pointsToGive[1])
 			secondPlace = FrontierNationCache[leaderboard.entries.elementAt(1).key].name
 		}
 		if (numNationsParticipated > 2) {
-			FrontierNation.updatePoints(leaderboard.entries.elementAt(2).key, pointsToGive[2])
 			thirdPlace = FrontierNationCache[leaderboard.entries.elementAt(2).key].name
 		}
 
@@ -369,18 +361,29 @@ object KingOfTheHills : IonServerComponent() {
 		return topThree
 	}
 
-	private fun giveRewards(topThree: List<String?>, koth: Koths) {
+	private fun giveRewards(topThree: List<String?>, koth: Koths) = asyncLocked {
 		val kothType = if (koth.type) KingOfTheHillRewards.KothType.MAJOR else KingOfTheHillRewards.KothType.MINOR
 		val stage = getServerStage()
 
 
 		//Check first place is a thing, reward them lower, this is just to stop unnecessary code running
-		val firstPlaceName = topThree[0] ?: return
-		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return
+		val firstPlaceName = topThree[0] ?: return@asyncLocked
+		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return@asyncLocked
 
 		//Get the right table and its rewards
 
-		if (stage !in 2..4) return log.error("Server age is wrong somehow!") //Check to make sure server age and stage is Okay
+		if (stage !in 2..4) return@asyncLocked log.error("Server age is wrong somehow!") //Check to make sure server age and stage is Okay
+
+		val pointsToGive = when {
+			koth.type -> listOf(75.0, 50.0, 25.0)
+			else -> listOf(35.0, 20.0, 10.0)
+		}
+		val pointsMultiplier = when {
+			stage == 3 -> 1.5
+			stage == 4 -> 2.0
+			else -> 1.0
+		}
+
 		val rewards = KothRewards.first { it.kothType == kothType && it.stage == stage }
 		val ores = rewards.rewards.filter{it.rewardType == RewardType.MATERIALS}
 		val cores = rewards.rewards.filter{it.rewardType == RewardType.CORES}
@@ -399,8 +402,9 @@ object KingOfTheHills : IonServerComponent() {
 			}
 		}
 
-		//FIRST PLACE REWARDS
+		//FIRST PLACE REWARDS START
 
+		FrontierNation.updatePoints(firstPlaceNation, (pointsToGive[0]* pointsMultiplier).toInt())
 
 		//TODO: Buff rewards
 
@@ -426,10 +430,14 @@ object KingOfTheHills : IonServerComponent() {
 		for (i in 1..3) BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
 
 
-		//SECOND PLACE REWARDS
+		//FIRST PLACE REWARDS END
 
-		val secondPlaceName = topThree[1] ?: return
-		val secondPlaceNation = FrontierNationCache.getByName(secondPlaceName) ?: return
+		//SECOND PLACE REWARDS START
+
+		val secondPlaceName = topThree[1] ?: return@asyncLocked
+		val secondPlaceNation = FrontierNationCache.getByName(secondPlaceName) ?: return@asyncLocked
+
+		FrontierNation.updatePoints(secondPlaceNation, (pointsToGive[1]* pointsMultiplier).toInt())
 
 		//TODO: Buff rewards
 
@@ -452,10 +460,14 @@ object KingOfTheHills : IonServerComponent() {
 
 		for (i in 1..2) BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
 
-		//THIRD PLACE REWARDS
+		//SECOND PLACE REWARDS END
 
-		val thirdPlaceName = topThree[2] ?: return
-		val thirdPlaceNation = FrontierNationCache.getByName(thirdPlaceName) ?: return
+		//THIRD PLACE REWARDS START
+
+		val thirdPlaceName = topThree[2] ?: return@asyncLocked
+		val thirdPlaceNation = FrontierNationCache.getByName(thirdPlaceName) ?: return@asyncLocked
+
+		FrontierNation.updatePoints(thirdPlaceNation, (pointsToGive[2]* pointsMultiplier).toInt())
 
 		//TODO: Buff rewards
 
@@ -476,6 +488,8 @@ object KingOfTheHills : IonServerComponent() {
 			BankedItem.create(thirdPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
 		}
 		for (i in 1..1) BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
+
+		//THIRD PLACE REWARDS END
 	}
 
 	//Starts a 15 minute activating timer before starting
