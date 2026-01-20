@@ -415,8 +415,8 @@ data class WebifierBalancing(
 	data class WebifierProjectileBalancing(
 		override var range: Double = 250.0,
 		override var speed: Double = 100.0,
-		override var explosionPower: Float = 2f,
-		override var starshipShieldDamageMultiplier: Double = 55.0,
+		override var explosionPower: Float = 3f,
+		override var starshipShieldDamageMultiplier: Double = 15.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -795,7 +795,7 @@ data class AutocannonBalancing(
 
 	@Serializable
 	data class AutocannonProjectileBalancing(
-		override var range: Double = 300.0,
+		override var range: Double = 275.0,
 		override var speed: Double = 175.0,
 		override var explosionPower: Float = 1.5f,
 		override var starshipShieldDamageMultiplier: Double = 1.0,
@@ -861,7 +861,7 @@ data class GaussCannonBalancing(
 	@Serializable
 	data class GaussCannonProjectileBalancing(
 		override var range: Double = 300.0,
-		override var speed: Double = 120.0,
+		override var speed: Double = 130.0,
 		override var explosionPower: Float = 3f,
 		override var starshipShieldDamageMultiplier: Double = 1.5,
 		override var areaShieldDamageMultiplier: Double = 1.0,
@@ -893,7 +893,7 @@ data class QuadTurretBalancing(
 	@Serializable
 	data class QuadTurretProjectileBalancing(
         override var range: Double = 500.0,
-        override var speed: Double = 25.0,
+        override var speed: Double = 35.0,
         override var explosionPower: Float = 5f,
         override var starshipShieldDamageMultiplier: Double = 6.3,
         override var areaShieldDamageMultiplier: Double = 6.0,
@@ -925,7 +925,7 @@ data class ACAPTurretBalancing(
 	@Serializable
 	data class ACAPTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 20.0,
+		override var speed: Double = 35.0,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 9.5,
 		override var areaShieldDamageMultiplier: Double = 6.0,
@@ -1247,7 +1247,7 @@ data class DoomsdayDeviceBalancing(
 	@Serializable
 	data class DoomsdayDeviceProjectileBalancing(
         override var range: Double = 500.0,
-        override var speed: Double = 100.0,
+        override var speed: Double = 175.0,
         override var explosionPower: Float = 18f,
         override var starshipShieldDamageMultiplier: Double = 150.0,
         override var areaShieldDamageMultiplier: Double = 100.0,
