@@ -781,7 +781,7 @@ data class HeavyTurretBalancing(
 @Serializable
 data class AutocannonBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override var firePowerConsumption: Int = 1000,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
@@ -797,7 +797,7 @@ data class AutocannonBalancing(
 	data class AutocannonProjectileBalancing(
 		override var range: Double = 300.0,
 		override var speed: Double = 175.0,
-		override var explosionPower: Float = 3f,
+		override var explosionPower: Float = 1.5f,
 		override var starshipShieldDamageMultiplier: Double = 1.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
