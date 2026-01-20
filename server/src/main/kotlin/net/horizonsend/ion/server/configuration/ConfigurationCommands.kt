@@ -29,6 +29,7 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = NewStarshipBalancing.ShipClasses::class.memberProperties
 	private val starshipBalancingOptions = StarshipTypeBalancing::class.memberProperties
 	private val starshipDefaultWeapons = ConfigurationFiles.starshipBalancing.get().weaponDefaults.weapons
+	private val starshipDefaultCommandBursts = ConfigurationFiles.starshipBalancing.get().commandBurstDefaults.commandBursts
 
 	private val meleeWeaponTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
 	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
@@ -47,6 +48,10 @@ object ConfigurationCommands : SLCommand() {
 
 		manager.commandCompletions.registerCompletion("starshipDefaultWeapons") {
 			starshipDefaultWeapons.map { it::class.simpleName }
+		}
+
+		manager.commandCompletions.registerCompletion("starshipDefaultCommandBursts") {
+			starshipDefaultCommandBursts.map { it::class.simpleName }
 		}
 
 		manager.commandCompletions.registerCompletion("meleeWeaponTypes") {
@@ -322,6 +327,38 @@ object ConfigurationCommands : SLCommand() {
 
 		try { setField(field, projectileBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
 		sender.success("Set $weaponName's projectile property $fieldName to $value for $starshipClassName")
+	}
+
+	@Subcommand("config get starship commandburst")
+	@CommandCompletion("@starshipTypes @starshipDefaultCommandBursts property")
+	fun getStarshipCommandBurstClassProperties(sender: CommandSender, starshipClassName: String, commandBurstName: String, fieldName: String) = asyncCommand(sender) {
+		val starshipClass = starshipTypes.find { it.name == starshipClassName } ?: fail { "Type $starshipClassName not found in configuration" }
+		val starshipClassBalancing = starshipClass.get(ConfigurationFiles.starshipBalancing.get().shipClasses) as? StarshipTypeBalancing ?: fail { "Balancing configuration for $starshipClassName not found" }
+
+		val commandBurstOverrides = starshipClassBalancing.commandBurstOverrides
+		val starshipCommandBurstBalancing = commandBurstOverrides.find { it::class.simpleName == commandBurstName } ?: fail { "Type $commandBurstName not found in starship command burst overrides" }
+
+		val fields = starshipCommandBurstBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $commandBurstName's balancing configuration" }
+
+		val value = try { getField(field, starshipCommandBurstBalancing) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.information("$commandBurstName's projectile property $fieldName for $starshipClassName: $value")
+	}
+
+	@Subcommand("config set starship commandburst")
+	@CommandCompletion("@starshipTypes @starshipDefaultWeapons property value")
+	fun setStarshipCommandBurstClassProperties(sender: CommandSender, starshipClassName: String, commandBurstName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		val starshipClass = starshipTypes.find { it.name == starshipClassName } ?: fail { "Type $starshipClassName not found in configuration" }
+		val starshipClassBalancing = starshipClass.get(ConfigurationFiles.starshipBalancing.get().shipClasses) as? StarshipTypeBalancing ?: fail { "Balancing configuration for $starshipClassName not found" }
+
+		val weaponOverrides = starshipClassBalancing.commandBurstOverrides
+		val starshipCommandBurstBalancing = weaponOverrides.find { it::class.simpleName == commandBurstName } ?: fail { "Type $commandBurstName not found in starship command burst overrides" }
+
+		val fields = starshipCommandBurstBalancing::class.declaredMemberProperties.filterIsInstance<KMutableProperty<*>>()
+		val field = fields.find { it.name == fieldName } ?: fail { "Field $fieldName not found in $commandBurstName's balancing configuration" }
+
+		try { setField(field, starshipCommandBurstBalancing, value) } catch (e: Throwable) { fail { "Error: ${e.message}" } }
+		sender.success("Set $commandBurstName's projectile property $fieldName to $value for $starshipClassName")
 	}
 
 	@Subcommand("config get starship class")
