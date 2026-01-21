@@ -85,7 +85,7 @@ object KingOfTheHills : IonServerComponent() {
 			updateQuarter()
 			beginKoth()
 		}
-		Tasks.syncRepeat(0L, 20L * 60L * 10L) { // Every 10 minutes
+		Tasks.syncRepeat(0L, 20L * 60L * 2L) { // Every 2 minutes
 			displayKothLeaderboard()
 		}
 	}
@@ -178,27 +178,28 @@ object KingOfTheHills : IonServerComponent() {
 	fun displayKothLeaderboard() {
 		for (koth: Koths in getKOTHS()) {
 			val kothRegion: RegionKothZone = Regions[koth.kothId]
-			val message = text("Scores for KOTH ${kothRegion.name}:").color(TextColor.fromHexString("#FFD700"))
-				.decorate(TextDecoration.BOLD)
-			val lineBreak = lineBreak(45)
-			message.append(lineBreak)
-			val scores = kothScores[koth.kothId] ?: return
-			val orderedScores = scores.entries
-				.sortedByDescending { it.value }
-				.associate { it.key to it.value }
-			for ((index, score) in orderedScores.entries.withIndex()) {
-				if (score.value == null) continue
-				val nation = FrontierNation.findById(score.key) ?: continue
-				val position = index + 1
-				message.append(
-					text("$position. ${nation.name} with ${score.value} points.").color(color(nation.color))
-				)
-				message.append(newline())
+			for (player in Bukkit.getOnlinePlayers()) {
+				val message = text("Scores for KOTH ${kothRegion.name}:").color(TextColor.fromHexString("#FFD700"))
+					.decorate(TextDecoration.BOLD)
+				val lineBreak = lineBreak(45)
+				message.append(lineBreak)
+				val scores = kothScores[koth.kothId] ?: return
+				val orderedScores = scores.entries
+					.sortedByDescending { it.value }
+					.associate { it.key to it.value }
+				for ((index, score) in orderedScores.entries.withIndex()) {
+					if (score.value == null) continue
+					val nation = FrontierNation.findById(score.key) ?: continue
+					val position = index + 1
+					message.append(
+						text("$position. ${nation.name} with ${score.value} points.").color(color(nation.color))
+					)
+					message.append(newline())
+				}
+				player.sendMessage(message)
 			}
-			Notify.chatAndGlobal(message)
 		}
 	}
-
 
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {

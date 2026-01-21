@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.player
 
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE_BLOCK
@@ -21,19 +22,21 @@ import java.util.concurrent.TimeUnit
 
 object ActivityRewards: IonServerComponent() {
 	override fun onEnable() {
-		Tasks.syncRepeat(0L, 20 * 60 * 5) { //Repeat every 5 min
+		Tasks.syncRepeat(0L, 20 * 60 * 3) { //Repeat every 3 min
 			doActivityRewards()
 		}
 	}
 
 
 	fun doActivityRewards() { //Async because of DB reads
+		log.info("Doing activity rewards.")
 		for (player in Bukkit.getOnlinePlayers()) {
 			Tasks.async {
 				val data = SLPlayer[player]
 				val timestamp = SLPlayer.getActivityTimestamp(data._id) ?: return@async
-				val currentRewardLevel = SLPlayer.getActivityRewardLevel(data._id) ?: return@async
+				val currentRewardLevel = SLPlayer.getActivityRewardLevel(data._id) ?: 0
 				val timeOnline = System.currentTimeMillis() - timestamp
+
 				val newRewardLevel = when {
 					timeOnline > TimeUnit.MINUTES.toMillis(120L) -> 8
 					timeOnline > TimeUnit.MINUTES.toMillis(105L) -> 7
@@ -46,14 +49,15 @@ object ActivityRewards: IonServerComponent() {
 					else -> 0
 				}
 
-				if (newRewardLevel == currentRewardLevel || newRewardLevel == 0) return@async //Don't give the same reward again and don't bother if level 0
-
 				if (newRewardLevel == 8) { //If at max reward level, reset time and go back to reward 0
 					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardTime, timestamp))
 					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardLevel, 0))
 				} else {
 					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardLevel, newRewardLevel))
 				}
+
+				if (newRewardLevel == currentRewardLevel || newRewardLevel == 0) return@async //Don't give the same reward again and don't bother if level 0
+
 				//I hate vand
 				val actualRewardLevel = when (newRewardLevel) {
 					in 6..7 -> 5
@@ -72,8 +76,10 @@ object ActivityRewards: IonServerComponent() {
 					for (item in rewards.guaranteedRewards) {
 						player.inventory.addItem(item.item)
 					}
-					val chancedItem = chanceRewards.random()
-					player.inventory.addItem(chancedItem)
+					if (!chanceRewards.isEmpty()) { //.random() on an empty list throws an error
+						val chancedItem = chanceRewards.random()
+						player.inventory.addItem(chancedItem)
+					}
 					player.information("Gained activity rewards.")
 				}
 			}
@@ -84,10 +90,12 @@ object ActivityRewards: IonServerComponent() {
 	fun onPlayerJoin(event: PlayerJoinEvent) {
 		val player = event.player
 		val data = PlayerCache[player]
-		val timeStamp = System.currentTimeMillis()
 		val playerId = data.id
 		Tasks.async {
+			val timeStamp = System.currentTimeMillis()
 			SLPlayer.updateById(playerId, setValue(SLPlayer::activityRewardTime, timeStamp))
+			SLPlayer.updateById(playerId, setValue(SLPlayer::activityRewardLevel, 0))
+			log.info("player ${player.name} logged in, setting login time to ${SLPlayer.getActivityTimestamp(playerId)}, actual time $timeStamp")
 		}
 	}
 }

@@ -142,6 +142,7 @@ data class SLPlayer(
 			ensureIndex(SLPlayer::nation)
 			ensureIndex(SLPlayer::frontierNation)
 			ensureIndex(SLPlayer::snowflake)
+			ensureIndex(SLPlayer::activityRewardLevel)
 		}
 	) {
 		operator fun get(uuid: UUID): SLPlayer? = col.findOneById(uuid.slPlayerId.toString())
