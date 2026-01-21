@@ -50,7 +50,7 @@ object ActivityRewards: IonServerComponent() {
 				}
 
 				if (newRewardLevel == 8) { //If at max reward level, reset time and go back to reward 0
-					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardTime, timestamp))
+					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardTime, System.currentTimeMillis()))
 					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardLevel, 0))
 				} else {
 					SLPlayer.updateById(data._id, setValue(SLPlayer::activityRewardLevel, newRewardLevel))
