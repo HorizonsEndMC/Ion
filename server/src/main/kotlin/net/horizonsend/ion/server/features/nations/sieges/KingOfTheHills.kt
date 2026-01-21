@@ -178,7 +178,9 @@ object KingOfTheHills : IonServerComponent() {
 	fun displayKothLeaderboard() {
 		for (koth: Koths in getKOTHS()) {
 			val kothRegion: RegionKothZone = Regions[koth.kothId]
-			for (player in Bukkit.getOnlinePlayers()) {
+			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
+			for (player in (world.players)) {
+				if (!kothRegion.contains(player.location)) continue
 				val message = text("Scores for KOTH ${kothRegion.name}:").color(TextColor.fromHexString("#FFD700"))
 					.decorate(TextDecoration.BOLD)
 				val lineBreak = lineBreak(45)
