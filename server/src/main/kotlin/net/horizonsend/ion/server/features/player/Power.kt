@@ -69,8 +69,10 @@ object Power : IonServerComponent() {
 
 	@EventHandler
 	fun modifyPowerOnPlayerDeath(event: PlayerDeathEvent) {
+		if (!event.player.isConnected) return
 		val victim = event.player
 		val killer = event.entity.killer ?: return // only player vs. player kills should modify power
+		if (!event.entity.killer!!.isConnected) return
 		val timeStamp = System.currentTimeMillis()
 
 		PlayerCache[victim].lastDeathTimestamp?.let { if ((timeStamp - it) < TimeUnit.MINUTES.toMillis(5L)){

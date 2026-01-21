@@ -40,18 +40,17 @@ object CoreRecipes {
 		ATAVUM_BLOCK.getValue().constructItemStack() to 2
 	)
 	val cruiserReactorRecipe: Map<ItemStack, Int> = mapOf(
-		ItemStack(Material.IRON_BLOCK) to 1280,
-		URANIUM_BLOCK.getValue().constructItemStack() to 640,
-		ItemStack(Material.REDSTONE_BLOCK) to 320,
+		ItemStack(Material.IRON_BLOCK) to 20,
+		URANIUM_BLOCK.getValue().constructItemStack() to 10,
+		ItemStack(Material.REDSTONE_BLOCK) to 5,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 8,
 		VANADIUM_BLOCK.getValue().constructItemStack() to 2
 	)
 	val battlecruiserReactorRecipe: Map<ItemStack, Int> = mapOf(
-		ItemStack(Material.IRON_BLOCK) to 1600,
-		URANIUM_BLOCK.getValue().constructItemStack() to 960,
-		ItemStack(Material.REDSTONE_BLOCK) to 640,
+		ItemStack(Material.IRON_BLOCK) to 25,
+		URANIUM_BLOCK.getValue().constructItemStack() to 15,
+		ItemStack(Material.REDSTONE_BLOCK) to 5,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 16,
-		VANADIUM_BLOCK.getValue().constructItemStack() to 4,
-		ATAVUM_BLOCK.getValue().constructItemStack() to 2
+		VANADIUM_BLOCK.getValue().constructItemStack() to 4
 	)
 }

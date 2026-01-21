@@ -61,6 +61,8 @@ data class SLPlayer(
 	var frontierNation: Oid<FrontierNation>? = null,
 
 	var snowflake: Long? = null,
+	var activityRewardTime: Long? = null,
+	var activityRewardLevel: Int = 0,
 
 	var cryopods: Set<Oid<Cryopod>> = setOf(),
 	var selectedCryopod: Oid<Cryopod>? = null,
@@ -70,7 +72,7 @@ data class SLPlayer(
 	var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,
 
-	var contactsDistance: Int = 6000,
+	var contactsDistance: Int = 2500,
 	var contactsMaxNameLength: Int = 64,
 	var contactsSort: Int = 0,
 	var contactsColoring: Int = 0,
@@ -199,6 +201,10 @@ data class SLPlayer(
 
 		fun setPower(id: SLPlayerId, power: Int): UpdateResult =
 			updateById(id, org.litote.kmongo.setValue(SLPlayer::power, power))
+
+		fun getActivityTimestamp(id: SLPlayerId): Long? = findPropById(id, SLPlayer::activityRewardTime)
+
+		fun getActivityRewardLevel(id: SLPlayerId): Int? = findPropById(id, SLPlayer::activityRewardLevel)
 
 		fun isSettlementLeader(slPlayerId: SLPlayerId): Boolean = !Settlement.none(Settlement::leader eq slPlayerId)
 

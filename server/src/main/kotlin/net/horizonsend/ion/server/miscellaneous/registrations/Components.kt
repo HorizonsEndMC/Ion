@@ -53,6 +53,7 @@ import net.horizonsend.ion.server.features.npcs.NPCDisplay
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
+import net.horizonsend.ion.server.features.player.ActivityRewards
 import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
@@ -128,6 +129,7 @@ val components: List<IonComponent> = listOf(
 	PacketListeners,
 	VariableRenderDistance,
 	ServerStage,
+	ActivityRewards,
 
 	PlayerXPLevelCache,
 	Levels,
