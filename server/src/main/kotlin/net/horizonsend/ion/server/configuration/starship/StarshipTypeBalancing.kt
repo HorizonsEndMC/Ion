@@ -369,8 +369,8 @@ data class NewStarshipBalancing(
 				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
-			shieldPowerMultiplier = 0.75,
-			shieldRegenMultiplier = 1.25,
+			shieldPowerMultiplier = 0.6,
+			shieldRegenMultiplier = 0.7,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")

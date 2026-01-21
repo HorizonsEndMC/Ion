@@ -484,7 +484,7 @@ data class EMPMissileBalancing(
 	data class EMPMissileProjectileBalancing(
 		override var range: Double = 200.0,
 		override var speed: Double = 80.0,
-		override var explosionPower: Float = 3f,
+		override var explosionPower: Float = 6f,
 		override var starshipShieldDamageMultiplier: Double = 5.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
@@ -795,8 +795,8 @@ data class AutocannonBalancing(
 
 	@Serializable
 	data class AutocannonProjectileBalancing(
-		override var range: Double = 255.0,
-		override var speed: Double = 300.0,
+		override var range: Double = 250.0,
+		override var speed: Double = 400.0,
 		override var explosionPower: Float = 1.5f,
 		override var starshipShieldDamageMultiplier: Double = 1.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
@@ -1118,7 +1118,7 @@ data class PlasmaCannonBalancing(
 @Serializable
 data class ArtilleryBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2500),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2000),
 	override var firePowerConsumption: Int = 7200,
 	override var isForwardOnly: Boolean = true,
 	override var maxPerShot: Int = 1,
@@ -1126,8 +1126,8 @@ data class ArtilleryBalancing(
 
 	override var convergeDistance: Double = 10.0,
 	override var projectileSpawnDistance: Int = 1,
-	override var angleRadiansHorizontal: Double = 15.0,
-	override var angleRadiansVertical: Double = 15.0,
+	override var angleRadiansHorizontal: Double = 30.0,
+	override var angleRadiansVertical: Double = 30.0,
 
 	override val projectile: ArtilleryProjectileBalancing = ArtilleryProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<ArtilleryBalancing.ArtilleryProjectileBalancing> {
@@ -1137,9 +1137,9 @@ data class ArtilleryBalancing(
 	@Serializable
 	data class ArtilleryProjectileBalancing(
 		override var range: Double = 250.0,
-		override var speed: Double = 105.0,
+		override var speed: Double = 135.0,
 		override var explosionPower: Float = 4f,
-		override var starshipShieldDamageMultiplier: Double = 15.0,
+		override var starshipShieldDamageMultiplier: Double = 18.0,
 		override var areaShieldDamageMultiplier: Double = 3.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
