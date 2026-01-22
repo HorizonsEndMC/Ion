@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.sidebar.component.CombatTagSidebarCom
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.ObjectiveHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent1
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent2
@@ -134,6 +135,10 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 				lines.addComponent(lastWaypointComponent)
 			}
 		}
+
+		// Objective
+		val objectiveHeaderComponent: SidebarComponent = ObjectiveHeaderSidebarComponent(player)
+		lines.addComponent(objectiveHeaderComponent)
 
 		// Assemble title and components
 		val componentSidebar = ComponentSidebarLayout(title, lines.build())
