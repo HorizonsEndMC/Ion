@@ -102,8 +102,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 		phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
 		sequenceKey: IonRegistryKey<Sequence, Sequence>,
 		triggers: Collection<SequenceTrigger<*>>,
+        description: Component? = null,
 		effects: List<SequencePhaseEffect>,
-	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, effects))
+	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, description, effects))
 
     private val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
         SequencePhaseEffect.PlaySound(
@@ -134,6 +135,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
                 )
             ),
+            description = text("Exit the cryopod room at TODO"),
             effects = listOf(
                 SendMessage(text("Welcome to Horizon's End!"), EffectTiming.START),
                 SendMessage(text("This is the start of the intro sequence."), EffectTiming.START),
@@ -167,6 +169,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ), triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
                 )
             ),
+            description = text("Access the elevator to the hangar bay at TODO"),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 ifPreviousPhase(
@@ -226,6 +229,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                 )
             ),
+            description = text("Find the backup crew elevator at the stern of the ship, at TODO"),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
@@ -278,6 +282,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                 )
             ),
+            description = text("Activate the elevator by crouching on the glass block and using your controller (clock)"),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
@@ -302,6 +307,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
+            description = text("Traverse through the damaged hallways to TODO"),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 ifPreviousPhase(
@@ -355,6 +361,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					), triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
 				)
             ),
+            description = text("Use zero gravity to hover over the flames"),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
@@ -378,6 +385,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(GO_TO_ESCAPE_POD)
                 )
             ),
+            description = text("Gather chetherite hyperdrive fuel at TODO"),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
@@ -409,7 +417,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						)
 					), triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
 				)
-			), listOf(
+			),
+            description = text("Enter the escape pod at TODO"),
+            listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, -3, -98), 10L, EffectTiming.TICKED), 10),
 
@@ -439,6 +449,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				)
 			),
+            description = text("Pilot the escape pod"),
             effects = listOf(
                 NEXT_PHASE_SOUND,
 				SequencePhaseEffect.RunCode({ player, _ ->
@@ -484,6 +495,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
 				)
 			),
+            description = text("Test ship movement by holding your controller and pressing TODO"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -521,6 +533,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				),
 			),
+            description = text("Turn the escape pod left by pressing TODO"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -548,6 +561,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				)
 			),
+            description = text("Turn the escape pod right by pressing TODO"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -571,6 +585,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_START)
 				) // TODO replace
 			),
+            description = text("Move to the objective at TODO"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_INTERMISSION_START", { System.currentTimeMillis() }, EffectTiming.START),
@@ -601,6 +616,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_TURN)
 				),
 			),
+            description = text("Activate cruise mode by TODO"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -628,6 +644,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_STOP)
 				)
 			),
+            description = text("Turn your ship while cruising"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_CRUISE_TURN_START", { System.currentTimeMillis() }, EffectTiming.START),
@@ -654,6 +671,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
 				)
 			),
+            description = text("Stop cruising by TODO"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -678,6 +696,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_HYPERSPACE_JUMP)
 				),
 			),
+            description = text("Load the hyperdrive with chetherite"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -710,6 +729,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE)
 				),
 			),
+            description = text("Jump to a new star system"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -737,6 +757,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					}
 				),
 			),
+            description = text("Wait until the escape pod completes the hyperspace transit"),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
