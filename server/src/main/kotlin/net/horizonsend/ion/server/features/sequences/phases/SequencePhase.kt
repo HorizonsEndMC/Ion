@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 class SequencePhase(
@@ -13,6 +14,7 @@ class SequencePhase(
 	val sequenceKey: IonRegistryKey<Sequence, Sequence>,
 
 	val triggers: Collection<SequenceTrigger<*>>,
+	val description: Component? = null,
 
 	effects: List<SequencePhaseEffect>
 ) {
@@ -38,10 +40,11 @@ class SequencePhase(
 	}
 
 	companion object {
-		fun endSequence(sequenceKey: IonRegistryKey<Sequence, Sequence>, key: IonRegistryKey<SequencePhase, SequencePhase>, triggers: Collection<SequenceTrigger<*>>, vararg effect: SequencePhaseEffect): SequencePhase = SequencePhase(
+		fun endSequence(sequenceKey: IonRegistryKey<Sequence, Sequence>, key: IonRegistryKey<SequencePhase, SequencePhase>, triggers: Collection<SequenceTrigger<*>>, description: Component, vararg effect: SequencePhaseEffect): SequencePhase = SequencePhase(
 			phaseKey = key,
 			sequenceKey = sequenceKey,
 			triggers = triggers,
+			description = description,
 			effects = listOf(
 				SequencePhaseEffect.EndSequence(EffectTiming.START),
 				SequencePhaseEffect.ClearSequenceData(EffectTiming.START),
