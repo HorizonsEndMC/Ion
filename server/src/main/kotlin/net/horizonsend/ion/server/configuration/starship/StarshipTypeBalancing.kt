@@ -739,7 +739,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 0.75,
-			shieldRegenMultiplier = 1.50,
+			shieldRegenMultiplier = 1.30,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -855,9 +855,9 @@ data class NewStarshipBalancing(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				HeavyNeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true)),
-				AssaultTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, ), maxPerShot = 5,),
-				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
-				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
+				AssaultTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, ), maxPerShot = 3,),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1110,7 +1110,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 16500),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			forbiddenMultiblocks = listOf(
