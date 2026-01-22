@@ -353,7 +353,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		val shouldBeVisible = isInSuperPOI(player, starship)
 
-		val isInvisible = isNoStarship && !isHoldingController && !isInPOICheck && !shouldBeVisible
+		val isInvisible = isNoStarship && /*!isHoldingController &&*/ !isInPOICheck && !shouldBeVisible
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
 
@@ -386,8 +386,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			val kothRegion: RegionKothZone = Regions[thisKoth]
 			if (kothRegion.contains(playerLocation)) return true
 			}
-		if (CombatTimer.isPvpCombatTagged(player)) return true
-		return false
+		return CombatTimer.isPvpCombatTagged(player)
 	}
 
 
