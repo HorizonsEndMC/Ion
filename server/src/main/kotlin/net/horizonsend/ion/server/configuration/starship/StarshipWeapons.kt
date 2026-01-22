@@ -279,12 +279,14 @@ data class NeutralizerBalancing(
 	override var projectileSpawnDistance: Int = 1,
 	override var angleRadiansHorizontal: Double = 15.0,
 	override var angleRadiansVertical: Double = 15.0,
+	override val aimDistance: Int = 10,
 
 	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(5),
 
 	override val projectile: NeutralizerProjectileBalancing = NeutralizerProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing>,
-	StarshipHeavyWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing> {
+	StarshipHeavyWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing>,
+	StarshipTrackingWeaponBalancing<NeutralizerBalancing.NeutralizerProjectileBalancing> {
 	@Transient
 	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = NeutralizerWeaponSubsystem::class
 
@@ -300,8 +302,9 @@ data class NeutralizerBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.8,
-		override var effectDurationNanos: Long = TimeUnit.SECONDS.toMillis(20L)
-	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
+		override var effectDurationNanos: Long = TimeUnit.SECONDS.toMillis(20L),
+		override val maxDegrees: Double = 45.0
+	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = NeutralizerProjectile::class
 	}
@@ -405,9 +408,12 @@ data class WebifierBalancing(
 	override var projectileSpawnDistance: Int = 0,
 	override var angleRadiansHorizontal: Double = 180.0,
 	override var angleRadiansVertical: Double = 180.0,
+	override var aimDistance: Int = 10,
 
 	override val projectile: WebifierProjectileBalancing = WebifierProjectileBalancing()
-) : StarshipCannonWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing>, StarshipHeavyWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing> {
+) : StarshipCannonWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing>,
+	StarshipHeavyWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing>,
+	StarshipTrackingWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing> {
 	@Transient
 	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = WebifierWeaponSubsystem::class
 
@@ -423,8 +429,9 @@ data class WebifierBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 2.0,
 		override var effectStrength: Double = 0.45,
-		override var effectDurationNanos: Long = TimeUnit.SECONDS.toMillis(5L)
-	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing {
+		override var effectDurationNanos: Long = TimeUnit.SECONDS.toMillis(5L),
+		override val maxDegrees: Double = 45.0,
+	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = WebifierProjectile::class
 	}

@@ -24,8 +24,10 @@ class NeutralizerProjectile(
     loc: Location,
     dir: Vector,
     shooter: Damager,
+	originalTarget: Vector,
+	baseAimDistance: Int,
 	private val subsystem: NeutralizerWeaponSubsystem
-) : LaserProjectile<NeutralizerBalancing.NeutralizerProjectileBalancing>(source, name, loc, dir, shooter, NeutralizerStarshipWeaponMultiblock.damageType) {
+) : TrackingLaserProjectile<NeutralizerBalancing.NeutralizerProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, NeutralizerStarshipWeaponMultiblock.damageType) {
 	override val color: Color = Color.ORANGE
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
@@ -70,7 +72,7 @@ class NeutralizerProjectile(
 		starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {
-			val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world).toCenterLocation()
+			val endLocation = subsystem.getFirePos().toLocation(shooterStarship.world).toCenterLocation()
 
 			for (startPoint in impactLocation.circlePoints(5.0, 20, direction)) {
 				shooterStarship.world.spawnParticle(

@@ -45,7 +45,7 @@ class WebifierWeaponSubsystem(
 		fixDirections(loc)
 
 		val newFirePos = getFirePos().toCenterVector()
-		WebifierProjectile(StarshipProjectileSource(starship), getName(), newFirePos.toLocation(loc.world), dir, shooter, this).fire()
+		WebifierProjectile(StarshipProjectileSource(starship), getName(), newFirePos.toLocation(loc.world), dir, shooter, target, balancing.aimDistance, this).fire()
 	}
 
 	private fun fixDirections(loc: Location) {

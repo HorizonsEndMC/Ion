@@ -26,8 +26,10 @@ class WebifierProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
+	originalTarget: Vector,
+	baseAimDistance: Int,
 	private val subsystem: WebifierWeaponSubsystem
-) : LaserProjectile<WebifierProjectileBalancing>(source, name, loc, dir, shooter, WebifierStarshipWeaponMultiblock.damageType) {
+) : TrackingLaserProjectile<WebifierProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, WebifierStarshipWeaponMultiblock.damageType) {
 	override val color: Color = Color.TEAL
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {

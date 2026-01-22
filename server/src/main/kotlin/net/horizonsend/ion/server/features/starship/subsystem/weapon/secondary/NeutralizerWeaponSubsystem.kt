@@ -30,7 +30,7 @@ class NeutralizerWeaponSubsystem(
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		NeutralizerProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, this).fire()
+		NeutralizerProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, target, balancing.aimDistance, this).fire()
 	}
 
 	override fun getName(): Component {
