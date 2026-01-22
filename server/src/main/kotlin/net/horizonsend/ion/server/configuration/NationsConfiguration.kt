@@ -26,7 +26,7 @@ data class NationsConfiguration(
 
 	@Serializable
 	data class FrontierNationSieges(
-		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.HOURS, 1),
+		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 20),
 		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 20),
 		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 3),
 		val playerKillPoints: Int = 5_000,

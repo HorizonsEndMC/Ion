@@ -47,13 +47,6 @@ class IonTurretProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		val shipsThrusters = starship.thrusters
-
-		for (thruster in shipsThrusters) {
-			if (impactLocation.distance(thruster.pos.toLocation(starship.world)) > 8) continue
-
-			thruster.lastIonTurretLimited = System.currentTimeMillis()
-		}
 
 		val speedPenalty = 1 - balancing.effectStrength
 
@@ -62,14 +55,11 @@ class IonTurretProjectile(
 			speedPenalty,
 			balancing.effectDurationNanos
 		))
-/* Dont think this is necessary, seems ion turrets still disable cruise without it
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.CRUISE_SLOW,
 			speedPenalty,
 			balancing.effectDurationNanos
-		)) */
-
-		starship.userErrorAction("Direct Control speed slowed by ${(SLOW_FACTOR * 100).toInt()}%!")
+		))
 	}
 
 	companion object {

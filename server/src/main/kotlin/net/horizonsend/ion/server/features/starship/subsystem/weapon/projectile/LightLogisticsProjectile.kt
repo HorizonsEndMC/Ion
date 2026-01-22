@@ -42,11 +42,7 @@ class LightLogisticsProjectile(
 
 	}
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if (starship.controller !is Player) return
-		val shooter = shooter.starship?.controller ?: return
-		if (shooter.starship.controller !is Player) return
-		if (PlayerCache[starship.controller as Player].frontierNationOid != PlayerCache[shooter.starship.controller as Player].frontierNationOid) return
-		if (starship.type == StarshipType.LOGISTICS_CRUISER || starship.type == StarshipType.LOGISTICS_CORVETTE)
+		if (starship.type == StarshipType.LOGISTICS_CRUISER || starship.type == StarshipType.LOGISTICS_CORVETTE) return
 
 		for (shield: ShieldSubsystem in starship.shields) {
 			if (impactLocation.distance(shield.pos.toLocation(starship.world)) > 10) continue
