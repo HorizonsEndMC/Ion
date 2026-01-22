@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM_BLOCK
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -123,7 +124,7 @@ object ActivityRewardTables {
 			1,
 			listOf(),
 			listOf(
-				ActivityRewardItem(SCORDITE_BLOCK.getValue().constructItemStack())
+				ActivityRewardItem(SCORDITE.getValue().constructItemStack())
 			)
 		),
 		ActivityReward(
@@ -132,7 +133,9 @@ object ActivityRewardTables {
 				ChancedActivityRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(1), 1),
 				ChancedActivityRewardItem(ItemStack(Material.AIR), 99) //gets nothing
 			),
-			listOf()
+			listOf(
+				ActivityRewardItem(SCORDITE.getValue().constructItemStack())
+			)
 		),
 		ActivityReward(
 			3,
@@ -141,7 +144,7 @@ object ActivityRewardTables {
 				ChancedActivityRewardItem(ItemStack(Material.AIR), 99) //gets nothing
 			),
 			listOf(
-				ActivityRewardItem(SCORDITE_BLOCK.getValue().constructItemStack())
+				ActivityRewardItem(SCORDITE.getValue().constructItemStack())
 			)
 		),
 		ActivityReward(
@@ -152,7 +155,7 @@ object ActivityRewardTables {
 				ChancedActivityRewardItem(ItemStack(Material.AIR), 90) //gets nothing
 			),
 			listOf(
-				ActivityRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(5))
+				ActivityRewardItem(SCORDITE.getValue().constructItemStack(5))
 			)
 		),
 		ActivityReward(
@@ -163,7 +166,7 @@ object ActivityRewardTables {
 				ChancedActivityRewardItem(ItemStack(Material.AIR), 90) //gets nothing
 			),
 			listOf(
-				ActivityRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(2))
+				ActivityRewardItem(SCORDITE.getValue().constructItemStack(2))
 			)
 		),
 		ActivityReward(
