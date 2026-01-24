@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
@@ -90,25 +91,23 @@ class ToolModMenu(
 		rebuildFromContents()
 	}
 
-	override fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent) {
-		if (!canAdd(item, slot, event.whoClicked as Player)) {
-			event.isCancelled = true
-			return
-		}
+	override fun handleAddItem(slot: Int, item: ItemStack, event: InventoryClickEvent) {
+		super.handleAddItem(slot, item, event)
+		rebuildFromContents(listOf(*internalInventory.contents, item))
+	}
 
+	override fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent) {
+		super.handleAddItem(slot, item, event)
 		rebuildFromContents(listOf(*internalInventory.contents, item))
 	}
 
 	override fun handleRemoveItem(slot: Int, event: InventoryClickEvent) {
-		// Rebuild with the item removed
+		super.handleRemoveItem(slot, event)
 		rebuildFromContents(internalInventory.contents.subtract(setOf(internalInventory.contents[slot])))
 	}
 
 	override fun handleSwapItem(slot: Int, currentItem: ItemStack, new: ItemStack, event: InventoryClickEvent) {
-		if (!canAdd(new, slot, event.playerClicker)) {
-			event.isCancelled = true
-			return
-		}
+		super.handleSwapItem(slot, currentItem, new, event)
 
 		val modified = internalInventory.contents.toMutableList()
 		modified[slot] = new
@@ -129,12 +128,14 @@ class ToolModMenu(
 			return false
 		}
 
-		if (this.modManager.getModKeys(this.itemStack).size >= this.modManager.maxMods) {
+		val modKeys = this.modManager.getModKeys(this.itemStack)
+
+		if (modKeys.size >= this.modManager.maxMods) {
 			player.userError("Mod limit reached!")
 			return false
 		}
 
-		return this.modManager.getModKeys(this.itemStack).none { existingMod ->
+		return modKeys.none { existingMod ->
 			val incompatible = existingMod.getValue().incompatibleWithMods.contains(mod::class)
 
 			if (incompatible) {
@@ -177,6 +178,29 @@ class ToolModMenu(
 				if (event.itemDrop.itemStack.itemMeta == holder.itemStack.itemMeta) {
 					player.closeInventory()
 				}
+			}
+		}
+
+		// Prevents people from modifying their inventory while in the tool mod menu and causing dupe glitches
+		@EventHandler(priority = EventPriority.HIGHEST)
+		fun onPlayerClickItemEvent(event: InventoryClickEvent) {
+			val player = event.playerClicker
+			val holder = player.openInventory.topInventory.holder
+
+			if (holder !is ToolModMenu) return
+
+			val itemInSlot = event.currentItem
+			val customItemInSlot = itemInSlot?.customItem
+			val itemInCursor = event.cursor
+			val customItemInCursor = itemInCursor.customItem
+
+			// deny if:
+			// slot item is not empty and is not a mod item
+			// cursor item is not empty and is not a mod item
+
+			if ((itemInSlot != null && !itemInSlot.isEmpty && customItemInSlot !is ModificationItem)
+				|| (!itemInCursor.isEmpty && customItemInCursor !is ModificationItem)) {
+				event.isCancelled = true
 			}
 		}
 	}

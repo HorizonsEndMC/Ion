@@ -77,7 +77,7 @@ val listeners: List<Listener> = listOf(
 	BiomeFixer9001(),
 	AbstractTractorBeam.Companion,
 	PlayerDeathListener,
-	ToolModMenu,
+	ToolModMenu.Companion,
 	InteractableGUI.Companion,
 	RecipeModifications,
 	ActivePlayerController.Companion,

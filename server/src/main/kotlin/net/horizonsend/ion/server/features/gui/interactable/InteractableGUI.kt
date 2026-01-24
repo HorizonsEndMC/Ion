@@ -12,6 +12,7 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftContainer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -182,7 +183,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, 
 			inventories[uuid] = gui
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGHEST)
 		fun onInventoryClick(event: InventoryClickEvent) {
 			val inventory = event.clickedInventory ?: return
 
@@ -203,7 +204,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, 
 			}
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGHEST)
 		fun onInventoryDrag(event: InventoryDragEvent) {
 			val inventory = event.inventory
 
@@ -214,7 +215,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, 
 			}
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGHEST)
 		fun onInventoryClose(event: InventoryCloseEvent) {
 			val inventory = event.inventory
 			val holder = inventory.holder
