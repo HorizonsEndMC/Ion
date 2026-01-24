@@ -44,7 +44,7 @@ object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblo
 		z(2) {
 			y(0) {
 				x(1).goldBlock()
-				x(0).kothBlock()
+				x(0).ironBlock()
 				x(-1).goldBlock()
 			}
 		}

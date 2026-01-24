@@ -833,6 +833,7 @@ class Starship(
 		if (sameStrengthEffect != null) {
 			sameStrengthEffect.durationMillis = max(sameStrengthEffect.durationMillis, newStatusEffect.durationMillis)
 
+			/*
 			this.playerPilot?.information("Refreshed status effect:")
 			this.playerPilot?.sendMessage(ofChildren(
 				sameStrengthEffect.type.displayName,
@@ -845,6 +846,7 @@ class Starship(
 					.hoverEvent(sameStrengthEffect.type.description),
 
 			))
+			*/
 			return
 		}
 

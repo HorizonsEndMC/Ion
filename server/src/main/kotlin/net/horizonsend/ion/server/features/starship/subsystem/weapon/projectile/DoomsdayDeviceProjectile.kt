@@ -3,11 +3,13 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DoomsdayDeviceWeaponMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
@@ -21,6 +23,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
+import kotlin.math.exp
+import kotlin.math.roundToInt
 
 class DoomsdayDeviceProjectile(
 	source: ProjectileSource,
@@ -127,7 +131,7 @@ class DoomsdayDeviceProjectile(
     override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
         super.impact(newLoc, block, entity)
 
-        newLoc.world.spawnParticle(
+		newLoc.world.spawnParticle(
             Particle.LAVA,
             newLoc.x,
             newLoc.y,
@@ -205,5 +209,20 @@ class DoomsdayDeviceProjectile(
             }
         }
     }
+
+	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+		super.onImpactStarship(starship, impactLocation)
+
+		val explosionSize = 7.5f
+		val offsetDirection = direction.clone().multiply(5.0)
+		val explosionLocation = impactLocation.clone().add(offsetDirection)
+
+		explosionLocation.createExplosion(explosionSize)
+
+		// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
+		addToDamagers(explosionLocation.world, explosionLocation.block, shooter, explosionSize.roundToInt(), explosionOccurred = false, runStarshipImpactEvent = false)
+
+	}
+
 	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
 }

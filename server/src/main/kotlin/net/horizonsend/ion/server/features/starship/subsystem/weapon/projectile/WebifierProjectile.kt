@@ -59,21 +59,29 @@ class WebifierProjectile(
 		Tasks.syncDelay(60L) {
 			task.cancel()
 		}
-		val speedPenalty = 1 - balancing.effectStrength
 
-		starship.addStatusEffect(StarshipStatusEffect(
-			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
-			speedPenalty,
-			balancing.effectDurationNanos
-		))
+		if (starship.initialBlockCount < 12501) {
 
-		starship.addStatusEffect(StarshipStatusEffect(
-			StarshipStatusEffectTypes.CRUISE_SLOW,
-			speedPenalty,
-			balancing.effectDurationNanos
-		))
+			val speedPenalty = 1 - balancing.effectStrength
 
-		starship.userErrorAction("Ship speed slowed by ${(speedPenalty * 100).toInt()}%!")
+			starship.addStatusEffect(
+				StarshipStatusEffect(
+					StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
+					speedPenalty,
+					balancing.effectDurationNanos
+				)
+			)
+
+			starship.addStatusEffect(
+				StarshipStatusEffect(
+					StarshipStatusEffectTypes.CRUISE_SLOW,
+					speedPenalty,
+					balancing.effectDurationNanos
+				)
+			)
+
+			starship.userErrorAction("Ship speed slowed by ${(speedPenalty * 100).toInt()}%!")
+		}
 	}
 
 	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }

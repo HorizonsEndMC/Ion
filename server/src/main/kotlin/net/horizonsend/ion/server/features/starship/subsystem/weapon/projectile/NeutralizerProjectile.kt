@@ -50,26 +50,34 @@ class NeutralizerProjectile(
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         val shooterStarship = shooter.starship ?: return
 
-		val regenPenalty = 1 - balancing.effectStrength
+		if (starship.initialBlockCount < 12501) {
 
-		starship.addStatusEffect(StarshipStatusEffect(
-			StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
-			regenPenalty,
-			balancing.effectDurationNanos
-		))
+			val regenPenalty = 1 - balancing.effectStrength
 
-		if (starship.initialBlockCount < 2500 && !starship.type.tech2) {
-			val speedPenalty = 1 - 0.85
-			starship.addStatusEffect(StarshipStatusEffect(
-				StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
-				speedPenalty,
-				balancing.effectDurationNanos
-			))
+			starship.addStatusEffect(
+				StarshipStatusEffect(
+					StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
+					regenPenalty,
+					balancing.effectDurationNanos
+				)
+			)
 
-			starship.userErrorAction("Ship Speed slowed by ${(speedPenalty * 100).toInt()}!")
+			if (starship.initialBlockCount < 2500 && !starship.type.tech2) {
+				val speedPenalty = 1 - 0.85
+				starship.addStatusEffect(
+					StarshipStatusEffect(
+						StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
+						speedPenalty,
+						balancing.effectDurationNanos
+					)
+				)
+
+				starship.userErrorAction("Ship Speed slowed by ${(speedPenalty * 100).toInt()}!")
+			}
+
+			starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
+
 		}
-
-		starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {
 			val endLocation = subsystem.getFirePos().toLocation(shooterStarship.world).toCenterLocation()

@@ -49,15 +49,19 @@ class HeavyNeutralizerProjectile(
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         val shooterStarship = shooter.starship ?: return
 
-		val regenPenalty = 1 - balancing.effectStrength
+		if (starship.initialBlockCount > 12500) {
+			val regenPenalty = 1 - balancing.effectStrength
 
-		starship.addStatusEffect(StarshipStatusEffect(
-			StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
-			regenPenalty,
-			balancing.effectDurationNanos
-		))
+			starship.addStatusEffect(
+				StarshipStatusEffect(
+					StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
+					regenPenalty,
+					balancing.effectDurationNanos
+				)
+			)
 
-		starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
+			starship.userErrorAction("Ship shield regeneration disrupted by ${(regenPenalty * 100).toInt()}%!")
+		}
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {
 			val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world)
