@@ -802,10 +802,10 @@ data class AutocannonBalancing(
 
 	@Serializable
 	data class AutocannonProjectileBalancing(
-		override var range: Double = 250.0,
+		override var range: Double = 200.0,
 		override var speed: Double = 400.0,
-		override var explosionPower: Float = 1.5f,
-		override var starshipShieldDamageMultiplier: Double = 1.0,
+		override var explosionPower: Float = 2.0f,
+		override var starshipShieldDamageMultiplier: Double = 2.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -836,7 +836,7 @@ data class AssaultTurretBalancing(
 	@Serializable
 	data class AssaultTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 90.0,
+		override var speed: Double = 70.0,
 		override var explosionPower: Float = 3.5f,
 		override var starshipShieldDamageMultiplier: Double = 5.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
@@ -870,7 +870,7 @@ data class GaussCannonBalancing(
 		override var range: Double = 300.0,
 		override var speed: Double = 130.0,
 		override var explosionPower: Float = 3f,
-		override var starshipShieldDamageMultiplier: Double = 2.0,
+		override var starshipShieldDamageMultiplier: Double = 3.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -932,7 +932,7 @@ data class ACAPTurretBalancing(
 	@Serializable
 	data class ACAPTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 35.0,
+		override var speed: Double = 32.5,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 9.5,
 		override var areaShieldDamageMultiplier: Double = 6.0,
@@ -1051,7 +1051,7 @@ data class PulseCannonBalancing(
 @Serializable
 data class ScramblerBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override var firePowerConsumption: Int = 2550,
 	override var isForwardOnly: Boolean = true,
 	override var maxPerShot: Int? = null,
@@ -1367,7 +1367,7 @@ data class LightLogisticsCannonBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 1.0,
-		override var shieldBoostFactor: Int = 20000
+		override var shieldBoostFactor: Int = 40000
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = LightLogisticsProjectile::class
@@ -1378,7 +1378,7 @@ data class LightLogisticsCannonBalancing(
 data class HeavyLogisticsCannonBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(2000),
-	override var firePowerConsumption: Int = 22500,
+	override var firePowerConsumption: Int = 3750,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int = 3,
 	override var applyCooldownToAll: Boolean = true,
@@ -1403,7 +1403,7 @@ data class HeavyLogisticsCannonBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 1.0,
-		override var shieldBoostFactor: Int = 75000
+		override var shieldBoostFactor: Int = 80000
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = HeavyLogisticsProjectile::class
