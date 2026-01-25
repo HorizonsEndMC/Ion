@@ -742,7 +742,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 0.75,
-			shieldRegenMultiplier = 1.50,
+			shieldRegenMultiplier = 1.35,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -1348,7 +1348,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 6.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
-			cruiseSpeedMultiplier = 1.25,
+			cruiseSpeedMultiplier = 1.15,
 			shieldPowerMultiplier = 1.90,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 17500)),
