@@ -942,7 +942,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.8,
+			shieldPowerMultiplier = 0.77,
 			shieldRegenMultiplier = 0.8,
 			cruiseSpeedMultiplier = 0.8,
 			requiredMultiblocks = listOf(
@@ -1238,7 +1238,7 @@ data class NewStarshipBalancing(
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.85,
-			shieldPowerMultiplier = 1.0,
+			shieldPowerMultiplier = 0.95,
 			shieldRegenMultiplier = 0.8,
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
