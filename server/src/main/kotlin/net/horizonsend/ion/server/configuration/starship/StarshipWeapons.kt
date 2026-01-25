@@ -1843,9 +1843,9 @@ data class ShieldCommandBurstBalancing(
 			"You cannot have more than one type of command burst!"
 		)
 	)),
-	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(3),
+	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(45),
 	override val range: Double = 200.0,
-	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(15),
+	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(25),
 
 	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
@@ -1860,9 +1860,9 @@ data class SkirmishCommandBurstBalancing(
 			"You cannot have more than one type of command burst!"
 		)
 	)),
-	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(3),
+	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(45),
 	override val range: Double = 200.0,
-	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(15),
+	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(25),
 	override val effectStrength: Double = 0.25,
 ) : StarshipMultiplierCommandBurstBalancing
 
@@ -1876,9 +1876,9 @@ data class CapitalSkirmishCommandBurstBalancing(
 			"You cannot have more than one type of command burst!"
 		)
 	)),
-	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(6),
+	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(45),
 	override val range: Double = 500.0,
-	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(30),
+	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(45),
 	override val effectStrength: Double = 0.5,
 ) : StarshipMultiplierCommandBurstBalancing
 
@@ -1892,9 +1892,9 @@ data class CapitalShieldCommandBurstBalancing(
 			"You cannot have more than one type of command burst!"
 		)
 	)),
-	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(6),
+	override val activateCooldownMillis: Long = TimeUnit.SECONDS.toMillis(45),
 	override val range: Double = 500.0,
-	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(30),
+	override val effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(45),
 	override val effectStrength: Double = 0.5,
 ) : StarshipMultiplierCommandBurstBalancing
 
