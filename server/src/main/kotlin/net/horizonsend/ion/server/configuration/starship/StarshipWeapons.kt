@@ -270,7 +270,7 @@ data class HeavyNeutralizerBalancing(
 data class NeutralizerBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override var firePowerConsumption: Int = 300000,
+	override var firePowerConsumption: Int = 30000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = null,
 	override var applyCooldownToAll: Boolean = false,
