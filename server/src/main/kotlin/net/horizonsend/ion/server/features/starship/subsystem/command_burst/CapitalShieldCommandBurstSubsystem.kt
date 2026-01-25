@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatu
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Sign
-import java.util.concurrent.TimeUnit
 
 class CapitalShieldCommandBurstSubsystem(
 	starship: Starship,
@@ -35,7 +34,7 @@ class CapitalShieldCommandBurstSubsystem(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.SHIELD_RESISTANCE,
 				balancing.effectStrength,
-				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+				balancing.effectDurationMillis
 			)
 		)
 
@@ -49,7 +48,7 @@ class CapitalShieldCommandBurstSubsystem(
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.SHIELD_RESISTANCE,
 				balancing.effectStrength,
-				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+				balancing.effectDurationMillis
 			))
 		}
 	}

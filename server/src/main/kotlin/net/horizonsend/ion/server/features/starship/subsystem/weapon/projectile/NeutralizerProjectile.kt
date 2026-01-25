@@ -58,7 +58,7 @@ class NeutralizerProjectile(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
 					regenPenalty,
-					balancing.effectDurationNanos
+					balancing.effectDurationMillis
 				)
 			)
 
@@ -68,7 +68,7 @@ class NeutralizerProjectile(
 					StarshipStatusEffect(
 						StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
 						speedPenalty,
-						balancing.effectDurationNanos
+						balancing.effectDurationMillis
 					)
 				)
 

@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatu
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Sign
-import java.util.concurrent.TimeUnit
 
 class CapitalSkirmishCommandBurstSubsystem(
 	starship: Starship,
@@ -35,7 +34,7 @@ class CapitalSkirmishCommandBurstSubsystem(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.CRUISE_SPEED,
 				balancing.effectStrength,
-				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+				balancing.effectDurationMillis
 			)
 		)
 
@@ -43,7 +42,7 @@ class CapitalSkirmishCommandBurstSubsystem(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED,
 				balancing.effectStrength,
-				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+				balancing.effectDurationMillis
 			)
 		)
 
@@ -57,13 +56,13 @@ class CapitalSkirmishCommandBurstSubsystem(
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.CRUISE_SPEED,
 				balancing.effectStrength,
-				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+				balancing.effectDurationMillis
 			))
 
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED,
 				balancing.effectStrength,
-				TimeUnit.NANOSECONDS.toSeconds(balancing.effectDurationNanos)
+				balancing.effectDurationMillis
 			))
 		}
 	}

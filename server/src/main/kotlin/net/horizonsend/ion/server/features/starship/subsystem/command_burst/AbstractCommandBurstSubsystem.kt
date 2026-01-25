@@ -1,16 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.command_burst
 
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.starship.StarshipCommandBurstBalancing
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurstMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
 import net.kyori.adventure.text.Component
 import org.bukkit.block.Sign
-import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
@@ -22,13 +18,13 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 
 	/** Balancing values for this subsystem **/
 	val balancing get() = balancingSupplier.get()
-	var lastActivated: Long = System.nanoTime()
+	var lastActivated: Long = System.currentTimeMillis()
 
 	/** Cooldown between activating abilities of this command burst **/
-	open val activateCooldownNanos: Long get() = balancing.activateCooldownNanos
+	open val activateCooldownMillis: Long get() = balancing.activateCooldownMillis
 
 	fun isCooledDown(): Boolean {
-		return System.nanoTime() - lastActivated >= activateCooldownNanos
+		return System.currentTimeMillis() - lastActivated >= activateCooldownMillis
 	}
 
 	fun canCreateSubsystem(): Boolean {
@@ -48,7 +44,7 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 	protected abstract fun activateEffect(starships: Set<Starship>)
 
 	fun postActivate() {
-		lastActivated = System.nanoTime()
+		lastActivated = System.currentTimeMillis()
 	}
 
 	abstract fun getName(): Component

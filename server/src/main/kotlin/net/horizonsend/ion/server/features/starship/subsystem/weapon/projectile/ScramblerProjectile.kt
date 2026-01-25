@@ -36,7 +36,7 @@ class ScramblerProjectile(
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
 			speedPenalty,
-			balancing.effectDurationNanos
+			balancing.effectDurationMillis
 		))
 
 		starship.userErrorAction("Direct Control speed slowed by ${(speedPenalty * 100).toInt()}%!")

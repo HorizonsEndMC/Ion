@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.EMPMissileBalancing
-import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
@@ -203,7 +202,7 @@ class EMPMissileProjectile(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.SHIELD_WEAKNESS,
 				shieldPenalty,
-				balancing.effectDurationNanos
+				balancing.effectDurationMillis
 			)
 		)
 		starship.userErrorAction("Shields weakened by ${(shieldPenalty * 100).toInt()}%!")

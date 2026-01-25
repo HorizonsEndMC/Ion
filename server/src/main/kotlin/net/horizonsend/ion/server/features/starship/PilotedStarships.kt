@@ -437,6 +437,16 @@ object PilotedStarships : IonServerComponent() {
 				}
 			}
 
+			for (subsystem in activePlayerStarship.commandBursts) {
+				for (incompatibleSubsystem in subsystem.balancing.activateRestrictions.incompatibleMultiblocks) {
+					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
+			}
+
 			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
 			if (activePlayerStarship.type != StarshipType.PLATFORM && miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {

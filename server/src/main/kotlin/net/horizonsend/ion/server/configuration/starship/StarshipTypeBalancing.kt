@@ -4,7 +4,6 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
-import net.horizonsend.ion.server.configuration.starship.EMPMissileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
@@ -21,6 +20,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumRe
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalShieldCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalSkirmishCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
@@ -752,8 +755,18 @@ data class NewStarshipBalancing(
 					"tech 2 ships require a fuel tank to pilot!"
 				)),
 			commandBurstOverrides = listOf(
-				SkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true)),
-				ShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true))
+				SkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
+					IncompatibleSubsystemInfo(
+						ShieldCommandBurstSubsystem::class.java,
+						"You cannot have more than one type of command burst!"
+					)
+				))),
+				ShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
+					IncompatibleSubsystemInfo(
+						SkirmishCommandBurstSubsystem::class.java,
+						"You cannot have more than one type of command burst!"
+					)
+				)))
 			),
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000)),
@@ -1158,8 +1171,18 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 0.9,
 			shieldRegenMultiplier = 4.0,
 			commandBurstOverrides = listOf(
-				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true)),
-				CapitalShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true))
+				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
+					IncompatibleSubsystemInfo(
+						CapitalShieldCommandBurstSubsystem::class.java,
+						"You cannot have more than one type of command burst!"
+					)
+				))),
+				CapitalShieldCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
+					IncompatibleSubsystemInfo(
+						CapitalSkirmishCommandBurstSubsystem::class.java,
+						"You cannot have more than one type of command burst!"
+					)
+				)))
 			),
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -1664,7 +1687,7 @@ sealed interface StarshipShieldDrainingProjectileBalancing : StarshipProjectileB
 @Serializable
 sealed interface StarshipStatusEffectProjectileBalancing : StarshipProjectileBalancing {
 	val effectStrength: Double
-	val effectDurationNanos: Long
+	val effectDurationMillis: Long
 }
 
 @Serializable
@@ -1759,9 +1782,9 @@ sealed interface StarshipCommandBurstBalancing {
 
 	val activateRestrictions: ActivateRestrictions
 
-	val activateCooldownNanos: Long
+	val activateCooldownMillis: Long
 	val range: Double
-	val effectDurationNanos: Long
+	val effectDurationMillis: Long
 
 	/**
 	 * @param canActivate Whether this weapon can be fired.

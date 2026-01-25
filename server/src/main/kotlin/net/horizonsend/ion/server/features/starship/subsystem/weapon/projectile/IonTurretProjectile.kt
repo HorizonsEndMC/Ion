@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.starship.IonTurretBalancing.IonTurretProjectileBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -53,12 +52,12 @@ class IonTurretProjectile(
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
 			speedPenalty,
-			balancing.effectDurationNanos
+			balancing.effectDurationMillis
 		))
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.CRUISE_SLOW,
 			speedPenalty,
-			balancing.effectDurationNanos
+			balancing.effectDurationMillis
 		))
 	}
 
