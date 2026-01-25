@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatu
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Color
 import org.bukkit.block.Sign
 
 class CapitalShieldCommandBurstSubsystem(
@@ -20,6 +21,8 @@ class CapitalShieldCommandBurstSubsystem(
 	sign,
 	multiblock,
 	starship.balancingManager.getCommandBurstSupplier(CapitalShieldCommandBurstSubsystem::class)) {
+
+	override val color: Color = Color.AQUA
 
 	override fun activateEffect(starships: Set<Starship>) {
 		val playerPilot = starship.playerPilot ?: return

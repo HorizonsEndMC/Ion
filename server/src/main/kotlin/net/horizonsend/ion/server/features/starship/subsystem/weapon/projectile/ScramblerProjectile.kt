@@ -46,7 +46,7 @@ class ScramblerProjectile(
 		val task = Tasks.syncRepeatTask(0L, 2L) {
 			val startLocation = subsystem.getFirePos().toLocation(location.world).toCenterLocation()
 
-			for (endLocation in impactLocation.circlePoints(10.0, 30, direction)) {
+			for (endLocation in impactLocation.circlePoints(10.0, 10, direction)) {
 				shooterStarship.world.spawnParticle(
 					Particle.TRAIL,
 					startLocation,

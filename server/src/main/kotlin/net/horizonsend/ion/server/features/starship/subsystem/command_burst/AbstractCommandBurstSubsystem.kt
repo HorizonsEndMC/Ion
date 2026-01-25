@@ -1,11 +1,16 @@
 package net.horizonsend.ion.server.features.starship.subsystem.command_burst
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.starship.StarshipCommandBurstBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurstMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
+import org.bukkit.Particle
 import org.bukkit.block.Sign
 import java.util.function.Supplier
 
@@ -23,6 +28,8 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 	/** Cooldown between activating abilities of this command burst **/
 	open val activateCooldownMillis: Long get() = balancing.activateCooldownMillis
 
+	abstract val color: Color
+
 	fun isCooledDown(): Boolean {
 		return System.currentTimeMillis() - lastActivated >= activateCooldownMillis
 	}
@@ -39,6 +46,7 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 		}
 
 		activateEffect(starshipsInRange.toSet())
+		spawnParticles()
 	}
 
 	protected abstract fun activateEffect(starships: Set<Starship>)
@@ -48,4 +56,25 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 	}
 
 	abstract fun getName(): Component
+
+	fun spawnParticles() {
+		val task = Tasks.syncRepeatTask(0L, 4L) {
+			for (endPoint in starship.centerOfMass.toLocation(starship.world).spherePoints(100.0, 300)) {
+				starship.world.spawnParticle(
+					Particle.TRAIL,
+					starship.centerOfMass.toLocation(starship.world),
+					1,
+					0.5,
+					0.5,
+					0.5,
+					0.0,
+					Particle.Trail(endPoint, color, randomInt(90, 100)),
+					true
+				)
+			}
+		}
+		Tasks.syncDelay(60L) {
+			task.cancel()
+		}
+	}
 }
