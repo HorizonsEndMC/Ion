@@ -42,10 +42,9 @@ class HeavyLogisticsProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if (starship.type == StarshipType.LOGISTICS_CRUISER || starship.type == StarshipType.LOGISTICS_CORVETTE)
-			for (shield: ShieldSubsystem in starship.shields) {
-				if (shield.isReinforcementActive()) continue
-				shield.power += balancing.shieldBoostFactor
-			}
+		if (starship.type == StarshipType.LOGISTICS_CRUISER || starship.type == StarshipType.LOGISTICS_CORVETTE) return
+		for (shield: ShieldSubsystem in starship.shields) {
+			if (!shield.isReinforcementActive()) shield.power += balancing.shieldBoostFactor
+		}
 	}
 }
