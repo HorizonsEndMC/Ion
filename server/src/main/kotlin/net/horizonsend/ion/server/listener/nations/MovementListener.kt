@@ -7,12 +7,17 @@ import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.StationZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.command.nations.stationZones.StationZoneCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
+import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
@@ -20,12 +25,14 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.Title.Times.times
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.lang.System.currentTimeMillis
 import java.time.Duration.ofMillis
+import java.time.temporal.TemporalQueries.zone
 import java.util.Collections
 import java.util.UUID
 
@@ -37,6 +44,7 @@ object MovementListener : SLEventListener() {
 	private val lastMoved = Collections.synchronizedMap(mutableMapOf<UUID, Long>())
 	private val lastPlayerTerritories = Collections.synchronizedMap(mutableMapOf<UUID, Oid<Territory>?>())
 	private val lastPlayerZones = Collections.synchronizedMap(mutableMapOf<UUID, Oid<SettlementZone>?>())
+	private val lastPlayerStationZones = Collections.synchronizedMap(mutableMapOf<UUID, Oid<StationZone>?>())
 
 	@EventHandler
 	fun onPlayerMove(event: PlayerMoveEvent) {
@@ -94,6 +102,25 @@ object MovementListener : SLEventListener() {
 					oldZone?.let { Regions.get<RegionSettlementZone>(it) }?.let {
 						player.information("Exited zone ${it.name}")
 					}
+				}
+			}
+		}
+
+		val station = Regions.findFirstOf<RegionSpaceStation<*, *>>(event.to)
+		val stationZone = station?.let { StationZoneCommand.getZones(SpaceStationCache[station.name]!!).firstOrNull { zone ->
+			zone.contains(event.to)
+		} }
+
+		val oldStationZone = lastPlayerStationZones[uuid]
+
+		if (oldStationZone != stationZone?.id) {
+			lastPlayerStationZones[uuid] = stationZone?.id
+
+			if (stationZone != null) {
+				player.information("Entered station zone ${stationZone.name}")
+			} else {
+				oldStationZone?.let { Regions.get<RegionStationZone>(it) }?.let {
+					player.information("Exited station zone ${it.name}")
 				}
 			}
 		}
