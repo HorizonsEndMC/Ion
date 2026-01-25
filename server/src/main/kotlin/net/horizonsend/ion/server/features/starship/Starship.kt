@@ -511,7 +511,7 @@ class Starship(
 	var shieldRegenModifier: Double = 1.0
 
 	val shieldEfficiency: Double
-		get() = (shieldRegenModifier*(shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7)) * type.balancing.shieldRegenMultiplier)
+		get() = (shieldRegenModifier*(shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7)))
 			.coerceAtMost(1.0)
 
 	val maxShields: Int = (0.00671215 * initialBlockCount.toDouble().pow(0.836512) - 0.188437).toInt()

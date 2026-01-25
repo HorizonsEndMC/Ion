@@ -39,6 +39,7 @@ class ReactorSubsystem(
 		val reactorOutput = this.output
 		val shieldPortion = this.powerDistributor.shieldPortion
 		val shieldEfficiency = starship.shieldEfficiency
+		val starshipTypeRegenModifier = starship.type.balancing.shieldRegenMultiplier
 		val shieldPower = reactorOutput * shieldPortion * shieldEfficiency * delta/* *
 				if (starship.initialBlockCount < 1000)
 					// approx. 0.25 shield regen at 150 blocks, 0.62 regen at 500, and 1.0 at 1k+
@@ -63,7 +64,7 @@ class ReactorSubsystem(
 			val fraction = ((missing.toDouble() / totalMissing.toDouble()) * shieldPower).roundToInt()
 			val shieldBoostMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED)?.strength ?: 0.0
 			val shieldDrainMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW)?.strength ?: 0.0
-			shield.power += (min(missing, fraction) * (1 + shieldBoostMultiplier) * (1 - shieldDrainMultiplier)).toInt()
+			shield.power += (min(missing, fraction) * (1 + shieldBoostMultiplier) * (1 - shieldDrainMultiplier) * starshipTypeRegenModifier).toInt()
 		}
 
 		if (starship is ActiveControlledStarship) {
