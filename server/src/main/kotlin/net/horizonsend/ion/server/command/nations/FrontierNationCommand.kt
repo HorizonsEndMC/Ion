@@ -327,7 +327,7 @@ object FrontierNationCommand : SLCommand() {
 
 		val playerId = resolveOfflinePlayer(otherPlayer)
 
-		failIf(PlayerCache[playerId.slPlayerId].frontierNationOid != nationId) { "$otherPlayer is not in your nation" }
+		failIf(SLPlayer[playerId] != nationId) { "$otherPlayer is not in your nation" }
 
 		SLPlayer.leaveFrontierNation(playerId.slPlayerId)
 
