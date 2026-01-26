@@ -7,9 +7,8 @@ import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
-import org.bukkit.entity.Player
 
-class ObjectiveHeaderSidebarComponent(player: Player) : SidebarComponent {
+class ObjectiveHeaderSidebarComponent() : SidebarComponent {
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
             text("Objective").style(style(BOLD).color(YELLOW)),
