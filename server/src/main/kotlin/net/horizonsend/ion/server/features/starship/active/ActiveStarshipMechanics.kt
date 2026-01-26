@@ -352,6 +352,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun isInPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
 		if (!player.world.hasFlag(WorldFlag.SPACE_WORLD) && !player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) return true
+		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
 		val stars = Space.getStars()
 		val moons = Space.getMoons()
 		val playerContacts = ContactsSidebar.getPlayerContacts(player)
@@ -372,6 +373,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	}
 
 	private fun isInSuperPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
+		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
 		val world = player.world
 		val playerLocation = player.location
 		if (world.hasFlag(WorldFlag.PLANET_WORLD) || world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) return true
