@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
@@ -351,3 +352,9 @@ fun Component.withShadowColor(color: String): Component {
 		.append(this)
 		.build()
 }
+
+fun formatObjectiveLocation(worldName: String, x: Int, y: Int, z: Int): Component =
+	text("[$worldName: $x, $y, $z]", HE_LIGHT_BLUE)
+
+fun formatObjectiveLocation(x: Int, y: Int, z: Int): Component =
+	text("[$x, $y, $z]", HE_LIGHT_BLUE)
