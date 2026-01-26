@@ -1,11 +1,15 @@
 package net.horizonsend.ion.server.features.sidebar
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.utils.text.wrap
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sidebar.component.CombatTagSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.GenericSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ObjectiveHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsHeaderSidebarComponent
@@ -137,8 +141,18 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		}
 
 		// Objective
-		val objectiveHeaderComponent: SidebarComponent = ObjectiveHeaderSidebarComponent(player)
-		lines.addComponent(objectiveHeaderComponent)
+		val objectiveHeaderComponent: SidebarComponent = ObjectiveHeaderSidebarComponent()
+
+		val sequence = SequenceManager.getCurrentSequences(player).firstOrNull()
+		val phase = sequence?.let { SequenceManager.getCurrentPhase(player, sequence) }
+		val description = phase?.let { IonRegistries.SEQUENCE_PHASE[phase].description?.formattedDescription(IonRegistries.SEQUENCE[sequence].getContext()) }
+		val wrappedDescription = description?.wrap(30 * 6)
+		wrappedDescription?.let {
+			lines.addComponent(objectiveHeaderComponent)
+			for (descriptionLine in wrappedDescription) {
+				lines.addComponent(GenericSidebarComponent(descriptionLine))
+			}
+		}
 
 		// Assemble title and components
 		val componentSidebar = ComponentSidebarLayout(title, lines.build())
