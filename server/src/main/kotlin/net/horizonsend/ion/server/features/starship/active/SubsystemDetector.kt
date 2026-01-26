@@ -418,6 +418,7 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.thrusters)
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
+		starship.subsystems.filterIsInstanceTo(starship.warpDisruptors)
 		starship.subsystems.filterIsInstanceTo(starship.jumpBeacons)
 		starship.subsystems.filterIsInstanceTo(starship.jumpFieldGenerators)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
