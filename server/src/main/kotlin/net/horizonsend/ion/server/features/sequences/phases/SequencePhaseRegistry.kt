@@ -79,9 +79,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSub
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Sound
@@ -102,7 +105,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 		phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
 		sequenceKey: IonRegistryKey<Sequence, Sequence>,
 		triggers: Collection<SequenceTrigger<*>>,
-        description: Component? = null,
+        description: PhaseDescription? = null,
 		effects: List<SequencePhaseEffect>,
 	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, description, effects))
 
@@ -135,7 +138,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
                 )
             ),
-            description = text("Exit the cryopod room at TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Exit the cryopod room at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(-9, -1, -56)
+            ),
             effects = listOf(
                 SendMessage(text("Welcome to Horizon's End!"), EffectTiming.START),
                 SendMessage(text("This is the start of the intro sequence."), EffectTiming.START),
@@ -169,7 +178,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ), triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
                 )
             ),
-            description = text("Access the elevator to the hangar bay at TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Access the elevator to the hangar bay at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(0, 1, -70)
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 ifPreviousPhase(
@@ -229,7 +244,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                 )
             ),
-            description = text("Find the backup crew elevator at the stern of the ship, at TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Find the backup crew elevator at the stern of the ship, at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(4, 1, -19)
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
@@ -282,7 +303,16 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                 )
             ),
-            description = text("Activate the elevator by crouching on the glass block and using your controller (clock)"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Activate the elevator by "),
+                    text("holding your controller (Clock) ", AQUA),
+                    text("and "),
+                    text("SNEAKING ", AQUA),
+                    text("while standing on the "),
+                    text("Glass Block ", AQUA),
+                )
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
@@ -307,7 +337,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
-            description = text("Traverse through the damaged hallways to TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Exit the elevator at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(1, -5, -19)
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 ifPreviousPhase(
@@ -361,7 +397,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					), triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
 				)
             ),
-            description = text("Use zero gravity to hover over the flames"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Use zero gravity to hover over the flames, and reach: "),
+                    text("{0}")
+                ),
+                position = Vec3i(0, -6, -58)
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
@@ -385,7 +427,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(GO_TO_ESCAPE_POD)
                 )
             ),
-            description = text("Gather chetherite hyperdrive fuel at TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Gather "),
+                    text("chetherite ", LIGHT_PURPLE),
+                    text("hyperdrive fuel at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(4, -7, -66)
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
@@ -418,7 +468,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					), triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
 				)
 			),
-            description = text("Enter the escape pod at TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Enter the escape pod at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(0, -2, -93)
+            ),
             listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, -3, -98), 10L, EffectTiming.TICKED), 10),
@@ -449,7 +505,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				)
 			),
-            description = text("Pilot the escape pod"),
+            description = PhaseDescription(
+                description = text("Pilot the escape pod")
+            ),
             effects = listOf(
                 NEXT_PHASE_SOUND,
 				SequencePhaseEffect.RunCode({ player, _ ->
@@ -495,7 +553,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
 				)
 			),
-            description = text("Test ship movement by holding your controller and pressing TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Test ship movement by holding your controller and pressing your "),
+                    text("SNEAK ", AQUA),
+                    text("key")
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -508,9 +572,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					ofChildren(
 						janePrefix,
 						ofChildren(text("When you are piloting a ship, you can move in any direction by holding a clock and pressing your "), Component.keybind("key.sneak"), text(" key in order to move in the direction you are looking. Try it out!")),
-						Component.newline(),
+                        newline(),
 						text("You can do this to move diagonally, upwards and downwards too."),
-						Component.newline(),
+                        newline(),
 					), 80L, EffectTiming.START
 				)
 			)
@@ -533,7 +597,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				),
 			),
-            description = text("Turn the escape pod left by pressing TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Turn the escape pod left by pressing your "),
+                    text("DROP ITEM ", AQUA),
+                    text("key")
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -561,7 +631,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				)
 			),
-            description = text("Turn the escape pod right by pressing TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Turn the escape pod right by pressing your "),
+                    text("SWAP ITEM TO OFFHAND ", AQUA),
+                    text("key"),
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -585,7 +661,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_START)
 				) // TODO replace
 			),
-            description = text("Move to the objective at TODO"),
+            description = PhaseDescription(text("Move to the objective")),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_INTERMISSION_START", { System.currentTimeMillis() }, EffectTiming.START),
@@ -616,7 +692,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_TURN)
 				),
 			),
-            description = text("Activate cruise mode by TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Activate cruise mode by "),
+                    text("RIGHT CLICKING/USING ", AQUA),
+                    text("the Cruise sign, or by running the /cruise command"),
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -625,7 +707,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendDelayedMessage(ofChildren(janePrefix, text("Cruising lets your ship move faster than manual flight, you can engage it by "), Component.keybind("key.use"), text("ing the cruise control sign, or using the /cruise command.")), 40L, EffectTiming.START),
 				SendDelayedMessage(ofChildren(janePrefix, text("When cruise is engaged, your ship will start to accelerate up to its cruise speed, in the direction you were looking when it started. You can cruise diagonally at full speed, but you " +
 					"need thrusters to cruise in other directions.")), 80L, EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.destroy"), text("ing the cruise control sign, or repeating the /cruise command.")), 80L, EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), 80L, EffectTiming.START),
 				SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
 			)
 		)
@@ -644,7 +726,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_STOP)
 				)
 			),
-            description = text("Turn your ship while cruising"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Turn the escape pod while cruising by pressing your "),
+                    text("DROP ITEM ", AQUA),
+                    text("or "),
+                    text("SWAP ITEM TO OFFHAND ", AQUA),
+                    text("key"),
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_CRUISE_TURN_START", { System.currentTimeMillis() }, EffectTiming.START),
@@ -671,13 +761,19 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
 				)
 			),
-            description = text("Stop cruising by TODO"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Deactivate cruise mode by "),
+                    text("LEFT CLICKING/ATTACKING ", AQUA),
+                    text("the Cruise sign, or by running the /cruise command"),
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field, congratulations! You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO - better messages
-				SendMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.destroy"), text("ing the cruise control sign, or repeating the /cruise command.")), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
@@ -696,7 +792,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_HYPERSPACE_JUMP)
 				),
 			),
-            description = text("Load the hyperdrive with chetherite"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Load the hyperdrive hoppers with the "),
+                    text("chetherite ", LIGHT_PURPLE),
+                    text("you obtained earlier")
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -729,7 +831,12 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE)
 				),
 			),
-            description = text("Jump to a new star system"),
+            description = PhaseDescription(
+                description = ofChildren(
+                    text("- Jump to a new star system by entering the command: "),
+                    text("/jump Horizons_End_Transit_Hub", AQUA)
+                )
+            ),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -757,7 +864,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					}
 				),
 			),
-            description = text("Wait until the escape pod completes the hyperspace transit"),
+            description = PhaseDescription(text("- Wait until the escape pod completes the hyperspace transit")),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
 
@@ -817,7 +924,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(
-                    text("This is a starship computer. It is the primary point of interface for ships. They allow piloting, detection, and manage settings.", GRAY, ITALIC),
+                    text("This is a starship computer. It is the primary point of interface for ships. They allow a pilot to start piloting, detect a ship, and manage settings.", GRAY, ITALIC),
                     EffectTiming.START
                 ),
                 SequencePhaseEffect.HighlightBlock(Vec3i(0, 0, 0), 60L, EffectTiming.START),
@@ -836,7 +943,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text(/*TODO*/ "These are navigation machines.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(text("These are navigation machines and the ship's hyperdrives." +
+                        "Their damaged state prevents this cruiser from escaping into hyperspace.", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 
 				GoToPreviousPhase(EffectTiming.START),
@@ -853,7 +961,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text(/*TODO*/ "These are multiblocks", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(text("These are power machines. They would normally be used by the" +
+                        "crew to supply power to their gear, but you don't think the crew will be returning while" +
+                        "the ship is in this state.", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 
 				GoToPreviousPhase(EffectTiming.START),
