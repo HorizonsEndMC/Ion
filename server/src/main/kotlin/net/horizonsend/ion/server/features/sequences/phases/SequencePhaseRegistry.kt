@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
@@ -149,7 +150,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(text("Welcome to Horizon's End!"), EffectTiming.START),
                 SendMessage(text("This is the start of the intro sequence."), EffectTiming.START),
                 SendMessage(text("Exit the cryopod room to begin."), EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START)
+                SendMessage(Component.empty(), EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(-9, -1, -56), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
             )
         )
 
@@ -197,7 +199,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
                     SendMessage(Component.empty(), null),
                 ),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, 0, -71), 10L, EffectTiming.TICKED), 10)
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(0, 0, -71), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
             )
         )
 
@@ -264,7 +266,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(Component.empty(), null),
                 ),
 
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(4, 0, -19), 10L, EffectTiming.TICKED), 10)
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(4, 0, -19), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
             )
         )
 
@@ -413,7 +415,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					SendMessage(Component.empty(), EffectTiming.START),
 					SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
 					SendMessage(Component.empty(), EffectTiming.START),
-				)
+				),
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(0, -6, -58), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
             )
         )
 
@@ -439,10 +442,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(4, -7, -66), 10L, EffectTiming.TICKED), 10),
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(text("Quick, you'll need to grab some fuel for the escape pod's emergancy hyperdrive. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(4, -5, -66), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
             )
         )
         bootstrapPhase(
@@ -477,7 +480,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, -3, -98), 10L, EffectTiming.TICKED), 10),
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(0, -3, -98), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20),
 
 				ifPreviousPhase(
 					GET_CHETHERITE,
