@@ -2,9 +2,15 @@ package net.horizonsend.ion.server.features.sequences.effect
 
 import kotlinx.serialization.InternalSerializationApi
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
+import net.horizonsend.ion.common.utils.text.QUEST_OBJECTIVE_ICON
+import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.util.FloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceContext
 import net.horizonsend.ion.server.features.sequences.SequenceManager
@@ -21,9 +27,13 @@ import net.minecraft.server.MinecraftServer
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import java.util.Optional
 import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
@@ -139,6 +149,43 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 	class HighlightBlock(val position: Vec3i, val duration: Long, timing: EffectTiming?) : SequencePhaseEffect(timing) {
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
 			player.highlightBlock(position.plus(context.getOrigin()), duration)
+		}
+	}
+
+	class DisplayHudIcon(val position: Vec3i, val itemStack: ItemStack, val duration: Long, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val actualPosition = position.plus(context.getOrigin())
+			val entity = ClientDisplayEntityFactory.createTextDisplay(player)
+			val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
+
+			entity.text(ofChildren(
+				Component.text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+				Component.text("TEST")
+			))
+			entity.billboard = Display.Billboard.FIXED
+			entity.viewRange = 5.0f
+			entity.brightness = Display.Brightness(15, 15)
+			entity.teleportDuration = 0
+			entity.isSeeThrough = true
+
+			val playerVec3i = Vec3i(player.location.x.toInt(), player.location.y.toInt(), player.location.z.toInt())
+			val distance = actualPosition.distance(playerVec3i)
+			val direction = actualPosition.toVector().subtract(player.location.toVector()).normalize()
+
+			// calculate position and offset
+			val playerPosition = player.eyeLocation.toVector()
+			val scale = 1f
+			val offset = direction.clone().normalize().multiply(1)
+
+			entity.transformation = Transformation(
+				offset.toVector3f(),
+				ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
+				Vector3f(1f, 1f, 1f),
+				Quaternionf()
+			)
+
+			val nmsEntity = entity.getNMSData(playerPosition.x, playerPosition.y, playerPosition.z)
+			ClientDisplayEntities.sendEntityPacket(player, nmsEntity, duration)
 		}
 	}
 
