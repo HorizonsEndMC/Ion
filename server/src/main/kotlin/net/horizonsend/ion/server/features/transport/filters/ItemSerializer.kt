@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.server.features.space.data.CompoundTagType
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
+import net.minecraft.nbt.Tag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.item.ItemStack as NMSItemStack
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -15,13 +17,18 @@ object ItemSerializer : PersistentDataType<PersistentDataContainer, BukkitItemSt
 	override fun getComplexType(): Class<BukkitItemStack> = BukkitItemStack::class.java
 
 	override fun toPrimitive(complex: BukkitItemStack, context: PersistentDataAdapterContext): PersistentDataContainer {
-		val compound = CraftItemStack.asNMSCopy(complex).saveOptional(MinecraftServer.getServer().registryAccess()) as CompoundTag
-		return CompoundTagType.toPrimitive(compound, context)
+		val nms = CraftItemStack.asNMSCopy(complex)
+		val compound = if (nms.isEmpty) CompoundTag() else NMSItemStack.CODEC.encode(
+			nms,
+			MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE),
+			CompoundTag()
+		).result().get()
+		return CompoundTagType.toPrimitive(compound as CompoundTag, context)
 	}
 
 	override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): BukkitItemStack {
 		val compound = CompoundTagType.fromPrimitive(primitive, context)
-		val nms = NMSItemStack.parse(MinecraftServer.getServer().registryAccess(), compound).get()
-		return CraftItemStack.asBukkitCopy(nms)
+		val nms = NMSItemStack.CODEC.decode(MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), compound).resultOrPartial().get()
+		return CraftItemStack.asBukkitCopy(nms.first)
 	}
 }
