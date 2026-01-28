@@ -86,7 +86,7 @@ public class SignUtils {
 			return new HashMap<>();
 		}
 
-		Set<String> keys = pdcNmsCompound.getAllKeys();
+		Set<String> keys = pdcNmsCompound.keySet();
 
 		//noinspection DataFlowIssue
 		return keys.stream().collect(Collectors.toMap(v -> v, pdcNmsCompound::get));

@@ -120,14 +120,14 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 
 	/** Returns the weapon set that's range contains the specified distance */
 	fun getManualSetInRange(distance: Double): WeaponSet? {
-		return manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
+		return manualWeaponSets.firstOrNull { it.engagementRange.contains(distance) }
 	}
 
 	/** Returns the weapon set that's range contains the specified distance
 	 * if no manual sets are define, return null*/
 	fun getManualSetsInRange(distance: Double): List<WeaponSet>? {
 		if (manualWeaponSets.isEmpty()) return null
-		return manualWeaponSets.filter { it.engagementRange.containsDouble(distance) }
+		return manualWeaponSets.filter { it.engagementRange.contains(distance) }
 	}
 
 	fun addManualSet(name: String, minRange: Double, maxRange: Double) {
@@ -138,7 +138,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 
 	/** Returns the weapon set that's range contains the specified distance */
 	fun getAutoSetsInRange(distance: Double): Set<WeaponSet> {
-		return autoWeaponSets.filter { it.engagementRange.containsDouble(distance) }.toSet()
+		return autoWeaponSets.filter { it.engagementRange.contains(distance) }.toSet()
 	}
 
 	fun addAutoSet(name: String, minRange: Double, maxRange: Double) {
