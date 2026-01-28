@@ -68,7 +68,7 @@ class IonBootstrapper : PluginBootstrap {
 
 
 
-		context.lifecycleManager.registerEventHandler(RegistryEvents.DAMAGE_TYPE.freeze().newHandler { event ->
+		context.lifecycleManager.registerEventHandler(RegistryEvents.DAMAGE_TYPE.compose().newHandler { event ->
 			for (weapon in damageMultiblocks) {
 				event.registry().register(
 					weapon.damageTypeKey,

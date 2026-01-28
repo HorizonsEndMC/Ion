@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.custom.items.type.armor
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
@@ -55,8 +54,8 @@ class PowerArmorItem(
 		.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
 		.setCustomModel(itemModel)
 		.setMaxStackSize(1)
-		.addData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable(false))
-		.addData(DataComponentTypes.EQUIPPABLE, Equippable
+		.addNonValuedData(DataComponentTypes.UNBREAKABLE, false)
+		.addValuedData(DataComponentTypes.EQUIPPABLE, Equippable
 			.equippable(slot)
 			.damageOnHurt(false)
 			.swappable(true)
@@ -64,7 +63,7 @@ class PowerArmorItem(
 			.assetId(NamespacedKeys.packKey("power_armor"))
 			.build()
 		)
-		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+		.addValuedData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
 			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
 //			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))

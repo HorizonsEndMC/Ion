@@ -250,7 +250,7 @@ class CancelListeners : SLEventListener() {
 			val state = event.block.getState(false)
 			if (state !is CraftVault) return@sync
 
-			val entity = state.tileEntity
+			val entity = state.blockEntity
 
 			entity.config = disabledVaultConfig
 			state.nextStateUpdateTime = Long.MAX_VALUE

@@ -1,15 +1,9 @@
 package net.horizonsend.ion.server.features.client.networking
 
-import net.horizonsend.ion.server.features.client.networking.packets.GetPosPacket
-import net.horizonsend.ion.server.features.client.networking.packets.HandshakePacket
-import net.horizonsend.ion.server.features.client.networking.packets.PlayerAdd
-import net.horizonsend.ion.server.features.client.networking.packets.PlayerRemove
-import net.horizonsend.ion.server.features.client.networking.packets.ShipData
-import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
 import org.bukkit.entity.Player
 
+/*
 abstract class IonPacketHandler {
 	abstract val name: String
 	val id by lazy { id(name.lowercase()) }
@@ -58,3 +52,4 @@ enum class Packets(
 //			)
 	}
 }
+ */

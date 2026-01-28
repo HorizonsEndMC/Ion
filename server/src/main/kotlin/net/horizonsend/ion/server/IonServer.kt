@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles.configuration
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.chat.Discord
-import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.misc.WorldReset
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
@@ -119,7 +118,7 @@ object IonServer : JavaPlugin() {
 			}
 		}
 
-		ShipData.enable()
+		//ShipData.enable()
 
 		// Checkmark is not an emoji?
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB

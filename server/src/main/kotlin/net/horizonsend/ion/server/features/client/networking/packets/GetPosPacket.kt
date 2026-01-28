@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.client.networking.packets
 
-import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
-import net.horizonsend.ion.server.features.client.networking.Packets
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
+/*
 object GetPosPacket : IonPacketHandler() {
 	override val name = "getpos"
 
@@ -37,3 +36,4 @@ object GetPosPacket : IonPacketHandler() {
 		buf.writeFloat(arguments[6] as Float)
 	}
 }
+ */

@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleListener
-import net.horizonsend.ion.server.features.client.VoidNetwork
-import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
@@ -73,7 +71,7 @@ val listeners: List<Listener> = listOf(
 	WorldGenerationManager,
 	EncounterManager(),
 	ResourcePackListener(),
-	VoidNetwork(),
+	//VoidNetwork(),
 	CryoPods,
 	BiomeFixer9001(),
 	AbstractTractorBeam.Companion,
@@ -93,5 +91,5 @@ val listeners: List<Listener> = listOf(
 	WaypointListeners(),
 
 	//Packet Listeners
-	WorldPacket
+	//WorldPacket
 )

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.filters
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
+import io.papermc.paper.datacomponent.item.TooltipDisplay
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -19,7 +20,7 @@ enum class FilterMethod(val icon: ItemStack) {
 		.updatePersistentDataContainer {
 			set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, "USELESS")
 		}
-		.updateData(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, true)
+		.updateData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build())
 		.updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 		.apply {
 			POWER_DRILL_BASIC.getValue().getComponent(CustomComponentTypes.POWER_STORAGE).setPower(POWER_DRILL_BASIC.getValue(), this, 25000)
@@ -35,7 +36,7 @@ enum class FilterMethod(val icon: ItemStack) {
 		.updatePersistentDataContainer {
 			set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, "USELESS")
 		}
-		.updateData(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, true)
+		.updateData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build())
 		.updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 		.updateDisplayName(text("Lenient item checks"))
 		.updateLore(mutableListOf(text("Only item IDs will be matched.")))

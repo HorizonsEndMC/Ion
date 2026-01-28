@@ -40,7 +40,7 @@ import org.bukkit.Material.CAMPFIRE
 import org.bukkit.Material.CARROTS
 import org.bukkit.Material.CARTOGRAPHY_TABLE
 import org.bukkit.Material.CAULDRON
-import org.bukkit.Material.CHAIN
+import org.bukkit.Material.IRON_CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
 import org.bukkit.Material.COAL_BLOCK
@@ -274,7 +274,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	GRINDSTONE,
 	BARREL,
 	SCAFFOLDING,
-	CHAIN,
+	IRON_CHAIN,
 
 	COPPER_BLOCK,
 	EXPOSED_COPPER,

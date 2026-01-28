@@ -47,6 +47,7 @@ import java.io.File
 @CommandAlias("regenerate")
 object RegenerateCommand : SLCommand() {
 	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
+	/*
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
 	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -279,4 +280,5 @@ object RegenerateCommand : SLCommand() {
 			regenerateOresInSelection(sender, selection, sender.world)
 		}
 	}
+	 */
 }

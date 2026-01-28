@@ -19,7 +19,9 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.minecraft.core.BlockPos
+import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.ListTag
+import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -104,8 +106,8 @@ object CratePlacer : CustomItem(
 			boxEntity.customName(item.itemMeta.displayName())
 			boxEntity.update()
 
-			val entity = (target.state as CraftShulkerBox).tileEntity
-			val chunk = entity.location.chunk.minecraft
+			val entity = (target.state as CraftShulkerBox).blockEntity
+			val chunk = entity.location?.chunk?.minecraft ?: throw (NullPointerException("Crate Placer doesn't work at the moment :("))
 
 			// Save the full compound tag
 			val base = entity.saveWithFullMetadata(player.world.minecraft.registryAccess())
