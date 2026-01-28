@@ -19,9 +19,8 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.minecraft.core.BlockPos
-import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.ListTag
-import net.minecraft.world.item.component.CustomData
+import net.minecraft.nbt.NbtOps
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -100,7 +99,11 @@ object CratePlacer : CustomItem(
 			val paperItem = itemState.inventory.filterNotNull().first()
 			val nms = CraftItemStack.asNMSCopy(paperItem)
 
-			val itemNBT = nms.save(player.world.minecraft.registryAccess())
+			val itemNBT = net.minecraft.world.item.ItemStack.CODEC.encodeStart(
+				player.world.minecraft.registryAccess().createSerializationContext(NbtOps.INSTANCE),
+				nms
+			).result()
+			if (!itemNBT.isPresent) throw (NullPointerException("Crate Placer doesn't work at the moment :("))
 
 			val boxEntity = target.state as ShulkerBox
 			boxEntity.customName(item.itemMeta.displayName())
@@ -113,7 +116,7 @@ object CratePlacer : CustomItem(
 			val base = entity.saveWithFullMetadata(player.world.minecraft.registryAccess())
 
 			val items = ListTag()
-			items.add(itemNBT)
+			items.add(itemNBT.get())
 
 			base.put("Items", items)
 
