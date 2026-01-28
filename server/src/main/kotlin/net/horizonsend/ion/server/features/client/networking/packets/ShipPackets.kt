@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.client.networking.packets
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
-import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
-import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -14,6 +12,7 @@ import org.bukkit.entity.Player
 import java.util.Locale
 import kotlin.math.roundToInt
 
+/*
 object ShipData : IonPacketHandler() {
 	override val name = "ship_data"
 
@@ -100,3 +99,4 @@ object ShipData : IonPacketHandler() {
 		buf.writeDouble(thruster)
 	}
 }
+ */

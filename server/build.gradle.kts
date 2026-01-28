@@ -33,9 +33,9 @@ repositories {
 dependencies {
 	implementation(project(":common"))
 
-	compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+	compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
 	// Platform
-	paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }

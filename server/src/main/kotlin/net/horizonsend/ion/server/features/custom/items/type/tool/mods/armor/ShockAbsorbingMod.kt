@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
+import io.papermc.paper.datacomponent.item.TooltipDisplay
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -33,7 +34,7 @@ object ShockAbsorbingMod : ItemModification {
 	override fun onAdd(itemStack: ItemStack) {
 		val existing = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
 
-		val builder = ItemAttributeModifiers.itemAttributes().showInTooltip(true)
+		val builder = ItemAttributeModifiers.itemAttributes()
 
 		if (existing != null) {
 			for (modifier in existing.modifiers()) {
@@ -47,12 +48,13 @@ object ShockAbsorbingMod : ItemModification {
 		)
 
 		itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, builder.build())
+		itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 	}
 
 	override fun onRemove(itemStack: ItemStack) {
 		val existing = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS) ?: return
 
-		val builder = ItemAttributeModifiers.itemAttributes().showInTooltip(true)
+		val builder = ItemAttributeModifiers.itemAttributes()
 		val trimmed = existing.modifiers().toMutableList()
 		trimmed.removeAll { it.modifier().key == KNOCKBACK_RESISTANCE_KEY }
 
@@ -61,6 +63,7 @@ object ShockAbsorbingMod : ItemModification {
 		}
 
 		itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, builder.build())
+		itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 	}
 
 	private val KNOCKBACK_RESISTANCE_KEY = NamespacedKeys.key("KNOCKBACK_RESISTANCE")

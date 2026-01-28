@@ -67,7 +67,9 @@ class SinkAnimation(
 
 			val initColor = Color.ORANGE
 
-			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor, false)) }
+			val item = DYEABLE_CUBE_MONO.construct { t ->
+				t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor))
+			}
 
 			val originHeading = Vector(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0))
 			val (_, _) = originHeading.orthogonalVectors()
@@ -101,7 +103,7 @@ class SinkAnimation(
 			val degrees = (shockwavePoints / iteration.toDouble()) * 360.0
 			val vector = BlockFace.NORTH.direction.rotateAroundY(Math.toRadians(degrees)).normalize().multiply(3).multiply(scale)
 
-			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.GRAY, false)) }
+			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.GRAY)) }
 			val displayContainer = ItemDisplayContainer(world, 1.0f, origin.toCenterVector(), Vector.getRandom(), item, playerFilter = playerFilter)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
@@ -285,7 +287,7 @@ class SinkAnimation(
 
 			val newColor = Color.fromRGB(blendedR, blendedG, blendedB)
 
-			wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
+			wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor))
 		}
 	}
 }

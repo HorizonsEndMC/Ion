@@ -302,8 +302,8 @@ object Crafting : IonServerComponent() {
 		shapeless("resin", ItemStack(RESIN_CLUMP), CraftingBookCategory.MISC, ItemStack(HONEYCOMB, 2), ItemStack(COBBLESTONE, 2))
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
-		Bukkit.removeRecipe(Material.CHAIN.key)
-		shaped("chain", ItemStack(Material.CHAIN, 4), CraftingBookCategory.BUILDING) {
+		Bukkit.removeRecipe(Material.IRON_CHAIN.key)
+		shaped("chain", ItemStack(Material.IRON_CHAIN, 4), CraftingBookCategory.BUILDING) {
 			shape("n", "i", "n")
 
 			setIngredient('n', IRON_NUGGET)
@@ -680,7 +680,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', RAW_GOLD)
 			setIngredient('b', TITANIUM_BLOCK.getValue().constructItemStack())
 			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
-			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(Enchantment.SILK_TOUCH to 1), true)))
+			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(Enchantment.SILK_TOUCH to 1))))
 			setIngredient('c', CIRCUIT_BOARD.getValue().constructItemStack())
 		}
 

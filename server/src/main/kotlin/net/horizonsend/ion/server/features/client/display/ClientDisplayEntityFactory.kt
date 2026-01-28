@@ -28,7 +28,7 @@ object ClientDisplayEntityFactory {
      * @param player the player that the entity will be visible to
      */
     fun createTextDisplay(player: Player): CraftTextDisplay =
-        CraftTextDisplay(player.minecraft.server.server, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
+        CraftTextDisplay(player.minecraft.level().server.server, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
 
     /**
      * Converts a Bukkit TextDisplay to a NMS TextDisplay.
@@ -84,7 +84,7 @@ object ClientDisplayEntityFactory {
      * @param player the player that the entity will be visible to
      */
     fun createItemDisplay(player: Player): CraftItemDisplay =
-        CraftItemDisplay(player.minecraft.server.server, Display.ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()))
+        CraftItemDisplay(player.minecraft.level().server.server, Display.ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()))
 
     fun ItemDisplay.getNMSData(): Display.ItemDisplay = (this as CraftItemDisplay).handle
 

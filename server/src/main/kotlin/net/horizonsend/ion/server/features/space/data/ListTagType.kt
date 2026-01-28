@@ -34,14 +34,14 @@ object ListTagType : PersistentDataType<PersistentDataContainer, ListTag> {
 			index++
 
 			when (entry) {
-				is ByteTag -> primitive.set(key, PersistentDataType.BYTE, entry.asByte)
-				is ShortTag -> primitive.set(key, PersistentDataType.SHORT, entry.asShort)
-				is IntTag -> primitive.set(key, PersistentDataType.INTEGER, entry.asInt)
-				is LongTag -> primitive.set(key, PersistentDataType.LONG, entry.asLong)
-				is FloatTag -> primitive.set(key, PersistentDataType.FLOAT, entry.asFloat)
-				is DoubleTag -> primitive.set(key, PersistentDataType.DOUBLE, entry.asDouble)
+				is ByteTag -> primitive.set(key, PersistentDataType.BYTE, entry.byteValue())
+				is ShortTag -> primitive.set(key, PersistentDataType.SHORT, entry.shortValue())
+				is IntTag -> primitive.set(key, PersistentDataType.INTEGER, entry.intValue())
+				is LongTag -> primitive.set(key, PersistentDataType.LONG, entry.longValue())
+				is FloatTag -> primitive.set(key, PersistentDataType.FLOAT, entry.floatValue())
+				is DoubleTag -> primitive.set(key, PersistentDataType.DOUBLE, entry.doubleValue())
 				is ByteArrayTag -> primitive.set(key, PersistentDataType.BYTE_ARRAY, entry.asByteArray)
-				is StringTag -> primitive.set(key, PersistentDataType.STRING, entry.asString)
+				is StringTag -> primitive.set(key, PersistentDataType.STRING, entry.toString())
 				is CompoundTag -> primitive.set(key, CompoundTagType, entry)
 				is IntArrayTag -> primitive.set(key, PersistentDataType.INTEGER_ARRAY, entry.asIntArray)
 				is LongArrayTag -> primitive.set(key, PersistentDataType.LONG_ARRAY, entry.asLongArray)

@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.client.networking.packets
 
-import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.entity.Player
 
+/*
 object PlayerAdd : IonPacketHandler() {
 	override val name: String = "player_add"
 
@@ -19,3 +19,4 @@ object PlayerRemove : IonPacketHandler() {
 		buf.writeUUID((arguments[0] as Player).uniqueId)
 	}
 }
+ */

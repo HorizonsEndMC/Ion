@@ -1,9 +1,6 @@
 package net.horizonsend.ion.server.features.client.networking.packets
 
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.client.VoidNetwork
-import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
-import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -11,6 +8,7 @@ import net.minecraft.world.item.ItemStack
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 
+/*
 object HandshakePacket : IonPacketHandler() {
 	override val name = "handshake"
 
@@ -31,3 +29,4 @@ object HandshakePacket : IonPacketHandler() {
 		for (i in items) ItemStack.OPTIONAL_STREAM_CODEC.encode(regFriendly, i)
 	}
 }
+ */

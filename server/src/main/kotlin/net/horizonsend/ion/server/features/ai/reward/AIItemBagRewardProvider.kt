@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.reward
 
-import io.papermc.paper.util.ItemComponentSanitizer.override
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.randomFloat
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom

@@ -76,7 +76,7 @@ private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
 	val (_, blockNBT) = blockData
 
 	if (!blockNBT!!.contains("CustomName")) return
-	val name = blockNBT.getString("CustomName")
+	val name = blockNBT.getString("CustomName").get()
 
 	if (name.contains("Secondary Chest: ", true)) {
 		val chestType = name.substringAfter("Secondary Chest: ").substringBefore("\"")

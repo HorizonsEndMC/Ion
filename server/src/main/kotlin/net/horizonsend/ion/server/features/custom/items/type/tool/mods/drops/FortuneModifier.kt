@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemEnchantments
+import io.papermc.paper.datacomponent.item.TooltipDisplay
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
@@ -50,7 +51,8 @@ class FortuneModifier(
 	}
 
 	private val fortunePick = ItemStack(Material.DIAMOND_PICKAXE)
-		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.FORTUNE to level), true))
+		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.FORTUNE to level)))
+		.updateData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.ENCHANTMENTS).build())
 
 	override val usedTool: ItemStack = fortunePick
 

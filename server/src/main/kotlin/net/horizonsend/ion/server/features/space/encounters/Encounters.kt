@@ -85,9 +85,9 @@ object Encounters {
 	}
 
 	fun encounterMatchesChest(wreck: CompoundTag, chest: Chest): Boolean = (
-			wreck.getInt("x") == chest.x &&
-					wreck.getInt("y") == chest.y &&
-					wreck.getInt("z") == chest.z)
+			wreck.getInt("x").get() == chest.x &&
+					wreck.getInt("y").get() == chest.y &&
+					wreck.getInt("z").get() == chest.z)
 
 	fun createLootChest(lootTable: String): CompoundTag {
 		val tileEntityData = Encounter.baseChestNBT

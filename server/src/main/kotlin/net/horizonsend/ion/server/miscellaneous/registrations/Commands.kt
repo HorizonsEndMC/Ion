@@ -170,7 +170,7 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
-	RegenerateCommand,
+	//RegenerateCommand,
 	RemoveGhostShipCommand,
 	DisplayShieldsCommand,
 

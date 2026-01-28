@@ -89,7 +89,14 @@ class ItemFactory private constructor(
 			return this
 		}
 
-		fun <T: Any> addData(type: DataComponentType.Valued<T>, data: T): Builder {
+		fun addNonValuedData(type: DataComponentType.NonValued, data: Boolean): Builder {
+			this.itemModifiers += Consumer<ItemStack> {
+				if (data) it.setData(type) else it.unsetData(type)
+			}
+			return this
+		}
+
+		fun <T: Any> addValuedData(type: DataComponentType.Valued<T>, data: T): Builder {
 			this.itemModifiers += Consumer<ItemStack> {
 				it.setData(type, data)
 			}

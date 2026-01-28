@@ -34,7 +34,7 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 	baseItemFactory = ItemFactory.builder()
 		.setMaterial(SHIELD)
 		.setCustomModel("weapon/energy_sword/${type.lowercase()}_energy_sword")
-		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+		.addValuedData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
 			.addModifier(Attribute.ATTACK_DAMAGE, AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 6.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))
 			.addModifier(Attribute.ATTACK_SPEED, AttributeModifier(NamespacedKeys.key("energy_sword_speed"), 1.8, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND))

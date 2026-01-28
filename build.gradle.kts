@@ -36,7 +36,7 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 }
 
 @Suppress("UNCHECKED_CAST")
-fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.4") {
+fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.11") {
 	val targetLoader = "paper"
 
 	logger.log(LogLevel.QUIET, "Downloading $project... ")

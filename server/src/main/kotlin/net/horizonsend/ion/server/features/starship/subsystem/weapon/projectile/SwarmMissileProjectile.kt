@@ -38,7 +38,7 @@ class SwarmMissileProjectile(
     var flightPath1Completed = false
     var flightPath2Completed = false
 
-    val item = ItemFactory.unStackableCustomItem("projectile/swarm_missile").construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color, false)) }
+    val item = ItemFactory.unStackableCustomItem("projectile/swarm_missile").construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color)) }
 
     private val container = ItemDisplayContainer(
         source.getWorld(),

@@ -9,9 +9,9 @@ import net.minecraft.advancements.AdvancementNode
 import net.minecraft.advancements.AdvancementTree
 import net.minecraft.advancements.AdvancementType
 import net.minecraft.advancements.TreeNodePosition
-import net.minecraft.advancements.critereon.InventoryChangeTrigger
+import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.registries.Registries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.ServerAdvancementManager
 import net.minecraft.world.level.block.Blocks
@@ -23,7 +23,7 @@ object NMSAchievements : IonServerComponent() {
 	}
 
 	private fun boostrapAchievements() {
-		val advancements = mutableMapOf<ResourceLocation, AdvancementHolder>()
+		val advancements = mutableMapOf<Identifier, AdvancementHolder>()
 
 		val consumer = Consumer<AdvancementHolder> { advancementHolder ->
 			advancements[advancementHolder.id] = advancementHolder
@@ -34,7 +34,7 @@ object NMSAchievements : IonServerComponent() {
 				Blocks.SCULK,
 				PaperAdventure.asVanilla(Component.text("HE TEST")),
 				PaperAdventure.asVanilla(Component.text("HE TEST DESCRIPTION")),
-				ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
+				Identifier.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
 				AdvancementType.TASK,
 				false,
 				false,
@@ -46,7 +46,7 @@ object NMSAchievements : IonServerComponent() {
 		apply(advancements)
 	}
 
-	fun apply(advancements: Map<ResourceLocation, AdvancementHolder>) {
+	fun apply(advancements: Map<Identifier, AdvancementHolder>) {
 		val manager = MinecraftServer.getServer().advancements
 		val plusOld = manager.advancements.plus(advancements)
 

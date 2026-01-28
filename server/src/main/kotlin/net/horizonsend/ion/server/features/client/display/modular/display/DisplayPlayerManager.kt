@@ -63,7 +63,7 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 
 	fun getPossibleViewers(useFilter: Boolean = true): MutableSet<UUID>? {
 		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return null
-		val viewerPlayers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false)
+		val viewerPlayers = chunk.`moonrise$getChunkHolder`().vanillaChunkHolder.`moonrise$getPlayers`(false)
 
 		if (!useFilter) return viewerPlayers.mapTo(mutableSetOf(), ServerPlayer::getUUID)
 		return viewerPlayers.filter(playerFilter).mapTo(mutableSetOf(), ServerPlayer::getUUID)

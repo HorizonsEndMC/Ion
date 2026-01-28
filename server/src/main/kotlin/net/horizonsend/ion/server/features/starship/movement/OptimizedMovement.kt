@@ -203,7 +203,7 @@ object OptimizedMovement {
 					}
 
 					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
-					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
+					nmsChunk.level.updatePOIOnBlockStateChange(blockPos, type, AIR)
 
 					section.setBlockState(localX, localY, localZ, AIR, false)
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
@@ -252,7 +252,7 @@ object OptimizedMovement {
 
 					val blockPos = BlockPos(x, y, z)
 					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
-					nmsChunk.level.onBlockStateChange(blockPos, AIR /*TODO hangars */, data)
+					nmsChunk.level.updatePOIOnBlockStateChange(blockPos, AIR /*TODO hangars */, data)
 
 					section.setBlockState(localX, localY, localZ, data, false)
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
@@ -354,7 +354,7 @@ object OptimizedMovement {
 		for ((chunkMap, world) in listOf(oldChunkMap to currentWorld.uid, newChunkMap to newWorld.uid)) {
 			for ((chunkKey, _) in chunkMap) {
 				val nmsChunk = getNMSChunk(Bukkit.getWorld(world)!!, chunkKey, chunkCache)
-				nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
+				nmsChunk.`moonrise$getChunkHolder`().vanillaChunkHolder.broadcastChanges(nmsChunk)
 			}
 		}
 	}
@@ -363,7 +363,7 @@ object OptimizedMovement {
 	private val hasChangedSections = ChunkHolder::class.java.getDeclaredField("hasChangedSections").apply { isAccessible = true }
 
 	fun pseudoBlockChanged(chunk: LevelChunk, sectionIndex: Int, blockPos: BlockPos) {
-		val holder = chunk.`moonrise$getChunkAndHolder`().holder
+		val holder = chunk.`moonrise$getChunkHolder`().vanillaChunkHolder
 
 		@Suppress("UNCHECKED_CAST") val changedBlockSets: Array<ShortSet?> = blocksChangedPersection.get(holder) as Array<ShortSet?>
 

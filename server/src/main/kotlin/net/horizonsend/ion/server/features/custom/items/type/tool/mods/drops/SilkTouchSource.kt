@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemEnchantments
+import io.papermc.paper.datacomponent.item.TooltipDisplay
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -49,7 +50,8 @@ object SilkTouchSource : ItemModification, DropSource {
 	}
 
 	private val silkPick = ItemStack(Material.DIAMOND_PICKAXE)
-		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true))
+		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1)))
+		.updateData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.ENCHANTMENTS).build())
 
 	override val usedTool: ItemStack = silkPick
 
