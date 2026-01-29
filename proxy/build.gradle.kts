@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-	id("com.github.johnrengelman.shadow")
+	id("com.gradleup.shadow") version "9.3.1"
 
 	kotlin("kapt")
 	kotlin("plugin.serialization")
@@ -33,8 +33,11 @@ dependencies {
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 }
 
-tasks.build { dependsOn("shadowJar") }
-tasks.shadowJar { archiveFileName.set("../../../build/IonProxy.jar") }
+tasks.assemble { dependsOn(tasks.shadowJar) }
+tasks.shadowJar {
+	archiveFileName.set("IonProxy.jar")
+	destinationDirectory.set(file(rootProject.projectDir.absolutePath + "/build"))
+}
 
 tasks.named<KotlinJvmCompile>("compileKotlin") {
 	compilerOptions {
