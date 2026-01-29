@@ -6,7 +6,7 @@ plugins {
 	kotlin("jvm")
 	kotlin("plugin.serialization")
 
-	id("com.github.johnrengelman.shadow")
+	id("com.gradleup.shadow") version "9.3.1"
 	id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
 }
 
@@ -88,13 +88,13 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 }
 
 val output = ByteArrayOutputStream()
-project.exec {
+tasks.register<Exec>("gitHash") {
 	setCommandLine("git", "rev-parse", "--verify", "--short", "HEAD")
 	standardOutput = output
 }
 val gitHash = String(output.toByteArray()).trim()
 
-val embedHash = tasks.create("embedHash") {
+val embedHash = tasks.register("embedHash") {
 	doLast {
 		val buildDir = layout.buildDirectory.get().path.toAbsolutePath().toString()
 		File("$buildDir/resources/main").mkdirs()
@@ -111,6 +111,6 @@ tasks.shadowJar {
 	destinationDirectory.set(file(rootProject.projectDir.absolutePath + "/build"))
 }
 
-tasks.build {
+tasks.assemble {
 	dependsOn(tasks.shadowJar)
 }
