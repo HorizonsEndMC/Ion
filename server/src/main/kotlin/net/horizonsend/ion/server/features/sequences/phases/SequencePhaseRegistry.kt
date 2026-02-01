@@ -4,6 +4,8 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.BOLD
+import net.horizonsend.ion.common.utils.text.QUEST_OBJECTIVE_ICON
+import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -88,6 +90,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import org.bukkit.Color
 import org.bukkit.Sound
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
 import org.bukkit.potion.PotionEffect
@@ -151,7 +154,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(text("This is the start of the intro sequence."), EffectTiming.START),
                 SendMessage(text("Exit the cryopod room to begin."), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(-9, -1, -56), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudIcon(
+                        position = Vec3i(-9, -1, -56),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayDistanceText(
+                        position = Vec3i(-9, -1, -56),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
             )
         )
 
@@ -185,7 +215,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("- Access the elevator to the hangar bay at: "),
                     text("{0}")
                 ),
-                position = Vec3i(0, 1, -70)
+                position = Vec3i(0, 0, -71)
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
@@ -199,7 +229,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
                     SendMessage(Component.empty(), null),
                 ),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(0, 0, -71), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudIcon(
+                        position = Vec3i(0, 0, -71),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = true,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayDistanceText(
+                        position = Vec3i(0, 0, -71),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = true,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
             )
         )
 
@@ -266,7 +323,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(Component.empty(), null),
                 ),
 
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(4, 0, -19), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudIcon(
+                        position = Vec3i(4, 0, -19),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayDistanceText(
+                        position = Vec3i(4, 0, -19),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
             )
         )
 
@@ -416,7 +500,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
 					SendMessage(Component.empty(), EffectTiming.START),
 				),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(0, -6, -58), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudIcon(
+                        position = Vec3i(0, -6, -58),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayDistanceText(
+                        position = Vec3i(0, -6, -58),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
             )
         )
 
@@ -445,7 +556,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(text("Quick, you'll need to grab some fuel for the escape pod's emergancy hyperdrive. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(4, -5, -66), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20)
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudIcon(
+                        position = Vec3i(4, -5, -66),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayDistanceText(
+                        position = Vec3i(4, -5, -66),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
             )
         )
         bootstrapPhase(
@@ -480,7 +618,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             listOf(
 				RANDOM_EXPLOSION_SOUND,
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.DisplayHudIcon(Vec3i(0, -3, -98), GuiItem.COMPASS_NEEDLE.get(), 20L, EffectTiming.TICKED), 20),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudIcon(
+                        position = Vec3i(0, -3, -98),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayDistanceText(
+                        position = Vec3i(0, -3, -98),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
 
 				ifPreviousPhase(
 					GET_CHETHERITE,
