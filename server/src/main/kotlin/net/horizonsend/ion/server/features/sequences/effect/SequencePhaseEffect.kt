@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.configuration.util.FloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.sequences.Sequence
@@ -37,6 +38,7 @@ import org.joml.Vector3f
 import java.util.Optional
 import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
+import kotlin.math.min
 
 abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 	abstract fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext)
@@ -152,40 +154,74 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 		}
 	}
 
-	class DisplayHudIcon(val position: Vec3i, val itemStack: ItemStack, val duration: Long, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+	class DisplayHudIcon(
+		val position: Vec3i,
+		val text: Component,
+		val durationTicks: Long,
+		val scale: Float = 1.0f,
+		val backgroundColor: Color = Color.fromARGB(0x00000000),
+		val defaultBackground: Boolean = false,
+		val seeThrough: Boolean = false,
+		val highlight: Boolean = false,
+		timing: EffectTiming?
+	) : SequencePhaseEffect(timing) {
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
 			val actualPosition = position.plus(context.getOrigin())
-			val entity = ClientDisplayEntityFactory.createTextDisplay(player)
-			val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
 
-			entity.text(ofChildren(
-				Component.text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
-				Component.text("TEST")
-			))
-			entity.billboard = Display.Billboard.FIXED
-			entity.viewRange = 5.0f
-			entity.brightness = Display.Brightness(15, 15)
-			entity.teleportDuration = 0
-			entity.isSeeThrough = true
-
-			val playerVec3i = Vec3i(player.location.x.toInt(), player.location.y.toInt(), player.location.z.toInt())
-			val distance = actualPosition.distance(playerVec3i)
+			val playerPosition = player.eyeLocation.toVector()
+			val distance = actualPosition.toVector().distance(playerPosition)
 			val direction = actualPosition.toVector().subtract(player.location.toVector()).normalize()
 
 			// calculate position and offset
-			val playerPosition = player.eyeLocation.toVector()
-			val scale = 1f
-			val offset = direction.clone().normalize().multiply(1)
+			val offset = direction.clone().normalize().multiply(min(distance, 10.0))
+			val finalPosition = playerPosition.add(offset).toLocation(player.world)
 
-			entity.transformation = Transformation(
-				offset.toVector3f(),
-				ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-				Vector3f(1f, 1f, 1f),
-				Quaternionf()
+			player.sendText(
+				location = finalPosition,
+				text = text,
+				durationTicks = durationTicks + 1,
+				scale = scale,
+				backgroundColor = backgroundColor,
+				defaultBackground = defaultBackground,
+				seeThrough = seeThrough,
+				highlight = highlight,
 			)
+		}
+	}
 
-			val nmsEntity = entity.getNMSData(playerPosition.x, playerPosition.y, playerPosition.z)
-			ClientDisplayEntities.sendEntityPacket(player, nmsEntity, duration)
+	class DisplayDistanceText(
+		val position: Vec3i,
+		val durationTicks: Long,
+		val scale: Float = 1.0f,
+		val backgroundColor: Color = Color.fromARGB(0x00000000),
+		val defaultBackground: Boolean = false,
+		val seeThrough: Boolean = false,
+		val highlight: Boolean = false,
+		timing: EffectTiming?
+	) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val actualPosition = position.plus(context.getOrigin())
+
+			val playerPosition = player.eyeLocation.toVector()
+			val distance = actualPosition.toVector().distance(playerPosition)
+			val direction = actualPosition.toVector().subtract(player.location.toVector()).normalize()
+
+			val text = Component.text("${distance.toInt()}m")
+
+			// calculate position and offset
+			val offset = direction.clone().normalize().multiply(min(distance, 10.0))
+			val finalPosition = playerPosition.add(offset).toLocation(player.world).add(Vector(0.0, -1.5, 0.0))
+
+			player.sendText(
+				location = finalPosition,
+				text = text,
+				durationTicks = durationTicks + 1,
+				scale = scale,
+				backgroundColor = backgroundColor,
+				defaultBackground = defaultBackground,
+				seeThrough = seeThrough,
+				highlight = highlight,
+			)
 		}
 	}
 
