@@ -16,7 +16,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.environments
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.world.environment.Environment
@@ -82,25 +81,25 @@ object WorldCommand : SLCommand() {
 		sender.sendMessage(builder.build())
 	}
 
-	@Subcommand("environment add")
-    fun onAddWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
-		val ionWorld = IonWorld[world]
-
-		if (ionWorld.configuration.environments.add(environment)) sender.success("Added flag $environment")
-		else return sender.userError("World ${world.name} already had the flag $environment")
-
-		ionWorld.saveConfiguration()
-	}
-
-	@Subcommand("environment remove")
-    fun onRemoveWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
-		val ionWorld = IonWorld[world]
-
-		if (ionWorld.configuration.environments.remove(environment)) sender.success("Removed flag $environment")
-		else return sender.userError("World ${world.name} did not have flag $environment")
-
-		ionWorld.saveConfiguration()
-	}
+//	@Subcommand("environment add")
+//    fun onAddWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
+//		val ionWorld = IonWorld[world]
+//
+//		if (ionWorld.configuration.environments.add(environment)) sender.success("Added flag $environment")
+//		else return sender.userError("World ${world.name} already had the flag $environment")
+//
+//		ionWorld.saveConfiguration()
+//	}
+//
+//	@Subcommand("environment remove")
+//    fun onRemoveWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
+//		val ionWorld = IonWorld[world]
+//
+//		if (ionWorld.configuration.environments.remove(environment)) sender.success("Removed flag $environment")
+//		else return sender.userError("World ${world.name} did not have flag $environment")
+//
+//		ionWorld.saveConfiguration()
+//	}
 
 	@Subcommand("environment list")
     fun onListEnvironments(sender: CommandSender, world: World, @Optional page: Int?) {
@@ -110,7 +109,7 @@ object WorldCommand : SLCommand() {
 
 		builder.append(text("${world.name} Environments:", HE_LIGHT_GRAY, TextDecoration.BOLD), Component.newline())
 
-		val flags = world.environments().toList()
+		val flags = listOf<Environment>() // world.environments().toList()
 
 		val body = formatPaginatedMenu(
 			flags.size,
@@ -149,8 +148,8 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_MINING_LASERS)
 
-				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
-				ionWorld.configuration.environments.add(Environment.VACUUM)
+//				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
+//				ionWorld.configuration.environments.add(Environment.VACUUM)
 
 				ionWorld.saveConfiguration()
 			}
@@ -161,8 +160,8 @@ object WorldCommand : SLCommand() {
 
 				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 
-				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
-				ionWorld.configuration.environments.add(Environment.VACUUM)
+//				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
+//				ionWorld.configuration.environments.add(Environment.VACUUM)
 
 				ionWorld.saveConfiguration()
 			}
