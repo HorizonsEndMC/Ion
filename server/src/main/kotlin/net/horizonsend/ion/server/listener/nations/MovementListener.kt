@@ -25,14 +25,12 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.Title.Times.times
-import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.lang.System.currentTimeMillis
 import java.time.Duration.ofMillis
-import java.time.temporal.TemporalQueries.zone
 import java.util.Collections
 import java.util.UUID
 
@@ -106,21 +104,25 @@ object MovementListener : SLEventListener() {
 			}
 		}
 
-		val station = Regions.findFirstOf<RegionSpaceStation<*, *>>(event.to)
-		val stationZone = station?.let { StationZoneCommand.getZones(SpaceStationCache[station.name]!!).firstOrNull { zone ->
-			zone.contains(event.to)
-		} }
+		val stationRegion = Regions.findFirstOf<RegionSpaceStation<*, *>>(event.to)
+		val cachedStation = stationRegion?.let { SpaceStationCache[stationRegion.name] }
 
-		val oldStationZone = lastPlayerStationZones[uuid]
+		if (cachedStation != null) {
+			val stationZone = StationZoneCommand.getZones(cachedStation).firstOrNull { zone ->
+				zone.contains(event.to)
+			}
 
-		if (oldStationZone != stationZone?.id) {
-			lastPlayerStationZones[uuid] = stationZone?.id
+			val oldStationZone = lastPlayerStationZones[uuid]
 
-			if (stationZone != null) {
-				player.information("Entered station zone ${stationZone.name}")
-			} else {
-				oldStationZone?.let { Regions.get<RegionStationZone>(it) }?.let {
-					player.information("Exited station zone ${it.name}")
+			if (oldStationZone != stationZone?.id) {
+				lastPlayerStationZones[uuid] = stationZone?.id
+
+				if (stationZone != null) {
+					player.information("Entered station zone ${stationZone.name}")
+				} else {
+					oldStationZone?.let { Regions.get<RegionStationZone>(it) }?.let {
+						player.information("Exited station zone ${it.name}")
+					}
 				}
 			}
 		}
