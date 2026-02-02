@@ -21,7 +21,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -30,7 +29,6 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.SLCommand
@@ -38,7 +36,6 @@ import net.horizonsend.ion.server.command.nations.roles.FrontierNationRoleComman
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
@@ -58,10 +55,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
@@ -152,6 +145,7 @@ object FrontierNationCommand : SLCommand() {
 		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
 		requireNotInFrontierNation(sender)
+		requiredNotOnNationJoinCooldown(sender)
 		validateName(name, null)
 		val color = validateColor(red, green, blue, nationId = null)
 
@@ -299,6 +293,8 @@ object FrontierNationCommand : SLCommand() {
 		failIf(!FrontierNation.isInvited(nationId, sender.slPlayerId)) { "You are not invited to $nationName" }
 		failIf(FrontierNation.getMembers(nationId).count() > 4) {"This nation has already reached its maximum member count of 5!"}
 
+		requiredNotOnNationJoinCooldown(sender)
+
 		FrontierNation.removeInvite(nationId, sender.slPlayerId)
 		SLPlayer.joinFrontierNation(sender.slPlayerId, nationId)
 
@@ -310,6 +306,8 @@ object FrontierNationCommand : SLCommand() {
 	fun onLeave(sender: Player, @Optional nation: String?) = asyncCommand(sender) {
 		val nationId = requireFrontierNationIn(sender)
 		val nationName = getFrontierNationName(nationId)
+
+		requiredNotOnNationJoinCooldown(sender)
 
 		failIf(nationName != nation) { "You need to confirm using the name of the nation. Run the command: /fn leave $nationName" }
 
@@ -815,6 +813,20 @@ object FrontierNationCommand : SLCommand() {
 		sender.sendMessage(builder.build())
 	}
 
+	@Subcommand("set leader")
+	@Description("Change the leader of your frontier nation")
+	fun onSetLeader(sender: Player, player: String): Unit = asyncCommand(sender) {
+		val frontierNationId = requireFrontierNationIn(sender)
+		requireFrontierNationLeader(sender, frontierNationId)
 
+		val playerId = resolveOfflinePlayer(player)
+		val slPlayerId = playerId.slPlayerId
+		val nationName = getFrontierNationName(frontierNationId)
 
+		requireIsMemberOfFrontierNation(slPlayerId, frontierNationId)
+
+		FrontierNation.setLeader(frontierNationId, slPlayerId)
+
+		Notify.chatAndGlobal(text("${sender.name} changed their frontier nation $nationName's leader to $player"))
+	}
 }

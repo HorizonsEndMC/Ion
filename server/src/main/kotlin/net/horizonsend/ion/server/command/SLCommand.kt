@@ -51,6 +51,8 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.Duration
+import java.util.Date
 import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -262,6 +264,15 @@ abstract class SLCommand : BaseCommand() {
 		) { "${name ?: "That player"} is not a member of the settlement" }
 	}
 
+	protected fun requireIsMemberOfFrontierNation(slPlayerId: SLPlayerId, frontierNationId: Oid<FrontierNation>, name: String? = null) {
+		failIf(
+			!SLPlayer.isMemberOfFrontierNation(
+				slPlayerId,
+				frontierNationId
+			)
+		) { "${name ?: "That player"} is not a member of the frontier nation" }
+	}
+
 	protected fun requireNotSettlementLeader(sender: Player, settlementId: Oid<Settlement>) {
 		failIf(isSettlementLeader(sender, settlementId)) {
 			"You can't do that while the leader of a settlement! " +
@@ -358,6 +369,13 @@ abstract class SLCommand : BaseCommand() {
 	protected fun requireSelection(sender: Player) = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must have a worldedit selection!" }
 
 	protected fun requireNotInCombat(sender: Player) = failIf(CombatTimer.isPvpCombatTagged(sender) || CombatTimer.isNpcCombatTagged(sender)) { "You can't do that while in combat!" }
+
+	protected fun requiredNotOnNationJoinCooldown(sender: Player) {
+		val lastJoinedNation = SLPlayer.findPropById(sender.slPlayerId, SLPlayer::lastJoinedFrontierNation)
+		if (lastJoinedNation != null && lastJoinedNation.before(Date(System.currentTimeMillis() + Duration.ofDays(1L).toMillis()))) {
+			fail { "You have already joined a nation in the past day!" }
+		}
+	}
 
 	open fun supportsVanilla(): Boolean = false
 }

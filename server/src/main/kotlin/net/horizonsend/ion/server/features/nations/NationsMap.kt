@@ -329,17 +329,25 @@ object NationsMap : IonServerComponent(true) {
 		val frontierNation: FrontierNation? = territory.frontierNation?.let { FrontierNation.findById(it) }
 
 		if (frontierNation != null && territory.isCapital) {
-			val rgb = frontierNation.color
+			val rgb = /*frontierNation.color*/ Integer.parseInt("ff0000", 16)
 
 			val hex = "#${Integer.toHexString(rgb)}"
 
 			val members = SLPlayer.findProps(SLPlayer::frontierNation eq frontierNation._id, SLPlayer::lastKnownName).map { it[SLPlayer::lastKnownName] }
 
+			/*
 			marker.setLabel(
 				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
 					"\n<h3 style=\"text-align: center; color: $hex;\">Nation: ${frontierNation.name}</h3>" +
 					"\n<p style=\"padding-top: 0;\">Leader: ${SLPlayer.getName(frontierNation.leader)}</p>" +
 					"\n<p style=\"padding-top: 0;\">Members: ${members.joinToString()}</p>",
+				true
+			)
+			 */
+
+			marker.setLabel(
+				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
+						"\n<p style=\"padding-top: 0;\">This territory is claimed.</p>",
 				true
 			)
 
@@ -353,17 +361,25 @@ object NationsMap : IonServerComponent(true) {
 				name = alias + " (${territory.name})"
 			}
 
-			val rgb = frontierNation.color
+			val rgb = /*frontierNation.color*/ Integer.parseInt("ff0000", 16)
 			fillOpacity = 0.2
 			fillRGB = rgb
 			lineOpacity = 0.5
 			lineRGB = rgb
 
 			// for nation outposts only
+			/*
 			marker.setLabel(
 				"<h3 style=\"text-align: center;\">${name}</h3>" +
 					"\n<h3 style=\"text-align: center;\">Owner: ${frontierNation.name}</h3>" +
 					"\n<p style=\"padding-top: 0;\">${territory.name} is an outpost of the nation ${frontierNation.name}</p>",
+				true
+			)
+			 */
+
+			marker.setLabel(
+				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
+						"\n<p style=\"padding-top: 0;\">This territory is claimed.</p>",
 				true
 			)
 		} else {

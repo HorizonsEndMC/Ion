@@ -126,5 +126,10 @@ data class FrontierNation(
 		fun setSiegable(frontierNationId: Oid<FrontierNation>, siegable: Boolean) {
 			updateById(frontierNationId, setValue(FrontierNation::siegable, siegable))
 		}
+
+		fun setLeader(frontierNationId: Oid<FrontierNation>, slPlayerId: SLPlayerId) = trx { sess ->
+			require(SLPlayer.matches(sess, slPlayerId, SLPlayer::frontierNation eq frontierNationId))
+			updateById(sess, frontierNationId, setValue(FrontierNation::leader, slPlayerId))
+		}
 	}
 }

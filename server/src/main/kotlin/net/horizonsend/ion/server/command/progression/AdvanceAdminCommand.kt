@@ -11,6 +11,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
@@ -23,6 +24,7 @@ import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import org.litote.kmongo.inc
 import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.min
@@ -169,6 +171,41 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val oldPower = PlayerXPLevelCache.fetchPower(playerId)
 		SLXP.setPowerAsync(playerId, amount.coerceIn(-20, 20))
 		sender.success("Changed $player's power from $oldPower to $amount.")
+	}
+
+	@Subcommand("points get")
+	@CommandCompletion("@frontierNations")
+	@CommandPermission("advance.admin.points")
+	fun onPointsGet(sender: CommandSender, frontierNation: String) = asyncCommand(sender) {
+		val nationId = resolveFrontierNation(frontierNation)
+
+		val points = FrontierNation.findPropById(nationId, FrontierNation::points) ?: fail { "Points for $frontierNation not found" }
+
+		sender.information("$frontierNation has $points points")
+	}
+
+	@Subcommand("points give")
+	@CommandCompletion("@frontierNations @nothing")
+	@CommandPermission("advance.admin.points")
+	fun onPointsGive(sender: CommandSender, frontierNation: String, amount: Int) = asyncCommand(sender) {
+		val nationId = resolveFrontierNation(frontierNation)
+
+		FrontierNation.updateById(nationId, inc(FrontierNation::points, amount))
+
+		val newPoints = FrontierNation.findPropById(nationId, FrontierNation::points)
+
+		sender.information("$frontierNation was given $amount points (now ${newPoints ?: "null"})")
+	}
+
+	@Subcommand("points set")
+	@CommandCompletion("@frontierNations @nothing")
+	@CommandPermission("advance.admin.points")
+	fun onPointsSet(sender: CommandSender, frontierNation: String, amount: Int) = asyncCommand(sender) {
+		val nationId = resolveFrontierNation(frontierNation)
+
+		FrontierNation.updateById(nationId, org.litote.kmongo.setValue(FrontierNation::points, amount))
+
+		sender.information("$frontierNation's points was set to $amount")
 	}
 
 	@Suppress("Unused")

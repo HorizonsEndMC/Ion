@@ -132,6 +132,8 @@ data class SLPlayer(
 	var defaultBazaarIndividualSort: Int = 0,
 	var skipBazaarSingleEntryMenus: Boolean = false,
 
+	var lastJoinedFrontierNation: Date = Date.from(Instant.ofEpochSecond(0L)),
+
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	var wasKilledOn: Set<String> = setOf()
 ) : DbObject {
