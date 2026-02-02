@@ -2,16 +2,10 @@ package net.horizonsend.ion.server.features.sequences.effect
 
 import kotlinx.serialization.InternalSerializationApi
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
-import net.horizonsend.ion.common.utils.text.QUEST_OBJECTIVE_ICON
-import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.util.FloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceContext
 import net.horizonsend.ion.server.features.sequences.SequenceManager
@@ -28,13 +22,9 @@ import net.minecraft.server.MinecraftServer
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
-import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
-import org.joml.Quaternionf
-import org.joml.Vector3f
 import java.util.Optional
 import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
@@ -154,7 +144,7 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 		}
 	}
 
-	class DisplayHudIcon(
+	class DisplayText(
 		val position: Vec3i,
 		val text: Component,
 		val durationTicks: Long,
@@ -211,6 +201,38 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 			// calculate position and offset
 			val offset = direction.clone().normalize().multiply(min(distance, 10.0))
 			val finalPosition = playerPosition.add(offset).toLocation(player.world).add(Vector(0.0, -1.5, 0.0))
+
+			player.sendText(
+				location = finalPosition,
+				text = text,
+				durationTicks = durationTicks + 1,
+				scale = scale,
+				backgroundColor = backgroundColor,
+				defaultBackground = defaultBackground,
+				seeThrough = seeThrough,
+				highlight = highlight,
+			)
+		}
+	}
+
+	class DisplayHudText(
+		val distance: Double,
+		val text: Component,
+		val durationTicks: Long,
+		val scale: Float = 1.0f,
+		val backgroundColor: Color = Color.fromARGB(0x00000000),
+		val defaultBackground: Boolean = false,
+		val seeThrough: Boolean = false,
+		val highlight: Boolean = false,
+		timing: EffectTiming?
+	) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val playerPosition = player.eyeLocation.toVector()
+			val direction = player.location.direction
+
+			// calculate position and offset
+			val offset = direction.clone().normalize().multiply(distance)
+			val finalPosition = playerPosition.add(offset).toLocation(player.world).add(Vector(0.0, 3.0, 0.0))
 
 			player.sendText(
 				location = finalPosition,
