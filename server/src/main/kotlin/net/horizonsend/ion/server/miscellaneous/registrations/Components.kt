@@ -231,6 +231,5 @@ val components: List<IonComponent> = listOf(
 	StationRentalZones,
 	ServerInboxes,
 	ServerMutesHook,
-	ChestShops,
 	Environments
 )
