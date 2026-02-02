@@ -307,7 +307,7 @@ private class RegionCache {
 
 		classMap[region.javaClass].remove(region)
 
-		if (region is RegionTerritory) {
+		if (region is RegionTopLevel) {
 			worldRegions[region.world].remove(region)
 		}
 	}
