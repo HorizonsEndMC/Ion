@@ -19,8 +19,7 @@ import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.core.registration.registries.Registry
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
@@ -155,7 +154,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(text("Exit the cryopod room to begin."), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudIcon(
+                    SequencePhaseEffect.DisplayText(
                         position = Vec3i(-9, -1, -56),
                         text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                         durationTicks = 2L,
@@ -230,13 +229,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(Component.empty(), null),
                 ),
                 SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudIcon(
+                    SequencePhaseEffect.DisplayText(
                         position = Vec3i(0, 0, -71),
                         text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                         durationTicks = 2L,
                         scale = 2.0f,
                         backgroundColor = Color.fromARGB(0x00000000),
-                        defaultBackground = true,
+                        defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
                         EffectTiming.TICKED
@@ -250,7 +249,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         durationTicks = 2L,
                         scale = 2.0f,
                         backgroundColor = Color.fromARGB(0x00000000),
-                        defaultBackground = true,
+                        defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
                         EffectTiming.TICKED
@@ -324,7 +323,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ),
 
                 SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudIcon(
+                    SequencePhaseEffect.DisplayText(
                         position = Vec3i(4, 0, -19),
                         text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                         durationTicks = 2L,
@@ -501,7 +500,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					SendMessage(Component.empty(), EffectTiming.START),
 				),
                 SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudIcon(
+                    SequencePhaseEffect.DisplayText(
                         position = Vec3i(0, -6, -58),
                         text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                         durationTicks = 2L,
@@ -557,7 +556,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(text("Quick, you'll need to grab some fuel for the escape pod's emergancy hyperdrive. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudIcon(
+                    SequencePhaseEffect.DisplayText(
                         position = Vec3i(4, -5, -66),
                         text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                         durationTicks = 2L,
@@ -619,7 +618,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             listOf(
 				RANDOM_EXPLOSION_SOUND,
                 SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudIcon(
+                    SequencePhaseEffect.DisplayText(
                         position = Vec3i(0, -3, -98),
                         text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                         durationTicks = 2L,
@@ -744,7 +743,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						text("You can do this to move diagonally, upwards and downwards too."),
                         newline(),
 					), 80L, EffectTiming.START
-				)
+				),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Press your "),
+                            Component.keybind("key.sneak"),
+                            text(" key to move forwards")
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
@@ -779,6 +796,24 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively.")), EffectTiming.START),
 				SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press " ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Press your "),
+                            Component.keybind("key.drop"),
+                            text(" key to turn left")
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
@@ -812,6 +847,24 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(ofChildren(janePrefix, text("Now press " ), Component.keybind("key.swapOffhand"), text(" to turn right.")), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Press your "),
+                            Component.keybind("key.swapOffhand"),
+                            text(" key to turn right")
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
@@ -877,6 +930,22 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					"need thrusters to cruise in other directions.")), 80L, EffectTiming.START),
 				SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), 80L, EffectTiming.START),
 				SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Right click the \"cruise sign\" to enable cruise mode"),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
@@ -912,6 +981,22 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendDelayedMessage(ofChildren(janePrefix, text("Manual flight is also possible during cruise, and can be used to make small adjustments.")), 0L, EffectTiming.START), //TODO - redo messages
 				SendDelayedMessage(ofChildren(janePrefix, text("Now make your way through the asteroid belt.")), 0L, EffectTiming.START), //TODO - redo messages
 				SendDelayedMessage(Component.empty(), 0L, EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Turn left or right while cruising"),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
@@ -943,6 +1028,22 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field, congratulations! You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO - better messages
 				SendMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Left click the \"cruise sign\" to disable cruise mode"),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
@@ -964,7 +1065,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 description = ofChildren(
                     text("- Load the hyperdrive hoppers with the "),
                     text("chetherite ", LIGHT_PURPLE),
-                    text("you obtained earlier")
+                    text("you obtained earlier (at the back of the ship)")
                 )
             ),
 			effects = listOf(
@@ -975,13 +1076,24 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(ofChildren(janePrefix, text("I've highlighted the hyperdrive, its in the back of the ship, above the door.")), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 
-				SequencePhaseEffect.RunCode({ player, _ ->
-					Tasks.sync {
-						val starship = PilotedStarships[player] ?: return@sync
-						val hyperdrive: HyperdriveSubsystem = starship.hyperdrives.firstOrNull() ?: return@sync
-						hyperdrive.getHoppers().forEach { player.highlightBlock(Vec3i(it.x, it.y, it.z), 20L) }
-					}
-				}, EffectTiming.TICKED),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.RunCode({ player, _ ->
+                        Tasks.sync {
+                            val starship = PilotedStarships[player] ?: return@sync
+                            val hyperdrive: HyperdriveSubsystem = starship.hyperdrives.firstOrNull() ?: return@sync
+                            hyperdrive.getHoppers().forEach { //
+                                player.sendText(
+                                    location = it.location.toCenterLocation(),
+                                    text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                                    durationTicks = 2L + 1L,
+                                    scale = 1.0f,
+                                    seeThrough = true,
+                                )
+                            }
+                        }
+                    }, EffectTiming.TICKED),
+                    interval = 2,
+                )
 			)
 		)
 		bootstrapPhase(
@@ -1010,7 +1122,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(ofChildren(janePrefix, text("Now that the hyperdrive is fueled, execute the command ‘/jump Horizons_End_Transit_Hub’.")), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START)
+				SendMessage(Component.empty(), EffectTiming.START),
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Run the command: "),
+                            newline(),
+                            text("/jump Horizons_End_Transit_Hub"),
+                            newline(),
+                            text("to jump to hyperspace"),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                )
 			)
 		)
 		bootstrapPhase(
