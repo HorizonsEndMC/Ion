@@ -742,7 +742,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 0.75,
-			shieldRegenMultiplier = 1.35,
+			shieldRegenMultiplier = 1.30,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -898,7 +898,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.7,
+			shieldPowerMultiplier = 0.45,
 			shieldRegenMultiplier = 0.8,
 			cruiseSpeedMultiplier = 1.25,
 			requiredMultiblocks = listOf(
@@ -944,7 +944,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 0.77,
 			shieldRegenMultiplier = 0.8,
-			cruiseSpeedMultiplier = 0.8,
+			cruiseSpeedMultiplier = 0.85,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
