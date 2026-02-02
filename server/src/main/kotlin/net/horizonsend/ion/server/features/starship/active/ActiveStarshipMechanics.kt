@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
-import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
@@ -92,6 +91,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun fireAutoWeapons() {
 		for (ship in ActiveStarships.all()) {
+			if (ship.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD)) return
 			val queuedShots = queueAutoShots(ship)
 			fireQueuedShots(queuedShots, ship)
 		}

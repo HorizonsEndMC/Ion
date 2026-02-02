@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.Roc
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.SwiftSneakMod.setSneakSpeed
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -39,26 +40,19 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
-import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate
-import net.minecraft.references.Items
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.enchantments.Enchantment.PROTECTION
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
-import org.bukkit.potion.PotionEffectType.RESISTANCE
 import org.bukkit.util.Vector
-import org.checkerframework.common.value.qual.IntRange
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -266,6 +260,11 @@ class PowerArmorItem(
 		if (ActiveStarships.findByPilot(entity) != null && entity.inventory.itemInMainHand.type == Material.CLOCK) return
 
 		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+
+		if (CombatTimer.isPvpCombatTagged(entity)) {
+			return setGliding(entity, false)
+		}
+
 		if (!mods.contains(ItemModKeys.ROCKET_BOOSTING)) {
 			return setGliding(entity, false)
 		}

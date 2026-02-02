@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.listener.gear
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
-import io.papermc.paper.event.player.PlayerStopUsingItemEvent
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -22,6 +20,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.Roc
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
 import net.horizonsend.ion.server.features.explosions.presets.MiniNukeModExplosion
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -37,7 +36,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityToggleGlideEvent
-import org.bukkit.event.player.PlayerChangedMainHandEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -162,6 +160,8 @@ object PowerArmorListener : SLEventListener() {
 
 		val power = customItem.getComponent(POWER_STORAGE).getPower(boots)
 		if (power <= 0) return
+
+		if (CombatTimer.isPvpCombatTagged(player)) return
 
 		setGliding(player, true)
 	}
