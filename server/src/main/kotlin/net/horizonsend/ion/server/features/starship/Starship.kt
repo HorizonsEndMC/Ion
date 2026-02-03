@@ -116,6 +116,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
+import java.time.Duration
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -857,9 +858,9 @@ class Starship(
 		this.playerPilot?.sendMessage(ofChildren(
 			newStatusEffect.type.displayName,
 			Component.newline(),
-			text("Strength: ${newStatusEffect.strength}", HE_MEDIUM_GRAY),
+			text("Strength: ${(newStatusEffect.strength * 100).roundToInt()}%", HE_MEDIUM_GRAY),
 			Component.newline(),
-			text( "Duration: ${newStatusEffect.durationMillis/1000}", HE_MEDIUM_GRAY),
+			text( "Duration: ${Duration.ofMillis(newStatusEffect.durationMillis).toSeconds()}", HE_MEDIUM_GRAY),
 			Component.newline(),
 			text("[Effect]", HE_LIGHT_ORANGE)
 				.hoverEvent(newStatusEffect.type.description),
