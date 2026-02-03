@@ -20,11 +20,11 @@ import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarCom
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsNameSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsSidebarComponent
-import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.WaypointsSidebar
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
@@ -98,7 +98,8 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 			val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
 			val contacts = ContactsSidebar.getPlayerContacts(player)
 			val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
-			if (!ContactsJammingSidebar.jammedPlayers.containsKey(player.uniqueId)) {
+			val isJammed = PilotedStarships[player]?.getActiveStatusEffectFromType(StarshipStatusEffectTypes.JAMMED)
+			if (isJammed == null) {
 				for (contact in contacts) {
 					contactsComponents.add(ContactsSidebarComponent { contact })
 				}

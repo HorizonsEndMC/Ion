@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingO
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
@@ -63,7 +62,6 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
-import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -471,13 +469,13 @@ object ContactsSidebar {
 
     fun createJammedStarshipContact(contactsData: ContactsData): ContactsData {
         return ContactsData(
-            name = text("########", DARK_RED),
+            name = contactsData.name,
             type = contactsData.type,
-            relation = null,
-            priority = false,
-            prefix = constructPrefixTextComponent(SidebarIcon.X_CROSS_ICON.text, DARK_RED),
-            suffix = empty(),
-            heading = constructHeadingTextComponent("XX", GRAY),
+            relation = contactsData.relation,
+            priority = contactsData.priority,
+            prefix = contactsData.prefix,
+            suffix = contactsData.suffix,
+            heading = contactsData.heading,
             height = constructHeightTextComponent("XXX", GRAY),
             distance = constructDistanceTextComponent("XXXX", GRAY),
             distanceInt = contactsData.distanceInt,

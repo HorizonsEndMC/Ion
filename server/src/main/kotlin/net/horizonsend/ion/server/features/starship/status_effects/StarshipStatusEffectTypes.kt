@@ -60,4 +60,11 @@ object StarshipStatusEffectTypes {
 		displayName = Component.text("Shield Weakness", HE_LIGHT_BLUE),
 		description = Component.text("Decreases shield resistance", HE_LIGHT_BLUE)
 	)
+
+	// Boolean effect; either the player has it or does not
+	val JAMMED = StarshipStatusEffectType(
+		key = StarshipStatusEffectTypeKeys.JAMMED,
+		displayName = Component.text("Jammed", HE_LIGHT_BLUE),
+		description = Component.text("Obfuscates other starships' height and distance", HE_LIGHT_BLUE)
+	)
 }

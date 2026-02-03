@@ -65,5 +65,10 @@ class ScramblerProjectile(
 			task.cancel()
 		}
 
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.JAMMED,
+			1.0,
+			balancing.effectDurationMillis
+		))
 	}
 }
