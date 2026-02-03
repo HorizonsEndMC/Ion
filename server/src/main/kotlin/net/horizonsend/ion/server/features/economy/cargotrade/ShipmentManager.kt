@@ -79,6 +79,7 @@ import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
+import java.time.Duration
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
@@ -103,6 +104,12 @@ object ShipmentManager : IonServerComponent() {
 		val routeValue: Double
 	)
 
+	private data class TradeTimeLimitData(
+		val city: TradeCityData,
+		var trades: Int = 0,
+		var firstTrade: Long = 0,
+	)
+
 	override fun onEnable() {
 		regenerateShipmentsAsync()
 	}
@@ -114,6 +121,8 @@ object ShipmentManager : IonServerComponent() {
 	 * Expires after an hour.
 	 */
 	private var crateItemOwnershipMap = mutableMapOf<UUID, ItemOwnerData>()
+
+	private val playerCityTradeTimes = mutableMapOf<UUID, TradeTimeLimitData>()
 
 	// Map of territory id to list of shipments
 	private val shipments = ConcurrentHashMap<Oid<Territory>, List<UnclaimedShipment>>()
@@ -233,7 +242,8 @@ object ShipmentManager : IonServerComponent() {
 		}
 	}
 
-	private const val TIME_LIMIT = 8L
+	private const val TIME_LIMIT = 23L
+	private const val TRADE_LIMIT_PER_CITY_PER_DAY = 3
 
 	private fun giveShipment(player: Player, shipment: UnclaimedShipment, count: Int) {
 		val cost = getCost(shipment, count)
@@ -246,10 +256,25 @@ object ShipmentManager : IonServerComponent() {
 		Tasks.async {
 			// database stuff async
 			val playerId = player.slPlayerId
+
+			val tradeTimeData = playerCityTradeTimes[player.uniqueId]
+			if (tradeTimeData != null) {
+				if (tradeTimeData.firstTrade + Duration.ofHours(TIME_LIMIT).toMillis() <= System.currentTimeMillis()) {
+					playerCityTradeTimes.remove(player.uniqueId)
+				} else {
+					if (tradeTimeData.trades >= TRADE_LIMIT_PER_CITY_PER_DAY) {
+						player.userError("You already bought crates $TRADE_LIMIT_PER_CITY_PER_DAY times from this territory within the past $TIME_LIMIT hours")
+						return@async
+					}
+				}
+			}
+
+			/*
 			if (CargoCrateShipment.hasPurchasedFrom(playerId, shipment.from.territoryId, TIME_LIMIT)) {
 				player.userError("You already bought crates from this territory within the past $TIME_LIMIT hours")
 				return@async
 			}
+			 */
 
 			if (!shipment.isAvailable) { // someone else might've got it in the process
 				return@async player.serverError("Shipment is not available")
@@ -273,6 +298,13 @@ object ShipmentManager : IonServerComponent() {
 				if (!shipment.isAvailable) { // someone else might've got it in the process
 					return@sync player.serverError("Shipment is not available")
 				}
+
+				if (playerCityTradeTimes[player.uniqueId] == null) {
+					playerCityTradeTimes[player.uniqueId] = TradeTimeLimitData(city = shipment.from, trades = 1, firstTrade = System.currentTimeMillis())
+				} else {
+					playerCityTradeTimes[player.uniqueId]?.trades += 1
+				}
+
 				completePurchase(player, shipment, item, count)
 				player.closeInventory()
 			}
