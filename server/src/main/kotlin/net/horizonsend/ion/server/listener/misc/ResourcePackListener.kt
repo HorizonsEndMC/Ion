@@ -35,12 +35,13 @@ class ResourcePackListener : SLEventListener() {
 	private fun getURLAndHash(): Pair<String, String>? {
 		if (System.currentTimeMillis() - lastUpdated > 600000) {
 			cachedURL = try {
-				val tagName = URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
+				// TODO: POINT THIS BACK TO MAIN HE WHEN RELEASING
+				val tagName = URL("https://api.github.com/repos/WitherV/HE_ResourcePack/releases/latest")
 					.readText()
 					.substringAfter("\",\"tag_name\":\"")
 					.substringBefore("\",")
 
-				"https://github.com/HorizonsEndMC/ResourcePack/releases/download/$tagName/HorizonsEndResourcePack.zip"
+				"https://github.com/WitherV/HE_ResourcePack/releases/download/$tagName/HE.HCF.Pack.zip"
 			} catch (exception: Exception) {
 				log.warn("Exception was thrown while updating resource pack URL!", exception)
 				null
@@ -66,7 +67,7 @@ class ResourcePackListener : SLEventListener() {
 
 		event.player.sendMessage(ofChildren(
 			text("You can load in instantly by downloading the texture pack yourself at ", HE_LIGHT_BLUE),
-			formatLink("this link!", "https://github.com/HorizonsEndMC/ResourcePack")
+			formatLink("this link!", "https://github.com/WitherV/HE_ResourcePack")
 		))
 	}
 
