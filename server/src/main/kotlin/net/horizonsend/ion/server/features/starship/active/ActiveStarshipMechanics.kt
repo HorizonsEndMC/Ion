@@ -41,8 +41,11 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import org.bukkit.Bukkit.getPluginManager
+import org.bukkit.Color
+import org.bukkit.Particle
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -71,6 +74,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(60L, 60L, this::handleSupercapitalMechanics)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 		Tasks.syncRepeat(20L, 20L, this::updateStarshipStatusEffects)
+		Tasks.syncRepeat(20L, 20L, this::displayJumpBeaconEffect)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
@@ -242,6 +246,36 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				}
 				statusEffect.durationMillis <= 0
 			} }
+		}
+	}
+
+	private fun displayJumpBeaconEffect() {
+		val particleData = Particle.DustTransition(
+			Color.BLUE,
+			Color.ORANGE,
+			4f
+		)
+
+		ActiveStarships.all().filter { starship -> starship.isJumpBeaconOn }.forEach { starship ->
+			val com = starship.centerOfMass.toLocation(starship.world).toCenterLocation()
+			val points = com.spherePoints(100.0, 300)
+			for (point in points) {
+				val toCenter = com.toVector().subtract(point.toVector()).normalize().multiply(5)
+
+				starship.world.spawnParticle(
+					Particle.DUST_COLOR_TRANSITION,
+					point.x,
+					point.y,
+					point.z,
+					0,
+					toCenter.x,
+					toCenter.y,
+					toCenter.z,
+					2.0,
+					particleData,
+					true
+				)
+			}
 		}
 	}
 
