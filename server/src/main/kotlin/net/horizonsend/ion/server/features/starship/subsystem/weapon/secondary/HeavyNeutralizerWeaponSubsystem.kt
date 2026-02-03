@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
@@ -27,7 +26,7 @@ class HeavyNeutralizerWeaponSubsystem(
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		HeavyNeutralizerProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, this).fire()
+		HeavyNeutralizerProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, target, balancing.aimDistance, this).fire()
 	}
 
 	override fun getName(): Component {
