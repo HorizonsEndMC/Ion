@@ -42,7 +42,7 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 
 	fun activate() {
 		val starshipsInRange = ActiveStarships.getInWorld(starship.world).filter { otherStarship ->
-			otherStarship.centerOfMass.toLocation(starship.world).distanceSquared(starship.centerOfMass.toLocation(starship.world)) <= balancing.range
+			otherStarship.centerOfMass.toLocation(otherStarship.world).distanceSquared(starship.centerOfMass.toLocation(starship.world)) <= balancing.range * balancing.range
 		}
 
 		activateEffect(starshipsInRange.toSet())
