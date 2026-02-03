@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
@@ -138,34 +139,63 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	}
 
 	override fun onImpact() {
-		for (loc in location.circlePoints(4.0, 50, direction)) {
+		for (loc in location.spherePoints(20.0, 200)) {
+			val particleData = Particle.DustTransition(
+				Color.RED,
+				Color.ORANGE,
+				4f
+			)
+
 			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
 			loc.world.spawnParticle(
-				Particle.CLOUD,
+				Particle.DUST_COLOR_TRANSITION,
 				location,
 				0,
 				radialVector.x,
 				radialVector.y,
 				radialVector.z,
-				1.0,
-				null,
+				2.0,
+				particleData,
 				true
 			)
 		}
 
-		for (loc in location.spherePoints(4.0, 50)) {
-			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
-			loc.world.spawnParticle(
-				Particle.FLAME,
-				location,
-				0,
-				radialVector.x,
-				radialVector.y,
-				radialVector.z,
-				1.0,
-				null,
-				true
-			)
+		Tasks.syncDelay(20L) {
+			for (loc in location.spherePoints(20.0, 200)) {
+				val particleData = Particle.DustTransition(
+					Color.ORANGE,
+					Color.YELLOW,
+					4f
+				)
+
+				val radialVector = location.toVector().subtract(loc.toVector()).normalize()
+				loc.world.spawnParticle(
+					Particle.DUST_COLOR_TRANSITION,
+					location,
+					0,
+					radialVector.x,
+					radialVector.y,
+					radialVector.z,
+					2.0,
+					particleData,
+					true
+				)
+			}
+
+			for (loc in location.circlePoints(40.0, 150, Vector(0, 1, 0))) {
+				val radialVector = loc.toVector().subtract(location.toVector()).normalize()
+				loc.world.spawnParticle(
+					Particle.CLOUD,
+					location,
+					0,
+					radialVector.x,
+					radialVector.y,
+					radialVector.z,
+					1.0,
+					null,
+					true
+				)
+			}
 		}
 
 		(0 until 20).forEach { _ ->
