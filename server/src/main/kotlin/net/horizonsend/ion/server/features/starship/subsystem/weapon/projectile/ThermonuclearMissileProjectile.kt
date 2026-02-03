@@ -197,44 +197,5 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 				)
 			}
 		}
-
-		(0 until 20).forEach { _ ->
-			val angle = Math.PI / 12
-			val opposite = direction.clone().multiply(-1)
-				.rotateAroundX(randomDouble(-angle, angle))
-				.rotateAroundY(randomDouble(-angle, angle))
-				.rotateAroundZ(randomDouble(-angle, angle))
-			location.world.spawnParticle(
-				Particle.FLAME,
-				location,
-				0,
-				opposite.x,
-				opposite.y,
-				opposite.z,
-				1.0,
-				null,
-				true
-			)
-		}
-
-		(0 until 40).forEach { _ ->
-			val angle = Math.PI / 6
-			val opposite = direction.clone().multiply(-1)
-				.rotateAroundX(randomDouble(-angle, angle))
-				.rotateAroundY(randomDouble(-angle, angle))
-				.rotateAroundZ(randomDouble(-angle, angle))
-			location.world.spawnParticle(
-				Particle.LARGE_SMOKE,
-				location,
-				0,
-				opposite.x,
-				opposite.y,
-				opposite.z,
-				2.0,
-				null,
-				true
-			)
-		}
-
 	}
 }
