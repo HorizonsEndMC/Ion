@@ -625,8 +625,8 @@ object FrontierNationCommand : SLCommand() {
 
 		message.append(
 			ofChildren(
-				text("Power: "),
-				text(FrontierNation.getTotalPower(nationId), NamedTextColor.WHITE),
+				text("Total Power across all players: "),
+				text(getTotalPower(nationId), NamedTextColor.WHITE),
 				newline()
 			)
 		)
