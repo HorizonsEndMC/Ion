@@ -336,7 +336,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 
 		if (destinationPos.bukkitWorld() != sender.world && starship.initialBlockCount <= 13500) {
-
 			//Check if the other player exists and if they have a jump beacon enabled
 			if (otherPlayer != null) {
 				val otherPlayerStarship = ActiveStarships.findByPilot(otherPlayer)
@@ -391,7 +390,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
 		val targetPlayer = player?.let { Bukkit.getPlayer(it) }
-		if (sender == targetPlayer) fail{"Cannot disrupt your own hyperdrive!"}
+		if (player == null && starship.disruptorTarget == null) fail {"The disruptor is already disabled!"}
 		if (targetPlayer == starship.disruptorTarget) fail {"Already disrupting $player!"}
 		if (starship.isInterdicting) fail {"Cannot interdict and disrupt at the same time!"}
 
