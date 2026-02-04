@@ -202,7 +202,7 @@ object FrontierNationCache : ManualCache() {
 				val data = FRONTIER_NATION_DATA[id] ?: return@synced
 
 				change[availableBuffsProperty]?.let {
-					data.availableBuffs = it.mappedSet { id -> id.toString() }
+					data.availableBuffs = it.mappedSet { id -> id.string() }
 				}
 			}
 		}
@@ -214,7 +214,7 @@ object FrontierNationCache : ManualCache() {
 				val data = FRONTIER_NATION_DATA[id] ?: return@synced
 
 				change[activatedBuffsProperty]?.let {
-					data.activatedBuffs = it.mappedSet { id -> id.toString() }
+					data.activatedBuffs = it.mappedSet { id -> id.string() }
 				}
 			}
 		}

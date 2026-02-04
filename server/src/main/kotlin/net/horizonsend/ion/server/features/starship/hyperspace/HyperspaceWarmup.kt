@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -38,6 +39,13 @@ class HyperspaceWarmup(
 				val stationCount = CapturableStation.count(CapturableStation::nation eq PlayerCache[it].nationOid).toInt()
 
 				warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
+
+				val nationJumpWarmupBuffActive = FrontierNationBuffTypes.isEffectActive(it, FrontierNationBuffTypes.JUMP_WARMUP)
+				val nationJumpWarmupModifier = if (nationJumpWarmupBuffActive) {
+					FrontierNationBuffTypes.JUMP_WARMUP.value
+				} else 0.0
+
+				warmup -= nationJumpWarmupModifier.toInt()
 			}
 
 			warmup = max(warmup, 0)

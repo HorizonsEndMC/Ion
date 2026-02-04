@@ -79,7 +79,16 @@ object StarshipCruising : IonServerComponent() {
 		}
 
 		// multiplied by power percent and rounded to the nearest hundredth
-		fun getRealAccel(thrusterPower: Double): Double = (accel * thrusterPower).roundToHundredth()
+		fun getRealAccel(thrusterPower: Double): Double {
+			val nationAccelerationModifier = starship.playerPilot?.let { player ->
+				val accelerationBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.ACCELERATION)
+				if (accelerationBuffActive) {
+					FrontierNationBuffTypes.ACCELERATION.value
+				} else 0.0
+			} ?: 0.0
+
+			return (accel * thrusterPower + nationAccelerationModifier).roundToHundredth()
+		}
 
 		private fun moveTowards(vector: Vector, other: Vector, maxDistance: Double): Vector {
 			val direction = other.clone().subtract(vector).normalize()

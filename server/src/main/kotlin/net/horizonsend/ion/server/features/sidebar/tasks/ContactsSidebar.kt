@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
@@ -76,7 +77,12 @@ import kotlin.math.abs
 
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
-        return player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsDistance)?.squared() ?: 0
+		val settingValue = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsDistance)
+		val nationContactRangeBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.CONTACT_RANGE)
+		val nationContactRangeModifier = if (nationContactRangeBuffActive) {
+			FrontierNationBuffTypes.CONTACT_RANGE.value
+		} else 0.0
+        return settingValue?.plus(nationContactRangeModifier)?.squared()?.toInt() ?: 0
     }
 
     private fun priorityColorChange(): Boolean {

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sidebar.component
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.input.DirectControlInput
@@ -18,9 +19,15 @@ import java.util.concurrent.TimeUnit
 
 class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val currentVelocity = starship.cruiseData.velocity.length().roundToHundredth()
-	private val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
-	private val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
-    private val maxVelocity = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier)).toInt()
+	private val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
+	private val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+	private val nationCruiseModifier = starship.playerPilot?.let { player ->
+		val cruiseBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.CRUISE_SPEED)
+		if (cruiseBuffActive) {
+			FrontierNationBuffTypes.CRUISE_SPEED.value
+		} else 0.0
+	} ?: 0.0
+    private val maxVelocity = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier) + nationCruiseModifier).toInt()
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion
     private val acceleration = starship.cruiseData.getRealAccel(pmThruster).roundToHundredth()
     private val isDirectControlEnabled = starship.isDirectControlEnabled

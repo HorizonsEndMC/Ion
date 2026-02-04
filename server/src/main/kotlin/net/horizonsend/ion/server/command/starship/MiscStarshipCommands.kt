@@ -36,7 +36,6 @@ import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
-import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -80,7 +79,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -438,11 +436,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val currentWorld = starship.world
-		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD) || !sender.world.ion.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) {
-			"Not a space world!"
-		}
-
-		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !sender.world.ion.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) {
 			"Not a space world!"
 		}
 
