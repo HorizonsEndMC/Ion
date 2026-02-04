@@ -4,6 +4,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -34,9 +35,11 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.nations.roles.FrontierNationRoleCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.registration.keys.FrontierNationBuffTypeKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.ServerInboxes
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffType
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -70,6 +73,8 @@ import kotlin.math.roundToInt
 
 @CommandAlias("frontiernation|fn")
 object FrontierNationCommand : SLCommand() {
+	const val MAX_ACTIVE_BUFFS = 2
+
 	private val nationsMessageColor = TextColor.fromHexString("#FC3200")
 	private val nationsImportantMessageColor = TextColor.fromHexString("#FC9300")
 	private fun nationMessageFormat(text: String, vararg args: Any?) =
@@ -85,6 +90,13 @@ object FrontierNationCommand : SLCommand() {
 			val nation = PlayerCache[player].frontierNationOid
 			Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nation }.map { it.name }
 		}
+
+		manager.commandCompletions.registerCompletion("nationBuffs") { FrontierNationBuffTypeKeys.allStrings() }
+		manager.commandContexts.registerContext(FrontierNationBuffType::class.java) {
+			val id = it.popFirstArg()
+			FrontierNationBuffTypeKeys[id]?.getValue() ?: throw InvalidCommandArgument("Buff type $id not found!")
+		}
+		manager.commandCompletions.setDefaultCompletion("nationBuffs", FrontierNationBuffType::class.java)
 	}
 
 	private fun validateName(name: String, nationId: Oid<FrontierNation>?) {
@@ -828,5 +840,79 @@ object FrontierNationCommand : SLCommand() {
 		FrontierNation.setLeader(frontierNationId, slPlayerId)
 
 		Notify.chatAndGlobal(text("${sender.name} changed their frontier nation $nationName's leader to $player"))
+	}
+
+	@Subcommand("buff list")
+	@Description("List available and active buffs for your nation")
+	fun onListBuffs(sender: Player): Unit = asyncCommand(sender) {
+		val frontierNationId = requireFrontierNationIn(sender)
+		val activeBuffs = FrontierNation.getActivatedBuffs(frontierNationId) ?: fail { "Could not get active buffs" }
+		val availableBuffs = FrontierNation.getAvailableBuffs(frontierNationId) ?: fail { "Could not get available buffs" }
+
+		val activeBuffsString = if (!activeBuffs.isEmpty()) activeBuffs.joinToString { it } else "None"
+		val availableBuffsString = if (!availableBuffs.isEmpty()) availableBuffs.joinToString { it } else "None"
+
+		sender.information("Active buffs: $activeBuffsString")
+		sender.information("Available buffs: $availableBuffsString")
+	}
+
+	@Subcommand("buff activate")
+	@Description("Activate a buff for your frontier nation")
+	@CommandCompletion("@nationBuffs")
+	fun onActivateBuff(sender: Player, buff: FrontierNationBuffType): Unit = asyncCommand(sender) {
+		val frontierNationId = requireFrontierNationIn(sender)
+		requireFrontierNationLeader(sender, frontierNationId)
+
+		val activeBuffs = FrontierNation.getActivatedBuffs(frontierNationId) ?: fail { "Could not get active buffs" }
+		if (activeBuffs.size >= MAX_ACTIVE_BUFFS) fail { "Your nation can only have $MAX_ACTIVE_BUFFS buffs active at a time" }
+
+		val availableBuffs = FrontierNation.getAvailableBuffs(frontierNationId) ?: fail { "Could not get available buffs" }
+		if (!availableBuffs.contains(buff.key.key)) fail { "The buff ${buff.key.key} is not available for your nation" }
+
+		val nationName = getFrontierNationName(frontierNationId)
+
+		FrontierNation.addActivatedBuff(frontierNationId, buff.key.key)
+		sender.success("Activated buff ${buff.key.key} for $nationName")
+	}
+
+	@Subcommand("buff deactivate")
+	@Description("Deactivate a buff for your frontier nation")
+	@CommandCompletion("@nationBuffs")
+	fun onDeactivateBuff(sender: Player, buff: FrontierNationBuffType): Unit = asyncCommand(sender) {
+		val frontierNationId = requireFrontierNationIn(sender)
+		requireFrontierNationLeader(sender, frontierNationId)
+
+		val activeBuffs = FrontierNation.getActivatedBuffs(frontierNationId) ?: fail { "Could not get active buffs" }
+		if (activeBuffs.isEmpty()) fail { "Your nation does not have any buffs active" }
+		if (!activeBuffs.contains(buff.key.key)) fail { "The buff ${buff.key.key} is not currently active" }
+
+		val nationName = getFrontierNationName(frontierNationId)
+
+		FrontierNation.removeActivatedBuff(frontierNationId, buff.key.key)
+		sender.success("Deactivated buff ${buff.key.key} for $nationName")
+	}
+
+	@Subcommand("buff give")
+	@Description("Makes a buff available to a frontier nation")
+	@CommandCompletion("@frontierNations @nationBuffs")
+	@CommandPermission("ion.admin.frontiernation.buff.give")
+	fun onGiveAvailableBuff(sender: CommandSender, frontierNation: String, buff: FrontierNationBuffType): Unit = asyncCommand(sender) {
+		val frontierNationId = resolveFrontierNation(frontierNation)
+
+		FrontierNation.addAvailableBuff(frontierNationId, buff.key.key)
+
+		sender.success("Added the buff ${buff.key.key} to $frontierNation's available buffs")
+	}
+
+	@Subcommand("buff remove")
+	@Description("Remove an available buff from a frontier nation")
+	@CommandCompletion("@frontierNations @nationBuffs")
+	@CommandPermission("ion.admin.frontiernation.buff.remove")
+	fun onRemoveAvailableBuff(sender: CommandSender, frontierNation: String, buff: FrontierNationBuffType): Unit = asyncCommand(sender) {
+		val frontierNationId = resolveFrontierNation(frontierNation)
+
+		FrontierNation.removeAvailableBuff(frontierNationId, buff.key.key)
+
+		sender.success("Removed the buff ${buff.key.key} from $frontierNation's available buffs")
 	}
 }

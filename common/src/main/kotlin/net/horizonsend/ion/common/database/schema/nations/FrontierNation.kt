@@ -36,7 +36,9 @@ data class FrontierNation(
 	override var balance: Int = 0,
 	override var points: Int = 0,
 	override var siegable: Boolean = false,
-	val invites: MutableSet<SLPlayerId> = mutableSetOf()
+	val invites: MutableSet<SLPlayerId> = mutableSetOf(),
+	val availableBuffs: MutableSet<String> = mutableSetOf(),
+	val activatedBuffs: MutableSet<String> = mutableSetOf(),
 ) : DbObject, MoneyHolder, PointsHolder, Siegable {
 	companion object : OidDbObjectCompanion<FrontierNation>(FrontierNation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(FrontierNation::name, indexOptions = IndexOptions().textVersion(3))
@@ -130,6 +132,30 @@ data class FrontierNation(
 		fun setLeader(frontierNationId: Oid<FrontierNation>, slPlayerId: SLPlayerId) = trx { sess ->
 			require(SLPlayer.matches(sess, slPlayerId, SLPlayer::frontierNation eq frontierNationId))
 			updateById(sess, frontierNationId, setValue(FrontierNation::leader, slPlayerId))
+		}
+
+		fun getAvailableBuffs(frontierNationId: Oid<FrontierNation>): Set<String>? = trx { _ ->
+            return@trx findPropById(frontierNationId, FrontierNation::availableBuffs)?.toSet()
+		}
+
+		fun addAvailableBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
+			updateById(sess, frontierNationId, addToSet(FrontierNation::availableBuffs, buffKey))
+		}
+
+		fun removeAvailableBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
+			updateById(sess, frontierNationId, pull(FrontierNation::availableBuffs, buffKey))
+		}
+
+		fun getActivatedBuffs(frontierNationId: Oid<FrontierNation>): Set<String>? = trx { _ ->
+			return@trx findPropById(frontierNationId, FrontierNation::activatedBuffs)?.toSet()
+		}
+
+		fun addActivatedBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
+			updateById(sess, frontierNationId, addToSet(FrontierNation::activatedBuffs, buffKey))
+		}
+
+		fun removeActivatedBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
+			updateById(sess, frontierNationId, pull(FrontierNation::activatedBuffs, buffKey))
 		}
 	}
 }

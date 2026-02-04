@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -54,10 +55,16 @@ object StarshipCruising : IonServerComponent() {
 		var lastBlockCount = starship.initialBlockCount
 
 		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
-			val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
-			val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+			val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
+			val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+			val nationCruiseModifier = starship.playerPilot?.let { player ->
+				val cruiseBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.CRUISE_SPEED)
+				if (cruiseBuffActive) {
+					FrontierNationBuffTypes.CRUISE_SPEED.value
+				} else 0.0
+			} ?: 0.0
 
-			val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio).toInt()
+			val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + nationCruiseModifier).toInt()
 
 			val dir = this.targetDir ?: Vector()
 			val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)
@@ -107,8 +114,14 @@ object StarshipCruising : IonServerComponent() {
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
-		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
-		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+		val nationCruiseModifier = starship.playerPilot?.let { player ->
+			val cruiseBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.CRUISE_SPEED)
+			if (cruiseBuffActive) {
+				FrontierNationBuffTypes.CRUISE_SPEED.value
+			} else 0.0
+		} ?: 0.0
 
 		starship.cruiseData.accelerate(starship.speedLimit, starship.reactor.powerDistributor.thrusterPortion)
 		val velocity = starship.cruiseData.velocity
@@ -116,7 +129,7 @@ object StarshipCruising : IonServerComponent() {
 
 		if (oldVelocity.distance(velocity) > 0.01) {
 			// velocity has changed
-			val targetSpeed = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier)).toInt()
+			val targetSpeed = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier) + nationCruiseModifier).toInt()
 
 			starship.sendActionBar(ofChildren(
 				text("Cruise Speed: ", color(Colors.INFORMATION)),

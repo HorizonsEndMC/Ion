@@ -25,7 +25,9 @@ object FrontierNationCache : ManualCache() {
 		var territory: Oid<FrontierTerritory>,
 		var invites: Set<SLPlayerId>,
 		var points: Int,
-		var siegable: Boolean
+		var siegable: Boolean,
+		var availableBuffs: Set<String>,
+		var activatedBuffs: Set<String>,
 	) {
 		val textColor: TextColor get() = TextColor.color(color)
 	}
@@ -50,6 +52,8 @@ object FrontierNationCache : ManualCache() {
 			FrontierNation::invites,
 			FrontierNation::points,
 			FrontierNation::siegable,
+			FrontierNation::availableBuffs,
+			FrontierNation::activatedBuffs,
 		)
 	}
 
@@ -69,7 +73,9 @@ object FrontierNationCache : ManualCache() {
 			frontierNation.territory,
 			frontierNation.invites,
 			frontierNation.points,
-			frontierNation.siegable
+			frontierNation.siegable,
+			frontierNation.availableBuffs,
+			frontierNation.activatedBuffs
 		)
 
 		FRONTIER_NATION_DATA[frontierNation._id] = cachedNation
@@ -87,6 +93,8 @@ object FrontierNationCache : ManualCache() {
 		invitesProperty: KProperty<Set<SLPlayerId>>,
 		pointsProperty: KProperty<Int>,
 		siegableProperty: KProperty<Boolean>,
+		availableBuffsProperty: KProperty<Set<String>>,
+		activatedBuffsProperty: KProperty<Set<String>>,
 	) {
 		companion.watchInserts { change ->
 			change.fullDocument?.let { createCached(it) }
@@ -183,6 +191,30 @@ object FrontierNationCache : ManualCache() {
 
 				change[siegableProperty]?.let {
 					data.siegable = it.boolean()
+				}
+			}
+		}
+
+		companion.watchUpdates { change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[availableBuffsProperty]?.let {
+					data.availableBuffs = it.mappedSet { id -> id.toString() }
+				}
+			}
+		}
+
+		companion.watchUpdates { change ->
+			val id = change.oid
+
+			synced {
+				val data = FRONTIER_NATION_DATA[id] ?: return@synced
+
+				change[activatedBuffsProperty]?.let {
+					data.activatedBuffs = it.mappedSet { id -> id.toString() }
 				}
 			}
 		}

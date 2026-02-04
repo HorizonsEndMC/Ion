@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffType
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
@@ -37,6 +38,7 @@ object RegistryKeys {
 	val WORLD_GENERATION_FEATURE = registryId<GeneratedFeature<*>>("WORLD_GENERATION_FEATURE")
 	val WRECK_STRUCTURE = registryId<WreckStructure>("WRECK_STRUCTURE")
 	val STARSHIP_STATUS_EFFECT_PROPERTY_TYPE = registryId<StarshipStatusEffectType>("STARSHIP_STATUS_EFFECT_PROPERTY_TYPE")
+	val FRONTIER_NATION_BUFF_TYPE = registryId<FrontierNationBuffType>("FRONTIER_NATION_BUFF_TYPE")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)
