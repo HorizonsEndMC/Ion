@@ -73,7 +73,7 @@ import kotlin.math.roundToInt
 
 @CommandAlias("frontiernation|fn")
 object FrontierNationCommand : SLCommand() {
-	const val MAX_ACTIVE_BUFFS = 2
+	const val MAX_ACTIVE_BUFFS = 1
 
 	private val nationsMessageColor = TextColor.fromHexString("#FC3200")
 	private val nationsImportantMessageColor = TextColor.fromHexString("#FC9300")
@@ -859,6 +859,7 @@ object FrontierNationCommand : SLCommand() {
 	@Subcommand("buff activate")
 	@Description("Activate a buff for your frontier nation")
 	@CommandCompletion("@nationBuffs")
+	@CommandPermission("ion.admin.frontiernation.buff.activate")
 	fun onActivateBuff(sender: Player, buff: FrontierNationBuffType): Unit = asyncCommand(sender) {
 		val frontierNationId = requireFrontierNationIn(sender)
 		requireFrontierNationLeader(sender, frontierNationId)
@@ -878,6 +879,7 @@ object FrontierNationCommand : SLCommand() {
 	@Subcommand("buff deactivate")
 	@Description("Deactivate a buff for your frontier nation")
 	@CommandCompletion("@nationBuffs")
+	@CommandPermission("ion.admin.frontiernation.buff.deactivate")
 	fun onDeactivateBuff(sender: Player, buff: FrontierNationBuffType): Unit = asyncCommand(sender) {
 		val frontierNationId = requireFrontierNationIn(sender)
 		requireFrontierNationLeader(sender, frontierNationId)

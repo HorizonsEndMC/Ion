@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+import net.horizonsend.ion.server.features.custom.items.type.NationBuffCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -46,6 +47,7 @@ import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Maga
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergyGreatSword
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -94,6 +96,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerEnergySwords()
 		registerPlanetIcons()
 		registerFood()
+		registerNationBuffs()
 
 		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
 		unStackable(CustomItemKeys.DEBUG_LINE_GREEN, displayName = Component.text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
@@ -1424,6 +1427,73 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
             }
+		)
+	}
+
+	private fun registerNationBuffs() {
+		register(
+			CustomItemKeys.SHIELD_RESISTANCE_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.SHIELD_RESISTANCE_BUFF,
+				displayName = text("Shield Resistance Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.SHIELD_RESISTANCE,
+			)
+		)
+		register(
+			CustomItemKeys.TURRET_DAMAGE_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.TURRET_DAMAGE_BUFF,
+				displayName = text("Turret Damage Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.TURRET_DAMAGE,
+			)
+		)
+		register(
+			CustomItemKeys.SHIELD_REGENERATION_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.SHIELD_REGENERATION_BUFF,
+				displayName = text("Shield Regeneration Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.SHIELD_REGENERATION,
+			)
+		)
+		register(
+			CustomItemKeys.CRUISE_SPEED_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.CRUISE_SPEED_BUFF,
+				displayName = text("Cruise Speed Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.CRUISE_SPEED,
+			)
+		)
+		register(
+			CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF,
+				displayName = text("Direct Control Speed Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.DIRECT_CONTROL_SPEED,
+			)
+		)
+		register(
+			CustomItemKeys.ACCELERATION_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.ACCELERATION_BUFF,
+				displayName = text("Acceleration Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.ACCELERATION,
+			)
+		)
+		register(
+			CustomItemKeys.JUMP_WARMUP_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.JUMP_WARMUP_BUFF,
+				displayName = text("Jump Warmup Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.JUMP_WARMUP,
+			)
+		)
+		register(
+			CustomItemKeys.CONTACT_RANGE_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.CONTACT_RANGE_BUFF,
+				displayName = text("Contact Range Buff", RED, BOLD).decoration(ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = FrontierNationBuffTypes.CONTACT_RANGE,
+			)
 		)
 	}
 

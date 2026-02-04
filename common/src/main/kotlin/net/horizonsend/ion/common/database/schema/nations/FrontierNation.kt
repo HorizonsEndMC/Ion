@@ -24,6 +24,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.inc
 import org.litote.kmongo.ne
 import org.litote.kmongo.pull
+import org.litote.kmongo.pullAll
 import org.litote.kmongo.setValue
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 
@@ -146,6 +147,10 @@ data class FrontierNation(
 			updateById(sess, frontierNationId, pull(FrontierNation::availableBuffs, buffKey))
 		}
 
+		fun removeAllAvailableBuffs(frontierNationId: Oid<FrontierNation>) = trx { sess ->
+			updateById(sess, frontierNationId, setValue(FrontierNation::availableBuffs, mutableSetOf()))
+		}
+
 		fun getActivatedBuffs(frontierNationId: Oid<FrontierNation>): Set<String>? = trx { _ ->
 			return@trx findPropById(frontierNationId, FrontierNation::activatedBuffs)?.toSet()
 		}
@@ -156,6 +161,10 @@ data class FrontierNation(
 
 		fun removeActivatedBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
 			updateById(sess, frontierNationId, pull(FrontierNation::activatedBuffs, buffKey))
+		}
+
+		fun removeAllActivatedBuffs(frontierNationId: Oid<FrontierNation>) = trx { sess ->
+			updateById(sess, frontierNationId, setValue(FrontierNation::activatedBuffs, mutableSetOf()))
 		}
 	}
 }
