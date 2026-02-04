@@ -59,6 +59,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
+import kotlin.math.sin
 
 
 object ActiveStarshipMechanics : IonServerComponent() {
@@ -74,7 +75,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(60L, 60L, this::handleSupercapitalMechanics)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 		Tasks.syncRepeat(20L, 20L, this::updateStarshipStatusEffects)
-		Tasks.syncRepeat(20L, 20L, this::displayJumpBeaconEffect)
+		Tasks.syncRepeat(5L, 5L, this::displayJumpBeaconEffect)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
@@ -249,6 +250,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
+	var jumpBeaconTick = 0
 	private fun displayJumpBeaconEffect() {
 		val particleData = Particle.DustTransition(
 			Color.BLUE,
@@ -258,7 +260,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		ActiveStarships.all().filter { starship -> starship.isJumpBeaconOn }.forEach { starship ->
 			val com = starship.centerOfMass.toLocation(starship.world).toCenterLocation()
-			val points = com.spherePoints(100.0, 300)
+			val points = com.spherePoints(25 * sin(jumpBeaconTick / (2 * Math.PI)) + 30, (140 * sin(jumpBeaconTick / (2 * Math.PI)) + 150).toInt())
 			for (point in points) {
 				val toCenter = com.toVector().subtract(point.toVector()).normalize().multiply(5)
 
@@ -277,6 +279,8 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				)
 			}
 		}
+
+		jumpBeaconTick += 1
 	}
 
 	@EventHandler
