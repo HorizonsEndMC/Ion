@@ -59,6 +59,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 
@@ -243,7 +244,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.durationMillis -= TimeUnit.SECONDS.toMillis(1) } }
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.removeAll { statusEffect ->
 				if (statusEffect.durationMillis <= 0) {
-					starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${statusEffect.strength} has worn off")
+					starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${(statusEffect.strength * 100).roundToInt()} has worn off")
 				}
 				statusEffect.durationMillis <= 0
 			} }
