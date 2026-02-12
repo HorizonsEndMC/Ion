@@ -12,8 +12,6 @@ import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.nations.FrontierNationBuffType
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
-import net.horizonsend.ion.server.features.space.signatures.Signature
-import net.horizonsend.ion.server.features.space.signatures.SignatureSpawner
 import net.horizonsend.ion.server.features.space.signatures.SignatureType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType

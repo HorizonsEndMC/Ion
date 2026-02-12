@@ -16,8 +16,6 @@ import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegist
 import net.horizonsend.ion.server.core.registration.registries.WorldGenerationFeatureRegistry
 import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
 import net.horizonsend.ion.server.core.registration.registries.WreckStructureRegistry
-import net.horizonsend.ion.server.core.registration.registries.SignatureRegistry
-import net.horizonsend.ion.server.core.registration.registries.SignatureSpawnerRegistry
 import net.horizonsend.ion.server.core.registration.registries.SignatureTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.sequences.SequenceRegistry
