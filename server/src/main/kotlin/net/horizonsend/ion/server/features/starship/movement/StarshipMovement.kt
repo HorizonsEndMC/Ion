@@ -60,6 +60,10 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 			throw StarshipMovementException("Ships of this class can't be piloted in ${world2.name}")
 		}
 
+		if (starship.isJumpBeaconOn) {
+			throw StarshipMovementException("Ships with active jump beacons cannot move")
+		}
+
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
 			Throwable().printStackTrace()
