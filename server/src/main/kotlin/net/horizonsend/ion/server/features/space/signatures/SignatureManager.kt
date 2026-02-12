@@ -5,7 +5,10 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
+import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -68,7 +71,7 @@ object SignatureManager : IonServerComponent(true) {
 
             // Do not spawn signature within gravity wells
             val massShadows = MassShadows.find(randomSpaceWorld, potentialX, potentialZ)
-            if (massShadows != null && !massShadows.isEmpty()) continue
+            if (!massShadows.isNullOrEmpty()) continue
 
             val stationsInWorld = SpaceStationCache.all().filter { station -> station.world == randomSpaceWorld.name }
             for (station in stationsInWorld) {
@@ -93,6 +96,22 @@ object SignatureManager : IonServerComponent(true) {
                         potentialZ) <= (NATIONS_BALANCE.capturableStation.radius + MIN_DISTANCE_FROM_STATIONS).toDouble().pow(2)
                 ) continue
             }
+
+            val kothStationsInWorld = KothStationCache.stations.filter { station -> station.loc.world.name == randomSpaceWorld.name }
+            for (kothStation in kothStationsInWorld) {
+                if (distanceSquared(
+                        kothStation.loc.x,
+                        (randomSpaceWorld.maxHeight - randomSpaceWorld.minHeight).toDouble() / 2,
+                        kothStation.loc.z,
+                        potentialX,
+                        potentialY,
+                        potentialZ) <= (NATIONS_BALANCE.koths.majorKothradius + MIN_DISTANCE_FROM_STATIONS).toDouble().pow(2)
+                ) continue
+            }
+
+            if (Regions.getAllOfInWorld<RegionFrontierTerritory>(randomSpaceWorld).any {
+                territory -> territory.contains(potentialX.toInt(), potentialY.toInt(), potentialZ.toInt())
+            }) continue
 
             return Location(randomSpaceWorld, potentialX, potentialY, potentialZ)
         }
