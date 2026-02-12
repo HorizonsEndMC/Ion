@@ -374,12 +374,21 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
 	}
 
+	private val jumpBeaconCooldown = object : PerPlayerCooldown(60L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassjumpbeaconlimit") {
+		override fun cooldownRejected(player: UUID) {
+			Bukkit.getPlayer(player)?.userError("Your jump beacon cannot switch on/off that frequently!")
+		}
+	}
+
 	@CommandAlias("jumpbeacon")
 	@Description("Toggles your jump beacon")
 	fun onJumpBeaconToggle(sender: Player) {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
-		starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
+
+		jumpBeaconCooldown.tryExec(sender) {
+			starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
+		}
 		return
 	}
 
