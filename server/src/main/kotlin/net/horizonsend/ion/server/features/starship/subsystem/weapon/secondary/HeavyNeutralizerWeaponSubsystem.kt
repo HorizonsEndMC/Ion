@@ -21,7 +21,7 @@ class HeavyNeutralizerWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem<HeavyNeutralizerBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyNeutralizerWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
-	override val length: Int = 5
+	override val length: Int = 7
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
