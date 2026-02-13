@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
@@ -406,7 +407,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     EffectTiming.START,
                     NEXT_PHASE_SOUND,
                     SendMessage(Component.empty(), null),
-                    SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), null),
+                    SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and sneak.", GRAY, ITALIC), null),
                     SendMessage(Component.empty(), null),
                 )
             )
@@ -693,9 +694,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(text("You are now piloting the escape pod!", NamedTextColor.YELLOW, BOLD), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
-				SendMessage(Component.empty(), EffectTiming.START),
+				//SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
+				//SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
+				//SendMessage(Component.empty(), EffectTiming.START),
 
 				SequencePhaseEffect.SuppliedSetSequenceData("ENTERED_ESCAPE_POD_START", { System.currentTimeMillis() }, EffectTiming.START),
             )
@@ -717,8 +718,16 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequenceTrigger(
 					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
 					ShipManualFlightTrigger.ShiftFlightTriggerSettings(),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
-				)
+                    triggerResult = { player, context ->
+                        val currentMovementsData = SequenceManager.getSequenceData(player, context.sequence).get<Int>("flight_shift_count")
+                        val currentMovements = if (currentMovementsData.isPresent) currentMovementsData.get() else 0
+                        SequencePhaseEffect.SetSequenceData("flight_shift_count", currentMovements + 1, EffectTiming.END)
+                    }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Int>("flight_shift_count") { it != null && it >= 5 },
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
+                )
 			),
             description = PhaseDescription(
                 description = ofChildren(
@@ -731,26 +740,41 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("A light starts flickering on the control panel of your escape pod, and a robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(text("A light starts flickering on the control panel.", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Hello! I am the Journey Assistive Navigational Educator, or "), janeTitle), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 40L, EffectTiming.START),
+                SendMessage(text("A robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("Hello! I am the Journey Assistive Navigational Educator, or "), janeTitle), 40L, EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 80L, EffectTiming.START),
 				SendDelayedMessage(
 					ofChildren(
 						janePrefix,
-						ofChildren(text("When you are piloting a ship, you can move in any direction by holding a clock and pressing your "), Component.keybind("key.sneak"), text(" key in order to move in the direction you are looking. Try it out!")),
+						ofChildren(
+                            text("Move the spacecraft "),
+                            text("by pressing your "),
+                            text("SNEAK ", AQUA),
+                            text("key ("),
+                            Component.keybind("key.sneak", NamedTextColor.YELLOW),
+                            text(").")
+                        ),
                         newline(),
-						text("You can do this to move diagonally, upwards and downwards too."),
-                        newline(),
-					), 80L, EffectTiming.START
+					), 120L, EffectTiming.START
 				),
+                SendDelayedMessage(
+                    ofChildren(
+                        janePrefix,
+                        text("The ship will move in the direction you are looking. Try it out!"),
+                        newline(),
+                    ), 160L, EffectTiming.START
+                ),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
                         text = ofChildren(
                             text("Press your "),
-                            Component.keybind("key.sneak"),
-                            text(" key to move forwards")
+                            Component.keybind("key.sneak", NamedTextColor.YELLOW),
+                            text(" key to move in the direction you are looking")
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
