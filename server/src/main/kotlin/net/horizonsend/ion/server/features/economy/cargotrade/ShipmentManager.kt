@@ -105,7 +105,6 @@ object ShipmentManager : IonServerComponent() {
 	)
 
 	private data class TradeTimeLimitData(
-		val city: TradeCityData,
 		var trades: Int = 0,
 		var firstTrade: Long = 0,
 	)
@@ -122,7 +121,7 @@ object ShipmentManager : IonServerComponent() {
 	 */
 	private var crateItemOwnershipMap = mutableMapOf<UUID, ItemOwnerData>()
 
-	private val playerCityTradeTimes = mutableMapOf<UUID, TradeTimeLimitData>()
+	private val playerCityTradeTimes = mutableMapOf<UUID, MutableMap<TradeCityData, TradeTimeLimitData>>()
 
 	// Map of territory id to list of shipments
 	private val shipments = ConcurrentHashMap<Oid<Territory>, List<UnclaimedShipment>>()
@@ -257,14 +256,22 @@ object ShipmentManager : IonServerComponent() {
 			// database stuff async
 			val playerId = player.slPlayerId
 
-			val tradeTimeData = playerCityTradeTimes[player.uniqueId]
-			if (tradeTimeData != null) {
-				if (tradeTimeData.firstTrade + Duration.ofHours(TIME_LIMIT).toMillis() <= System.currentTimeMillis()) {
-					playerCityTradeTimes.remove(player.uniqueId)
-				} else {
-					if (tradeTimeData.trades >= TRADE_LIMIT_PER_CITY_PER_DAY) {
-						player.userError("You already bought crates $TRADE_LIMIT_PER_CITY_PER_DAY times from this territory within the past $TIME_LIMIT hours")
-						return@async
+			val playerTradeData = playerCityTradeTimes[player.uniqueId]
+			if (playerTradeData != null) {
+				// player has traded since the last restart
+				val playerTradeDataForCity = playerTradeData[shipment.from]
+
+				if (playerTradeDataForCity != null) {
+					// player has traded specifically to this city; check
+
+					if (playerTradeDataForCity.firstTrade + Duration.ofHours(TIME_LIMIT).toMillis() <= System.currentTimeMillis()) {
+						// the last time the player traded was over TIME_LIMIT hours ago; remove this city from the player's trade data
+						playerCityTradeTimes[player.uniqueId]?.remove(shipment.from)
+					} else {
+						if (playerTradeDataForCity.trades >= TRADE_LIMIT_PER_CITY_PER_DAY) {
+							player.userError("You already bought crates $TRADE_LIMIT_PER_CITY_PER_DAY times from this territory within the past $TIME_LIMIT hours")
+							return@async
+						}
 					}
 				}
 			}
@@ -299,10 +306,20 @@ object ShipmentManager : IonServerComponent() {
 					return@sync player.serverError("Shipment is not available")
 				}
 
-				if (playerCityTradeTimes[player.uniqueId] == null) {
-					playerCityTradeTimes[player.uniqueId] = TradeTimeLimitData(city = shipment.from, trades = 1, firstTrade = System.currentTimeMillis())
+				val playerTradeData = playerCityTradeTimes[player.uniqueId]
+				if (playerTradeData == null) {
+					playerCityTradeTimes[player.uniqueId] = mutableMapOf(
+						shipment.from to TradeTimeLimitData(trades = 1, firstTrade = System.currentTimeMillis())
+					)
 				} else {
-					playerCityTradeTimes[player.uniqueId]?.trades += 1
+					val playerTradeDataForCity = playerTradeData[shipment.from]
+					// asserting non-null here as this was already checked for null
+					if (playerTradeDataForCity == null) {
+						playerCityTradeTimes[player.uniqueId]!![shipment.from] = TradeTimeLimitData(trades = 1, firstTrade = System.currentTimeMillis())
+					} else {
+						// asserting non-null here as this was already checked for null
+						playerCityTradeTimes[player.uniqueId]!![shipment.from]!!.trades += 1
+					}
 				}
 
 				completePurchase(player, shipment, item, count)
