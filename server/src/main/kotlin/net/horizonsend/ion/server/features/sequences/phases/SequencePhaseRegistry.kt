@@ -715,19 +715,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				),
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
-					ShipManualFlightTrigger.ShiftFlightTriggerSettings(),
+                // data predicate MUST come before movement detection, as these are only checked on movement and break if the first trigger result is fulfilled
+                SequenceTrigger(
+                    SequenceTriggerTypes.DATA_PREDICATE,
+                    DataPredicate.DataPredicateSettings<Int>("flight_shift_count") { it != null && it >= 5 },
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
+                    ShipManualFlightTrigger.ShiftFlightTriggerSettings(),
                     triggerResult = { player, context ->
                         val currentMovementsData = SequenceManager.getSequenceData(player, context.sequence).get<Int>("flight_shift_count")
                         val currentMovements = if (currentMovementsData.isPresent) currentMovementsData.get() else 0
-                        SequencePhaseEffect.SetSequenceData("flight_shift_count", currentMovements + 1, EffectTiming.END)
+                        SequencePhaseEffect.SetSequenceData(
+                            "flight_shift_count",
+                            currentMovements + 1,
+                            EffectTiming.END
+                        ).playEffect(player, SequenceKeys.TUTORIAL, context.sequenceContext)
                     }
                 ),
-                SequenceTrigger(
-                    SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Int>("flight_shift_count") { it != null && it >= 5 },
-                    triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
-                )
 			),
             description = PhaseDescription(
                 description = ofChildren(
