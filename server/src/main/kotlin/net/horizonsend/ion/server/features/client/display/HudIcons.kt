@@ -767,7 +767,10 @@ object HudIcons : IonServerComponent() {
                     StarshipType.AI_BARGE -> BARGE_ICON
                     else -> STARFIGHTER_ICON
                 }
-                val color = ContactsSidebar.playerRelationColor(player, starship.controller, false)
+                val otherNation = starship.playerPilot?.let { PlayerCache[it].frontierNationOid }
+            val color = if (otherNation != null && otherNation == PlayerCache[player].frontierNationOid) NamedTextColor.GREEN
+            else if (otherNation != null && otherNation != PlayerCache[player].frontierNationOid) NamedTextColor.RED
+            else NamedTextColor.GRAY
 
                 player.sendText(
                     location = finalPosition,
