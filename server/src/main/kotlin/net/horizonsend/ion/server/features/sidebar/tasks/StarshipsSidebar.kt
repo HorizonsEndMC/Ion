@@ -25,6 +25,7 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.sign
 import kotlin.time.Duration.Companion.nanoseconds
@@ -47,8 +48,8 @@ object StarshipsSidebar {
         }}
     }
 
-    fun reserveShieldPowerComponent(reserveShieldPower: Int): Component {
-        return Component.text("$reserveShieldPower", WHITE)
+    fun reserveShieldPowerComponent(reserveShieldPower: Double): Component {
+        return Component.text(DecimalFormat("##%").format(reserveShieldPower), AQUA)
     }
 
     fun blockCountComponent(currentBlockCount: Int, initialBlockCount: Int): Component {
