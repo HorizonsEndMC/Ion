@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import java.time.Duration
-import kotlin.math.cbrt
 import kotlin.math.min
 import kotlin.math.roundToInt
 
