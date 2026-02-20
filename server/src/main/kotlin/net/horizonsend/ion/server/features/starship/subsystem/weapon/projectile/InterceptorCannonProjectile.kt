@@ -23,6 +23,7 @@ class InterceptorCannonProjectile(
 	private val explosionSize = 4.0f
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+		/*
 		val calcExplosionSize = if (starship.initialBlockCount < 700) explosionSize
 		else if (starship.initialBlockCount < 1000) explosionSize * explosionCalc(starship.initialBlockCount)
 		else 0.0f
@@ -33,6 +34,7 @@ class InterceptorCannonProjectile(
 			// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
 			addToDamagers(impactLocation.world, impactLocation.block, shooter, calcExplosionSize.roundToInt(), explosionOccurred = false, runStarshipImpactEvent = false)
 		}
+		 */
 	}
 
 	fun explosionCalc(blockCount: Int): Float {
