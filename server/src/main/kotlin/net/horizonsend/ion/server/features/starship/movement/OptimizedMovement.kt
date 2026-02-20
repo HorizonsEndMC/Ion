@@ -7,7 +7,9 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet
 import it.unimi.dsi.fastutil.shorts.ShortSet
+import net.horizonsend.ion.server.features.starship.BlockingBypass
 import net.horizonsend.ion.server.features.starship.Hangars
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -134,7 +136,7 @@ object OptimizedMovement {
 					val blockData = section.getBlockState(localX, localY, localZ)
 
 					if (!passThroughBlocks.contains(blockData)) {
-						if (!isHangar(blockData)) {
+						if (!isHangar(blockData) && !BlockingBypass.objectIsSmallEnough(blockKey, world)) {
 							throw StarshipBlockedException(Vec3i(x, y, z), blockData)
 						}
 
