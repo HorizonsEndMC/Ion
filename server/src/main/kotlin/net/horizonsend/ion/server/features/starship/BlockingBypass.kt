@@ -18,10 +18,10 @@ import java.util.concurrent.TimeUnit
 object BlockingBypass {
     private const val MAX_OBJECT_SIZE_TO_EXPLODE = 10
 
-    fun objectIsSmallEnough(blockKey: Long, world: World): Boolean {
+    fun objectIsSmallEnough(oldPositionArray: LongArray, blockKey: Long, world: World): Boolean {
         // Copied from StarshipDetection.detectNewState()
 
-        val originalStarship = ActiveStarships.findByBlock(Location(world, blockKeyX(blockKey).toDouble(), blockKeyY(blockKey).toDouble(), blockKeyZ(blockKey).toDouble()))
+        //val originalStarship = ActiveStarships.findByBlock(Location(world, blockKeyX(blockKey).toDouble(), blockKeyY(blockKey).toDouble(), blockKeyZ(blockKey).toDouble()))
 
         // blocks that were accepted
         val blockTypes = Long2ObjectOpenHashMap<BlockData>()
@@ -55,7 +55,7 @@ object BlockingBypass {
             val z = blockKeyZ(key)
 
             val blockPartOfStarship = ActiveStarships.findByBlock(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))
-            if (blockPartOfStarship == originalStarship) {
+            if (oldPositionArray.contains(key)) {
                 // Skip check only if the checked block is part of the checking starship
                 continue
             } else if (blockPartOfStarship != null) {

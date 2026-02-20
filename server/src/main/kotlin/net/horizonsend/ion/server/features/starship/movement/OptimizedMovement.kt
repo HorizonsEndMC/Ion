@@ -78,7 +78,7 @@ object OptimizedMovement {
 					return@syncBlocking
 				}
 
-				checkForCollision(newWorld, collisionChunkMap, chunkCache, hangars, newPositionArray)
+				checkForCollision(newWorld, collisionChunkMap, chunkCache, hangars, oldPositionArray, newPositionArray)
 
 				processOldBlocks(
 					oldChunkMap,
@@ -114,6 +114,7 @@ object OptimizedMovement {
 		collisionChunkMap: ChunkMap,
 		chunkCache: ChunkCache,
 		hangars: LinkedList<Long>,
+		oldPositionArray: LongArray,
 		newPositionArray: LongArray
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
@@ -136,7 +137,7 @@ object OptimizedMovement {
 					val blockData = section.getBlockState(localX, localY, localZ)
 
 					if (!passThroughBlocks.contains(blockData)) {
-						if (!isHangar(blockData) && !BlockingBypass.objectIsSmallEnough(blockKey, world)) {
+						if (!isHangar(blockData) && !BlockingBypass.objectIsSmallEnough(oldPositionArray, blockKey, world)) {
 							throw StarshipBlockedException(Vec3i(x, y, z), blockData)
 						}
 
