@@ -20,7 +20,6 @@ import org.bukkit.entity.Player
 
 class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val hullIntegrity = starship.hullIntegrity.times(100).toInt()
-    private val maxReserveShieldPower = starship.maxReserveShieldPower
     private val reserveShieldPower = starship.reserveShieldPower
     private val initialBlockCount = starship.initialBlockCount
     private val currentBlockCount = starship.currentBlockCount
@@ -36,7 +35,7 @@ class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Pla
                 space(),
                 blockCountComponent(currentBlockCount, initialBlockCount),
                 space(),
-                reserveShieldPowerComponent((reserveShieldPower / maxReserveShieldPower.toDouble()))
+                reserveShieldPowerComponent(reserveShieldPower)
             )
         } else Component.empty()
     }
