@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import kotlin.math.cbrt
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -32,7 +33,6 @@ class ReactorSubsystem(
 	}
 
 	private fun chargeShields(delta: Double) {
-		if (starship.reserveShieldPower == 0) return
 		val reactorOutput = this.output
 		val shieldPortion = this.powerDistributor.shieldPortion
 		val shieldEfficiency = starship.shieldEfficiency
@@ -58,9 +58,7 @@ class ReactorSubsystem(
 			}
 
 			val fraction = ((missing.toDouble() / totalMissing.toDouble()) * shieldPower).roundToInt()
-			val healthRestored = min(missing, fraction)
-			shield.power += healthRestored
-			starship.reserveShieldPower -= healthRestored
+			shield.power += min(missing, fraction)
 		}
 
 		if (starship is ActiveControlledStarship) {
