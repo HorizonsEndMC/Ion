@@ -82,7 +82,7 @@ object ContactsSidebar {
         return (Bukkit.getCurrentTick() / 2) % 2 == 0
     }
 
-    private fun distanceColor(distance: Int): NamedTextColor {
+    fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
             distance < 1500 -> GOLD
@@ -136,7 +136,7 @@ object ContactsSidebar {
         }
     }
 
-    private fun playerRelationColor(player: Player, otherController: Controller, inFleet: Boolean): NamedTextColor {
+    fun playerRelationColor(player: Player, otherController: Controller, inFleet: Boolean): NamedTextColor {
         if (inFleet) return BLUE
         when (otherController) {
             is NoOpController -> return GRAY
