@@ -52,7 +52,7 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 	}
 
 	private fun sendSinkMessage(killerDamager: Damager, sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>) {
-		val arena = sunkShip.world.ion.hasFlag(WorldFlag.ARENA)
+		val arena = sunkShip.world.ion.hasFlag(WorldFlag.ARENA) || sunkShip.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS)
 		val assistsData = getAssists(sortedByTime)
 
 		val message = template(
