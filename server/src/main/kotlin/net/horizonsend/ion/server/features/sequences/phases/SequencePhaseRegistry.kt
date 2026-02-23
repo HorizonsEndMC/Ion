@@ -87,7 +87,9 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Color
@@ -692,7 +694,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				),
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("You are now piloting the escape pod!", NamedTextColor.YELLOW, BOLD), EffectTiming.START),
+				SendMessage(text("You are now piloting the escape pod!", YELLOW, BOLD), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 				//SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
 				//SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
@@ -757,11 +759,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					ofChildren(
 						janePrefix,
 						ofChildren(
-                            text("Move the spacecraft "),
+                            text("Move the spacecraft ", LIGHT_PURPLE),
                             text("by pressing your "),
                             text("SNEAK ", AQUA),
                             text("key ("),
-                            Component.keybind("key.sneak", NamedTextColor.YELLOW),
+                            Component.keybind("key.sneak", YELLOW),
                             text(").")
                         ),
                         newline(),
@@ -779,8 +781,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         distance = 10.0,
                         text = ofChildren(
                             text("Press your "),
-                            Component.keybind("key.sneak", NamedTextColor.YELLOW),
-                            text(" key to move in the direction you are looking")
+                            Component.keybind("key.sneak", YELLOW),
+                            text(" key "),
+                            text("while holding your controller ", GREEN),
+                            text("to "),
+                            text("move in the direction you are looking", LIGHT_PURPLE)
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
@@ -823,16 +828,40 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively.")), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press " ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
+				SendMessage(
+                    ofChildren(
+                        janePrefix,
+                        text("Very well! You can "),
+                        text("turn your ship 90° left ", LIGHT_PURPLE),
+                        text("by pressing your "),
+                        text("DROP ITEM ", AQUA),
+                        text("key ("),
+                        Component.keybind("key.drop", YELLOW),
+                        text(")."),
+                    ),
+                    EffectTiming.START
+                ),
+				SendDelayedMessage(
+                    ofChildren(
+                        janePrefix,
+                        text("Now give it a try! Press your " ),
+                        text("DROP ITEM ", AQUA),
+                        text("key ("),
+                        Component.keybind("key.drop", YELLOW),
+                        text(") to "),
+                        text("turn left.", LIGHT_PURPLE)
+                    ),
+                    40L, EffectTiming.START
+                ),
 				SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
                         text = ofChildren(
                             text("Press your "),
-                            Component.keybind("key.drop"),
-                            text(" key to turn left")
+                            Component.keybind("key.drop", YELLOW),
+                            text(" key to "),
+                            text("turn left", LIGHT_PURPLE)
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
@@ -875,15 +904,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Now press " ), Component.keybind("key.swapOffhand"), text(" to turn right.")), EffectTiming.START),
+				SendMessage(
+                    ofChildren(
+                        janePrefix,
+                        text("Now press your " ),
+                        text("SWAP OFF HAND ", AQUA),
+                        text("key ("),
+                        Component.keybind("key.swapOffhand", YELLOW),
+                        text(") to "),
+                        text("turn right.", LIGHT_PURPLE)
+                    ),
+                    EffectTiming.START
+                ),
 				SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
                         text = ofChildren(
                             text("Press your "),
-                            Component.keybind("key.swapOffhand"),
-                            text(" key to turn right")
+                            Component.keybind("key.swapOffhand", YELLOW),
+                            text(" key to "),
+                            text("turn right", LIGHT_PURPLE)
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
