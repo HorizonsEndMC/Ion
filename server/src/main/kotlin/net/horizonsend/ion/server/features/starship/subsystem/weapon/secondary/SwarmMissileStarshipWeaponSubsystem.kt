@@ -130,4 +130,8 @@ class SwarmMissileStarshipWeaponSubsystem(
             else -> throw IllegalArgumentException("Unsupported material type")
         }
     }
+
+    override fun isAcceptableDirection(face: BlockFace): Boolean {
+        return this.face == face || this.face == BlockFace.UP || this.face == BlockFace.DOWN
+    }
 }
