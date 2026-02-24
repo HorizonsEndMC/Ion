@@ -50,6 +50,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FL
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_LEFT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_RIGHT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_SHIFT
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_START
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO_TO_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
@@ -667,7 +668,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequenceTrigger(
 					SequenceTriggerTypes.WAIT_TIME,
 					WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(5)),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_SHIFT)
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_START)
 				),
 				SequenceTrigger(
 					SequenceTriggerTypes.STARSHIP_UNPILOT,
@@ -708,6 +709,35 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 		val janeTitle = text("J.A.N.E.", janeColor)
 		val janePrefix = ofChildren(janeTitle, text(" » ", HEColorScheme.HE_DARK_GRAY))
 
+        bootstrapPhase(
+            phaseKey = FLIGHT_START,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.WAIT_TIME,
+                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(5)),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_SHIFT)
+                )
+            ),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+                SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_START_DELAY", { System.currentTimeMillis() }, EffectTiming.START),
+
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("A light starts flickering on the control panel.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("A robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendDelayedMessage(ofChildren(janePrefix, text("Hello! I am the Journey Assistive Navigational Educator, or "), janeTitle), 40L, EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 80L, EffectTiming.START),
+            )
+        )
 		bootstrapPhase(
 			phaseKey = FLIGHT_SHIFT,
 			sequenceKey = SequenceKeys.TUTORIAL,
@@ -729,11 +759,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = { player, context ->
                         val currentMovementsData = SequenceManager.getSequenceData(player, context.sequence).get<Int>("flight_shift_count")
                         val currentMovements = if (currentMovementsData.isPresent) currentMovementsData.get() else 0
-                        SequencePhaseEffect.SetSequenceData(
-                            "flight_shift_count",
-                            currentMovements + 1,
-                            EffectTiming.END
-                        ).playEffect(player, SequenceKeys.TUTORIAL, context.sequenceContext)
+                        SequenceManager.getSequenceData(player, context.sequence).set("flight_shift_count", currentMovements + 1)
                     }
                 ),
 			),
@@ -745,17 +771,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 )
             ),
 			effects = listOf(
-				NEXT_PHASE_SOUND,
-
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("A light starts flickering on the control panel.", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(text("A robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("Hello! I am the Journey Assistive Navigational Educator, or "), janeTitle), 40L, EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 80L, EffectTiming.START),
-				SendDelayedMessage(
+                SendMessage(
 					ofChildren(
 						janePrefix,
 						ofChildren(
@@ -767,14 +783,14 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             text(").")
                         ),
                         newline(),
-					), 120L, EffectTiming.START
+					), EffectTiming.START
 				),
                 SendDelayedMessage(
                     ofChildren(
                         janePrefix,
                         text("The ship will move in the direction you are looking. Try it out!"),
                         newline(),
-                    ), 160L, EffectTiming.START
+                    ), 40L, EffectTiming.START
                 ),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(

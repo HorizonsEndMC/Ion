@@ -19,6 +19,7 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val GO_TO_ESCAPE_POD = registerKey("GO_TO_ESCAPE_POD")
 	val BRANCH_CARGO_CRATES = registerKey("BRANCH_CARGO_CRATES")
 	val ENTERED_ESCAPE_POD = registerKey("ENTERED_ESCAPE_POD")
+	val FLIGHT_START = registerKey("FLIGHT_START")
 	val FLIGHT_SHIFT = registerKey("FLIGHT_SHIFT")
 	val FLIGHT_ROTATION_LEFT = registerKey("FLIGHT_ROTATION")
 	val FLIGHT_ROTATION_RIGHT = registerKey("FLIGHT_ROTATION_RIGHT")
