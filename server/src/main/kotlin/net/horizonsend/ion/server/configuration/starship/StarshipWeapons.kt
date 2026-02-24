@@ -1035,8 +1035,8 @@ data class PulseCannonBalancing(
 	data class PulseCannonProjectileBalancing(
         override var range: Double = 180.0,
         override var speed: Double = 300.0,
-        override var explosionPower: Float = 1.1f,
-        override var starshipShieldDamageMultiplier: Double = 1.0,
+        override var explosionPower: Float = 1.5f,
+        override var starshipShieldDamageMultiplier: Double = 2.0,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -1322,7 +1322,7 @@ data class LogisticsTurretBalancing(
 
 	@Serializable
 	data class LogisticsTurretProjectileBalancing(
-        override var range: Double = 200.0,
+        override var range: Double = 100.0,
         override var speed: Double = 2000.0,
         override var explosionPower: Float = 0f,
         override var starshipShieldDamageMultiplier: Double = 0.0,

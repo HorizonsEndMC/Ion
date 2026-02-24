@@ -898,7 +898,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.45,
+			shieldPowerMultiplier = 0.25,
 			shieldRegenMultiplier = 0.8,
 			cruiseSpeedMultiplier = 1.25,
 			requiredMultiblocks = listOf(
