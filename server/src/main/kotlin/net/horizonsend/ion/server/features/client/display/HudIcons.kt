@@ -762,7 +762,7 @@ object HudIcons : IonServerComponent() {
 
             // calculate position and offset
             val offset = direction.clone().normalize().multiply(min(distance, 32.0))
-            val finalPosition = playerPosition.add(offset).toLocation(player.world)
+            val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
             val starshipIcon = when (starship.type) {
                 StarshipType.STARFIGHTER -> STARFIGHTER_ICON
                 StarshipType.GUNSHIP -> GUNSHIP_ICON
