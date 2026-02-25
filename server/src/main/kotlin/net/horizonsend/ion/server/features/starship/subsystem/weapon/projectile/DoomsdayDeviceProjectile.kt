@@ -213,7 +213,7 @@ class DoomsdayDeviceProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		super.onImpactStarship(starship, impactLocation)
 
-		val explosionSize = 7.5f
+		val explosionSize = 12.5f
 		val offsetDirection = direction.clone().multiply(5.0)
 		val explosionLocation = impactLocation.clone().add(offsetDirection)
 
