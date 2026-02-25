@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
 sealed class HeavyTurretMultiblock : TurretMultiblock<HeavyTurretProjectileBalancing>() {
@@ -83,7 +82,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock<HeavyTurretProjectileBalan
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
-				x(+0).type(IRON_TRAPDOOR)
+				x(+0).anyTrapdoor()
 				x(+1).endRod()
 			}
 		}

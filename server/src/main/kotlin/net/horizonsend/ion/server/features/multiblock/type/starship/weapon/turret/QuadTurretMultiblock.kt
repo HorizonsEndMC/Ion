@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -165,7 +164,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 			y(getSign() * 4) {
 				x(-2).endRod()
 				x(-1).endRod()
-				x(0).type(IRON_TRAPDOOR)
+				x(0).anyTrapdoor()
 				x(+1).endRod()
 				x(+2).endRod()
 			}
@@ -180,7 +179,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
-				x(0).type(IRON_TRAPDOOR)
+				x(0).anyTrapdoor()
 				x(1).endRod()
 			}
 		}

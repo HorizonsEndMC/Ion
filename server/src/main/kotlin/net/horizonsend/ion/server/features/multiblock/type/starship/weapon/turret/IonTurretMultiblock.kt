@@ -15,7 +15,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.GRINDSTONE
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -131,7 +130,7 @@ sealed class IonTurretMultiblock : TurretMultiblock<IonTurretProjectileBalancing
 			}
 			y(getSign() * 4) {
 				x(-1).type(END_ROD)
-				x(+0).type(IRON_TRAPDOOR)
+				x(+0).anyTrapdoor()
 				x(+1).type(END_ROD)
 			}
 		}
