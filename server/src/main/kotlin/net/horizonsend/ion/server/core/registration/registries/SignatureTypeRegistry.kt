@@ -20,7 +20,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
             maximumPerServer = 5,
             minSpawnTimeMinutes = Duration.ofMinutes(15L),
             maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTime = TimeUnit.NANOSECONDS.toMinutes(30L),
+			despawnTimeMinutes = Duration.ofMinutes(30L),
 			schematicName = "comet_small"
         ))
 
@@ -32,7 +32,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
             maximumPerServer = 3,
             minSpawnTimeMinutes = Duration.ofMinutes(20L),
             maxSpawnTimeMinutes = Duration.ofMinutes(60L),
-			despawnTime = TimeUnit.NANOSECONDS.toMinutes(30L),
+			despawnTimeMinutes = Duration.ofMinutes(30L),
 			schematicName = "comet_medium"
 		))
 
@@ -44,7 +44,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			maximumPerServer = 5,
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTime = TimeUnit.NANOSECONDS.toMinutes(30L),
+			despawnTimeMinutes = Duration.ofMinutes(0L),
 			schematicName = "scordite_field"
 		))
 
@@ -56,7 +56,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			maximumPerServer = 5,
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTime = TimeUnit.NANOSECONDS.toMinutes(30L),
+			despawnTimeMinutes = Duration.ofMinutes(0L),
 			schematicName = "vanadium_field"
 		))
 
@@ -68,7 +68,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			maximumPerServer = 5,
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTime = TimeUnit.NANOSECONDS.toMinutes(30L),
+			despawnTimeMinutes = Duration.ofMinutes(0L),
 			schematicName = "zircon_field"
 		))
 
@@ -80,7 +80,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			maximumPerServer = 5,
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTime = TimeUnit.NANOSECONDS.toMinutes(30L),
+			despawnTimeMinutes = Duration.ofMinutes(0L),
 			schematicName = "atavum_field"
 		))
     }

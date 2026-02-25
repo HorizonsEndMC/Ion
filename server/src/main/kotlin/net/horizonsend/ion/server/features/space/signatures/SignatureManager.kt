@@ -39,6 +39,7 @@ object SignatureManager : IonServerComponent(true) {
     private const val MAX_SPAWN_ATTEMPTS = 30
     private const val MIN_DISTANCE_FROM_STATIONS = 500
 
+    // Map of signatures, and their epoch spawn time in millis
     val activeSignatures = mutableMapOf<Signature, Long>()
 
 	val schematicCache: LoadingCache<File, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
@@ -72,24 +73,20 @@ object SignatureManager : IonServerComponent(true) {
 						signature
 					)
 				)
-				activeSignatures[signature] = System.nanoTime()
+				activeSignatures[signature] = System.currentTimeMillis()
             }
         }
     }
 
 	private fun tickCurrentSignatures() {
-		val currentTime = System.nanoTime()
+		val currentTimeMillis = System.currentTimeMillis()
 
 		activeSignatures.entries.removeIf { signature ->
-			val maximumTime = signature.key.signatureType.despawnTime
-			if (currentTime < signature.value + maximumTime) {
-				//TODO: DESPAWN SCHEMATIC, maybe just remove valuable ores?
-				true
-			}
-			else {
-				false
-			}
-		}
+			val maximumTime = signature.key.signatureType.despawnTimeMinutes
+
+            //TODO: DESPAWN SCHEMATIC, maybe just remove valuable ores?
+            currentTimeMillis > maximumTime.plusMillis(signature.value).toMillis()
+        }
 	}
 
     private fun generateNewSignature(signatureType: SignatureType): Signature? {
