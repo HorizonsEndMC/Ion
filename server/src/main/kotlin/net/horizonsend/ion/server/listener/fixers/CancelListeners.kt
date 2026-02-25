@@ -132,12 +132,7 @@ class CancelListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPotionSplashEvent(event: PotionSplashEvent) {
-		for (effect in event.potion.effects) {
-			if (effect.type == PotionEffectType.HEALTH_BOOST) {
-				return
-			}
-		}
-		event.isCancelled = true
+		event.isCancelled = event.potion.effects.none { it.type == PotionEffectType.INSTANT_HEALTH }
 	}
 
 	@EventHandler
