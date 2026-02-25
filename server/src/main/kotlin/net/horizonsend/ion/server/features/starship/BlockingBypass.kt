@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -72,6 +73,9 @@ object BlockingBypass {
             if (material == Material.AIR || material == Material.VOID_AIR || material == Material.CAVE_AIR) {
                 continue
             }
+
+            // always disallow shulker boxes
+            if (material.isShulkerBox) return false
 
             // Add the location to the list of blocks that'll be set on the starships
             blockTypes[key] = blockData
