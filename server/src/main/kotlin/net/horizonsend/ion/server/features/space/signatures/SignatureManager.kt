@@ -1,6 +1,12 @@
 package net.horizonsend.ion.server.features.space.signatures
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
+import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistries
@@ -10,21 +16,37 @@ import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
+import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.slf4j.Logger
+import java.io.File
+import java.util.Optional
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
 
 object SignatureManager : IonServerComponent(true) {
     private const val MAX_SPAWN_ATTEMPTS = 30
     private const val MIN_DISTANCE_FROM_STATIONS = 500
 
-    val activeSignatures = mutableListOf<Signature>()
+    val activeSignatures = mutableMapOf<Signature, Long>()
+
+	val schematicCache: LoadingCache<File, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
+		CacheLoader.from { schematicFile ->
+			val clipboard = readSchematic(schematicFile) ?: return@from Optional.empty<Clipboard>()
+			return@from Optional.of(clipboard)
+		}
+	)
 
     override fun onEnable() {
         if (ConfigurationFiles.featureFlags().explorationSpawns) {
@@ -32,24 +54,62 @@ object SignatureManager : IonServerComponent(true) {
                 signature.calculateNewSpawnTime()
             }
 
-            Tasks.syncRepeat(60 * 20L, 60 * 20L, SignatureManager::tickSpawners)
+            Tasks.syncRepeat(60 * 20L, 60 * 20L) {
+				tickSpawners()
+				tickCurrentSignatures()
+			}
         }
     }
 
     private fun tickSpawners() {
         for (signatureType in IonRegistries.SIGNATURE_TYPE.getAll()) {
-            if (signatureType.isReadyToSpawn() && activeSignatures.count { signature -> signature.signatureType == signatureType } < signatureType.maximumPerServer) {
+            if (signatureType.isReadyToSpawn() && activeSignatures.count { signature -> signature.key.signatureType == signatureType } < signatureType.maximumPerServer) {
                 val signature = generateNewSignature(signatureType) ?: continue
                 log.info("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}")
-                activeSignatures.add(signature)
+				IonServer.server.sendMessage(
+					template(
+						Component.text("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}"),
+						signature
+					)
+				)
+				activeSignatures[signature] = System.nanoTime()
             }
         }
     }
 
+	private fun tickCurrentSignatures() {
+		val currentTime = System.nanoTime()
+
+		activeSignatures.entries.removeIf { signature ->
+			val maximumTime = signature.key.signatureType.despawnTime
+			if (currentTime < signature.value + maximumTime) {
+				//TODO: DESPAWN SCHEMATIC, maybe just remove valuable ores?
+				true
+			}
+			else {
+				false
+			}
+		}
+	}
+
     private fun generateNewSignature(signatureType: SignatureType): Signature? {
         val location = getValidSignatureLocation() ?: return null
+		val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("${signatureType.schematicName}.schem")
+		val clipboard: Clipboard = schematicCache[schematicFile].getOrNull() ?: return null
+		createSignatureFromClipboard(log, location, clipboard)
         return Signature(signatureType, location)
     }
+
+	fun createSignatureFromClipboard(
+		logger: Logger,
+		location: Location,
+		clipboard: Clipboard,
+	) {
+		val target = StarshipDealers.resolveTarget(clipboard, location)
+		val vec3i = Vec3i(target)
+		logger.info("Attempting to place signature")
+		placeSchematicEfficiently(clipboard, location.world, vec3i, true)
+	}
 
     private fun getValidSignatureLocation(): Location? {
         var attempts = 0

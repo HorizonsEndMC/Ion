@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalan
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
+import net.horizonsend.ion.server.features.multiblock.type.defense.active.projectile.AntiAirCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalSkirmishCommandBurstSubsystem
@@ -121,17 +122,20 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.PI
 import kotlin.reflect.KClass
 
-class AntiAirProjectileBalancing : StarshipParticleProjectileBalancing {
-	override var particleThickness: Double = TODO("Not yet implemented")
-	override val clazz: KClass<out Projectile> = TODO("Not yet implemented")
-	override var range: Double = TODO("Not yet implemented")
-	override var speed: Double = TODO("Not yet implemented")
-	override var explosionPower: Float = TODO("Not yet implemented")
-	override var starshipShieldDamageMultiplier: Double = TODO("Not yet implemented")
-	override var areaShieldDamageMultiplier: Double = TODO("Not yet implemented")
-	override val entityDamage: EntityDamage = TODO("Not yet implemented")
-	override val fireSoundNear: SoundInfo = TODO("Not yet implemented")
-	override val fireSoundFar: SoundInfo = TODO("Not yet implemented")
+@Serializable
+data class AntiAirProjectileBalancing (
+	override var particleThickness: Double = 2.0,
+	override var range: Double = 500.0,
+	override var speed: Double = 200.0,
+	override var explosionPower: Float = 10.0f,
+	override var starshipShieldDamageMultiplier: Double = 4.0,
+	override var areaShieldDamageMultiplier: Double = 0.1,
+	override val entityDamage: EntityDamage = RegularDamage(15.0),
+	override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+	override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+	) : StarshipProjectileBalancing, StarshipParticleProjectileBalancing {
+	@Transient
+	override val clazz: KClass<out Projectile> = AntiAirCannonProjectile::class
 }
 
 @Serializable

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.active
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.configuration.starship.AntiAirProjectileBalancing
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.projectile.AntiAirCannonProjectile
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.RotatingMultiblock
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.AntiAirCannonProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -708,8 +710,9 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 	fun shoot(shooter: Player, facing: BlockFace, turretBaseSign: Sign) {
 		val power = 0
+		println("pretending to work")
 
-		if (power < POWER_PER_SHOT) return shooter.userError("Out of power!")
+		//if (power < POWER_PER_SHOT) return shooter.userError("Out of power!") unused
 
 		val left = AntiAirCannons.lastBarrel[shooter.uniqueId] ?: false
 		val barrelEndPosition =
@@ -721,12 +724,13 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 		val dir = shooter.location.direction
 
+		println("FIRING AA GUN!")
 		AntiAirCannonProjectile(
-			source = TODO(),
+			source = AntiAirCannonProjectileSource(shooter),
 			location = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
 			direction = dir,
-			shooter
+			shooter,
+			AntiAirProjectileBalancing(),
 		).fire()
-
 	}
 }

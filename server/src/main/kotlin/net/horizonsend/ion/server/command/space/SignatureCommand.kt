@@ -16,7 +16,7 @@ object SignatureCommand : SLCommand() {
 
     @Default
     fun onList(sender: CommandSender) {
-        val signatures = SignatureManager.activeSignatures
+        val signatures = SignatureManager.activeSignatures.keys.toList()
 
         val body = formatPaginatedMenu(
             signatures.size,
@@ -25,7 +25,7 @@ object SignatureCommand : SLCommand() {
         ) { index ->
             ofChildren(
                 signatures[index].signatureType.displayName,
-                Component.text(" at ${signatures[index].location}"))
+                Component.text(" at ${signatures[index].location.world} x ${signatures[index].location.x} z ${signatures[index].location.z}"))
         }
 
         if (signatures.isEmpty()) sender.userError("No signatures")

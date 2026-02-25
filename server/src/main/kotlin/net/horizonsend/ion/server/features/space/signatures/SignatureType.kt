@@ -14,7 +14,9 @@ open class SignatureType(
     val maximumPerServer: Int,
     val minSpawnTimeMinutes: Duration,
     val maxSpawnTimeMinutes: Duration,
-) : Keyed<SignatureType> {
+	val despawnTime: Long,
+	val schematicName: String,
+	) : Keyed<SignatureType> {
     var nextSpawnTimeMillis: Long = 0L
 
     fun isReadyToSpawn(): Boolean {

@@ -100,7 +100,7 @@ data class NewStarshipBalancing(
 			CthulhuBeamBalancing(),
 			CapitalCannonBalancing(),
 			TestBoidCannonBalancing(),
-			SwarmMissileBalancing(),
+			SwarmMissileBalancing()
 		)
 	)
 
@@ -965,7 +965,7 @@ data class NewStarshipBalancing(
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),
-				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 3, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(

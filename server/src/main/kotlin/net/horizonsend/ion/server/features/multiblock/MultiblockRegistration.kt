@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultib
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield30
@@ -508,6 +509,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
+		registerMultiblock(AntiAirCannonTurretMultiblock)
 
 		if (ConfigurationFiles.featureFlags().graphTransfer) {
 			registerMultiblock(ChemicalProcessorMultiblock)
