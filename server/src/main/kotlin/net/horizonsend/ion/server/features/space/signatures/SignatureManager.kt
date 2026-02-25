@@ -94,7 +94,7 @@ object SignatureManager : IonServerComponent(true) {
 
     private fun generateNewSignature(signatureType: SignatureType): Signature? {
         val location = getValidSignatureLocation() ?: return null
-		val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("${signatureType.schematicName}.schem")
+		val schematicFile: File = IonServer.dataFolder.resolve("signatures").resolve("${signatureType.schematicName}.schem")
 		val clipboard: Clipboard = schematicCache[schematicFile].getOrNull() ?: return null
 		createSignatureFromClipboard(log, location, clipboard)
         return Signature(signatureType, location)
