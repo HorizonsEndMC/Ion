@@ -37,12 +37,10 @@ import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.Koths
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.getKOTHS
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
-import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
-import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
