@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.core.registration.keys.SignatureTypeKeys
 import net.horizonsend.ion.server.features.space.signatures.SignatureType
 import net.kyori.adventure.text.Component
 import java.time.Duration
-import java.util.concurrent.TimeUnit
 
 class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYPE) {
     override fun getKeySet(): KeyRegistry<SignatureType> = SignatureTypeKeys
@@ -45,7 +44,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
 			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "scordite_field"
+			schematicName = "scordite_field",
+			minimumServerStage = 1,
 		))
 
 		register(SignatureTypeKeys.VANADIUM_FIELD, SignatureType(
@@ -57,7 +57,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
 			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "vanadium_field"
+			schematicName = "vanadium_field",
+			minimumServerStage = 1,
 		))
 
 		register(SignatureTypeKeys.ZIRCON_FIELD, SignatureType(
@@ -69,7 +70,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
 			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "zircon_field"
+			schematicName = "zircon_field",
+			minimumServerStage = 2,
 		))
 
 		register(SignatureTypeKeys.ATAVUM_FIELD, SignatureType(
@@ -81,7 +83,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			minSpawnTimeMinutes = Duration.ofMinutes(15L),
 			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
 			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "atavum_field"
+			schematicName = "atavum_field",
+			minimumServerStage = 3,
 		))
     }
 }
