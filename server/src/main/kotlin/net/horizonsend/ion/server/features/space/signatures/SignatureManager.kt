@@ -16,23 +16,18 @@ import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
-import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
-import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.slf4j.Logger
 import java.io.File
 import java.util.Optional
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
 
 object SignatureManager : IonServerComponent(true) {
@@ -64,7 +59,9 @@ object SignatureManager : IonServerComponent(true) {
 
     private fun tickSpawners() {
         for (signatureType in IonRegistries.SIGNATURE_TYPE.getAll()) {
-            if (signatureType.isReadyToSpawn() && activeSignatures.count { signature -> signature.key.signatureType == signatureType } < signatureType.maximumPerServer) {
+			if (signatureType is PersistentSignatureType && activeSignatures.count { signature -> signature.key.signatureType == signatureType } < signatureType.maximumPerServer) continue
+
+            if (signatureType.isReadyToSpawn()) {
                 val signature = generateNewSignature(signatureType) ?: continue
                 log.info("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}")
 				IonServer.server.sendMessage(
@@ -73,7 +70,7 @@ object SignatureManager : IonServerComponent(true) {
 						signature
 					)
 				)
-				activeSignatures[signature] = System.currentTimeMillis()
+				if (signatureType is PersistentSignatureType) activeSignatures[signature] = System.currentTimeMillis()
             }
         }
     }
@@ -82,31 +79,19 @@ object SignatureManager : IonServerComponent(true) {
 		val currentTimeMillis = System.currentTimeMillis()
 
 		activeSignatures.entries.removeIf { signature ->
-			val maximumTime = signature.key.signatureType.despawnTimeMinutes
+			val maximumTime = (signature.key.signatureType as PersistentSignatureType).despawnTimeMinutes
 
-            //TODO: DESPAWN SCHEMATIC, maybe just remove valuable ores?
             currentTimeMillis > maximumTime.plusMillis(signature.value).toMillis()
         }
 	}
 
     private fun generateNewSignature(signatureType: SignatureType): Signature? {
         val location = getValidSignatureLocation() ?: return null
-		val schematicFile: File = IonServer.dataFolder.resolve("signatures").resolve("${signatureType.schematicName}.schem")
-		val clipboard: Clipboard = schematicCache[schematicFile].getOrNull() ?: return null
-		createSignatureFromClipboard(log, location, clipboard)
+
+		if (signatureType is SchematicSignatureType) signatureType.generateSchematic(location, schematicCache, log)
+
         return Signature(signatureType, location)
     }
-
-	fun createSignatureFromClipboard(
-		logger: Logger,
-		location: Location,
-		clipboard: Clipboard,
-	) {
-		val target = StarshipDealers.resolveTarget(clipboard, location)
-		val vec3i = Vec3i(target)
-		logger.info("Attempting to place signature")
-		placeSchematicEfficiently(clipboard, location.world, vec3i, true)
-	}
 
     private fun getValidSignatureLocation(): Location? {
         var attempts = 0

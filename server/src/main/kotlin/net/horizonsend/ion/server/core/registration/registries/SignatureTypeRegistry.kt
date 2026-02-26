@@ -3,7 +3,10 @@ package net.horizonsend.ion.server.core.registration.registries
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.keys.SignatureTypeKeys
+import net.horizonsend.ion.server.features.space.signatures.PersistentSignatureType
+import net.horizonsend.ion.server.features.space.signatures.SchematicSignatureType
 import net.horizonsend.ion.server.features.space.signatures.SignatureType
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.kyori.adventure.text.Component
 import java.time.Duration
 
@@ -11,80 +14,40 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
     override fun getKeySet(): KeyRegistry<SignatureType> = SignatureTypeKeys
 
     override fun boostrap() {
-        register(SignatureTypeKeys.COMET_SMALL, SignatureType(
+        register(SignatureTypeKeys.COMET_SMALL, PersistentSignatureType(
             key = SignatureTypeKeys.COMET_SMALL,
             displayName = Component.text("Small Comet"),
-            detectionRange = 5000,
-            interactRange = 200,
             maximumPerServer = 5,
             minSpawnTimeMinutes = Duration.ofMinutes(15L),
             maxSpawnTimeMinutes = Duration.ofMinutes(30L),
+			detectionRange = 5000,
+			interactRange = 200,
 			despawnTimeMinutes = Duration.ofMinutes(30L),
-			schematicName = "comet_small"
         ))
 
-        register(SignatureTypeKeys.COMET_MEDIUM, SignatureType(
+        register(SignatureTypeKeys.COMET_MEDIUM, PersistentSignatureType(
             key = SignatureTypeKeys.COMET_MEDIUM,
             displayName = Component.text("Medium Comet"),
-            detectionRange = 3000,
-            interactRange = 200,
             maximumPerServer = 3,
             minSpawnTimeMinutes = Duration.ofMinutes(20L),
             maxSpawnTimeMinutes = Duration.ofMinutes(60L),
+			detectionRange = 3000,
+			interactRange = 200,
 			despawnTimeMinutes = Duration.ofMinutes(30L),
-			schematicName = "comet_medium"
 		))
 
-		register(SignatureTypeKeys.SCORDITE_FIELD, SignatureType(
-			key = SignatureTypeKeys.SCORDITE_FIELD,
-			displayName = Component.text("Scordite Asteroid Field"),
-			detectionRange = 5000,
-			interactRange = 200,
-			maximumPerServer = 5,
-			minSpawnTimeMinutes = Duration.ofMinutes(15L),
-			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "scordite_field",
+		register(SignatureTypeKeys.ASTEROID_FIELD, SchematicSignatureType(
+			key = SignatureTypeKeys.ASTEROID_FIELD,
+			displayName = Component.text("Asteroid Field"),
+			minSpawnTimeMinutes = Duration.ofHours(2L),
+			maxSpawnTimeMinutes = Duration.ofHours(4L),
 			minimumServerStage = 1,
-		))
-
-		register(SignatureTypeKeys.VANADIUM_FIELD, SignatureType(
-			key = SignatureTypeKeys.VANADIUM_FIELD,
-			displayName = Component.text("Vanadium Asteroid Field"),
-			detectionRange = 5000,
-			interactRange = 200,
-			maximumPerServer = 5,
-			minSpawnTimeMinutes = Duration.ofMinutes(15L),
-			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "vanadium_field",
-			minimumServerStage = 1,
-		))
-
-		register(SignatureTypeKeys.ZIRCON_FIELD, SignatureType(
-			key = SignatureTypeKeys.ZIRCON_FIELD,
-			displayName = Component.text("Zircon Asteroid Field"),
-			detectionRange = 5000,
-			interactRange = 200,
-			maximumPerServer = 5,
-			minSpawnTimeMinutes = Duration.ofMinutes(15L),
-			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "zircon_field",
-			minimumServerStage = 2,
-		))
-
-		register(SignatureTypeKeys.ATAVUM_FIELD, SignatureType(
-			key = SignatureTypeKeys.ATAVUM_FIELD,
-			displayName = Component.text("Atavum Asteroid Field"),
-			detectionRange = 5000,
-			interactRange = 200,
-			maximumPerServer = 5,
-			minSpawnTimeMinutes = Duration.ofMinutes(15L),
-			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			despawnTimeMinutes = Duration.ofMinutes(0L),
-			schematicName = "atavum_field",
-			minimumServerStage = 3,
+			schematicNames = WeightedRandomList(
+				"scordite_field" to 35,
+				"vanadium_field" to 35,
+				"zircon_field" to 25,
+				"atavum_field" to 5,
+			),
 		))
     }
 }
