@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.minecraft.world.level.block.StairBlock
@@ -19,6 +20,8 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.util.CraftMagicNumbers
+import org.bukkit.damage.DamageSource
+import org.bukkit.damage.DamageType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockExplodeEvent
@@ -37,6 +40,18 @@ object GameplayTweaks : IonServerComponent() {
 
 		listen<BlockPhysicsEvent> { event -> if (physicsDisabled) event.isCancelled = true }
 		listen<ItemSpawnEvent> { event -> event.entity.isInvulnerable = true }
+
+		Tasks.syncRepeat(0L, 10L) {
+			damagePlayersAboveMaxHeight()
+		}
+	}
+
+	private fun damagePlayersAboveMaxHeight() {
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (player.y < player.world.maxHeight + 64) continue
+
+			player.damage(4.0, DamageSource.builder(DamageType.OUT_OF_WORLD).build())
+		}
 	}
 
 	@EventHandler
