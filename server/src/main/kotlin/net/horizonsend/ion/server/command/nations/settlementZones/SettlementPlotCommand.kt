@@ -64,7 +64,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		SettlementZone.setOwner(zone.id, sender.slPlayerId)
 
 		VAULT_ECO.withdrawPlayer(sender, realPrice.toDouble())
-		sender msg "&aPurchased zone ${zone.name} for ${realPrice.toCreditsString()}"
+		sender.success("Purchased zone ${zone.name} for ${realPrice.toCreditsString()}")
 	}
 
 	@Subcommand("list")
@@ -131,7 +131,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 			SettlementZone.setPrice(zone.id, null)
 
-			sender msg "&aMade plot ${zone.name} no longer for sale"
+			sender.sucess("&aMade plot ${zone.name} no longer for sale")
 			return@asyncCommand
 		}
 
@@ -141,8 +141,8 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 		SettlementZone.setPrice(zone.id, price)
 
-		sender msg "&aPut your plot ${zone.name} up for sale with price ${price.toCreditsString()}."
-		sender msg "&7&o(To make it no longer for sale, use /s plot sell -1)"
+		sender.success("Put your plot ${zone.name} up for sale with price ${price.toCreditsString()}.")
+		sender.information("To make it no longer for sale, use /s plot sell -1")
 	}
 
 	@Subcommand("unclaim")
@@ -153,7 +153,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 		SettlementZone.setOwner(zone.id, null)
 
-		sender msg "&aUnclaimed zone ${zone.name}"
+		sender.success("Unclaimed zone ${zone.name}")
 	}
 
 	@Subcommand("trusted add player")
@@ -164,7 +164,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		val player = resolveOfflinePlayer(name).slPlayerId
 		failIf(zone.trustedPlayers?.contains(player) == true) { "$name is already added to ${zone.name}" }
 		SettlementZone.addTrustedPlayer(zone.id, player)
-		sender msg "&aAdded player $name to plot ${zone.name}"
+		sender.success("Added player $name to plot ${zone.name}")
 	}
 
 	@Subcommand("trusted add nation")
@@ -175,7 +175,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		val nation = resolveNation(name)
 		failIf(zone.trustedNations?.contains(nation) == true) { "$name is already added to ${zone.name}" }
 		SettlementZone.addTrustedNation(zone.id, nation)
-		sender msg "&aAdded nation $name to plot ${zone.name}"
+		sender.success("Added nation $name to plot ${zone.name}")
 	}
 
 	@Subcommand("trusted add settlement")
@@ -186,7 +186,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		val settlement = resolveSettlement(name)
 		failIf(zone.trustedSettlements?.contains(settlement) == true) { "$name is already added to ${zone.name}" }
 		SettlementZone.addTrustedSettlement(zone.id, settlement)
-		sender msg "&aAdded settlement $name to plot ${zone.name}"
+		sender.success("Added settlement $name to plot ${zone.name}")
 	}
 
 	@Subcommand("trusted remove player")
@@ -197,7 +197,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		val player = resolveOfflinePlayer(name).slPlayerId
 		failIf(zone.trustedPlayers?.contains(player) != true) { "$name is not added to ${zone.name}" }
 		SettlementZone.removeTrustedPlayer(zone.id, player)
-		sender msg "&aRemoved player $name from plot ${zone.name}"
+		sender.success("Removed player $name from plot ${zone.name}")
 	}
 
 	@Subcommand("trusted remove nation")
@@ -208,7 +208,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		val nation = resolveNation(name)
 		failIf(zone.trustedNations?.contains(nation) != true) { "$name is not added to ${zone.name}" }
 		SettlementZone.removeTrustedNation(zone.id, nation)
-		sender msg "&aRemoved nation $name from plot ${zone.name}"
+		sender.success("Removed nation $name from plot ${zone.name}")
 	}
 
 	@Subcommand("trusted remove settlement")
@@ -219,7 +219,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		val settlement = resolveSettlement(name)
 		failIf(zone.trustedSettlements?.contains(settlement) != true) { "$name is not added to ${zone.name}" }
 		SettlementZone.removeTrustedSettlement(zone.id, settlement)
-		sender msg "&aRemoved settlement $name from plot ${zone.name}"
+		sender.success("Removed settlement $name from plot ${zone.name}")
 	}
 
 	@Subcommand("allowFriendlyFire")
@@ -228,7 +228,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
     fun onSetFriendlyFire(sender: Player, zone: RegionSettlementZone, state: Boolean) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		SettlementZone.setAllowFriendlyFire(zone.id, state)
-		sender msg "&aChanged ${zone.name} to ${if (state) "allow" else "disallow"} friendly fire"
+		sender.success("Changed ${zone.name} to ${if (state) "allow" else "disallow"} friendly fire")
 	}
 
 	@Subcommand("interactableBlocks add")
@@ -238,7 +238,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		requireOwnsZone(sender, zone)
 		val material = validateBlock(blockString)
 		SettlementZone.addInteractableBlock(zone.id, material.name)
-		sender msg "&aAdded $blockString to ${zone.name}'s list of interactable blocks"
+		sender.success("Added $blockString to ${zone.name}'s list of interactable blocks")
 	}
 
 	@Subcommand("interactableBlocks remove")
@@ -248,7 +248,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		requireOwnsZone(sender, zone)
 		val material = validateBlock(blockString)
 		SettlementZone.removeInteractableBlock(zone.id, material.name)
-		sender msg "&aRemoved $blockString from ${zone.name}'s list of interactable blocks"
+		sender.success("Removed $blockString from ${zone.name}'s list of interactable blocks")
 	}
 
 	@Subcommand("interactableBlocks list")
@@ -285,6 +285,6 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 			Settlement.ForeignRelation.STRICT -> "Only those with explicit access can build in the plot."
 		}
 		SettlementZone.setMinBuildAccess(zone.id, level)
-		sender msg "&aChanged updated min build access of ${zone.name}. Description of $level:&2&o $description"
+		sender.success("Changed updated min build access of ${zone.name}. Description of $level:&2&o $description")
 	}
 }
