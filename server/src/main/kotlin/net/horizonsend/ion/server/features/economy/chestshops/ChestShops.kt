@@ -17,7 +17,7 @@ import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.wrap
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
@@ -491,7 +491,7 @@ object ChestShops : IonServerComponent() {
 		val players = worldPlayers.filter { player ->
 			player.location.distance(location) < 20.0
 				&& !player.isNPC
-				&& player.getSetting(PlayerSettings::chestShopDisplays)
+				&& player.getSetting(PlayerSettings::chestShopDisplays) == true
 		}
 
 		val itemDisplay = ClientDisplayEntityFactory.createItemDisplay(world.minecraft)

@@ -68,6 +68,7 @@ import java.util.concurrent.ThreadFactory
 import kotlin.reflect.KClass
 
 object DBManager : IonComponent() {
+	private const val MAX_POOL_SIZE = 1000
 	var INITIALIZATION_COMPLETE: Boolean = false
 
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
@@ -104,7 +105,7 @@ object DBManager : IonComponent() {
 		val host = CommonConfig.db.host
 		val port = CommonConfig.db.port
 		val authDb = CommonConfig.db.database
-		val connectionString = ConnectionString("mongodb://$username:$password@$host:$port/$authDb")
+		val connectionString = ConnectionString("mongodb://$username:$password@$host:$port/$authDb?maxPoolSize=$MAX_POOL_SIZE")
 		client = KMongo.createClient(connectionString)
 
 		database = client.getDatabase(CommonConfig.db.database)

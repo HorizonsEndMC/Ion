@@ -11,8 +11,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipSounds
-import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.machine.AreaShields
@@ -379,8 +377,7 @@ class MiningLaserSubsystem(
 				initScale = 1.0f,
 				item = item,
 				playerFilter = {
-					!it.isNPC &&
-					test <= it.getSetting(PlayerSettings::miningLaserEffectLevel)
+                    !it.isNPC && test <= (it.getSetting(PlayerSettings::miningLaserEffectLevel) ?: 0)
 				}
 			),
 			direction = beamOrigin.clone().subtract(origin).normalize().multiply(ANIMATION_SPEED).add(randomOffset),
