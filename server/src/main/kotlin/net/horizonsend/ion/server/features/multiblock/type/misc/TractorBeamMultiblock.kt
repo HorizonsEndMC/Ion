@@ -126,6 +126,13 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 			}
 		}
 
+		private fun isPassableSlab(block: Block): Boolean {
+			val blockData = block.blockData
+			if (blockData is org.bukkit.block.data.type.Slab.Type.BOTTOM
+				}
+				return false
+				}
+
 		private fun tryAscend(player: Player, event: Cancellable?) {
 			val (x, originY, z) = Vec3i(player.location)
 			val world = player.world
@@ -141,7 +148,32 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 					if (!blockType.isAir && blockType.isCollidable) break // obstructed
 
 					continue
-				}
+
+					val clearance1 = Location(world, player.location.blockX +0.5, block.y + 1.0, player.location.blockY +0.5).block
+
+					if (clearance1.type.isAir) continue {
+						continue
+					} else if (clearance1.type.isCarpet) {
+						continue
+					} else if (clearance1.type.isSlab && isPassableSlab(clearance1)) {
+						continue
+					} else if (!clearance1.type.isCollideable) {
+					} else if (!clearance1.type.isAir && clearance1.type.isCollideable) {
+						break
+					}
+
+					val clearance2 = Location(world, player.location.blockX +0.5, block.y + 2.0, player.location.blockY +0.5).block
+
+					if (clearance2.type.isAir) continue {
+						continue
+					} else if (clearance2.type.isCarpet) {
+						continue
+					} else if (clearance2.type.isSlab && isPassableSlab(clearance2)) {
+						continue
+					} else if (!clearance2.type.isCollideable) {
+					} else if (!clearance2.type.isAir && clearance1.type.isCollideable) {
+						break
+					}
 
 				val newLocation = Location(player.world, player.location.x, block.y + 1.0, player.location.z)
 
