@@ -55,7 +55,7 @@ dependencies {
 	implementation("fr.skytasul:guardianbeam:2.4.4")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 
-	val scoreboardLibraryVersion = "2.4.1"
+	val scoreboardLibraryVersion = "2.7.0"
 	implementation("net.megavex:scoreboard-library-extra-kotlin:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
