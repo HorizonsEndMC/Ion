@@ -52,7 +52,7 @@ dependencies {
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.11.3")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("fr.skytasul:guardianbeam:2.4.4")
+	implementation("fr.skytasul:guardianbeam:2.4.6")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 
 	val scoreboardLibraryVersion = "2.4.1"
