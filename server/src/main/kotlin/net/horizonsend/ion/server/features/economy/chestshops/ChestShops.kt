@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.economy.ChestShop.Companion.se
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -127,6 +128,11 @@ object ChestShops : IonServerComponent() {
 	fun checkChestInteraction(event: PlayerInteractEvent, clickedBlock: Block) {
 		val chest = clickedBlock.state as? Chest ?: return
 		val shop = getShop(chest) ?: return
+
+		if (event.player.hasPermission("group.dutymode")) {
+			event.player.informationAction("Bypassed chest shop protection in dutymode")
+			return
+		}
 
 		if (event.player.slPlayerId != shop.owner) {
 			event.isCancelled = true
