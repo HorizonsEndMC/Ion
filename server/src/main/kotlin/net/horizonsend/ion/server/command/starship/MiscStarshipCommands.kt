@@ -636,6 +636,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		sender.success("Took control of weapon set <white>$set")
 	}
 
+	/*
 	@Suppress("unused")
 	@CommandAlias("powerdivision|powerd|pdivision|pd|powermode|pm")
 	fun onPowerDivision(sender: Player, shield: Int, weapon: Int, thruster: Int) {
@@ -650,6 +651,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		getStarshipRiding(sender).updatePower(sender.name, shieldPct, weaponPct, thrusterPct)
 	}
+	 */
 
 	@Suppress("unused")
 	@CommandAlias("nukeship")
