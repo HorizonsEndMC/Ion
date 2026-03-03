@@ -54,6 +54,7 @@ object NationsBalancing : IonServerComponent() {
 			val minorKothradius: Int = 1500,
 			val minorKOTHMaxDuration: Long = 30,
 			val majorKOTHMaxDuration: Long = 45,
+			val siegeTerritoryRadius: Int = 250
 		)
 	}
 

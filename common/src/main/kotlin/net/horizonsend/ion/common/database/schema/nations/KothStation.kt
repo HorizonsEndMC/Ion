@@ -18,7 +18,7 @@ data class KothStation(
     override val _id: Oid<KothStation>,
     /** The name of the KOTH */
 	var name: String,
-	/** The type of KOTH */
+	/** The type of KOTH (true = major, false = minor) */
 	val type: Boolean,
     /** The world the KOTH is in */
 	var world: String,
