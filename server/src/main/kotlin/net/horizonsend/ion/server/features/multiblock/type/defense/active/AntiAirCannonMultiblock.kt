@@ -6,12 +6,19 @@ import net.horizonsend.ion.server.configuration.starship.AntiAirProjectileBalanc
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.projectile.AntiAirCannonProjectile
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.RotatingMultiblock
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.AntiAirCannonProjectileSource
+import net.horizonsend.ion.server.features.transport.inputs.IOData
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -27,9 +34,8 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-object AntiAirCannonBaseMultiblock : Multiblock()/*, PowerStoringMultiblock*/, InteractableMultiblock {
+object AntiAirCannonBaseMultiblock : Multiblock(), InteractableMultiblock {
 	override val name: String = "antiaircannon"
-//	override val maxPower: Int = 1_000_000
 
 	private val turretPivotPoint = Vec3i(0, 3, -4)
 
@@ -324,11 +330,14 @@ object AntiAirCannonBaseMultiblock : Multiblock()/*, PowerStoringMultiblock*/, I
 	}
 }
 
-object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
+object AntiAirCannonTurretMultiblock: RotatingMultiblock(), DisplayNameMultilblock, EntityMultiblock<AntiAirCannonTurretMultiblock.AntiAirCannonEntity> {
 	/** Cooldown between shots **/
-	const val cooldownMillis: Long = 1000
+	const val cooldownMillis: Long = 250
 
 	override val name: String = javaClass.simpleName
+
+	override val displayName: Component get() = text("Anti Air Turret")
+	override val description: Component get() = text("A fixed turret used to defend bases.")
 
 	override val signText: Array<Component?> = arrayOf(
 		null,
@@ -345,6 +354,10 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		Vec3i(-3, 3, -7), // Left
 		Vec3i(3, 3, -7) // Right
 	)
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AntiAirCannonEntity {
+		return AntiAirCannonEntity(manager, this,x, y, z, world, structureDirection)
+	}
 
 	// Centered on pivot point
 	override fun MultiblockShape.buildStructure() {
@@ -662,6 +675,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 			val originBlock = world.getBlockAt(x, y, z)
 			val sign = originBlock.state as? Sign ?: continue
+			return sign
 		}
 
 		return null
@@ -710,7 +724,6 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 	fun shoot(shooter: Player, facing: BlockFace, turretBaseSign: Sign) {
 		val power = 0
-		println("pretending to work")
 
 		//if (power < POWER_PER_SHOT) return shooter.userError("Out of power!") unused
 
@@ -724,7 +737,6 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 		val dir = shooter.location.direction
 
-		println("FIRING AA GUN!")
 		AntiAirCannonProjectile(
 			source = AntiAirCannonProjectileSource(shooter),
 			location = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
@@ -732,5 +744,34 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 			shooter,
 			AntiAirProjectileBalancing(),
 		).fire()
+	}
+
+	class AntiAirCannonEntity(
+		manager: MultiblockManager,
+		override val multiblock: AntiAirCannonTurretMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock,  world, x, y, z, structureDirection) {
+
+		override val ioData: IOData = IOData.builder(this)
+			.build()
+
+		override fun onLoad() {
+			world.ion.multiblockManager.register(this)
+			super.onLoad()
+		}
+
+		override fun handleRemoval() {
+			world.ion.multiblockManager.deregister(this)
+			super.handleRemoval()
+		}
+
+		override fun onUnload() {
+			world.ion.multiblockManager.deregister(this)
+			super.onUnload()
+		}
 	}
 }

@@ -89,7 +89,7 @@ object AntiAirCannons : IonServerComponent() {
 		AntiAirCannonBaseMultiblock.getTurretPivotPoint(baseSign)
 		AntiAirCannonBaseMultiblock.turretIntact(baseSign) ?: return player.userError("Turret not intact!")
 
-		cooldown.tryExec(player.uniqueId, AntiAirCannonTurretMultiblock.cooldownMillis, TimeUnit.NANOSECONDS) {
+		cooldown.tryExec(player.uniqueId, AntiAirCannonTurretMultiblock.cooldownMillis, TimeUnit.MILLISECONDS) {
 			val oldFace = AntiAirCannonTurretMultiblock.getFacing(baseSign)
 			val newFace = player.facing
 

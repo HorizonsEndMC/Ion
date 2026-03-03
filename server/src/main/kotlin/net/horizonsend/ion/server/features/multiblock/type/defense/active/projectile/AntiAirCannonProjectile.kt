@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.defense.active.projectile
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.configuration.starship.AntiAirProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
@@ -32,17 +34,16 @@ class AntiAirCannonProjectile(
 	DamageType.GENERIC
 ) {
 	private fun getColor(shooter: Player): Color {
-		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
+		val nation: Oid<FrontierNation>? = PlayerCache[shooter].frontierNationOid
 
 		if (nation != null) {
-			return Color.fromRGB(NationCache[nation].color)
+			return Color.fromRGB(FrontierNationCache[nation].color)
 		}
 
 		return Color.FUCHSIA
 	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		println("SPAWNING AA GUN PARTICLE")
 		val particle = Particle.DUST_COLOR_TRANSITION
 		val color = getColor(playerShooter)
 
