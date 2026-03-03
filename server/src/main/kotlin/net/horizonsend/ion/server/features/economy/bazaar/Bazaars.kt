@@ -19,6 +19,14 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarBuyFromSellOrderEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarCollectItemFromBuyOrderEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarCollectMoneyFromSellOrdersEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarDepositItemToBuyOrderEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarDepositItemToSellOrderEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarCreateBuyOrderEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarDeleteBuyOrderEvent
+import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarWithdrawItemFromSellOrderEvent
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -328,6 +336,7 @@ object Bazaars : IonServerComponent() {
 			Tasks.async {
 				BazaarItem.addStock(resultItem._id, count)
 				player.information("Added $count of $itemString to listing in $cityName")
+				BazaarDepositItemToSellOrderEvent(player, itemString, count, cityName).callEvent()
 
 				result.complete(InputResult.SuccessReason(listOf(template(text("Added {0} of {1} to listing in {2}", GREEN), count, itemString, cityName))))
 			}
@@ -366,6 +375,7 @@ object Bazaars : IonServerComponent() {
 			val (fullStacks, remainder) = giveOrDropItems(itemReference, amount, player)
 
 			player.sendMessage(template(text("Withdrew {0} of {1} at {2} ({3} stack(s) and {4} item(s)", GREEN), amount, itemString, cityName, fullStacks, remainder))
+			BazaarWithdrawItemFromSellOrderEvent(player, itemString, amount, cityName).callEvent()
 		}
 
 		return InputResult.InputSuccess
@@ -445,6 +455,7 @@ object Bazaars : IonServerComponent() {
 
 		Tasks.sync {
 			VAULT_ECO.depositPlayer(player, total)
+			BazaarCollectMoneyFromSellOrdersEvent(player, total.toInt()).callEvent()
 		}
 
 		return InputResult.SuccessReason(listOf(template(text("Collected {0} from {1} listings.", GREEN), total.toCreditComponent(), count)))
@@ -497,6 +508,7 @@ object Bazaars : IonServerComponent() {
 
 			Tasks.sync {
 				VAULT_ECO.withdrawPlayer(player, cost)
+				BazaarBuyFromSellOrderEvent(player, item, amount, revenue, tax.toDouble(), cost, remote).callEvent()
 				futureResult.complete(syncBlock.invoke())
 			}
 		}
@@ -540,6 +552,10 @@ object Bazaars : IonServerComponent() {
 			BazaarOrder.create(player.slPlayerId, territory.id, itemString, orderQuantity, individualPrice)
 			player.information("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.")
 
+			Tasks.sync {
+				BazaarCreateBuyOrderEvent(player, itemString, orderQuantity, totalPrice, cityName).callEvent()
+			}
+
 			return InputResult.SuccessReason(listOf(
 				text("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.", GREEN)
 			))
@@ -569,6 +585,7 @@ object Bazaars : IonServerComponent() {
 		if (remainingBalance != null) {
 			Tasks.sync {
 				player.depositMoney(remainingBalance)
+				BazaarDeleteBuyOrderEvent(player, remainingBalance).callEvent()
 			}
 		}
 
@@ -627,6 +644,7 @@ object Bazaars : IonServerComponent() {
 
 		Tasks.sync {
 			val result = resultFunction.invoke()
+			BazaarCollectItemFromBuyOrderEvent(player, orderDocument.itemString, toRemove, cityName(Regions[orderDocument.cityTerritory])).callEvent()
 
 			future.complete(result)
 		}
@@ -683,6 +701,10 @@ object Bazaars : IonServerComponent() {
 					InputResult.SuccessReason(listOf(
 					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3} (revenue {4} minus tax {5})", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent(), revenue.toCreditComponent(), tax.toCreditComponent())
 				)))
+
+				Tasks.sync {
+					BazaarDepositItemToBuyOrderEvent(fulfiller, orderDocument, count, revenue, tax.toDouble(), profit, cityData.displayName).callEvent()
+				}
 			}
 		}
 
