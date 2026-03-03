@@ -30,7 +30,6 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
@@ -61,6 +60,8 @@ object StationSieges : IonServerComponent() {
 
 	private val siegeMinTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMinDuration)
 	private val siegeMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMaxDuration)
+
+	private const val MINIMUM_SIEGE_SIZE = 6500
 
 	private fun currentHour() = ZonedDateTime.now().hour
 
@@ -230,7 +231,7 @@ object StationSieges : IonServerComponent() {
 		}
 
 		if (!isInBigShip(player)) {
-			player.userError("You cannot siege in a ship smaller then 2000 blocks.")
+			player.userError("You cannot siege in a ship smaller then $MINIMUM_SIEGE_SIZE blocks.")
 			return@asyncLocked
 		}
 
@@ -359,7 +360,7 @@ object StationSieges : IonServerComponent() {
 
 	private fun isInBigShip(player: Player): Boolean {
 		val starship = ActiveStarships.findByPilot(player) ?: return false
-		return starship.initialBlockCount >= StarshipType.CORVETTE.minSize
+		return starship.initialBlockCount >= MINIMUM_SIEGE_SIZE
 	}
 
 	fun getAllies(sieger: Player, stationId: Oid<CapturableStation>): List<Player> {
