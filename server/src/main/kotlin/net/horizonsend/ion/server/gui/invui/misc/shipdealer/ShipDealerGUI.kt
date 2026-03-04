@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.misc.shipdealer
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.starship.dealers.DealerShip
@@ -21,7 +22,7 @@ class ShipDealerGUI(viewer: Player, private val ships: List<DealerShip>) : ListI
 	}
 
 	override fun createItem(entry: DealerShip): Item {
-		return entry.getIcon().makeGuiButton { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Purchase ${entry.displayName} for ${entry.price}?")) {
+		return entry.getIcon().makeGuiButton { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Purchase ${entry.displayName.plainText()} for ${entry.price}?")) {
 			StarshipDealers.loadShip(viewer, entry) }
 		}
 	}
