@@ -192,7 +192,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class BlasterWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 9.375,
+			damage = 28.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -228,7 +228,7 @@ data class PVPBalancingConfiguration(
 			zoomEffect = 0.0
 		),
 		val rifle: Singleshot = Singleshot(
-			damage = 17.2,
+			damage = 60.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 20,
 			ammoPerRefill = 20,
@@ -264,7 +264,7 @@ data class PVPBalancingConfiguration(
 			zoomEffect = 0.0
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 9.375,
+			damage = 28.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -300,7 +300,7 @@ data class PVPBalancingConfiguration(
 			zoomEffect = 0.0
 		),
 		val sniper: Singleshot = Singleshot(
-			damage = 37.5,
+			damage = 180.0,
 			damageFalloffMultiplier = 30.0,
 			capacity = 5,
 			ammoPerRefill = 20,
@@ -336,7 +336,7 @@ data class PVPBalancingConfiguration(
 			zoomEffect = -0.9
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 5.0,
+			damage = 20.0,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -376,7 +376,7 @@ data class PVPBalancingConfiguration(
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 1.4,
+			damage = 15.0,
 			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,
@@ -415,7 +415,7 @@ data class PVPBalancingConfiguration(
 		),
 		//KOTH weapons
 		val revolver: Singleshot = Singleshot(
-			damage = 20.0,
+			damage = 50.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 6,
 			ammoPerRefill = 20,
@@ -451,7 +451,7 @@ data class PVPBalancingConfiguration(
 			zoomEffect = 0.0
 		),
 		val lightMachineBlaster: Singleshot = Singleshot(
-			damage = 20.0,
+			damage = 40.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 90,
 			ammoPerRefill = 20,
@@ -488,14 +488,14 @@ data class PVPBalancingConfiguration(
 		),
 
 		val standardMagazine: AmmoStorage = AmmoStorage(
-			capacity = 60,
+			capacity = 80,
 			refillType = "minecraft:lapis_lazuli",
-			ammoPerRefill = 20
+			ammoPerRefill = 30
 		),
 		val specialMagazine: AmmoStorage = AmmoStorage(
-			capacity = 20,
+			capacity = 40,
 			refillType = "minecraft:emerald",
-			ammoPerRefill = 20
+			ammoPerRefill = 30
 		),
 	) {
 		@Serializable

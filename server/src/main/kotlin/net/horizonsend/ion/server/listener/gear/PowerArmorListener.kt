@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -19,6 +20,8 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.Hov
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergyGreatSword
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.features.explosions.presets.MiniNukeModExplosion
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -27,6 +30,7 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -34,6 +38,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityToggleGlideEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -236,18 +241,44 @@ object PowerArmorListener : SLEventListener() {
 			return
 		}
 	}
-	//Stop SMBs sending people flying
+	//Stop guns sending people flying
 	@EventHandler
-	fun onSMGHit(event: EntityDamageByEntityEvent) {
+	fun onGunHit(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player) return
 		if (event.damager !is Player) return
 		val damager = (event.damager as Player)
 		val damaged = (event.entity as Player)
 		val customItem = damager.inventory.itemInMainHand.customItem ?: return
 		if (customItem !is Blaster<*>) return
-		if (customItem.identifier != "SUBMACHINE_BLASTER") return
 		event.isCancelled = true
-		damaged.damage(event.damage)
+		damaged.damage(event.finalDamage)
+	}
+
+	//Prevent the pickup of lightsabers while using guns, and vice versa to prevent mid fight trolling
+	@EventHandler
+	fun onGunPickup(event: EntityPickupItemEvent) {
+		if (event.item !is Blaster<*>) return
+		if (event.entity !is Player) return
+		val player = event.entity as Player
+		for (item in player.inventory) {
+			if (item.customItem is EnergyGreatSword || item.customItem is EnergySword) {
+				event.isCancelled = true
+				return
+			}
+		}
+	}
+
+	@EventHandler
+	fun onSaberPickup(event: EntityPickupItemEvent) {
+		if (event.item.itemStack.customItem !is EnergySword && event.item.itemStack.customItem !is EnergyGreatSword) return
+		if (event.entity !is Player) return
+		val player = event.entity as Player
+		for (item in player.inventory) {
+			if (item.customItem is Blaster<*>) {
+				event.isCancelled = true
+				return
+			}
+		}
 	}
 
 	@EventHandler
