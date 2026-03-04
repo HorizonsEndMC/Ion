@@ -1,16 +1,12 @@
 package net.horizonsend.ion.server.features.ai.reward
 
-import io.papermc.paper.util.ItemComponentSanitizer.override
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.common.utils.miscellaneous.randomFloat
-import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
-import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
-import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -22,7 +18,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Supplier
-import kotlin.math.cbrt
 
 class AIItemBagRewardProvider(
 	override val starship: ActiveControlledStarship,
@@ -31,15 +26,17 @@ class AIItemBagRewardProvider(
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	override fun processDamagerRewards(
-		damager: PlayerDamager,
-		topDamagerPoints: AtomicInteger,
-		points: AtomicInteger,
-		pointsSum: Int) {
+        damager: PlayerDamager,
+        topDamagerPoints: AtomicInteger,
+        points: AtomicInteger,
+        pointsSum: Int,
+        penalty: Double
+    ) {
 		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
 		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
 		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
 		val percent = points.get().toDouble() / pointsSum.toDouble()
-		val score = ((percent / topPercent) * difficultyMultiplier * killStreakBonus)
+		val score = ((percent / topPercent) * difficultyMultiplier * killStreakBonus) * penalty
 		if (score <= 0) return
 
 		val maxBagSize = configuration.maxBagSize * score
@@ -66,7 +63,7 @@ class AIItemBagRewardProvider(
 
 	private fun getItems(budget : Double): Set<ItemStack> {
 		var points = budget
-		val bag = mutableSetOf<ItemStack>()//TODO: Combine items into one itemstack
+		val bag = mutableSetOf<ItemStack>()
 
 		val items = getItems()
 
@@ -80,7 +77,13 @@ class AIItemBagRewardProvider(
 
 			val stack = stackSupplier.get()
 			if (stack.isEmpty) continue
-			bag += stack
+			val existing = bag.firstOrNull {toItemString(it) == toItemString(stack)}
+			if (existing != null) {
+				existing.amount += 1
+				continue
+			} else {
+				bag += stack
+			}
 		}
 
 		return bag
