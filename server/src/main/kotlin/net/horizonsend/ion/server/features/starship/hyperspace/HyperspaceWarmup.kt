@@ -158,25 +158,25 @@ class HyperspaceWarmup(
 	}
 
 	private fun playChargeSound() {
-		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+		toPlayersInRadius(startLocation, 100.0 * 20.0) { player ->
 			playDirectionalStarshipSound(
 				startLocation,
 				player,
 				ship.balancing.shipSounds.jumpChargeNear,
 				ship.balancing.shipSounds.jumpChargeFar,
-				500.0
+				100.0
 			)
 		}
 	}
 
 	private fun playCompleteWarmupSound() {
-		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+		toPlayersInRadius(startLocation, 100.0 * 20.0) { player ->
 			playDirectionalStarshipSound(
 				startLocation,
 				player,
 				ship.balancing.shipSounds.jumpCompleteNear,
 				ship.balancing.shipSounds.jumpCompleteFar,
-				500.0
+				100.0
 			)
 		}
 	}

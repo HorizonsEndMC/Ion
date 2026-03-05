@@ -37,11 +37,6 @@ class WebifierWeaponSubsystem(
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-
-		toPlayersInRadius(loc, balancing.projectile.range * 20.0) { player ->
-			playDirectionalStarshipSound(loc, player, balancing.projectile.fireSoundNear, balancing.projectile.fireSoundNear, balancing.projectile.range)
-		}
-
 		fixDirections(loc)
 
 		val newFirePos = getFirePos().toCenterVector()
