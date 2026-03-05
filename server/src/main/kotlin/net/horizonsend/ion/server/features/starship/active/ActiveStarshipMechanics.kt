@@ -191,9 +191,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		// Destroy large tech 2 ships without intact reactors
 		ActiveStarships.all().filter {
-			it.type == StarshipType.MISSILE_CRUISER ||
+			(it.type == StarshipType.MISSILE_CRUISER ||
 			it.type == StarshipType.LOGISTICS_CRUISER ||
-			it.type == StarshipType.LANCER_BATTLECRUISER &&
+			it.type == StarshipType.LANCER_BATTLECRUISER) &&
 			!it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<LargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
@@ -203,11 +203,11 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		// Destroy medium tech 2 ships without intact reactors
 		ActiveStarships.all().filter {
-			it.type == StarshipType.ASSAULT_FRIGATE ||
+			(it.type == StarshipType.ASSAULT_FRIGATE ||
 			it.type == StarshipType.BLACK_OPS_FRIGATE ||
 			it.type == StarshipType.MISSILE_FRIGATE ||
 			it.type == StarshipType.ASSAULT_DESTROYER ||
-			it.type == StarshipType.INTERDICTOR_DESTROYER &&
+			it.type == StarshipType.INTERDICTOR_DESTROYER) &&
 			!it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<MediumReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
