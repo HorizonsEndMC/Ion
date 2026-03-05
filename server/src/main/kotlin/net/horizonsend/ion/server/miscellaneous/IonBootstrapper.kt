@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyLaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyNeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.NeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
@@ -81,7 +82,8 @@ class IonBootstrapper : PluginBootstrap {
 			TopSwarmMissileStarshipWeaponMultiblock,
 			NeutralizerStarshipWeaponMultiblock,
 			WebifierStarshipWeaponMultiblock,
-			ScramblerStarshipWeaponMultiblock
+			ScramblerStarshipWeaponMultiblock,
+			HeavyNeutralizerStarshipWeaponMultiblock
 		)
 
 
