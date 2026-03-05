@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.configuration.starship.SkirmishCommandBurstBal
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.SkirmishCommandBurstMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.kyori.adventure.text.Component
@@ -27,10 +28,10 @@ class SkirmishCommandBurstSubsystem(
 
 	override fun activateEffect(starships: Set<Starship>) {
 		val playerPilot = starship.playerPilot ?: return
-		val frontierNationId = PlayerCache[playerPilot].frontierNationOid
+		val fleet = Fleets.findByMember(playerPilot)
 
-		if (frontierNationId == null) {
-			playerPilot.userError("You must be in a nation to use command bursts!")
+		if (fleet == null) {
+			playerPilot.userError("You must be in a fleet to use command bursts!")
 			return
 		}
 
@@ -54,8 +55,8 @@ class SkirmishCommandBurstSubsystem(
 			val otherPlayer = otherStarship.playerPilot ?: continue
 			if (otherPlayer == playerPilot) continue
 
-			val otherNationId = PlayerCache[otherPlayer].frontierNationOid
-			if (frontierNationId != otherNationId) continue
+			val otherFleet = Fleets.findByMember(otherPlayer)
+			if (fleet != otherFleet) continue
 
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.CRUISE_SPEED,
