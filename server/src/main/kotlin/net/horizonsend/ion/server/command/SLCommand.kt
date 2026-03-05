@@ -372,8 +372,8 @@ abstract class SLCommand : BaseCommand() {
 
 	protected fun requiredNotOnNationJoinCooldown(sender: Player) {
 		val lastJoinedNation = SLPlayer.findPropById(sender.slPlayerId, SLPlayer::lastJoinedFrontierNation)
-		if (lastJoinedNation != null && lastJoinedNation.before(Date(System.currentTimeMillis() + Duration.ofDays(1L).toMillis()))) {
-			fail { "You have already joined a nation in the past day!" }
+		if (lastJoinedNation != null && lastJoinedNation.before(Date(System.currentTimeMillis() + Duration.ofHours(1L).toMillis()))) {
+			fail { "You have already joined a nation in the past hour!" }
 		}
 	}
 
