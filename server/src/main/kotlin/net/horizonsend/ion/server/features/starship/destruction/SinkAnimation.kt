@@ -15,14 +15,12 @@ import net.horizonsend.ion.server.features.transport.items.util.DYEABLE_CUBE_MON
 import net.horizonsend.ion.server.features.transport.items.util.EXPLOSION_RING
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.orthogonalVectors
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.minecraft.util.Brightness
 import org.bukkit.Color
 import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
@@ -56,9 +54,9 @@ class SinkAnimation(
 	fun addExplosion() {
 		val referenceCenter = origin.toCenterVector()
 
-		val explosionBlockCount = (cbrt(size.toDouble()) * 2 * scale).roundToInt()
+		val explosionBlockCount = (cbrt(size.toDouble()) * 3 * scale).roundToInt()
 
-		repeat(explosionBlockCount) {
+		fun animatedColoredSinkAnimationBlock(duration: Long, initialScale: Double, finalScale: Double, colors: Map<Color, Int>): ColoredSinkAnimationBlock {
 			val origin = Vec3i(starship.blocks.random()).toCenterVector()
 			var vector = origin.clone().subtract(referenceCenter)
 
@@ -77,14 +75,24 @@ class SinkAnimation(
 			val displayContainer = ItemDisplayContainer(world = world, initScale = 1.0f, initPosition = origin, initHeading = originHeading, item = item, playerFilter = playerFilter)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
-			blockWrappers.add(ColoredSinkAnimationBlock(
-				duration = Random.nextLong(baseDuration, (baseDuration * 1.5).roundToLong()),
+			return ColoredSinkAnimationBlock(
+				duration = duration,
 				wrapper = displayContainer,
-				direction = vector.multiply(scale).multiply(Random.nextDouble(0.9, 1.1)),
-				initialScale = 2.0 * scale,
-				finalScale = 8.0 * scale,
+				direction = vector.multiply(scale).multiply(Random.nextDouble(0.0, 0.1)),
+				initialScale = initialScale,
+				finalScale = finalScale,
 				rotationAxis = Vector.getRandom(),
-				rotationDegrees = 360.0 / 20.0,
+				rotationDegrees = 0.5,
+				colors = colors
+			)
+		}
+
+		// big flash explosion
+		repeat(explosionBlockCount) {
+			blockWrappers.add(animatedColoredSinkAnimationBlock(
+				duration = Random.nextLong((baseDuration * 0.25).roundToLong(), (baseDuration * 0.5).roundToLong()),
+				initialScale = 0.5 * scale,
+				finalScale = 12.0 * scale,
 				colors = mapOf(
 					Color.fromRGB(255, 219, 1) to 2,
 					Color.ORANGE to 2,
@@ -121,17 +129,20 @@ class SinkAnimation(
 	fun playRandomBlocks() {
 		val blockCount = sqrt(sqrt(min(size, 20000).toDouble()) * scale).roundToInt() * 10
 
-		val bockPositions = starship.blocks.shuffled().take(blockCount)
+		val blockPositions = starship.blocks.shuffled().take(blockCount)
 
 		val random = ThreadLocalRandom.current()
 
-		for (position in bockPositions) {
+		for (position in blockPositions) {
+			val fast = Random.nextBoolean()
+
 			val blockData = starship.world.getBlockAtKey(position).blockData
 			if (!blockData.material.isItem) continue
 
 			val position = Vec3i(position).toVector()
 
-			val direction = position.clone().subtract(origin.toCenterVector()).normalize().multiply(6 * scale).multiply(Random.nextDouble(0.75, 1.25))
+			val directionMod = if (fast) 6 else 2
+			val direction = position.clone().subtract(origin.toCenterVector()).normalize().multiply(directionMod * scale).multiply(Random.nextDouble(0.75, 1.25))
 
 			val displayContainer = ItemDisplayContainer(
 				world = world,
@@ -144,7 +155,8 @@ class SinkAnimation(
 
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
-			val d = random.nextLong(baseDuration, (baseDuration / 2) + baseDuration)
+			val durationMod = if (fast) 1.0 else 0.25
+			val d = random.nextLong((baseDuration * durationMod).toLong(), (baseDuration * durationMod / 2).toLong() + baseDuration)
 
 			blockWrappers.add(SinkAnimationBlock(
 				duration = d,
