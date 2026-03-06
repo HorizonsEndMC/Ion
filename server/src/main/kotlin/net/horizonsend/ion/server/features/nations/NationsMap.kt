@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.KothType
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -455,7 +456,11 @@ object NationsMap : IonServerComponent(true) {
 		val x = station.x
 		val y = 128.0
 		val z = station.z.toDouble()
-		val radius = if (station.type) NATIONS_BALANCE.koths.majorKothradius.toDouble() else NATIONS_BALANCE.koths.minorKothradius.toDouble()
+		val radius = when (station.type) {
+			KothType.MAJOR -> NATIONS_BALANCE.koths.majorKothradius.toDouble()
+			KothType.MINOR -> NATIONS_BALANCE.koths.minorKothradius.toDouble()
+			KothType.MOON -> NATIONS_BALANCE.koths.siegeTerritoryRadius.toDouble()
+		}
 
 		markerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
 

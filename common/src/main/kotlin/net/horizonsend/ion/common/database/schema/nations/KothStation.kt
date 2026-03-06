@@ -19,7 +19,7 @@ data class KothStation(
     /** The name of the KOTH */
 	var name: String,
 	/** The type of KOTH (true = major, false = minor) */
-	val type: Boolean,
+	val type: KothType,
     /** The world the KOTH is in */
 	var world: String,
     /** The X-coordinate of the center of the KOTH */
@@ -44,7 +44,7 @@ data class KothStation(
 		ensureUniqueIndex(KothStation::world, KothStation::x, KothStation::z)
 	}) {
 		fun create(
-			type: Boolean,
+			type: KothType,
 			name: String,
 			world: String,
 			x: Int,
@@ -84,4 +84,10 @@ data class KothSiege(
 			return id
 		}
 	}
+}
+
+enum class KothType {
+	MAJOR,
+	MINOR,
+	MOON,
 }

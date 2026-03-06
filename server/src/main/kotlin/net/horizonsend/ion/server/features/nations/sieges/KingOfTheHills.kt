@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
+import net.horizonsend.ion.common.database.schema.nations.KothType
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
@@ -63,7 +64,7 @@ object KingOfTheHills : IonServerComponent() {
 		val start: Long,
 		var kothPoints: MutableMap<Oid<KothStation>, MutableMap<Oid<FrontierNation>, Int?>>,
 		var nation: Oid<FrontierNation>?,
-		val type: Boolean,
+		val type: KothType,
 		val timeLimit: Long
 	)
 
@@ -286,15 +287,19 @@ object KingOfTheHills : IonServerComponent() {
 			val playerCount = Bukkit.getOnlinePlayers().size
 			val koths = Regions.getAllOf<RegionKothZone>()
 			if (playerCount > 34) {
-				val majorKoth = koths.find {it.type}
+				val majorKoth = koths.filter { it.type == KothType.MAJOR }.randomOrNull()
 				if (majorKoth == null) return
 				activateKoth(majorKoth)
 			}
 			else {
-				val minorKoth = koths.find{!it.type}
+				val minorKoth = koths.filter { it.type == KothType.MINOR }.randomOrNull()
 				if (minorKoth == null) return
 				activateKoth(minorKoth)
 			}
+
+			val moonKoth = koths.filter { it.type == KothType.MOON }.randomOrNull()
+			if (moonKoth == null) return
+			activateKoth(moonKoth)
 		}
 	}
 
@@ -365,7 +370,7 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 	private fun giveRewards(topThree: List<String?>, koth: Koths) = asyncLocked {
-		val kothType = if (koth.type) KingOfTheHillRewards.KothType.MAJOR else KingOfTheHillRewards.KothType.MINOR
+		val kothType = koth.type
 		val stage = getServerStage()
 
 
@@ -377,9 +382,10 @@ object KingOfTheHills : IonServerComponent() {
 
 		if (stage !in 2..4) return@asyncLocked log.error("Server age is wrong somehow!") //Check to make sure server age and stage is Okay
 
-		val pointsToGive = when {
-			koth.type -> listOf(75.0, 50.0, 25.0)
-			else -> listOf(35.0, 20.0, 10.0)
+		val pointsToGive = when (kothType){
+			KothType.MAJOR -> listOf(75.0, 50.0, 25.0)
+			KothType.MINOR -> listOf(35.0, 20.0, 10.0)
+			KothType.MOON -> listOf(35.0, 20.0, 10.0)
 		}
 		val pointsMultiplier = when {
 			stage == 3 -> 1.5
@@ -524,7 +530,11 @@ object KingOfTheHills : IonServerComponent() {
 			val currentKothID = currentKoth.id
 			if (System.nanoTime() - activatingKoths[currentKoth]!! > TimeUnit.MINUTES.toNanos(15.toLong())) continue
 			val kothType = currentKoth.type
-			val timeLimit = if(kothType) NATIONS_BALANCE.koths.majorKOTHMaxDuration else NATIONS_BALANCE.koths.minorKOTHMaxDuration
+			val timeLimit = when (kothType) {
+				KothType.MAJOR -> NATIONS_BALANCE.koths.majorKOTHMaxDuration
+				KothType.MINOR -> NATIONS_BALANCE.koths.minorKOTHMaxDuration
+				KothType.MOON -> NATIONS_BALANCE.koths.majorKOTHMaxDuration
+			}
 
 			activatingKoths.remove(currentKoth)
 			KothSiege.create(currentKothID)

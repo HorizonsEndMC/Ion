@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.nations.sieges
 
+import net.horizonsend.ion.common.database.schema.nations.KothType
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_REVOLVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_GREATSWORD
@@ -20,7 +21,6 @@ import org.bukkit.inventory.ItemStack
 
 object KingOfTheHillRewards {
 
-	enum class KothType{MAJOR, MINOR, MOON}
 	enum class RewardType{MATERIALS, CORES, KOTHBLOCK, BUFFS, PVP}
 
 	//Item and its chance, amount and type

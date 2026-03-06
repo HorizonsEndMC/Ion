@@ -21,7 +21,8 @@ object KothStationCache : IonServerComponent() {
                     CachedKothStation(
                         station.name,
 						station.nation,
-                        Location(Bukkit.getWorld(station.world), station.x.toDouble(), 192.0, station.z.toDouble())
+                        Location(Bukkit.getWorld(station.world), station.x.toDouble(), 192.0, station.z.toDouble()),
+                        station.kothHour
                     )
                 )
             }
@@ -29,4 +30,4 @@ object KothStationCache : IonServerComponent() {
     }
 }
 
-data class CachedKothStation(val name: String, val nation: Oid<FrontierNation>?, val loc: Location)
+data class CachedKothStation(val name: String, val nation: Oid<FrontierNation>?, val loc: Location, val siegeHour: Int)
