@@ -69,7 +69,6 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sidebar.Sidebar
-import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
@@ -238,7 +237,6 @@ val components: List<IonComponent> = listOf(
 	HudIcons,
 	Fleets,
 	AIKillStreak,
-	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
 	DisplayHandlers,
