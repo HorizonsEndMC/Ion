@@ -49,7 +49,9 @@ interface AIRewardsProvider : RewardsProvider {
 			debugAudience.debug("points: ${points.get()}, player : ${player.name}")
 
 			try {
-				processDamagerRewards(damager, topDamager!!.value.points, points, sum)
+				val penalty = AIRewardCap.getPenalty(damager.player)
+				if (penalty == 0.0) continue
+				processDamagerRewards(damager, topDamager!!.value.points, points, sum, penalty)
 			} catch (e: Throwable) {
 				log.error("Exception processing damager rewards: ${e.message}!")
 				e.printStackTrace()
@@ -63,7 +65,8 @@ interface AIRewardsProvider : RewardsProvider {
 		damager: PlayerDamager,
 		topDamagerPoints: AtomicInteger,
 		points: AtomicInteger,
-		pointsSum: Int
+		pointsSum: Int,
+		penalty: Double
 	) {
 	}
 

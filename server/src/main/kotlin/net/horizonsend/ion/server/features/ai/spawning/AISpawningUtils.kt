@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
+import net.horizonsend.ion.server.features.ai.reward.AICapRewardProvider
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -71,6 +72,8 @@ fun createAIShipFromTemplate(
 ) = createShipFromTemplate(logger, template.starshipInfo, location, createController, suffix) { starship ->
 	logger.info("Attempting to spawn AI starship ${template.identifier}")
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
+	//additionally attach the capping provider (this has no configuration)
+	starship.rewardsProviders.add(AICapRewardProvider(starship))
 
 	val controller = starship.controller
 
