@@ -415,7 +415,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
 		val world = player.world
 		val playerLocation = player.location
-		if (world.hasFlag(WorldFlag.PLANET_WORLD) || world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) return true
+		if (world.hasFlag(WorldFlag.PLANET_WORLD)) return true
 		for (koth in KingOfTheHills.getKOTHS()) {
 			val thisKoth = koth.kothId
 			val kothRegion: RegionKothZone = Regions[thisKoth]
