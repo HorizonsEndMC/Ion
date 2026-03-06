@@ -31,7 +31,7 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 		null
 	)
 
-	private val powerConsumed = 0.5
+	private val powerConsumed = 0.0
 	abstract val mirrored: Boolean
 
 	override val description: Component get() = text("Destroys all items inserted into the attached inventory.")
