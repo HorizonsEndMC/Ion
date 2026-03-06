@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
@@ -270,7 +271,7 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("jump")
-    @CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld")
+    @CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks")
     @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
     fun onFleetJump(sender: Player, destination: String) {
         val fleet = getFleet(sender) ?: return
@@ -282,8 +283,15 @@ object FleetCommand : SLCommand() {
 
         fleet.information("Fleet Commander issuing fleet jump command")
 
-        fleet.jumpFleet(destination)
-        sender.success("Jumping fleet")
+        // as bookmarks are tied to the player, other players cannot access the fleet commander's bookmarks
+        val bookmark = BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }
+        if (bookmark == null) {
+            fleet.jumpFleet(destination)
+            sender.success("Jumping fleet")
+        } // jump to non-bookmark
+        else {
+            onFleetJump(sender, bookmark.x.toString(), bookmark.z.toString())
+        }
     }
 
     @Subcommand("usebeacon")
