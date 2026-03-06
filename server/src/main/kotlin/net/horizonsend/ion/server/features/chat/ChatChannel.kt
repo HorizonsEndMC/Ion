@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.chat
 
 import github.scarsz.discordsrv.DiscordSRV
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
@@ -592,9 +593,8 @@ enum class ChatChannel(
 
 private fun playerInfo(player: Player): String =
 	"""
-	Level: ${Levels[player]}
+	Power: ${PlayerCache[player].power}
 	XP: ${SLXP[player]}
-	Nation: ${PlayerCache[player].nationOid?.let(NationCache::get)?.name}
-	Settlement: ${PlayerCache[player].settlementOid?.let(SettlementCache::get)?.name}
+	Nation: ${PlayerCache[player].frontierNationOid?.let(FrontierNationCache::get)?.name}
 	Player: ${player.name}
 	""".trimIndent()
