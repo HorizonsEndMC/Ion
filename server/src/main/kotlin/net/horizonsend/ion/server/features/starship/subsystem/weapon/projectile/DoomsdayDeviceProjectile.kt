@@ -213,15 +213,24 @@ class DoomsdayDeviceProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		super.onImpactStarship(starship, impactLocation)
 
-		val explosionSize = 12.5f
+		val explosionSize = 25.0f
 		val offsetDirection = direction.clone().multiply(5.0)
 		val explosionLocation = impactLocation.clone().add(offsetDirection)
 
-		explosionLocation.createExplosion(explosionSize)
+		Tasks.syncDelay(10L) {
+			explosionLocation.createExplosion(explosionSize)
 
-		// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
-		addToDamagers(explosionLocation.world, explosionLocation.block, shooter, explosionSize.roundToInt(), explosionOccurred = false, runStarshipImpactEvent = false)
+			// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
+			addToDamagers(
+				explosionLocation.world,
+				explosionLocation.block,
+				shooter,
+				explosionSize.roundToInt(),
+				explosionOccurred = false,
+				runStarshipImpactEvent = false
+			)
 
+		}
 	}
 
 	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
