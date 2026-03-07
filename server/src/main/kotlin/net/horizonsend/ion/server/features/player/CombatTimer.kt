@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
@@ -440,6 +441,10 @@ object CombatTimer : IonServerComponent() {
 					text("- Combat NPCs created when you log off will last for the duration of your combat tag", HE_LIGHT_BLUE),
 					newline(),
 					text("- Cannot use Drill, Mining Laser, Decomposer, or Ship Factory", HE_LIGHT_BLUE),
+					newline(),
+					text("- Cannot enter planets more frequently than ${PlanetTeleportCooldown.ENTRY_COOLDOWN.toMinutesPart()} minutes", HE_LIGHT_BLUE),
+					newline(),
+					text("- Cannot enter planets more frequently than ${PlanetTeleportCooldown.EXIT_COOLDOWN.toMinutesPart()} minutes", HE_LIGHT_BLUE),
 					newline(),
 					text("- Remaining within ${MAINTAIN_COMBAT_DIST.toInt()} blocks of unfriendly and enemy starships will refresh your combat tag", HE_LIGHT_BLUE),
 					)),

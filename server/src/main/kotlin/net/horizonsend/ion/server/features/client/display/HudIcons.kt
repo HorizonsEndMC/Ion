@@ -321,7 +321,7 @@ object HudIcons : IonServerComponent() {
         val entity = ClientDisplayEntityFactory.createTextDisplay(player)
 
         entity.text(ofChildren(
-            Component.text(sanitizePrefixes(data.name)),
+            text(sanitizePrefixes(data.name)),
             Component.space(),
             Component.text(data.actualDistance.toString() + "m", NamedTextColor.AQUA),
             Component.space(),
@@ -377,7 +377,7 @@ object HudIcons : IonServerComponent() {
         } else {
             nmsEntity.text = PaperAdventure.asVanilla(
                 ofChildren(
-                    Component.text(sanitizePrefixes(data.name)),
+                    text(sanitizePrefixes(data.name)),
                     Component.space(),
                     Component.text(data.actualDistance.toString() + "m", NamedTextColor.AQUA),
                     Component.space(),
@@ -806,7 +806,7 @@ object HudIcons : IonServerComponent() {
             )
 
             val distanceText = if (starshipWithLowestAngle == starship && angle != null && angle < SELECTOR_ANGLE_THRESHOLD * 2) {
-                ofChildren(text(starship.identifier, color), text("${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt())))
+                ofChildren(text(starship.identifier, color), text(" ${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt())))
             } else text("${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt()))
 
             player.sendText(

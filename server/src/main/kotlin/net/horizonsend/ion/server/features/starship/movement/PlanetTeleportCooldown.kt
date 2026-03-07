@@ -15,8 +15,8 @@ import java.util.UUID
 
 object PlanetTeleportCooldown : IonServerComponent() {
 
-    private val ENTRY_COOLDOWN = Duration.ofMinutes(2)
-    private val EXIT_COOLDOWN = Duration.ofMinutes(2)
+    val ENTRY_COOLDOWN: Duration = Duration.ofMinutes(2)
+    val EXIT_COOLDOWN: Duration = Duration.ofMinutes(2)
 
     private val entryCooldown = mutableMapOf<UUID, Long>()
     private val exitCooldown = mutableMapOf<UUID, Long>()
