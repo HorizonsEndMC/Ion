@@ -93,7 +93,7 @@ object NationsMap : IonServerComponent(true) {
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
-			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
+			//Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
 			Regions.getAllOf<RegionKothZone>().forEach (::addKingOfTheHill)
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
@@ -108,7 +108,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
+		//Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 		Regions.getAllOf<RegionKothZone>().forEach(NationsMap::updateKingOfTheHill)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
@@ -139,7 +139,7 @@ object NationsMap : IonServerComponent(true) {
 				false // Persistent
 			)
 
-			updateTerritory(territory)
+			//updateTerritory(territory)
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}

@@ -189,7 +189,7 @@ object Regions : IonServerComponent() {
 
 			refreshSettlementTerritoryLocally(id)
 			refreshSettlementMembersLocally(id)
-			NationsMap.updateTerritory(Regions[data.territory])
+			//NationsMap.updateTerritory(Regions[data.territory])
 		}
 	}
 
