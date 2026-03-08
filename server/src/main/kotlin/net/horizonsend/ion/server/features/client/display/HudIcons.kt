@@ -729,45 +729,63 @@ object HudIcons : IonServerComponent() {
                 ?.subtract(playerPosition)?.normalize()
                 ?.angle(player.location.direction)
 
-            for (starship in starshipList) {
-                if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
-                val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
-                if (distance > 1000) continue
-                val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
+        for (starship in starshipList) {
+            if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
+            val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
+            if (distance > 1000) continue
+			if (distance > 700 && starship.type == StarshipType.BLACK_OPS_FRIGATE) continue
+			if (distance > 500 && starship.type == StarshipType.RECON_STARFIGHTER) continue
+            val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
 
-                // calculate position and offset
-                val offset = direction.clone().normalize().multiply(min(distance, 32.0))
-                val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
-                val starshipIcon = when (starship.type) {
-                    StarshipType.STARFIGHTER -> STARFIGHTER_ICON
-                    StarshipType.GUNSHIP -> GUNSHIP_ICON
-                    StarshipType.CORVETTE -> CORVETTE_ICON
-                    StarshipType.FRIGATE -> FRIGATE_ICON
-                    StarshipType.DESTROYER -> DESTROYER_ICON
-                    StarshipType.CRUISER -> CRUISER_ICON
-                    StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
-                    StarshipType.SHUTTLE -> SHUTTLE_ICON
-                    StarshipType.TRANSPORT -> TRANSPORT_ICON
-                    StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
-                    StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
-                    StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
-                    StarshipType.BARGE -> BARGE_ICON
-                    StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
-                    StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
-                    StarshipType.AI_CORVETTE -> CORVETTE_ICON
-                    StarshipType.AI_FRIGATE -> FRIGATE_ICON
-                    StarshipType.AI_DESTROYER -> DESTROYER_ICON
-                    StarshipType.AI_CRUISER -> CRUISER_ICON
-                    StarshipType.AI_BATTLECRUISER -> BATTLECRUISER_ICON
-                    StarshipType.AI_SHUTTLE -> SHUTTLE_ICON
-                    StarshipType.AI_TRANSPORT -> TRANSPORT_ICON
-                    StarshipType.AI_LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
-                    StarshipType.AI_MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
-                    StarshipType.AI_HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
-                    StarshipType.AI_BARGE -> BARGE_ICON
-                    else -> STARFIGHTER_ICON
-                }
-                val otherNation = starship.playerPilot?.let { PlayerCache[it].frontierNationOid }
+            // calculate position and offset
+            val offset = direction.clone().normalize().multiply(min(distance, 32.0))
+            val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
+            val starshipIcon = when (starship.type) {
+                StarshipType.STARFIGHTER -> STARFIGHTER_ICON
+				StarshipType.RECON_STARFIGHTER -> STARFIGHTER_ICON
+				StarshipType.SCRAMBLER_STARFIGHTER -> STARFIGHTER_ICON
+				StarshipType.GUNSHIP -> GUNSHIP_ICON
+				StarshipType.ASSAULT_GUNSHIP -> GUNSHIP_ICON
+				StarshipType.INTERDICTOR_GUNSHIP -> GUNSHIP_ICON
+				StarshipType.CORVETTE -> CORVETTE_ICON
+				StarshipType.STASIS_CORVETTE -> CORVETTE_ICON
+				StarshipType.INTERDICTOR_CORVETTE -> CORVETTE_ICON
+				StarshipType.ASSAULT_CORVETTE -> CORVETTE_ICON
+				StarshipType.LOGISTICS_CORVETTE -> CORVETTE_ICON
+				StarshipType.FRIGATE -> FRIGATE_ICON
+				StarshipType.ASSAULT_FRIGATE -> FRIGATE_ICON
+				StarshipType.MISSILE_FRIGATE -> FRIGATE_ICON
+				StarshipType.BLACK_OPS_FRIGATE -> FRIGATE_ICON
+				StarshipType.DESTROYER -> DESTROYER_ICON
+				StarshipType.INTERDICTOR_DESTROYER -> DESTROYER_ICON
+				StarshipType.ASSAULT_DESTROYER -> DESTROYER_ICON
+				StarshipType.CRUISER -> CRUISER_ICON
+				StarshipType.MISSILE_CRUISER -> CRUISER_ICON
+				StarshipType.LOGISTICS_CRUISER -> CRUISER_ICON
+				StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
+				StarshipType.LANCER_BATTLECRUISER -> BATTLECRUISER_ICON
+				StarshipType.SHUTTLE -> SHUTTLE_ICON
+                StarshipType.TRANSPORT -> TRANSPORT_ICON
+                StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+                StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
+                StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
+                StarshipType.BARGE -> BARGE_ICON
+                StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
+                StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
+                StarshipType.AI_CORVETTE -> CORVETTE_ICON
+                StarshipType.AI_FRIGATE -> FRIGATE_ICON
+                StarshipType.AI_DESTROYER -> DESTROYER_ICON
+                StarshipType.AI_CRUISER -> CRUISER_ICON
+                StarshipType.AI_BATTLECRUISER -> BATTLECRUISER_ICON
+                StarshipType.AI_SHUTTLE -> SHUTTLE_ICON
+                StarshipType.AI_TRANSPORT -> TRANSPORT_ICON
+                StarshipType.AI_LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+                StarshipType.AI_MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
+                StarshipType.AI_HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
+                StarshipType.AI_BARGE -> BARGE_ICON
+                else -> STARFIGHTER_ICON
+            }
+            val otherNation = starship.playerPilot?.let { PlayerCache[it].frontierNationOid }
             val color = if (otherNation != null && otherNation == PlayerCache[player].frontierNationOid) NamedTextColor.GREEN
             else if (otherNation != null && otherNation != PlayerCache[player].frontierNationOid) NamedTextColor.RED
             else NamedTextColor.GRAY
