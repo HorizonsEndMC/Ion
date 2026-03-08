@@ -138,7 +138,10 @@ object RemoteSellerMultiblock : Multiblock(), EntityMultiblock<RemoteSellerMulti
 
 		fun startTask(player: Player) {
 			if (!ConfigurationFiles.featureFlags().economy) return
-			if (isRunning) {player.userError("This machine is already in use!")}
+			if (isRunning) {
+				player.userError("This machine is already in use!")
+				return
+			}
 			if (!isAlive) return
 			userManager.setUser(player)
 			val inventory = getInput() ?: return
