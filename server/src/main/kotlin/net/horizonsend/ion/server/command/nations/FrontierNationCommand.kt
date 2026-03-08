@@ -44,6 +44,8 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.invui.misc.FrontierNationBankMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -62,6 +64,7 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -397,8 +400,22 @@ object FrontierNationCommand : SLCommand() {
 		val power = getTotalPower(nationId)
 
 		failIf(power < 40) { "Your nation doesn't have enough power to claim an outpost!" }
-		failIf(Regions.getAllOf<RegionFrontierTerritory>().any { it.frontierNation == nationId && !it.isCapital }) { "Nations can only have one outpost (besides the capital)" }
 
+		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>()
+
+		// only one territory in a space world (besides the capital)
+		failIf((sender.world.hasFlag(WorldFlag.SPACE_WORLD) || sender.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) && currentTerritories.any {
+			!it.isCapital && (Bukkit.getWorld(it.world)?.hasFlag(WorldFlag.SPACE_WORLD) == true || Bukkit.getWorld(it.world)?.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) == true)
+		})) {
+			"Nations can only have one outpost in space (besides the capital)"
+		}
+
+		// only one territory on a planet world
+		failIf(sender.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD) && currentTerritories.any {
+			!it.isCapital && Bukkit.getWorld(it.world)?.hasFlag(WorldFlag.PLANET_SIEGE_WORLD) == true
+		}) {
+			"Nations can only have one outpost on a planet"
+		}
 
 		FrontierTerritory.setFrontierNation(territory.id, nationId)
 
