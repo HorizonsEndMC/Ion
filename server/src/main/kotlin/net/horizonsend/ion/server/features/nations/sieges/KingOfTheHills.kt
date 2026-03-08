@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
@@ -121,11 +122,11 @@ object KingOfTheHills : IonServerComponent() {
 					log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
 					Notify.chatAndGlobal(
 						MiniMessage.miniMessage()
-							.deserialize("<gold><bold>Nation ${formatFrontierNationName(dominantNation)} has taken control of the KOTH ${kothRegion.name}!")
+							.deserialize("<gold><bold>Nation ${FrontierNationCache[dominantNation].name} has taken control of the KOTH ${kothRegion.name}!")
 					)
 					Discord.sendMessage(
 						ConfigurationFiles.discordSettings().eventsChannel,
-						"<gold><bold>Nation ${formatFrontierNationName(dominantNation)} has taken control of the KOTH ${kothRegion.name}!"
+						"<gold><bold>Nation ${FrontierNationCache[dominantNation].name} has taken control of the KOTH ${kothRegion.name}!"
 					)
 				}
 				//Set the nation as this loop's dominant nation for next time
