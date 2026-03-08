@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.sendMessage
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
@@ -90,8 +91,8 @@ abstract class CoreForgeEntity (
 	fun disable(success: Boolean) {
 		if (!userManager.currentlyUsed()) return
 		val player = userManager.getUserPlayer()
-		if (success) player?.sendMessage(Component.text("Success!", HE_DARK_ORANGE))
-		else player?.sendMessage(Component.text("Insufficient resources.", HE_MEDIUM_GRAY))
+		if (success) player?.sendMessage(Component.text("Success!", HE_LIGHT_BLUE))
+		else player?.sendMessage(Component.text("Insufficient resources.", HE_DARK_ORANGE))
 		userManager.clear()
 	}
 
@@ -116,6 +117,9 @@ abstract class CoreForgeEntity (
 		}
 		val input: Inventory = getInput() ?: return disable(false)
 		val output: Inventory = getOutput() ?: return disable(false)
+
+		val missingItems = mutableListOf<String>()
+
 		for (item in currentRecipe) {
 			val neededAmount = item.value
 			val recipeItem = item.key.clone().apply { amount = 1 }
@@ -127,23 +131,29 @@ abstract class CoreForgeEntity (
 					.sumOf { it.amount }
 
 				if (total < neededAmount) {
-					disable(false)
-					return
+					val itemName = recipeItem.customItem?.key?.key ?: "Unknown"
+					missingItems.add("$itemName x${neededAmount - total}")
 				}
-			}
-			else {
+			} else {
 				val total = input.storageContents
 					.filterNotNull()
-					.filter { it.isSimilar(recipeItem)}
+					.filter { it.isSimilar(recipeItem) }
 					.sumOf { it.amount }
 
 				if (total < neededAmount) {
-					disable(false)
-					return
+					val itemName = recipeItem.itemMeta?.displayName ?: recipeItem.type.name
+					missingItems.add("${itemName} x${neededAmount - total}")
 				}
 			}
 		}
-		 //Need a second loop to stop items being removed without checking if the input has all the items, thus failing the craft but still taking items
+
+		if (missingItems.isNotEmpty()) {
+			player.userError("Missing resources: ${missingItems.joinToString(", ")}")
+			disable(false)
+			return
+		}
+
+		// second loop to remove items - only reached if all items are present
 		for ((recipeItem, neededAmount) in currentRecipe) {
 			var remaining = neededAmount
 			val item = recipeItem.clone().apply { amount = 1 }
