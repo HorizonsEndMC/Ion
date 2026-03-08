@@ -26,6 +26,8 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
@@ -51,59 +53,47 @@ object RemoteSellerMultiblock : Multiblock(), EntityMultiblock<RemoteSellerMulti
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(-1) {
-				x(-2).ironBlock()
-				x(-1).sponge()
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(0).powerInput()
 				x(1).anyPipedInventory()
-				x(2).ironBlock()
 			}
 			y(0) {
-				x(-2).ironBlock()
-				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.FORWARD, RelativeFace.RIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyGlass()
-				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.FORWARD, RelativeFace.RIGHT))
-				x(2).ironBlock()
+				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.FORWARD))
 			}
 		}
 		z(1) {
 			y(-1) {
-				x(-2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-1).redstoneBlock()
+				x(-1).anyWall()
 				x(0).titaniumBlock()
-				x(1).redstoneBlock()
-				x(2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.FORWARD, RelativeFace.BACKWARD))
+				x(1).netheriteBlock()
 			}
 			y(0) {
-				x(-2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-1).redstoneBlock()
+				x(-1).anyWall()
 				x(0).titaniumBlock()
-				x(1).redstoneBlock()
-				x(2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.FORWARD, RelativeFace.BACKWARD))
+				x(1).netheriteBlock()
 			}
 			y(1) {
-				x(1).anyWall()
+				x(-1).anyWall()
 			}
 			y(2) {
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
 			}
 			y(3) {
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
 			}
 		}
 		z(2) {
 			y(-1) {
-				x(-2).ironBlock()
-				x(-1).sponge()
-				x(0).ironBlock()
-				x(1).sponge()
-				x(2).ironBlock()
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(0).sponge()
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(-2).ironBlock()
-				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(2).ironBlock()
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(0).anyGlass()
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 	}
