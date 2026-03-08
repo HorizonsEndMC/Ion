@@ -377,7 +377,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('n', IRON_NUGGET)
 			setIngredient('i', IRON_INGOT)
 		}
-		shaped("Unloaded__Shell", LOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+		shaped("Loaded_Shell", LOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" y ", " z ")
 
 			setIngredient('y', LAPIS_LAZULI)
