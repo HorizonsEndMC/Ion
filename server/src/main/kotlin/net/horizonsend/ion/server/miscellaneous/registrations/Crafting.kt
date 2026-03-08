@@ -143,8 +143,14 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MOD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNCHARGED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHARGED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LIGHT_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_ARSENAL_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LOADED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCANNER_PROBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.THERMONUCLEAR_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_CORE
@@ -371,17 +377,42 @@ object Crafting : IonServerComponent() {
 			setIngredient('n', IRON_NUGGET)
 			setIngredient('i', IRON_INGOT)
 		}
-		shaped("Unloaded__Shell", UNLOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+		shaped("Unloaded__Shell", LOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" y ", " z ")
 
 			setIngredient('y', LAPIS_LAZULI)
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 		}
-		shaped("Uncharged_Shell", UNCHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+		shaped("Charged_Shell", CHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" y ", " z ")
 
 			setIngredient('y', PRISMARINE_CRYSTALS)
 			setIngredient('z', COPPER_INGOT)
+		}
+		shaped("Scanner_Probe", SCANNER_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape(" y ", " z ", " y ")
+
+			setIngredient('y', IRON_INGOT)
+			setIngredient('z', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+		}
+		shaped("Light_Missile", LIGHT_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape(" y ", " z ", " y ")
+
+			setIngredient('z', REDSTONE)
+			setIngredient('y', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+		}
+		shaped("Heavy_Missile", HEAVY_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape(" y ", " z ", " y ")
+
+			setIngredient('y', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+			setIngredient('z', COPPER_INGOT)
+		}
+		shaped("Thermonuclear_missile", THERMONUCLEAR_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape(" y ", " z ", "aya")
+
+			setIngredient('y', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+			setIngredient('z', ExactChoice(URANIUM.getValue().constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 		}
 		shaped("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("aba", "mum", "hlo")
