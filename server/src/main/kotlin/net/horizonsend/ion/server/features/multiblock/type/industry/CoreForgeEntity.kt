@@ -141,8 +141,13 @@ abstract class CoreForgeEntity (
 					.sumOf { it.amount }
 
 				if (total < neededAmount) {
-					val itemName = recipeItem.itemMeta?.displayName ?: recipeItem.type.name
-					missingItems.add("${itemName} x${neededAmount - total}")
+					val itemName = recipeItem.itemMeta?.displayName()
+						?.let { component -> net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(component) }
+						?.takeIf { it.isNotBlank() }
+						?: recipeItem.type.name
+							.split('_')
+							.joinToString(" ") { it.lowercase().replaceFirstChar { c -> c.uppercase() } }
+					missingItems.add("$itemName x${neededAmount - total}")
 				}
 			}
 		}

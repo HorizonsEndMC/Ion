@@ -259,6 +259,5 @@ override fun onSignInteract( sign: Sign, player: Player, event: PlayerInteractEv
 	val entity = getMultiblockEntity(sign) ?: return
 	entity.openGui(player)
 		}
-
 }
 
