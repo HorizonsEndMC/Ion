@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.progression.SLXP
 import org.bukkit.Bukkit
 import org.bukkit.damage.DamageSource
 import org.bukkit.damage.DamageType
@@ -35,7 +36,8 @@ object SuicideCommand : SLCommand() {
 
         // Notify everyone of this player's untimely demise
         sender.information("Goodbye cruel world...")
-        for (otherPlayer in Bukkit.getOnlinePlayers()) {
+		SLXP.addPowerAsync(sender.uniqueId, -4)
+		for (otherPlayer in Bukkit.getOnlinePlayers()) {
             otherPlayer.information("Player ${sender.name} took their own life")
         }
     }
