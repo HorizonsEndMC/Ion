@@ -33,7 +33,7 @@ class ArtilleryWeaponSubsystem(
 	override val fireCooldownNanos: Long = balancing.fireCooldownNanos
 
 	companion object {
-		private const val WARM_UP_TIME_SECONDS = 0.5
+		private const val WARM_UP_TIME_SECONDS = 0.0
 	}
 
 	override fun isAcceptableDirection(face: BlockFace) = true
@@ -48,10 +48,10 @@ class ArtilleryWeaponSubsystem(
 			playDirectionalStarshipSound(loc, player, balancing.projectile.fireSoundNear, balancing.projectile.fireSoundNear, balancing.projectile.range)
 		}
 
-		Tasks.syncDelay((20.0 * WARM_UP_TIME_SECONDS).toLong()) {
+		//Tasks.syncDelay((20.0 * WARM_UP_TIME_SECONDS).toLong()) {
 			val newFirePos = getFirePos().toCenterVector()
 			ArtilleryProjectile(StarshipProjectileSource(starship), getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
-		}
+		//}
 	}
 
 	override fun getName(): Component {
