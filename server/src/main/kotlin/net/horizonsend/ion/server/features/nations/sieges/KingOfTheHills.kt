@@ -179,6 +179,7 @@ object KingOfTheHills : IonServerComponent() {
 				.decorate(TextDecoration.BOLD)
 			messageBuilder.append(newline())
 			messageBuilder.append(lineBreak(45))
+			messageBuilder.append(newline())
 
 			for ((index, entry) in orderedScores.entries.withIndex()) {
 				val nation = FrontierNation.findById(entry.key) ?: continue
@@ -187,8 +188,8 @@ object KingOfTheHills : IonServerComponent() {
 					text("$position. ${nation.name} with ${entry.value} points.").color(color(nation.color))
 				)
 				messageBuilder.append(newline())
-				messageBuilder.append(lineBreak(45))
 			}
+			messageBuilder.append(lineBreak(45))
 			for (player in (world.players)) {
 				if (!kothRegion.contains(player.location)) continue
 				player.sendMessage(messageBuilder.build())
