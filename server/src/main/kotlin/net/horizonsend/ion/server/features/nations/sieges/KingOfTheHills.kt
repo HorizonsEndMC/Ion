@@ -57,7 +57,6 @@ import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
-import kotlin.collections.get
 
 object KingOfTheHills : IonServerComponent() {
 	data class Koths(
@@ -218,7 +217,7 @@ object KingOfTheHills : IonServerComponent() {
 
 					else -> return log.error("Pilot is flying something hitherto unknown to mankind.")
 				}
-				processKothKill(controller.player, damager.player, pointsGained, koth.kothId)
+				processKothKill(controller.player, damager.player, pointsGained, koth.kothId, "sinking")
 				break
 			}
 		}
@@ -232,14 +231,14 @@ object KingOfTheHills : IonServerComponent() {
 			val kothRegion: RegionKothZone = Regions[thisKoth]
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
 			if (kothRegion.contains(event.player.location)) {
-				processKothKill(event.player, killer, 50, koth.kothId)
+				processKothKill(event.player, killer, 50, koth.kothId, "killing")
 				break
 			}
 		}
 	}
 
 
-	private fun processKothKill(player: Player, killer: Player, points: Int, kothId: Oid<KothStation>) {
+	private fun processKothKill(player: Player, killer: Player, points: Int, kothId: Oid<KothStation>, verb: String) {
 		val victimNation = PlayerCache[player].frontierNationOid
 		val killerNation = PlayerCache[killer].frontierNationOid
 		val koth = activeKoths.find { it.kothId == kothId } ?: return
@@ -252,7 +251,10 @@ object KingOfTheHills : IonServerComponent() {
 		if (killerNation != null && victimNation != null) {
 			IonServer.server.sendMessage(
 				template(
-					text("${killer.name} accrued ${points} points for killing ${player.name}."),
+					"${killer.name} accrued $points points for $verb ${player.name}.",
+					color = HE_MEDIUM_GRAY,
+					paramColor = HEColorScheme.HE_LIGHT_BLUE,
+					useQuotesAroundObjects = false,
 					formatFrontierNationName(killerNation),
 					points,
 					player.name
