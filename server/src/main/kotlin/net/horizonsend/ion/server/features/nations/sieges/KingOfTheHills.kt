@@ -162,6 +162,7 @@ object KingOfTheHills : IonServerComponent() {
 			.associate { it.key to it.value }
 		val dominantNationAndCount = orderedNation.entries.first()
 		val dominantNation = dominantNationAndCount.key
+		if (dominantNationAndCount.value == orderedNation[nation]) return nation
 		return dominantNation
 	}
 
