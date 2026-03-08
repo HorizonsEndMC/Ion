@@ -105,7 +105,7 @@ class MiniNukeModExplosion(val location: Location){
 			flashBurn.verticalCount = 10
 
 			//burner
-			burner.disabled = true
+			burner.disabled = false
 		}
 	}
 }

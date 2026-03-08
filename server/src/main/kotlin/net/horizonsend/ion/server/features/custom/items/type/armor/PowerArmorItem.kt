@@ -40,6 +40,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -207,6 +208,11 @@ class PowerArmorItem(
 			entity.allowFlight = true
 			entity.flySpeed = 0.025f
 			entity.velocity.y = 0.0
+			val footDir = entity.location.direction.normalize().multiply(-1)
+				.rotateAroundX(randomDouble(0.20, 0.40))
+				.rotateAroundY(randomDouble(0.20, 0.40))
+				.rotateAroundZ(randomDouble(0.20, 0.40))
+			entity.world.spawnParticle(Particle.SMOKE, entity.location, 0, footDir.x, footDir.y, footDir.z, 0.05)
 		}
 	}
 
@@ -227,10 +233,9 @@ class PowerArmorItem(
 			entity.canPickupItems = false
 			entity.velocity = Vector(0, 0, 0)
 			val origin = entity.location
-			val vector = Vector(0, 1, 0)
-			helixAroundVector(origin, vector, 0.3, 20, wavelength = 1.0) {
-				entity.world.spawnParticle(Particle.SOUL_FIRE_FLAME, it, 1, 0.0, 0.0,0.0,0.0, null, true) }
-
+			helixAroundVector(origin, Vector(0, 0, 1), 0.3, 20, wavelength = 1.0) {
+				entity.world.spawnParticle(Particle.SOUL_FIRE_FLAME, it, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+			}
 			if (System.nanoTime() - ArmorLockMod.armorLockEnabledPlayers[entity.uniqueId]!! >= ArmorLockMod.maxLockTime) {
 				forceDisableArmorLock(entity)
 			}
@@ -250,6 +255,11 @@ class PowerArmorItem(
 		if (!(entity.world.hasFlag(WorldFlag.SPACE_WORLD)) && !getGravityEnabled(entity.player!!)) {
 			forceDisableGravityBoots(entity)
 			return
+		}
+		if (getGravityEnabled(entity)) {
+			val feetLocation = entity.location.clone().add(0.0, 0.1, 0.0)
+			entity.world.spawnParticle(Particle.DUST, feetLocation, 5, 0.2, 0.05, 0.2, 0.0,
+				Particle.DustOptions(Color.fromRGB(180, 0, 255), 1.0f), true)
 		}
 	}
 

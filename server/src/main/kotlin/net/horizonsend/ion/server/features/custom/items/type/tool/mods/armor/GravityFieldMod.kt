@@ -41,16 +41,12 @@ object GravityFieldMod : ItemModification {
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 	fun setGravity(player : Player) {
 		if (!player.world.hasFlag(WorldFlag.SPACE_WORLD))  {
-			player.sendMessage("Gravity Boots only work in space!")
-			gravityEnabledPlayers.remove(player.uniqueId)
 			return
 		}
 
 		val isEnabled = gravityEnabledPlayers.contains(player.uniqueId)
 		if (isEnabled) gravityEnabledPlayers.remove(player.uniqueId)
 		else gravityEnabledPlayers.add(player.uniqueId)
-		player.sendMessage(
-			"Gravity Module ${if (isEnabled) { "Enabled" } else { "Disabled" }}")
 	}
 
 	fun getGravityEnabled(player: Player) : Boolean {

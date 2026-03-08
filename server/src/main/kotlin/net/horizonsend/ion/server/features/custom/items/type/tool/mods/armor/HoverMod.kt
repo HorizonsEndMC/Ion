@@ -50,7 +50,6 @@ object HoverMod : ItemModification {
 			player.isFlying = false
 		}
 		else hoverEnabledPlayers.add(player.uniqueId)
-		player.sendMessage("Hover Module ${if (isEnabled) { "Enabled" } else { "Disabled" }}")
 	}
 
 	fun getHoverEnabled(player: Player) : Boolean {
