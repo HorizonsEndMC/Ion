@@ -62,7 +62,7 @@ object KingOfTheHills : IonServerComponent() {
 	data class Koths(
 		val kothId: Oid<KothStation>,
 		val start: Long,
-		var kothPoints: MutableMap<Oid<KothStation>, MutableMap<Oid<FrontierNation>, Int?>>,
+		var kothPoints: MutableMap<Oid<FrontierNation>, Int>,
 		var nation: Oid<FrontierNation>?,
 		val type: KothType,
 		val timeLimit: Long
@@ -70,14 +70,7 @@ object KingOfTheHills : IonServerComponent() {
 
 	private val activeKoths = mutableListOf<Koths>()
 	private val activatingKoths = mutableMapOf<RegionKothZone, Long>()
-
-	//private val kothMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.koths.majorKOTHMaxDuration)
-
 	private fun currentHour() = ZonedDateTime.now().hour
-
-	private val kothScores = mutableMapOf<Oid<KothStation>, MutableMap<Oid<FrontierNation>, Int?>>()
-
-	private var nation: Oid<FrontierNation>? = null
 
 
 	override fun onEnable() {
@@ -93,7 +86,7 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun updateKOTHs() {
 		for (koth: Koths in getKOTHS()) {
-			val memberCount = mutableMapOf<Oid<FrontierNation>, Int?>()
+			val memberCount = mutableMapOf<Oid<FrontierNation>, Int>()
 			val kothId = koth.kothId
 			val kothRegion: RegionKothZone = Regions[kothId]
 			val elapsed = currentTimeMillis() - koth.start
@@ -105,60 +98,55 @@ object KingOfTheHills : IonServerComponent() {
 				val playerNation = PlayerCache[player].frontierNationOid
 				if (playerNation == null || !isPiloting(player)) continue
 				//If the player's nation hasnt gotten a player in the koth this loop yet:
-				if (!memberCount.contains(playerNation)) {
+				if (!memberCount.containsKey(playerNation)) {
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
 					memberCount[playerNation] = 1
 					//If the player's nation hasnt gotten a player in the koth at all this siege:
-					if (!kothScores[kothId]!!.contains(playerNation)) {
-						kothScores[kothId]!![playerNation] = 1
+					if (!koth.kothPoints.containsKey(playerNation)) {
+						koth.kothPoints[playerNation] = 0
 					}
 				}
 				//If the player isnt the first of his nation to be in the koth, add 1 to his nation's member count
 				else {
-					val personalNationCount = memberCount[playerNation]!!
-					val newCount = personalNationCount.plus(1)
-					memberCount[playerNation] = newCount
+					memberCount.merge(playerNation, 1, Int::plus)
 				}
+			}
 
-				//if there are people in the Koth, find the nation with the most people
-				if (!memberCount.isEmpty()) {
-					//if there has been no nations in this koth, just set it to the first nation in the member count
-					if (nation == null) {nation = memberCount.keys.firstNotNullOf { it }}
-					//Find the nation with the highest member count, if nobody participated return the nation from the line above
-					val dominantNation = findDominantNation(memberCount, nation!!)
-					//If the dominant nation this time isnt the same as last loop
-					if (dominantNation != nation) {
-						log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
-						Notify.chatAndGlobal(
-							MiniMessage.miniMessage()
-								.deserialize("<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!")
-						)
-						Discord.sendMessage(
-							ConfigurationFiles.discordSettings().eventsChannel,
-							"<gold><bold>Nation ${dominantNation.id} has taken control of the KOTH ${kothId}!"
-						)
-					}
-					//Set the nation as this loop's dominant nation for next time
-					nation = dominantNation
+			//if there are people in the Koth, find the nation with the most people
+			if (memberCount.isNotEmpty()) {
+				val currentNation = koth.nation ?: memberCount.keys.first()
+				val dominantNation = findDominantNation(memberCount, currentNation)
+
+				if (dominantNation != koth.nation) {
+					log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
+					Notify.chatAndGlobal(
+						MiniMessage.miniMessage()
+							.deserialize("<gold><bold>Nation ${formatFrontierNationName(dominantNation)} has taken control of the KOTH ${kothRegion.name}!")
+					)
+					Discord.sendMessage(
+						ConfigurationFiles.discordSettings().eventsChannel,
+						"<gold><bold>Nation ${formatFrontierNationName(dominantNation)} has taken control of the KOTH ${kothRegion.name}!"
+					)
 				}
-				//Get the scores of this koth
-				val thisKothsScores = kothScores[kothId] ?: return
-				//if there is a dominant nation
-				if (nation != null) {
-					//give them a point
-					thisKothsScores[nation]?.plus(1) ?: return
-				}
+				//Set the nation as this loop's dominant nation for next time
+				koth.nation = dominantNation
+			}
 
-				when {
+			//if there is a dominant nation
+			koth.nation?.let { currentNation ->
+				//give them a point
+				koth.kothPoints.merge(currentNation, 1, Int::plus)
+			}
 
-					elapsed > timeLimit -> endKoth(koth)
-					else -> {
-						for (player in world.players) {
-							if (!kothRegion.contains(player.location)) continue
-							val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(timeLimit - elapsed) / 60.0
-							player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
-							CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
-						}
+			when {
+
+				elapsed > timeLimit -> endKoth(koth)
+				else -> {
+					for (player in world.players) {
+						if (!kothRegion.contains(player.location)) continue
+						val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(timeLimit - elapsed) / 60.0
+						player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
+						CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
 					}
 				}
 			}
@@ -166,7 +154,7 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 
-	fun findDominantNation(numbers: MutableMap<Oid<FrontierNation>, Int?>, nation: Oid<FrontierNation>): Oid<FrontierNation> {
+	fun findDominantNation(numbers: MutableMap<Oid<FrontierNation>, Int>, nation: Oid<FrontierNation>): Oid<FrontierNation> {
 		if (numbers.isEmpty()) return nation
 		val orderedNation = numbers.entries
 			.sortedByDescending { it.value }
@@ -180,26 +168,29 @@ object KingOfTheHills : IonServerComponent() {
 		for (koth: Koths in getKOTHS()) {
 			val kothRegion: RegionKothZone = Regions[koth.kothId]
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
+			val scores = koth.kothPoints
+			val orderedScores = scores.entries
+				.sortedByDescending { it.value }
+				.associate { it.key to it.value }
+			val messageBuilder = text()
+				.content("Scores for KOTH ${kothRegion.name}:")
+				.color(TextColor.fromHexString("#FFD700"))
+				.decorate(TextDecoration.BOLD)
+			messageBuilder.append(newline())
+			messageBuilder.append(lineBreak(45))
+
+			for ((index, entry) in orderedScores.entries.withIndex()) {
+				val nation = FrontierNation.findById(entry.key) ?: continue
+				val position = index + 1
+				messageBuilder.append(
+					text("$position. ${nation.name} with ${entry.value} points.").color(color(nation.color))
+				)
+				messageBuilder.append(newline())
+				messageBuilder.append(lineBreak(45))
+			}
 			for (player in (world.players)) {
 				if (!kothRegion.contains(player.location)) continue
-				val message = text("Scores for KOTH ${kothRegion.name}:").color(TextColor.fromHexString("#FFD700"))
-					.decorate(TextDecoration.BOLD)
-				val lineBreak = lineBreak(45)
-				message.append(lineBreak)
-				val scores = kothScores[koth.kothId] ?: return
-				val orderedScores = scores.entries
-					.sortedByDescending { it.value }
-					.associate { it.key to it.value }
-				for ((index, score) in orderedScores.entries.withIndex()) {
-					if (score.value == null) continue
-					val nation = FrontierNation.findById(score.key) ?: continue
-					val position = index + 1
-					message.append(
-						text("$position. ${nation.name} with ${score.value} points.").color(color(nation.color))
-					)
-					message.append(newline())
-				}
-				player.sendMessage(message)
+				player.sendMessage(messageBuilder.build())
 			}
 		}
 	}
@@ -218,9 +209,9 @@ object KingOfTheHills : IonServerComponent() {
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
 			if (kothRegion.contains(event.starship.centerOfMass.toLocation(world))) {
 				val pointsGained = when {
-					event.starship.initialBlockCount <= 4000 -> 1
-					event.starship.initialBlockCount in 4001..12000 -> 2
-					event.starship.initialBlockCount >= 12001 -> 4
+					event.starship.initialBlockCount <= 4000 -> 100
+					event.starship.initialBlockCount in 4001..12000 -> 200
+					event.starship.initialBlockCount >= 12001 -> 400
 
 					else -> return log.error("Pilot is flying something hitherto unknown to mankind.")
 				}
@@ -248,7 +239,12 @@ object KingOfTheHills : IonServerComponent() {
 	private fun processKothKill(player: Player, killer: Player, points: Int, kothId: Oid<KothStation>) {
 		val victimNation = PlayerCache[player].frontierNationOid
 		val killerNation = PlayerCache[killer].frontierNationOid
-		kothScores[kothId]?.get(killerNation)?.plus(points)
+		val koth = activeKoths.find { it.kothId == kothId } ?: return
+		//if there is a dominant nation
+		killerNation?.let { killerNation ->
+			//give them a point
+			koth.kothPoints[killerNation] = (koth.kothPoints[killerNation] ?: 0) + points
+		}
 		log.info("Awarded $killerNation $points points for killing ${player.name}")
 		if (killerNation != null && victimNation != null) {
 			IonServer.server.sendMessage(
@@ -320,8 +316,6 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun endKoth(koths: Koths) = asyncLocked {
 		val topThree = determineWinner(koths)
-		giveRewards(topThree, koths)
-		activeKoths.remove(koths)
 
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
 
@@ -332,15 +326,17 @@ object KingOfTheHills : IonServerComponent() {
 			newline(), //Gold
 			if (topThree[1] != null) {text("Second place: ${topThree[1]}").color(TextColor.fromHexString("#C0C0C0"))} else Component.empty(),
 			newline(), //Silver
-			if (topThree[2] != null) {text("Third place: ${topThree[2]}\"}").color(TextColor.fromHexString("#CD7F32"))} else Component.empty(),
+			if (topThree[2] != null) {text("Third place: ${topThree[2]}").color(TextColor.fromHexString("#CD7F32"))} else Component.empty(),
 			newline() //Bronze)
 		)
 		Notify.chatAndGlobal(message)
 		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)
+		giveRewards(topThree, koths)
+		activeKoths.removeIf { it.kothId == koths.kothId }
 	}
 
 	private fun determineWinner(koths: Koths): List<String?> {
-		val rawScores = kothScores[koths.kothId] ?: return listOf(null, null, null)
+		val rawScores = koths.kothPoints
 
 		if (rawScores.isEmpty()) {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended, nobody participated!"))
@@ -373,138 +369,102 @@ object KingOfTheHills : IonServerComponent() {
 		val kothType = koth.type
 		val stage = getServerStage()
 
+		if (stage !in 2..4) return@asyncLocked log.error("Server age is wrong somehow!")
 
-		//Check first place is a thing, reward them lower, this is just to stop unnecessary code running
-		val firstPlaceName = topThree[0] ?: return@asyncLocked
-		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return@asyncLocked
-
-		//Get the right table and its rewards
-
-		if (stage !in 2..4) return@asyncLocked log.error("Server age is wrong somehow!") //Check to make sure server age and stage is Okay
-
-		val pointsToGive = when (kothType){
+		val pointsToGive = when (kothType) {
 			KothType.MAJOR -> listOf(75.0, 50.0, 25.0)
 			KothType.MINOR -> listOf(35.0, 20.0, 10.0)
 			KothType.MOON -> listOf(35.0, 20.0, 10.0)
 		}
-		val pointsMultiplier = when {
-			stage == 3 -> 1.5
-			stage == 4 -> 2.0
+		val pointsMultiplier = when (stage) {
+			3 -> 1.5
+			4 -> 2.0
 			else -> 1.0
 		}
 
 		val rewards = KothRewards.first { it.kothType == kothType && it.stage == stage }
-		val ores = rewards.rewards.filter{it.rewardType == RewardType.MATERIALS}
-		val cores = rewards.rewards.filter{it.rewardType == RewardType.CORES}
-		val kothBlocks = rewards.rewards.filter{it.rewardType == RewardType.KOTHBLOCK}
-		//val buffs = rewards.rewards.filter{it.rewardType == RewardType.BUFFS}
+		val ores = rewards.rewards.filter { it.rewardType == RewardType.MATERIALS }
+		val cores = rewards.rewards.filter { it.rewardType == RewardType.CORES }
+		val kothBlocks = rewards.rewards.filter { it.rewardType == RewardType.KOTHBLOCK }
+		//TODO: BUFF REWARDS
 
-		val oreRewards = WeightedRandomList<ItemStack>().apply{
-			for (ore in ores) {
-				this.addEntry(ore.item, ore.chance)
-			}
+		val oreRewards = WeightedRandomList<ItemStack>().apply {
+			for (ore in ores) addEntry(ore.item, ore.chance)
+		}
+		val coreRewards = WeightedRandomList<ItemStack>().apply {
+			for (core in cores) addEntry(core.item, core.chance)
 		}
 
-		val coreRewards = WeightedRandomList<ItemStack>().apply{
-			for (core in cores) {
-				this.addEntry(core.item, core.chance)
-			}
-		}
+		fun getOreQuantity(item: ItemStack): IntRange =
+			ores.find { it.item == item }?.amount ?: 1..2
 
-		//FIRST PLACE REWARDS START
-
-		FrontierNation.updatePoints(firstPlaceNation, (pointsToGive[0]* pointsMultiplier).toInt())
-
-		//TODO: Buff rewards
-
-		for (i in 1..3) {
-			val item = oreRewards.random()
-			val itemIndex = ores.find { it.item == item }
-			val quantity = itemIndex?.amount ?: 1..1
-			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(
-				firstPlaceNation, itemString, randomInt(quantity.first, quantity.last))
-		}
-
-		for (i in 1..6) {
-			val item = coreRewards.random()
-			val itemIndex = ores.find { it.item == item }
-			val quantity = itemIndex?.amount ?: 1..1
-			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(firstPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
-		}
+		fun getCoreQuantity(item: ItemStack): IntRange =
+			cores.find { it.item == item }?.amount ?: 1..2
 
 		val kothBlock = KOTH_BLOCK.getValue().constructItemStack()
 		val kothBlockItemString = GlobalCompletions.toItemString(kothBlock)
-		for (i in 1..3) BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
+		val kothBlockQuantity = kothBlocks[0].amount
 
+		// FIRST PLACE
+		val firstPlaceName = topThree[0] ?: return@asyncLocked
+		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return@asyncLocked
 
-		//FIRST PLACE REWARDS END
+		FrontierNation.updatePoints(firstPlaceNation, (pointsToGive[0] * pointsMultiplier).toInt())
 
-		//SECOND PLACE REWARDS START
+		repeat(3) {
+			val item = oreRewards.random()
+			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), randomInt(getOreQuantity(item).first, getOreQuantity(item).last))
+		}
+		repeat(6) {
+			val item = coreRewards.random()
+			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), randomInt(getCoreQuantity(item).first, getCoreQuantity(item).last))
+		}
+		repeat(3) {
+			BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
+		}
 
+		// SECOND PLACE
 		val secondPlaceName = topThree[1] ?: return@asyncLocked
 		val secondPlaceNation = FrontierNationCache.getByName(secondPlaceName) ?: return@asyncLocked
 
-		FrontierNation.updatePoints(secondPlaceNation, (pointsToGive[1]* pointsMultiplier).toInt())
+		FrontierNation.updatePoints(secondPlaceNation, (pointsToGive[1] * pointsMultiplier).toInt())
 
-		//TODO: Buff rewards
-
-		for (i in 1..2) {
+		repeat(2) {
 			val item = oreRewards.random()
-			val itemIndex = ores.find { it.item == item }
-			val quantity = itemIndex?.amount ?: 1..1
-			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(
-				secondPlaceNation, itemString, randomInt(quantity.first, quantity.last))
+			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), randomInt(getOreQuantity(item).first, getOreQuantity(item).last))
 		}
-
-		for (i in 1..4) {
+		repeat(4) {
 			val item = coreRewards.random()
-			val itemIndex = ores.find { it.item == item }
-			val quantity = itemIndex?.amount ?: 1..1
-			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(secondPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
+			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), randomInt(getCoreQuantity(item).first, getCoreQuantity(item).last))
+		}
+		repeat(2) {
+			BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
 		}
 
-		for (i in 1..2) BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
-
-		//SECOND PLACE REWARDS END
-
-		//THIRD PLACE REWARDS START
-
+		// THIRD PLACE
 		val thirdPlaceName = topThree[2] ?: return@asyncLocked
 		val thirdPlaceNation = FrontierNationCache.getByName(thirdPlaceName) ?: return@asyncLocked
 
-		FrontierNation.updatePoints(thirdPlaceNation, (pointsToGive[2]* pointsMultiplier).toInt())
+		FrontierNation.updatePoints(thirdPlaceNation, (pointsToGive[2] * pointsMultiplier).toInt())
 
-		//TODO: Buff rewards
-
-		for (i in 1..1) {
+		repeat(1) {
 			val item = oreRewards.random()
-			val itemIndex = ores.find { it.item == item }
-			val quantity = itemIndex?.amount ?: 1..1
-			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(
-				thirdPlaceNation, itemString, randomInt(quantity.first, quantity.last))
+			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), randomInt(getOreQuantity(item).first, getOreQuantity(item).last))
 		}
-
-		for (i in 1..2) {
+		repeat(2) {
 			val item = coreRewards.random()
-			val itemIndex = ores.find { it.item == item }
-			val quantity = itemIndex?.amount ?: 1..1
-			val itemString = GlobalCompletions.toItemString(item)
-			BankedItem.create(thirdPlaceNation, itemString,  randomInt(quantity.first, quantity.last))
+			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), randomInt(getCoreQuantity(item).first, getCoreQuantity(item).last))
 		}
-		for (i in 1..1) BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlocks[0].amount.first, kothBlocks[0].amount.last))
-
-		//THIRD PLACE REWARDS END
+		repeat(1) {
+			BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
+		}
 	}
 
 	//Starts a 15 minute activating timer before starting
 	fun activateKoth(koth: RegionKothZone) = asyncLocked {
 		if (!activatingKoths.isEmpty() || !activeKoths.isEmpty()) return@asyncLocked
 		activatingKoths[koth] = System.nanoTime()
+		//TODO: fix moon message
 		val message = template(
 			"KOTH {0} is starting in 15 minutes at ${koth.x}, ${koth.z}, (/jump ${koth.x} ${koth.z})!",
 			color = HE_MEDIUM_GRAY,
@@ -528,7 +488,7 @@ object KingOfTheHills : IonServerComponent() {
 		for (currentKoth in getCurrentKoth()) {
 
 			val currentKothID = currentKoth.id
-			if (System.nanoTime() - activatingKoths[currentKoth]!! > TimeUnit.MINUTES.toNanos(15.toLong())) continue
+			if (System.nanoTime() - activatingKoths[currentKoth]!! < TimeUnit.MINUTES.toNanos(15.toLong())) continue
 			val kothType = currentKoth.type
 			val timeLimit = when (kothType) {
 				KothType.MAJOR -> NATIONS_BALANCE.koths.majorKOTHMaxDuration
@@ -539,11 +499,17 @@ object KingOfTheHills : IonServerComponent() {
 			activatingKoths.remove(currentKoth)
 			KothSiege.create(currentKothID)
 
-			activeKoths.add(Koths(currentKothID, currentTimeMillis(), kothScores, null, kothType, timeLimit))
+			activeKoths.add(Koths(currentKothID, currentTimeMillis(), mutableMapOf(), null, kothType, timeLimit))
 
-			Notify.chatAndGlobal(
-				MiniMessage.miniMessage().deserialize("<gold>King of the hill ${currentKoth.name} has begun!")
+			val message = template(
+				"KOTH {0} has begun at ${currentKoth.x}, ${currentKoth.z}!",
+				color = HE_MEDIUM_GRAY,
+				paramColor = HEColorScheme.HE_LIGHT_BLUE,
+				useQuotesAroundObjects = false,
+				currentKoth.name
 			)
+
+			IonServer.server.sendMessage(message)
 
 			Discord.sendMessage(
 				ConfigurationFiles.discordSettings().eventsChannel,
@@ -557,8 +523,7 @@ object KingOfTheHills : IonServerComponent() {
 	fun forceActivateKoth(desiredKoth: String) {
 		val allKoths = Regions.getAllOf<RegionKothZone>()
 		val iminentKoths = Regions.getAllOf<RegionKothZone>()
-			.filter { koth -> koth.siegeHour == currentHour()}
-			.filter { koth -> koth.siegeHour == currentHour()+1 }
+			.filter { koth -> koth.siegeHour == currentHour() || koth.siegeHour == currentHour() + 1 }
 		for (koth in allKoths) {
 			if (koth.name == desiredKoth) {
 				if (iminentKoths.contains(koth)) return
