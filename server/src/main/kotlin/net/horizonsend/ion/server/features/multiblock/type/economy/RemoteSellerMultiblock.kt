@@ -145,13 +145,16 @@ object RemoteSellerMultiblock : Multiblock(), EntityMultiblock<RemoteSellerMulti
 			if (!isAlive) return
 			val inventory = getInput() ?: return
 			userManager.setUser(player)
-			for (item in inventory) {
-				val sellPrice = Merchants.getPrice(GlobalCompletions.toItemString(item)) ?: 1.0
-				Tasks.async { VAULT_ECO.depositPlayer(player, sellPrice)}
-				inventory.remove(item)
+			if (!inventory.isEmpty) {
+				for (item in inventory) {
+					val sellPrice = Merchants.getPrice(GlobalCompletions.toItemString(item)) ?: 1.0
+					Tasks.async { VAULT_ECO.depositPlayer(player, sellPrice) }
+					inventory.remove(item)
+				}
+				player.information("Sold items.")
 			}
-			player.information("Sold items.")
 			userManager.clear()
+			return
 		}
 	}
 }
