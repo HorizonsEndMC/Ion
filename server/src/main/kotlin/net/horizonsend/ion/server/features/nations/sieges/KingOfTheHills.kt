@@ -367,6 +367,12 @@ object KingOfTheHills : IonServerComponent() {
 		return topThree
 	}
 
+	//Handles randomness where the max and min are the same because i am lazy
+	fun safeRandomInt(min: Int, max: Int): Int {
+		if (min >= max) return min
+		return randomInt(min, max)
+	}
+
 	private fun giveRewards(topThree: List<String?>, koth: Koths) = asyncLocked {
 		val kothType = koth.type
 		val stage = getServerStage()
@@ -404,23 +410,30 @@ object KingOfTheHills : IonServerComponent() {
 			for (pvp in pvps) addEntry(pvp.item, pvp.chance)
 		}
 
-		fun getOreQuantity(item: ItemStack): IntRange =
-			ores.find { it.item == item }?.amount ?: 1..2
+		fun getOreQuantity(item: ItemStack): Int {
+			val quantity = ores.find { it.item == item }?.amount ?: 1..1
+			return safeRandomInt(quantity.first, quantity.last)
+		}
+		fun getCoreQuantity(item: ItemStack): Int {
+			val quantity = cores.find { it.item == item }?.amount ?: 1..1
+			return safeRandomInt(quantity.first, quantity.last)
+		}
 
-		fun getCoreQuantity(item: ItemStack): IntRange =
-			cores.find { it.item == item }?.amount ?: 1..2
+		fun getBuffQuantity(item: ItemStack): Int {
+			val quantity = buffs.find { it.item == item }?.amount ?: 1..1
+			return safeRandomInt(quantity.first, quantity.last)
+		}
 
-		fun getBuffQuantity(item: ItemStack): IntRange =
-			buffs.find { it.item == item }?.amount ?: 1..2
-
-		fun getPvpQuantity(item: ItemStack): IntRange =
-				pvps.find { it.item == item}?.amount ?: 1..2
+		fun getPvpQuantity(item: ItemStack): Int {
+			val quantity = 	pvps.find { it.item == item}?.amount ?: 1..1
+			return safeRandomInt(quantity.first, quantity.last)
+		}
 
 		fun givePvpRewards(nation: Oid<FrontierNation>, count: Int) {
 			if (pvpRewards.isEmpty()) return
 			repeat(count) {
 				val item = pvpRewards.random()
-				BankedItem.create(nation, GlobalCompletions.toItemString(item), randomInt(getPvpQuantity(item).first, getPvpQuantity(item).last))
+				BankedItem.create(nation, GlobalCompletions.toItemString(item), getPvpQuantity(item))
 			}
 		}
 
@@ -436,18 +449,18 @@ object KingOfTheHills : IonServerComponent() {
 
 		repeat(3) {
 			val item = oreRewards.random()
-			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), randomInt(getOreQuantity(item).first, getOreQuantity(item).last))
+			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), getOreQuantity(item))
 		}
 		repeat(6) {
 			val item = coreRewards.random()
-			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), randomInt(getCoreQuantity(item).first, getCoreQuantity(item).last))
+			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), getCoreQuantity(item))
 		}
 		repeat(3) {
-			BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
+			BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last)) //!!!
 		}
 		repeat(2) {
 			val item = buffRewards.random()
-			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), randomInt(getBuffQuantity(item).first, getBuffQuantity(item).last))
+			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), getBuffQuantity(item))
 		}
 		if (pvps.isNotEmpty()) givePvpRewards(firstPlaceNation, 10)
 
@@ -460,18 +473,18 @@ object KingOfTheHills : IonServerComponent() {
 
 		repeat(2) {
 			val item = oreRewards.random()
-			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), randomInt(getOreQuantity(item).first, getOreQuantity(item).last))
+			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), getOreQuantity(item))
 		}
 		repeat(4) {
 			val item = coreRewards.random()
-			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), randomInt(getCoreQuantity(item).first, getCoreQuantity(item).last))
+			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), getCoreQuantity(item))
 		}
 		repeat(2) {
 			BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
 		}
 		repeat(2) {
 			val item = buffRewards.random()
-			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), randomInt(getBuffQuantity(item).first, getBuffQuantity(item).last))
+			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), getBuffQuantity(item))
 		}
 		if (pvps.isNotEmpty()) givePvpRewards(secondPlaceNation, 6)
 
@@ -484,18 +497,18 @@ object KingOfTheHills : IonServerComponent() {
 
 		repeat(1) {
 			val item = oreRewards.random()
-			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), randomInt(getOreQuantity(item).first, getOreQuantity(item).last))
+			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), getOreQuantity(item))
 		}
 		repeat(2) {
 			val item = coreRewards.random()
-			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), randomInt(getCoreQuantity(item).first, getCoreQuantity(item).last))
+			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), getCoreQuantity(item))
 		}
 		repeat(1) {
 			BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
 		}
 		repeat(1) {
 			val item = buffRewards.random()
-			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), randomInt(getBuffQuantity(item).first, getBuffQuantity(item).last))
+			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), getBuffQuantity(item))
 		}
 		if (pvps.isNotEmpty()) givePvpRewards(thirdPlaceNation, 4)
 	}
