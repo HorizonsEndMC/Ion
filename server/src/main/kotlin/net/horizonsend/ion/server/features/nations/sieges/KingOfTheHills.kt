@@ -95,8 +95,8 @@ object KingOfTheHills : IonServerComponent() {
 
 			for (player in world.players) {
 				if (!kothRegion.contains(player.location)) continue
-				val playerNation = PlayerCache[player].frontierNationOid
-				if (playerNation == null || !isPiloting(player)) continue
+				val playerNation = PlayerCache[player].frontierNationOid ?: continue
+				if (koth.type != KothType.MOON && !isPiloting(player)) continue
 				//If the player's nation hasnt gotten a player in the koth this loop yet:
 				if (!memberCount.containsKey(playerNation)) {
 					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
