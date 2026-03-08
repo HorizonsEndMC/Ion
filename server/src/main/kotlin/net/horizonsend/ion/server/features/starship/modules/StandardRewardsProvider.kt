@@ -66,6 +66,7 @@ open class StandardRewardsProvider(protected val starship: ActiveStarship) : Rew
 
 		if (xp > 0) {
 			damager.rewardXP(xp)
+			damager.rewardMoney(killedSize * percent)
 			log.info("Gave $damager $xp XP for ship-killing ${starship.identifier}")
 		}
 	}
