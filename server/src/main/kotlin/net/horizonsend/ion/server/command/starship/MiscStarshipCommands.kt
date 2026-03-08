@@ -303,13 +303,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			onUseBeacon(sender)
 			return
 		} else it.spaceLocation
-		} ?:Bukkit.getWorld(destination)?.let {
-			Pos(
-				it.name,
-				randomInt(0, 10000),
-				128,
-				randomInt(0, 10000)
-			)
 		} ?:BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
 			// Check if the destination is a saved player bookmark
 			Pos(
@@ -334,7 +327,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 
-		if (destinationPos.bukkitWorld() != sender.world && starship.initialBlockCount <= 13500) {
+		if (destinationPos.bukkitWorld() != sender.world) {
 			//Check if the other player exists and if they have a jump beacon enabled
 			if (otherPlayer != null) {
 				val otherPlayerStarship = ActiveStarships.findByPilot(otherPlayer)

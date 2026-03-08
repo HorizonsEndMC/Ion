@@ -218,7 +218,6 @@ class ShipFactoryPrintTask(
 					toPrint.add(printPosition)
 					printedBlocks++
 
-					consumedCredits += price
 					consumedPower += 0
 				}
 				if (isDisabled) break
