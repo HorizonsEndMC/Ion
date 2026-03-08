@@ -22,7 +22,11 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.KOTH_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.CachedKothStation
@@ -74,6 +78,12 @@ object KingOfTheHills : IonServerComponent() {
 	private val activeKoths = mutableListOf<Koths>()
 	private val activatingKoths = mutableMapOf<RegionKothZone, Long>()
 	private fun currentHour() = ZonedDateTime.now().hour
+	private val moonKillRewards = WeightedRandomList<ItemStack>().apply {
+		addEntry(SCORDITE.getValue().constructItemStack(), 45)
+		addEntry(VANADIUM.getValue().constructItemStack(), 35)
+		addEntry(ZIRCON.getValue().constructItemStack(), 15)
+		addEntry(ATAVUM.getValue().constructItemStack(), 5)
+	}
 
 
 	override fun onEnable() {
@@ -245,10 +255,14 @@ object KingOfTheHills : IonServerComponent() {
 		val victimNation = PlayerCache[player].frontierNationOid
 		val killerNation = PlayerCache[killer].frontierNationOid
 		val koth = activeKoths.find { it.kothId == kothId } ?: return
-		//if there is a dominant nation
+
 		killerNation?.let { killerNation ->
-			//give them a point
 			koth.kothPoints[killerNation] = (koth.kothPoints[killerNation] ?: 0) + points
+
+			if (koth.type == KothType.MOON) {
+				val item = moonKillRewards.random()
+				BankedItem.create(killerNation,GlobalCompletions.toItemString(item) , 1)
+			}
 		}
 		log.info("Awarded $killerNation $points points for killing ${player.name}")
 		if (killerNation != null && victimNation != null) {
