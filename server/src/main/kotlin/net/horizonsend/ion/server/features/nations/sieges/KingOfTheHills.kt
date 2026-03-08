@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.KOTH_BLOCK
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.misc.CachedKothStation
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
@@ -37,6 +38,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloting
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -605,6 +608,9 @@ object KingOfTheHills : IonServerComponent() {
 		}
 	}
 
-
 	fun getKOTHS(): Iterable<Koths> = activeKoths
+
+	fun moonSiegeActiveOrStaging(siege: CachedKothStation): Boolean {
+		return siege.siegeHour in (ZonedDateTime.now().hour - 1)..ZonedDateTime.now().hour
+	}
 }

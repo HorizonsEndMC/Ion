@@ -38,10 +38,12 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.keys.FrontierNationBuffTypeKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.FrontierNationBuffType
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -66,6 +68,7 @@ import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
@@ -401,11 +404,11 @@ object FrontierNationCommand : SLCommand() {
 
 		failIf(power < 40) { "Your nation doesn't have enough power to claim an outpost!" }
 
-		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>()
+		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId }
 
 		// only one territory in a space world (besides the capital)
 		failIf((sender.world.hasFlag(WorldFlag.SPACE_WORLD) || sender.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) && currentTerritories.any {
-			!it.isCapital && (Bukkit.getWorld(it.world)?.hasFlag(WorldFlag.SPACE_WORLD) == true || Bukkit.getWorld(it.world)?.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) == true)
+			!it.isCapital && (it.bukkitWorld?.hasFlag(WorldFlag.SPACE_WORLD) == true || it.bukkitWorld?.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) == true)
 		})) {
 			"Nations can only have one outpost in space (besides the capital)"
 		}
@@ -933,5 +936,50 @@ object FrontierNationCommand : SLCommand() {
 		FrontierNation.removeAvailableBuff(frontierNationId, buff.key.key)
 
 		sender.success("Removed the buff ${buff.key.key} from $frontierNation's available buffs")
+	}
+
+	@Subcommand("warp moon")
+	@Description("Warp to your nation's moon siege territory (moon siege must be active or staging)")
+	fun onWarpToMoonTerritory(sender: Player): Unit = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		val territory = requireFrontierTerritoryIn(sender)
+
+		failIf(!territory.isCapital) { "You can only warp to your nation's moon territory if you are inside your nation's capital territory!" }
+
+		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId }
+		val moonTerritory = currentTerritories.firstOrNull { !it.isCapital && it.bukkitWorld?.hasFlag(WorldFlag.PLANET_SIEGE_WORLD) == true }
+
+		failIf(moonTerritory == null) { "Your nation does not have a moon territory!" }
+		moonTerritory!! // assert to remove warning
+
+		val moonKothSiege = KothStationCache.stations.find { station -> station.loc.world == sender.world }
+		failIf(moonKothSiege == null || KingOfTheHills.moonSiegeActiveOrStaging(moonKothSiege)) { "The moon siege is not active or staging!" }
+
+		val center = Pair(moonTerritory.centerX, moonTerritory.centerZ)
+		val y = moonTerritory.bukkitWorld!!.getHighestBlockYAt(center.first, center.second)
+
+		sender.teleport(Location(moonTerritory.bukkitWorld, center.first.toDouble(), y.toDouble(), center.second.toDouble()))
+		sender.success("Teleported to your nation's moon territory")
+	}
+
+	@Subcommand("warp space")
+	@Description("Warp to your nation's space territory")
+	fun onWarpToSpaceTerritory(sender: Player): Unit = asyncCommand(sender) {
+		val nationId = requireFrontierNationIn(sender)
+		val territory = requireFrontierTerritoryIn(sender)
+
+		failIf(!territory.isCapital) { "You can only warp to your nation's moon territory if you are inside your nation's capital territory!" }
+
+		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId }
+		val spaceTerritory = currentTerritories.firstOrNull { !it.isCapital && it.bukkitWorld?.hasFlag(WorldFlag.SPACE_WORLD) == true }
+
+		failIf(spaceTerritory == null) { "Your nation does not have a space territory!" }
+		spaceTerritory!! // assert to remove warning
+
+		val center = Pair(spaceTerritory.centerX, spaceTerritory.centerZ)
+		val y = spaceTerritory.bukkitWorld!!.getHighestBlockYAt(center.first, center.second)
+
+		sender.teleport(Location(spaceTerritory.bukkitWorld, center.first.toDouble(), y.toDouble(), center.second.toDouble()))
+		sender.success("Teleported to your nation's space territory")
 	}
 }

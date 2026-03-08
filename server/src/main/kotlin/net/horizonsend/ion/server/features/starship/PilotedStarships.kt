@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.KothStationCache
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -317,7 +318,7 @@ object PilotedStarships : IonServerComponent() {
 		}
 
 		val moonKothSiege = KothStationCache.stations.find { station -> station.loc.world == player.world }
-		if (moonKothSiege != null && player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD) && moonKothSiege.siegeHour in (ZonedDateTime.now().hour - 1)..ZonedDateTime.now().hour) {
+		if (moonKothSiege != null && player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD) && KingOfTheHills.moonSiegeActiveOrStaging(moonKothSiege)) {
 			player.userErrorActionMessage("Starships cannot be piloted an hour before/during a moon KOTH!")
 			return false
 		}
