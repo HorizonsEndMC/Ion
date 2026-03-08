@@ -1,19 +1,27 @@
 package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.schema.nations.KothType
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ACCELERATION_BUFF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_REVOLVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CONTACT_RANGE_BUFF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISE_SPEED_BUFF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_GREATSWORD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LIGHT_MACHINE_BLASTER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_POWER_ARMOR_BOOTS
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_POWER_ARMOR_CHESTPLATE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_POWER_ARMOR_HELMET
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.JUMP_WARMUP_BUFF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.KOTH_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MEDIUM_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MINI_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHIELD_REGENERATION_BUFF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHIELD_RESISTANCE_BUFF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TURRET_DAMAGE_BUFF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_BLOCK
@@ -51,8 +59,17 @@ object KingOfTheHillRewards {
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 16..48, RewardType.MATERIALS),
 				//Cores
 				KothRewardItem(MINI_REACTOR_CORE.getValue().constructItemStack(), 65, 1..1, RewardType.CORES),
-				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 35, 1..1, RewardType.CORES)
-			)
+				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 35, 1..1, RewardType.CORES),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
+				)
 		),
 		//Stage 2 Minor KOTH
 		KothReward(
@@ -66,7 +83,16 @@ object KingOfTheHillRewards {
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 8..24, RewardType.MATERIALS),
 				//Cores
 				KothRewardItem(MINI_REACTOR_CORE.getValue().constructItemStack(), 65, 1..1, RewardType.CORES),
-				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 35, 1..1, RewardType.CORES)
+				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 35, 1..1, RewardType.CORES),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 2 Moon KOTH
@@ -89,7 +115,16 @@ object KingOfTheHillRewards {
 				KothRewardItem(HEAVY_POWER_ARMOR_BOOTS.getValue().constructItemStack(), 10, 1..1, RewardType.PVP),
 				KothRewardItem(ENERGY_GREATSWORD.getValue().constructItemStack(), 10, 1..1, RewardType.PVP),
 				KothRewardItem(LIGHT_MACHINE_BLASTER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP),
-				KothRewardItem(BLASTER_REVOLVER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP)
+				KothRewardItem(BLASTER_REVOLVER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 3 Major KOTH
@@ -107,7 +142,16 @@ object KingOfTheHillRewards {
 				//Cores
 				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 45, 1..1, RewardType.CORES),
 				KothRewardItem(MEDIUM_REACTOR_CORE.getValue().constructItemStack(), 45, 1..1, RewardType.CORES),
-				KothRewardItem(LARGE_REACTOR_CORE.getValue().constructItemStack(), 10, 1..1, RewardType.CORES)
+				KothRewardItem(LARGE_REACTOR_CORE.getValue().constructItemStack(), 10, 1..1, RewardType.CORES),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 3 Minor KOTH
@@ -124,7 +168,16 @@ object KingOfTheHillRewards {
 				//Cores
 				KothRewardItem(MINI_REACTOR_CORE.getValue().constructItemStack(), 20, 1..1, RewardType.CORES),
 				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 50, 1..1, RewardType.CORES),
-				KothRewardItem(MEDIUM_REACTOR_CORE.getValue().constructItemStack(), 30, 1..1, RewardType.CORES)
+				KothRewardItem(MEDIUM_REACTOR_CORE.getValue().constructItemStack(), 30, 1..1, RewardType.CORES),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 3 Moon KOTH
@@ -149,7 +202,16 @@ object KingOfTheHillRewards {
 				KothRewardItem(HEAVY_POWER_ARMOR_BOOTS.getValue().constructItemStack(), 10, 1..1, RewardType.PVP),
 				KothRewardItem(ENERGY_GREATSWORD.getValue().constructItemStack(), 10, 1..1, RewardType.PVP),
 				KothRewardItem(LIGHT_MACHINE_BLASTER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP),
-				KothRewardItem(BLASTER_REVOLVER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP)
+				KothRewardItem(BLASTER_REVOLVER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 4 Major KOTH
@@ -167,7 +229,16 @@ object KingOfTheHillRewards {
 				//Cores
 				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 10, 1..1, RewardType.CORES),
 				KothRewardItem(MEDIUM_REACTOR_CORE.getValue().constructItemStack(), 50, 1..1, RewardType.CORES),
-				KothRewardItem(LARGE_REACTOR_CORE.getValue().constructItemStack(), 40, 1..1, RewardType.CORES)
+				KothRewardItem(LARGE_REACTOR_CORE.getValue().constructItemStack(), 40, 1..1, RewardType.CORES),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 4 Minor KOTH
@@ -185,7 +256,16 @@ object KingOfTheHillRewards {
 				//Cores
 				KothRewardItem(SMALL_REACTOR_CORE.getValue().constructItemStack(), 30, 1..1, RewardType.CORES),
 				KothRewardItem(MEDIUM_REACTOR_CORE.getValue().constructItemStack(), 60, 1..1, RewardType.CORES),
-				KothRewardItem(LARGE_REACTOR_CORE.getValue().constructItemStack(), 10, 1..1, RewardType.CORES)
+				KothRewardItem(LARGE_REACTOR_CORE.getValue().constructItemStack(), 10, 1..1, RewardType.CORES),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		),
 		//Stage 4 Moon KOTH
@@ -211,7 +291,16 @@ object KingOfTheHillRewards {
 				KothRewardItem(HEAVY_POWER_ARMOR_BOOTS.getValue().constructItemStack(), 10, 1..1, RewardType.PVP),
 				KothRewardItem(ENERGY_GREATSWORD.getValue().constructItemStack(), 10, 1..1, RewardType.PVP),
 				KothRewardItem(LIGHT_MACHINE_BLASTER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP),
-				KothRewardItem(BLASTER_REVOLVER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP)
+				KothRewardItem(BLASTER_REVOLVER.getValue().constructItemStack(), 25, 1..1, RewardType.PVP),
+				//Buffs
+				KothRewardItem(SHIELD_RESISTANCE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(TURRET_DAMAGE_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(SHIELD_REGENERATION_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(CRUISE_SPEED_BUFF.getValue().constructItemStack(), 12, 1..1, RewardType.BUFFS),
+				KothRewardItem(DIRECT_CONTROL_SPEED_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(ACCELERATION_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(JUMP_WARMUP_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS),
+				KothRewardItem(CONTACT_RANGE_BUFF.getValue().constructItemStack(), 13, 1..1, RewardType.BUFFS)
 			)
 		)
 	)

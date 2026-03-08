@@ -388,7 +388,8 @@ object KingOfTheHills : IonServerComponent() {
 		val ores = rewards.rewards.filter { it.rewardType == RewardType.MATERIALS }
 		val cores = rewards.rewards.filter { it.rewardType == RewardType.CORES }
 		val kothBlocks = rewards.rewards.filter { it.rewardType == RewardType.KOTHBLOCK }
-		//TODO: BUFF REWARDS
+		val buffs = rewards.rewards.filter { it.rewardType == RewardType.BUFFS }
+		val pvps = rewards.rewards.filter { it.rewardType == RewardType.PVP }
 
 		val oreRewards = WeightedRandomList<ItemStack>().apply {
 			for (ore in ores) addEntry(ore.item, ore.chance)
@@ -396,12 +397,32 @@ object KingOfTheHills : IonServerComponent() {
 		val coreRewards = WeightedRandomList<ItemStack>().apply {
 			for (core in cores) addEntry(core.item, core.chance)
 		}
+		val buffRewards = WeightedRandomList<ItemStack>().apply {
+			for (buff in buffs) addEntry(buff.item, buff.chance)
+		}
+		val pvpRewards = WeightedRandomList<ItemStack>().apply {
+			for (pvp in pvps) addEntry(pvp.item, pvp.chance)
+		}
 
 		fun getOreQuantity(item: ItemStack): IntRange =
 			ores.find { it.item == item }?.amount ?: 1..2
 
 		fun getCoreQuantity(item: ItemStack): IntRange =
 			cores.find { it.item == item }?.amount ?: 1..2
+
+		fun getBuffQuantity(item: ItemStack): IntRange =
+			buffs.find { it.item == item }?.amount ?: 1..2
+
+		fun getPvpQuantity(item: ItemStack): IntRange =
+				pvps.find { it.item == item}?.amount ?: 1..2
+
+		fun givePvpRewards(nation: Oid<FrontierNation>, count: Int) {
+			if (pvpRewards.isEmpty()) return
+			repeat(count) {
+				val item = pvpRewards.random()
+				BankedItem.create(nation, GlobalCompletions.toItemString(item), randomInt(getPvpQuantity(item).first, getPvpQuantity(item).last))
+			}
+		}
 
 		val kothBlock = KOTH_BLOCK.getValue().constructItemStack()
 		val kothBlockItemString = GlobalCompletions.toItemString(kothBlock)
@@ -424,6 +445,12 @@ object KingOfTheHills : IonServerComponent() {
 		repeat(3) {
 			BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
 		}
+		repeat(2) {
+			val item = buffRewards.random()
+			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), randomInt(getBuffQuantity(item).first, getBuffQuantity(item).last))
+		}
+		if (pvps.isNotEmpty()) givePvpRewards(firstPlaceNation, 10)
+
 
 		// SECOND PLACE
 		val secondPlaceName = topThree[1] ?: return@asyncLocked
@@ -442,6 +469,12 @@ object KingOfTheHills : IonServerComponent() {
 		repeat(2) {
 			BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
 		}
+		repeat(2) {
+			val item = buffRewards.random()
+			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), randomInt(getBuffQuantity(item).first, getBuffQuantity(item).last))
+		}
+		if (pvps.isNotEmpty()) givePvpRewards(secondPlaceNation, 6)
+
 
 		// THIRD PLACE
 		val thirdPlaceName = topThree[2] ?: return@asyncLocked
@@ -460,13 +493,17 @@ object KingOfTheHills : IonServerComponent() {
 		repeat(1) {
 			BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
 		}
+		repeat(1) {
+			val item = buffRewards.random()
+			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), randomInt(getBuffQuantity(item).first, getBuffQuantity(item).last))
+		}
+		if (pvps.isNotEmpty()) givePvpRewards(thirdPlaceNation, 4)
 	}
 
 	//Starts a 15 minute activating timer before starting
 	fun activateKoth(koth: RegionKothZone) = asyncLocked {
 		if (!activatingKoths.isEmpty() || !activeKoths.isEmpty()) return@asyncLocked
 		activatingKoths[koth] = System.nanoTime()
-		//TODO: fix moon message
 		val message = template(
 			"KOTH {0} is starting in 15 minutes at ${koth.x}, ${koth.z}, (/jump ${koth.x} ${koth.z})!",
 			color = HE_MEDIUM_GRAY,
@@ -475,12 +512,29 @@ object KingOfTheHills : IonServerComponent() {
 			koth.name
 		)
 
-		IonServer.server.sendMessage(message)
-		if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(
-			ConfigurationFiles.discordSettings().globalChannel, Embed(
-				description = "KOTH ${koth.name} is starting in 15 minutes at ${koth.x}, ${koth.z}!"
-			)
+		val message2 = template(
+			"Moon KOTH {0} is starting in 15 minutes at ${koth.x}, ${koth.z} on {1}, (/jump {1})!",
+			color = HE_MEDIUM_GRAY,
+			paramColor = HEColorScheme.HE_LIGHT_BLUE,
+			useQuotesAroundObjects = false,
+			koth.name, koth.world
 		)
+		if (koth.type == KothType.MOON) {
+			IonServer.server.sendMessage(message2)
+			if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(
+				ConfigurationFiles.discordSettings().globalChannel, Embed(
+					description = "Moon KOTH ${koth.name} is starting in 15 minutes at ${koth.x}, ${koth.z} on ${koth.world}!"
+				)
+			)
+		}
+		else {
+			IonServer.server.sendMessage(message)
+			if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(
+				ConfigurationFiles.discordSettings().globalChannel, Embed(
+					description = "KOTH ${koth.name} is starting in 15 minutes at ${koth.x}, ${koth.z}!"
+				)
+			)
+		}
 	}
 
 
