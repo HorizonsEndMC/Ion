@@ -229,7 +229,7 @@ object KingOfTheHills : IonServerComponent() {
 			val kothRegion: RegionKothZone = Regions[thisKoth]
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
 			if (kothRegion.contains(event.player.location)) {
-				processKothKill(event.player, killer, 1, koth.kothId)
+				processKothKill(event.player, killer, 50, koth.kothId)
 				break
 			}
 		}
