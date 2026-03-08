@@ -372,6 +372,7 @@ object PowerArmorListener : SLEventListener() {
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
 			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
 			if (!mods.contains(ItemModKeys.ARMOR_LOCK)) continue
+
 			return setLocked(event.player)
 		}
 	}

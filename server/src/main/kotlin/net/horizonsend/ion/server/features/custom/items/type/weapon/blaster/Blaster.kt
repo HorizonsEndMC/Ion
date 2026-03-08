@@ -212,8 +212,6 @@ open class Blaster<T : Balancing>(
 
 	open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
-		val slowness = PotionEffect(SLOWNESS, 10, 1)
-		livingEntity.addPotionEffect(slowness)
 		location.y -= 0.125
 
 		if (balancing.shotDeviation > 0) {

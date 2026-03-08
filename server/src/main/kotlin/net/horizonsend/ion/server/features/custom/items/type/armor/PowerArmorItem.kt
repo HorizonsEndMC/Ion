@@ -233,7 +233,7 @@ class PowerArmorItem(
 			entity.canPickupItems = false
 			entity.velocity = Vector(0, 0, 0)
 			val origin = entity.location
-			helixAroundVector(origin, Vector(0, 0, 1), 0.3, 20, wavelength = 1.0) {
+			helixAroundVector(origin, Vector(0.01, 1.0, 0.0), 0.8, 20, wavelength = 1.0) {
 				entity.world.spawnParticle(Particle.SOUL_FIRE_FLAME, it, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 			if (System.nanoTime() - ArmorLockMod.armorLockEnabledPlayers[entity.uniqueId]!! >= ArmorLockMod.maxLockTime) {

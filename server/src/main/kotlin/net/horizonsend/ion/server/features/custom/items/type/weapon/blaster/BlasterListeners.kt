@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.potion.PotionEffectType.SLOWNESS
 import org.litote.kmongo.util.idValue
 import kotlin.math.roundToInt
 
@@ -75,6 +76,8 @@ class BlasterListeners : SLEventListener() {
 		val customItem = itemStack.customItem as? Blaster<*> ?: return
 
 		// adding a potion effect because it takes ages for that attack cooldown to come up
+		val slowness = PotionEffect(SLOWNESS, 10, 1)
+		event.player.addPotionEffect(slowness)
 		event.player.addPotionEffect(PotionEffect(PotionEffectType.HASTE, 20, 5, false, false, false))
 
 		val ammunition = customItem.ammoComponent.getAmmo(itemStack)

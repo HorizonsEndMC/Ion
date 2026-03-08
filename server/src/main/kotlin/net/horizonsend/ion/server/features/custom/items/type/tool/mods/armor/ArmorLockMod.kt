@@ -48,8 +48,6 @@ object ArmorLockMod : ItemModification {
 		val isEnabled = armorLockEnabledPlayers.contains(player.uniqueId)
 		if (isEnabled) armorLockEnabledPlayers.remove(player.uniqueId)
 		else armorLockEnabledPlayers[player.uniqueId] = System.nanoTime()
-		player.sendMessage(
-			"Armor Lock Module ${if (isEnabled) { "Enabled" } else { "Disabled" }}")
 	}
 
 	fun getLockEnabled(player: Player) : Boolean {
@@ -61,7 +59,6 @@ object ArmorLockMod : ItemModification {
 			armorLockEnabledPlayers.remove(player.uniqueId)
 			player.isInvulnerable = false
 			player.canPickupItems = true
-			player.sendMessage("Armor Lock Module Disabled")
 		}
 	}
 }
