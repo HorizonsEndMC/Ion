@@ -130,8 +130,8 @@ object SiegeCommand : SLCommand() {
 			return
 		}
 
-		if(getStarshipPiloting(sender).initialBlockCount < 15000) {
-			sender.userError("You must be piloting a ship larger than 15000 blocks to initiate a siege!")
+		if(getStarshipPiloting(sender).initialBlockCount < 4000) {
+			sender.userError("You must be piloting a ship larger than 4000 blocks to initiate a siege!")
 			return
 		}
 
