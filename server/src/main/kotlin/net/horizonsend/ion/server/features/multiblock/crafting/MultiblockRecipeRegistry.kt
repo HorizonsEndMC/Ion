@@ -220,9 +220,9 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
 			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_SHELL),
 			fuelItem = null,
-			power = PowerRequirement(10),
+			power = PowerRequirement(1),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Duration.ofSeconds(90),
+				Duration.ofSeconds(1),
 				ItemResult.simpleResult(CustomItemKeys.LOADED_SHELL),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -235,9 +235,9 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
 			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNCHARGED_SHELL),
 			fuelItem = null,
-			power = PowerRequirement(10),
+			power = PowerRequirement(1),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Duration.ofSeconds(90),
+				Duration.ofSeconds(1),
 				ItemResult.simpleResult(CustomItemKeys.CHARGED_SHELL),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)

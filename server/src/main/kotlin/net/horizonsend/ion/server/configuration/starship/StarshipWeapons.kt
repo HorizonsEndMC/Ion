@@ -744,7 +744,7 @@ data class LightTurretBalancing(
 	data class LightTurretProjectileBalancing(
         override var range: Double = 200.0,
         override var speed: Double = 250.0,
-        override var explosionPower: Float = 2.2f,
+        override var explosionPower: Float = 2.0f,
         override var starshipShieldDamageMultiplier: Double = 1.0,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(7.0),
@@ -1040,7 +1040,7 @@ data class PulseCannonBalancing(
         override var range: Double = 180.0,
         override var speed: Double = 300.0,
         override var explosionPower: Float = 1.5f,
-        override var starshipShieldDamageMultiplier: Double = 2.0,
+        override var starshipShieldDamageMultiplier: Double = 1.8,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -1055,7 +1055,7 @@ data class PulseCannonBalancing(
 @Serializable
 data class ScramblerBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override var firePowerConsumption: Int = 2550,
 	override var isForwardOnly: Boolean = true,
 	override var maxPerShot: Int? = null,
@@ -1131,14 +1131,14 @@ data class ArtilleryBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1500),
 	override var firePowerConsumption: Int = 7200,
-	override var isForwardOnly: Boolean = true,
+	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int = 1,
 	override var applyCooldownToAll: Boolean = true,
 
 	override var convergeDistance: Double = 10.0,
 	override var projectileSpawnDistance: Int = 1,
-	override var angleRadiansHorizontal: Double = 45.0,
-	override var angleRadiansVertical: Double = 45.0,
+	override var angleRadiansHorizontal: Double = 75.0,
+	override var angleRadiansVertical: Double = 75.0,
 
 	override val projectile: ArtilleryProjectileBalancing = ArtilleryProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<ArtilleryBalancing.ArtilleryProjectileBalancing> {
