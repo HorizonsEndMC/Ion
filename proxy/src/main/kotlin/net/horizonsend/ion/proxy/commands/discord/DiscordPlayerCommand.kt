@@ -7,8 +7,10 @@ import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
@@ -51,15 +53,15 @@ object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to pla
 			)
 		}
 
-		val nationId: Oid<Nation>? = slPlayer.nation
-		val cachedNation = nationId?.let { NationCache[nationId] }
+		val frontierNationId: Oid<FrontierNation>? = slPlayer.frontierNation
+		val cachedFrontierNation = frontierNationId?.let { FrontierNationCache[frontierNationId] }
 
-		val nationInfo = cachedNation?.let {
-			val nationName = cachedNation.name
+		val froontierNationInfo = cachedFrontierNation?.let {
+			val frontierNationName = cachedFrontierNation.name
 
 			MessageEmbed.Field(
 				"Nation:",
-				nationName,
+				frontierNationName,
 				true
 			)
 		}
@@ -93,7 +95,7 @@ object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to pla
 
 		val fields = listOfNotNull(
 			settlementInfo,
-			nationInfo,
+			froontierNationInfo,
 			xpField,
 			levelField,
 			bountyField,
@@ -106,7 +108,7 @@ object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to pla
 				title = "Player: $player",
 				fields = fields,
 				thumbnail = MessageEmbed.Thumbnail("https://minotar.net/avatar/$player", null, 16, 16),
-				color = cachedNation?.color ?: Integer.parseInt("ffffff", 16)
+				color = cachedFrontierNation?.color ?: Integer.parseInt("ffffff", 16)
 			)
 		)
 	}

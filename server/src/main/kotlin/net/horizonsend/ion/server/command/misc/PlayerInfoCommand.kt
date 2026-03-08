@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -45,6 +46,8 @@ object PlayerInfoCommand : SLCommand() {
 
 		sendNationsInfo(sender, target)
 
+		sendFrontierNationsInfo(sender, target)
+
 		sendAdvanceInfo(sender, target)
 
 		sendGracePeriodInfo(sender, target)
@@ -52,6 +55,14 @@ object PlayerInfoCommand : SLCommand() {
 		sendBountyInfo(sender, target)
 
 		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(target)}")
+	}
+
+	private fun sendFrontierNationsInfo(sender: CommandSender, slPlayer: SLPlayer) {
+		val nationId = slPlayer.frontierNation
+		if (nationId != null) {
+			val nationName: String = FrontierNation.findPropById(nationId, Nation::name)!!
+			sender.sendRichMessage("<dark_green>Frontier Nation: <green>$nationName")
+		}
 	}
 
 	private fun sendNationsInfo(sender: CommandSender, slPlayer: SLPlayer) {
