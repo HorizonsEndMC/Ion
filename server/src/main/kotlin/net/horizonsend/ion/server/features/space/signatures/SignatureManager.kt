@@ -99,7 +99,7 @@ object SignatureManager : IonServerComponent(true) {
         while (attempts < MAX_SPAWN_ATTEMPTS) {
             attempts += 1
 
-            val spaceWorlds = Bukkit.getWorlds().filter { it.ion.hasFlag(WorldFlag.SPACE_WORLD) || it.ion.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) }
+            val spaceWorlds = Bukkit.getWorlds().filter { it.ion.hasFlag(WorldFlag.SPACE_WORLD) }
             val randomSpaceWorld = spaceWorlds.random()
 
             val worldBorderMinX = randomSpaceWorld.worldBorder.center.x - (randomSpaceWorld.worldBorder.size / 2)

@@ -37,7 +37,7 @@ object HoverMod : ItemModification {
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 	fun setHover(player : Player) {
-		if ((player.world.hasFlag(WorldFlag.SPACE_WORLD) || player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)))  {
+		if (player.world.hasFlag(WorldFlag.SPACE_WORLD))  {
 			hoverEnabledPlayers.remove(player.uniqueId)
 			player.flySpeed = 0.025f
 			player.isFlying = false

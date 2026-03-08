@@ -407,8 +407,8 @@ object FrontierNationCommand : SLCommand() {
 		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId }
 
 		// only one territory in a space world (besides the capital)
-		failIf((sender.world.hasFlag(WorldFlag.SPACE_WORLD) || sender.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) && currentTerritories.any {
-			!it.isCapital && (it.bukkitWorld?.hasFlag(WorldFlag.SPACE_WORLD) == true || it.bukkitWorld?.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) == true)
+		failIf((sender.world.hasFlag(WorldFlag.SPACE_WORLD) && currentTerritories.any {
+			!it.isCapital && (it.bukkitWorld?.hasFlag(WorldFlag.SPACE_WORLD) == true)
 		})) {
 			"Nations can only have one outpost in space (besides the capital)"
 		}

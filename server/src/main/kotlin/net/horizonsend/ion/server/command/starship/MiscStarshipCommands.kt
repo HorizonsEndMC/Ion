@@ -111,7 +111,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		manager.commandCompletions.registerCompletion("spaceWorlds") { e ->
 			Bukkit.getWorlds()
 				.filter { it.hasFlag(WorldFlag.SPACE_WORLD) }
-				.filter { it.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD) }
 				.map {
 					it.name.replace((" "), "_")
 				}
@@ -444,7 +443,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val currentWorld = starship.world
-		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !sender.world.ion.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) {
+		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 

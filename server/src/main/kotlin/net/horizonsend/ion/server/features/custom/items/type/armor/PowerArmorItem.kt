@@ -198,7 +198,7 @@ class PowerArmorItem(
 			forceDisableHoverBoots(entity)
 			return
 		}
-		if ((entity.world.hasFlag(WorldFlag.SPACE_WORLD) || entity.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) && getHoverEnabled(entity)) {
+		if ((entity.world.hasFlag(WorldFlag.SPACE_WORLD)) && getHoverEnabled(entity)) {
 			forceDisableHoverBoots(entity)
 			return
 		}
@@ -247,7 +247,7 @@ class PowerArmorItem(
 			forceDisableGravityBoots(entity)
 			return
 		}
-		if (!(entity.world.hasFlag(WorldFlag.SPACE_WORLD) || entity.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) && !getGravityEnabled(entity.player!!)) {
+		if (!(entity.world.hasFlag(WorldFlag.SPACE_WORLD)) && !getGravityEnabled(entity.player!!)) {
 			forceDisableGravityBoots(entity)
 			return
 		}

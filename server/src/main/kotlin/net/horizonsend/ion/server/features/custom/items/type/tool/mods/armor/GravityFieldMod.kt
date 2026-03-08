@@ -40,7 +40,7 @@ object GravityFieldMod : ItemModification {
 	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.PRIMARY
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 	fun setGravity(player : Player) {
-		if (!(player.world.hasFlag(WorldFlag.SPACE_WORLD) || player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)))  {
+		if (!player.world.hasFlag(WorldFlag.SPACE_WORLD))  {
 			player.sendMessage("Gravity Boots only work in space!")
 			gravityEnabledPlayers.remove(player.uniqueId)
 			return

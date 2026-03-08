@@ -104,7 +104,7 @@ object Hyperspace : IonServerComponent() {
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
 		val spaceWorld = starship.world
-		check(spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD ) || spaceWorld.ion.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) { "${spaceWorld.name} is not a space world" }
+		check(spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD )) { "${spaceWorld.name} is not a space world" }
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }
 
