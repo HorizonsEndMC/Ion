@@ -99,7 +99,6 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun updateKOTHs() {
 		for (koth: Koths in getKOTHS()) {
-			val memberCount = mutableMapOf<Oid<FrontierNation>, Int>()
 			val kothId = koth.kothId
 			val kothRegion: RegionKothZone = Regions[kothId]
 			val elapsed = currentTimeMillis() - koth.start
@@ -110,72 +109,31 @@ object KingOfTheHills : IonServerComponent() {
 				if (!kothRegion.contains(player.location)) continue
 				val playerNation = PlayerCache[player].frontierNationOid ?: continue
 				if (koth.type != KothType.MOON && !isPiloting(player)) continue
-				//If the player's nation hasnt gotten a player in the koth this loop yet:
-				if (!memberCount.containsKey(playerNation)) {
-					player.rewardAchievement(Achievement.KOTH_PARTICIPATION)
-					memberCount[playerNation] = 1
-					//If the player's nation hasnt gotten a player in the koth at all this siege:
-					if (!koth.kothPoints.containsKey(playerNation)) {
-						koth.kothPoints[playerNation] = 0
-					}
-				}
-				//If the player isnt the first of his nation to be in the koth, add 1 to his nation's member count
-				else {
-					memberCount.merge(playerNation, 1, Int::plus)
+				if (!koth.kothPoints.containsKey(playerNation)) {
+					koth.kothPoints[playerNation] = 0
+				} else {
+					koth.kothPoints.merge(playerNation, 2, Int::plus)
 				}
 			}
-
-			//if there are people in the Koth, find the nation with the most people
-			if (memberCount.isNotEmpty()) {
-				val currentNation = koth.nation ?: memberCount.keys.first()
-				val dominantNation = findDominantNation(memberCount, currentNation)
-
-				if (dominantNation != koth.nation) {
-					log.info("Nation ${dominantNation} has taken control of KOTH ${kothId}")
-					Notify.chatAndGlobal(
-						MiniMessage.miniMessage()
-							.deserialize("<gold><bold>Nation ${FrontierNationCache[dominantNation].name} has taken control of the KOTH ${kothRegion.name}!")
-					)
-					Discord.sendMessage(
-						ConfigurationFiles.discordSettings().eventsChannel,
-						"<gold><bold>Nation ${FrontierNationCache[dominantNation].name} has taken control of the KOTH ${kothRegion.name}!"
-					)
-				}
-				//Set the nation as this loop's dominant nation for next time
-				koth.nation = dominantNation
-			}
-
-			//if there is a dominant nation
-			koth.nation?.let { currentNation ->
-				//give them a point
-				koth.kothPoints.merge(currentNation, 1, Int::plus)
-			}
-
 			when {
-
 				elapsed > timeLimit -> endKoth(koth)
 				else -> {
 					for (player in world.players) {
 						if (!kothRegion.contains(player.location)) continue
 						val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(timeLimit - elapsed) / 60.0
-						player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
+						player.informationAction(
+							"${
+								String.format(
+									"%.2f",
+									elapsedSecondsDecimal
+								)
+							} minutes remaining"
+						)
 						CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
 					}
 				}
 			}
 		}
-	}
-
-
-	fun findDominantNation(numbers: MutableMap<Oid<FrontierNation>, Int>, nation: Oid<FrontierNation>): Oid<FrontierNation> {
-		if (numbers.isEmpty()) return nation
-		val orderedNation = numbers.entries
-			.sortedByDescending { it.value }
-			.associate { it.key to it.value }
-		val dominantNationAndCount = orderedNation.entries.first()
-		val dominantNation = dominantNationAndCount.key
-		if (dominantNationAndCount.value == orderedNation[nation]) return nation
-		return dominantNation
 	}
 
 	fun displayKothLeaderboard() {
@@ -213,10 +171,9 @@ object KingOfTheHills : IonServerComponent() {
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val controller = event.previousController as? PlayerController ?: return
-		val damager = event.starship.damagers
+		val damagers = event.starship.damagers
 			.filter { it.key is PlayerDamager }
 			.filter { SLPlayer[(it.key as PlayerDamager).player.name]?.frontierNation != SLPlayer[controller.player.name]?.frontierNation }
-			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
 
 		for (koth: Koths in getKOTHS()) {
 			val thisKoth = koth.kothId
@@ -224,13 +181,16 @@ object KingOfTheHills : IonServerComponent() {
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
 			if (kothRegion.contains(event.starship.centerOfMass.toLocation(world))) {
 				val pointsGained = when {
-					event.starship.initialBlockCount <= 4000 -> 100
-					event.starship.initialBlockCount in 4001..12000 -> 200
-					event.starship.initialBlockCount >= 12001 -> 400
+					event.starship.initialBlockCount <= 4000 -> 500
+					event.starship.initialBlockCount in 4001..12000 -> 1000
+					event.starship.initialBlockCount >= 12001 -> 2000
 
 					else -> return log.error("Pilot is flying something hitherto unknown to mankind.")
 				}
-				processKothKill(controller.player, damager.player, pointsGained, koth.kothId, "sinking")
+				for (damager in damagers) {
+					val player = damager.key as PlayerDamager
+					processKothKill(controller.player, player.player, pointsGained, koth.kothId, "sinking")
+				}
 				break
 			}
 		}

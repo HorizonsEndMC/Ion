@@ -158,7 +158,7 @@ object WorldCommand : SLCommand() {
 			override fun setup(world: World) {
 				val ionWorld = world.ion
 
-				ionWorld.configuration.flags.add(WorldFlag.SECONDARY_SPACE_WORLD)
+				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_AI_SPAWNS)
 				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_MINING_LASERS)
