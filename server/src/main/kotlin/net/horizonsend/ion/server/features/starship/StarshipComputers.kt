@@ -182,12 +182,17 @@ object StarshipComputers : IonServerComponent() {
 	}
 
 	fun canTakeOwnership(player: Player, data: PlayerStarshipData): Boolean {
+		val canBreakHere = BlockBreakEvent(player.location.block, player).apply {
+			isDropItems = false // we don't need to actually drop a block since we didn't break it.
+		}.callEvent()
+
 		return !data.isPilot(player)
 			&& (player.hasPermission("ion.core.starship.override")
 			|| isSettlementOwner(player, data)
 			|| (isMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))   // passing this implies the player is a member of the settlement
 			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP)) // passing this implies the player is part of the nation
 			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true)) // passing this implies the player has access to a station
+			|| (player.hasPermission("starships.noxp") && canBreakHere) // "starships.noxp" is only given in creative, if they can break blocks, we can guess that they have access to the plot.
 	}
 
 	fun takeOwnership(player: Player, data: PlayerStarshipData) {
