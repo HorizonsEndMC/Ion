@@ -187,9 +187,11 @@ object KingOfTheHills : IonServerComponent() {
 
 					else -> return log.error("Pilot is flying something hitherto unknown to mankind.")
 				}
+				val damagePointsSum = damagers.values.sumOf { it.points.get() }
 				for (damager in damagers) {
+					val percent = damager.value.points.get().toDouble() / damagePointsSum.toDouble()
 					val player = damager.key as PlayerDamager
-					processKothKill(controller.player, player.player, pointsGained, koth.kothId, "sinking")
+					processKothKill(controller.player, player.player, (pointsGained * percent).toInt(), koth.kothId, "sinking")
 				}
 				break
 			}
