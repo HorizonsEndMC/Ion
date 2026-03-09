@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatFrontierNationName
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -231,8 +232,8 @@ object KingOfTheHills : IonServerComponent() {
 			IonServer.server.sendMessage(
 				template(
 					"${killer.name} accrued $points points for $verb ${player.name}.",
-					color = HE_MEDIUM_GRAY,
-					paramColor = HEColorScheme.HE_LIGHT_BLUE,
+					color = HE_DARK_ORANGE,
+					paramColor = HEColorScheme.HE_LIGHT_ORANGE,
 					useQuotesAroundObjects = false,
 					formatFrontierNationName(killerNation),
 					points,
@@ -554,8 +555,8 @@ object KingOfTheHills : IonServerComponent() {
 
 			val message = template(
 				"KOTH {0} has begun at ${currentKoth.x}, ${currentKoth.z}!",
-				color = HE_MEDIUM_GRAY,
-				paramColor = HEColorScheme.HE_LIGHT_BLUE,
+				color = HE_DARK_ORANGE,
+				paramColor = HEColorScheme.HE_LIGHT_ORANGE,
 				useQuotesAroundObjects = false,
 				currentKoth.name
 			)
