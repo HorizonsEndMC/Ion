@@ -30,11 +30,11 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandException
 import org.bukkit.command.CommandSender
@@ -134,14 +134,14 @@ abstract class SLCommand : BaseCommand() {
 		return NPCTerritoryOwner.getName(id)
 	}
 
-	protected fun getSettlementTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
+	protected fun getSettlementTag(id: SLPlayerId, name: String, color: TextColor? = null): String {
 		val tag = PlayerCache.getColoredTag(SettlementRole.getTag(id))?.plus(" ") ?: ""
-		return "$tag$color$name"
+		return if (color == null) "$tag$name" else "$tag<color:${color.asHexString()}>$name"
 	}
 
-	protected fun getNationTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
+	protected fun getNationTag(id: SLPlayerId, name: String, color: TextColor? = null): String {
 		val tag = PlayerCache.getColoredTag(NationRole.getTag(id))?.plus(" ") ?: ""
-		return "$tag$color$name"
+		return if (color == null) "$tag$name" else "$tag<color:${color.asHexString()}>$name"
 	}
 
 	protected fun getRelation(sender: CommandSender, nation: Oid<Nation>): NationRelation.Level = when (sender) {

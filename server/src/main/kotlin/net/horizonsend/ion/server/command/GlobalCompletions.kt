@@ -28,7 +28,17 @@ object GlobalCompletions {
 		manager.commandCompletions.setDefaultCompletion("allPlayers", SLPlayer::class.java)
 
 		manager.commandCompletions.registerAsyncCompletion("anyBlock") { Material.entries.filter { it.isBlock && !it.isLegacy }.map { it.name } }
-		manager.commandCompletions.registerAsyncCompletion("chatChannel") { ChatChannel.entries.map { it.name.lowercase() } }
+		manager.commandCompletions.registerAsyncCompletion("chatChannel") { context ->
+			val hasStaffPermission = context.sender.hasPermission("group.staff")
+
+			ChatChannel.entries.filter { channel ->
+				// Non-staff players do not need to see staff-only channels.
+				when (channel) {
+					ChatChannel.STAFF, ChatChannel.MOD, ChatChannel.ADMIN, ChatChannel.DEV, ChatChannel.ContentDesign -> hasStaffPermission
+					else -> true
+				}
+			}.map { it.name.lowercase() }
+		}
 	}
 
 	fun toItemString(item: ItemStack): String {

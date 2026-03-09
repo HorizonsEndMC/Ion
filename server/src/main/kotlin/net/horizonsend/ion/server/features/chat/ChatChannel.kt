@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatNationName
 import net.horizonsend.ion.common.utils.text.formatSettlementName
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
 import net.horizonsend.ion.common.utils.text.plainText
@@ -398,8 +399,8 @@ enum class ChatChannel(
 				nationsid = settlement,
 				settlementName = formatSettlementName(settlement),
 				nationName = cached.nation?.let { formatNationName(it) }.orEmpty(),
-				nationsRole = LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""),
-				settlementRole = LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.settlementTag ?: ""),
+				nationsRole = (playerData.nationTag ?: "").miniMessage(),
+				settlementRole = (playerData.settlementTag ?: "").miniMessage(),
 				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
 				luckPermsSuffix = player.common().getSuffix(),
@@ -428,8 +429,8 @@ enum class ChatChannel(
 				nationsid = nation,
 				settlementName = formatSettlementName(settlement),
 				nationName = formatNationName(nation),
-				nationsRole = LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""),
-				settlementRole = LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.settlementTag ?: ""),
+				nationsRole = (playerData.nationTag ?: "").miniMessage(),
+				settlementRole = (playerData.settlementTag ?: "").miniMessage(),
 				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
 				luckPermsSuffix = player.common().getSuffix(),
@@ -458,8 +459,8 @@ enum class ChatChannel(
 				nationsid = nation,
 				settlementName = formatSettlementName(settlement),
 				nationName = formatNationName(nation),
-				nationsRole = LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""),
-				settlementRole = LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.settlementTag ?: ""),
+				nationsRole = (playerData.nationTag ?: "").miniMessage(),
+				settlementRole = (playerData.settlementTag ?: "").miniMessage(),
 				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
 				luckPermsSuffix = player.common().getSuffix(),

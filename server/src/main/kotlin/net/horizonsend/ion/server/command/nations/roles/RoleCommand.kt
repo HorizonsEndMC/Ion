@@ -22,10 +22,11 @@ import net.horizonsend.ion.server.features.nations.gui.membersRoleGUI
 import net.horizonsend.ion.server.features.nations.gui.name
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
+import net.horizonsend.ion.server.miscellaneous.utils.colorDB
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.toBukkitColor
+import net.horizonsend.ion.server.miscellaneous.utils.toTextColor
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -84,9 +85,10 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		else -> roleCompanion.getHighestRole(slPlayerId)?.weight ?: -1
 	}
 
-	private fun validateColor(color: SLTextStyle): Unit = when (color) {
-		SLTextStyle.OBFUSCATED -> fail { "${color.name} is not allowed to be used as a role color" }
-		else -> run { }
+	private fun validateColor(red: Int, green: Int, blue: Int) {
+		require(red in 0..255) { "Red value must be 0-255, got $red" }
+		require(green in 0..255) { "Green value must be 0-255, got $green" }
+		require(blue in 0..255) { "Blue value must be 0-255, got $blue" }
 	}
 
 	private fun validateWeight(sender: Player, weight: Int, parent: Oid<Parent>) {
@@ -127,12 +129,14 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 			.sortedByDescending { it.weight }
 			.map { role: T ->
 				val roleName = role.name // store here to avoid keeping role in memory
+				val roleColorDB = role.color
+				val roleColor = roleColorDB.toBukkitColor()
 
 				guiButton(Material.PAPER) {
 					playerClicker.performCommand("$name edit $roleName")
-				}.name(Component.text(role.name, role.color.actualStyle.textColor)).lore(
+				}.name(Component.text(role.name, role.color.toTextColor())).lore(
 					"Weight: ${role.weight}",
-					"Color: ${role.color.actualStyle.name}",
+					"Color: RGB(${roleColor.red}, ${roleColor.green}, ${roleColor.blue})",
 					"Members: ${role.members.size}",
 					"Permissions:",
 					role.permissions.joinToString("\n")
@@ -144,18 +148,18 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		}
 	}
 
-	open fun onCreate(sender: Player, name: String, color: SLTextStyle, weight: Int) = asyncCommand(sender) {
+	open fun onCreate(sender: Player, name: String, red: Int, green: Int, blue: Int, weight: Int) = asyncCommand(sender) {
 		val parent: Oid<Parent> = requireManageableParent(sender)
 
 		failIf(roleCompanion.count(roleCompanion.parentProperty eq parent) >= 27) { "You can only make 27 roles." }
 
 		validateName(parent, name)
-		validateColor(color)
+		validateColor(red, green, blue)
 		validateWeight(sender, weight, parent)
 
-		roleCompanion.create(parent, name, color.name, weight)
+		roleCompanion.create(parent, name, colorDB(red, green, blue), weight)
 
-		sender.success("Created role $name")
+		sender.success("Created role $name with color RGB($red, $green, $blue)")
 	}
 
 	open fun onEdit(sender: Player, role: String) = asyncCommand(sender) {
@@ -163,7 +167,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		val roleData: T = requireManageableRole(sender, parent, role)
 
 		Tasks.sync {
-			editRoleGUI(sender, this.name, roleData.name, roleData.color.actualStyle, roleData.weight)
+			editRoleGUI(sender, this.name, roleData.name, roleData.color, roleData.weight)
 		}
 	}
 
@@ -172,7 +176,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		val roleData: T = requireManageableRole(sender, parent, role)
 
 		Tasks.sync {
-			editRolePermissionGUI(sender, name, roleData.name, roleData.color.actualStyle, roleData.permissions, allPermissions)
+			editRolePermissionGUI(sender, name, roleData.name, roleData.permissions, allPermissions)
 		}
 	}
 
@@ -219,15 +223,18 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		sender.success("Renamed ${roleData.name} to $newName")
 	}
 
-	open fun onEditColor(sender: Player, role: String, newColor: SLTextStyle) = asyncCommand(sender) {
+	open fun onEditColor(sender: Player, role: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
 		val parent: Oid<Parent> = requireManageableParent(sender)
 		val roleData: T = requireManageableRole(sender, parent, role)
 
-		validateColor(newColor)
+		validateColor(red, green, blue)
 
-		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.colorProperty, newColor.name))
+		val oldColor = roleData.color.toBukkitColor()
+		val newColorDB = colorDB(red, green, blue)
 
-		sender.success("Changed color of ${roleData.name} from ${roleData.color.actualStyle.name} to ${newColor.name}")
+		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.colorProperty, newColorDB))
+
+		sender.success("Changed color of ${roleData.name} from RGB(${oldColor.red}, ${oldColor.green}, ${oldColor.blue}) to RGB($red, $green, $blue)")
 	}
 
 	open fun onEditWeight(sender: Player, role: String, newWeight: Int) = asyncCommand(sender) {
@@ -301,7 +308,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), addToSet(roleCompanion.membersProperty, playerId))
 
-		sender.success("Gave role ${roleData.name} to $player")
+		sender.success("Gave role {0} to $player",Component.text(roleData.name, roleData.color.toTextColor()))
 	}
 
 	open fun onMemberRemove(sender: Player, player: String, role: String) = asyncCommand(sender) {
@@ -313,6 +320,6 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		failIf(result.matchedCount <= 0) { "$player doesn't have role ${roleData.name}." }
 
-		sender.success("Took role {0} from $player", Component.text(roleData.name, roleData.color.actualStyle.textColor))
+		sender.success("Took role {0} from $player", Component.text(roleData.name, roleData.color.toTextColor()))
 	}
 }

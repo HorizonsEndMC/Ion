@@ -12,6 +12,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
+import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameSimple
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -25,7 +26,7 @@ import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-fun GuiItem.name(text: String?): GuiItem = apply { if (text != null) item.updateDisplayName(text) }
+fun GuiItem.name(text: String?): GuiItem = apply { if (text != null) item.setDisplayNameSimple(text) }
 fun GuiItem.name(text: Component?): GuiItem = apply { if (text != null) item.updateDisplayName(text) }
 
 fun GuiItem.lore(text: String): GuiItem {
@@ -90,7 +91,7 @@ fun skullItem(uuid: UUID, playerName: String, itemName: Component): ItemStack =
 	}.ensureServerConversions()
 
 fun skullItem(itemName: String, uuid: UUID, skinData: String): ItemStack =
-	item(Material.PLAYER_HEAD).updateDisplayName(itemName).also { item ->
+	item(Material.PLAYER_HEAD).setDisplayNameSimple(itemName).also { item ->
 		val meta = item.itemMeta as SkullMeta
 
 		meta.playerProfile = CraftPlayerProfile(uuid, itemName).apply {
