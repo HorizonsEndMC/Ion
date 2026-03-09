@@ -407,10 +407,8 @@ object FrontierNationCommand : SLCommand() {
 		val currentTerritories = Regions.getAllOf<RegionFrontierTerritory>().filter { it.frontierNation == nationId }
 
 		// only one territory in a space world (besides the capital)
-		failIf((sender.world.hasFlag(WorldFlag.SPACE_WORLD) && currentTerritories.any {
-			!it.isCapital && (it.bukkitWorld?.hasFlag(WorldFlag.SPACE_WORLD) == true)
-		})) {
-			"Nations can only have one outpost in space (besides the capital)"
+		failIf(sender.world.hasFlag(WorldFlag.SPACE_WORLD)) {
+			"Nations cannot have outposts in space (besides the capital)"
 		}
 
 		// only one territory on a planet world
@@ -962,6 +960,7 @@ object FrontierNationCommand : SLCommand() {
 		sender.success("Teleported to your nation's moon territory")
 	}
 
+	/*
 	@Subcommand("warp space")
 	@Description("Warp to your nation's space territory")
 	fun onWarpToSpaceTerritory(sender: Player): Unit = asyncCommand(sender) {
@@ -982,4 +981,5 @@ object FrontierNationCommand : SLCommand() {
 		sender.teleport(Location(spaceTerritory.bukkitWorld, center.first.toDouble(), y.toDouble(), center.second.toDouble()))
 		sender.success("Teleported to your nation's space territory")
 	}
+	 */
 }
