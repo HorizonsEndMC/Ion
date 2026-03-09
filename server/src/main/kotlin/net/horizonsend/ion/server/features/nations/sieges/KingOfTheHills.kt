@@ -231,7 +231,7 @@ object KingOfTheHills : IonServerComponent() {
 		if (killerNation != null && victimNation != null) {
 			IonServer.server.sendMessage(
 				template(
-					"${killer.name} accrued $points points for $verb ${player.name}.",
+					"[KOTH] ${killer.name} accrued $points points for $verb ${player.name}.",
 					color = HE_DARK_ORANGE,
 					paramColor = HEColorScheme.HE_LIGHT_ORANGE,
 					useQuotesAroundObjects = false,
