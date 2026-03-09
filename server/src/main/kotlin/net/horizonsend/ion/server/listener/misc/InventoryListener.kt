@@ -2,26 +2,43 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import org.bukkit.Material
+import org.bukkit.block.BlockType
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.math.min
 
 object InventoryListener : SLEventListener() {
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun contrabandClick(event: InventoryClickEvent) {
 		if (LegacyItemUtils.isContraband(event.currentItem)) {
 			event.isCancelled = true
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun contrabandClick(event: InventoryMoveItemEvent) {
 		if (LegacyItemUtils.isContraband(event.item)) {
 			event.isCancelled = true
 		}
+	}
+
+	// Decorated pots can be extracted from and have items moved into chests.
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun contrabandPotClick(event: PlayerInteractEvent) {
+		if (
+			event.item?.type?.isShulkerBox ?: false &&
+			event.action == Action.RIGHT_CLICK_BLOCK &&
+			event.clickedBlock?.type?.asBlockType() == BlockType.DECORATED_POT
+			) event.isCancelled = true
+
 	}
 
 	/** allow players to put items in furnace fuel slots */
