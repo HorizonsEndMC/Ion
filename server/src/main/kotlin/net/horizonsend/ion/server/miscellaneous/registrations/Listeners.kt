@@ -38,6 +38,7 @@ import net.horizonsend.ion.server.listener.misc.PlayerDeathListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.listener.misc.RecipeModifications
 import net.horizonsend.ion.server.listener.misc.ResourcePackListener
+import net.horizonsend.ion.server.listener.misc.StuckInHyperspaceListener
 import net.horizonsend.ion.server.listener.nations.FriendlyFireListener
 import net.horizonsend.ion.server.listener.nations.MovementListener
 import org.bukkit.event.Listener
@@ -85,6 +86,7 @@ val listeners: List<Listener> = listOf(
 	MultiblockEntities,
 	PrePackaged,
 	AIModuleListener,
+	StuckInHyperspaceListener,
 
 	// Achievement Listeners
 	AchievementListeners(),
