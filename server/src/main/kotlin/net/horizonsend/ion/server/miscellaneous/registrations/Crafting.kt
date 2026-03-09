@@ -674,13 +674,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', GLASS_PANE)
 
 		}
-		shaped("detonator", DETONATOR.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+		/*shaped("detonator", DETONATOR.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" r ", "tut", " t ")
 
 			setIngredient('r', REDSTONE)
 			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 			setIngredient('u', URANIUM.getValue().constructItemStack())
-		}
+		}*/
 		shaped("smokeGrenade", SMOKE_GRENADE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" i ", "tct", " t ")
 
