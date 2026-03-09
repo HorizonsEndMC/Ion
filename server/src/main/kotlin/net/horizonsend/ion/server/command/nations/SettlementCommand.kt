@@ -182,7 +182,7 @@ internal object SettlementCommand : SLCommand() {
 		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.INVITE)
 
 		val raw = Settlement.findPropById(settlementId, Settlement::invites) ?: fail { "That settlement doesn't exist!" }
-		val invitedPlayers = raw.mapTo(mutableListOf()) { getPlayerName(it) }
+		val invitedPlayers = raw.mapTo(mutableListOf()) { getPlayerName(it as SLPlayerId) }
 
 		if (invitedPlayers.isEmpty()) fail { "No players have been invited to your settlement." }
 

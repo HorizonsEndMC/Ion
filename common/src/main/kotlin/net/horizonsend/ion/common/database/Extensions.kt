@@ -19,6 +19,7 @@ import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.*
 import org.litote.kmongo.id.IdTransformer
+import org.litote.kmongo.id.StringId
 import org.litote.kmongo.id.WrappedObjectId
 import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
@@ -134,17 +135,23 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 		}
 	}
 
-	inline operator fun <reified Z, reified R : Collection<Z>> get(path: String): List<Z> {
+	inline operator fun <reified Z, reified R : Collection<Z>> get(path: String): List<StringId<*>> {
 		val unwrapped = get<R>(path) as Collection<Z>
 
-		if (Z::class.isSubclassOf(Id::class) ) {
+		if (Z::class.isSubclassOf(StringId::class) ) {
 			@Suppress("UNCHECKED_CAST")
 			unwrapped as java.util.Collection<String>
 
-			return unwrapped.map { any -> IdTransformer.wrapId(any) as Z }
+			return unwrapped.map { any -> IdTransformer.wrapId(any) as StringId<*> }
+		} else if (Z::class.isSubclassOf(WrappedObjectId::class)) {
+			@Suppress("UNCHECKED_CAST")
+			unwrapped as Collection<Map<String, WrappedObjectId<*>>>
+
+			return unwrapped.map { any -> IdTransformer.wrapId(any.values.first()) as StringId<*> }
 		}
 
-		return unwrapped.toList()
+		@Suppress("UNCHECKED_CAST")
+		return (unwrapped as Collection<StringId<*>>).toList()
 	}
 
 	inline operator fun <reified R> get(path: String): R {
@@ -173,7 +180,7 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 		}
 	}
 
-	inline operator fun <reified Z, reified R : Collection<Z>> get(property: KProperty<R>): List<Z> = get<Z, R>(property.path())
+	inline operator fun <reified Z, reified R : Collection<Z>> get(property: KProperty<R>): List<StringId<*>> = get<Z, R>(property.path())
 	inline operator fun <reified R> get(property: KProperty<R>): R = get<R>(property.path())
 
 	inline fun <reified I, reified R> convertProperty(path: String, convert: (I) -> R): R {

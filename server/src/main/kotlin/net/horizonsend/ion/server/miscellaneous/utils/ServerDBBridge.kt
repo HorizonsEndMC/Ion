@@ -72,7 +72,7 @@ fun Blueprint.Companion.canAccess(player: Player, id: Oid<Blueprint>): Boolean {
 	if (slPlayerId == owner) return true
 	if (trustedPlayers.contains(slPlayerId)) return true
 
-	if (trustedNations.contains(PlayerCache[player].nationOid)) return true
+	if (trustedNations.map { it.id }.contains(PlayerCache[player].nationOid.toString())) return true
 
 	return false
 }
