@@ -1317,7 +1317,7 @@ enum class StarshipType(
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	TESTINGSHIP(
-	displayName = "UnidentifiedShip",
+	displayName = "TestingShip",
 	needsFuel = false,
 	tech2 = false,
 	minSize = 25,
@@ -1326,7 +1326,7 @@ enum class StarshipType(
 	containerPercent = 100.0,
 	concretePercent = 0.0,
 	crateLimitMultiplier = 100.0,
-	menuItemRaw = { ItemStack(Material.MUD_BRICKS) },
+	menuItemRaw = { ItemStack(Material.WITHER_ROSE) },
 	typeCategory = TypeCategory.MISC,
 	color = "#d0e39d",
 	overridePermission = "ion.ships.eventship",
