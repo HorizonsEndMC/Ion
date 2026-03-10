@@ -21,6 +21,8 @@ object VariableRenderDistance: IonServerComponent() {
 			val renderDistance = when {
 				//When dead
 				player.isDead -> 4
+				//When oped or in dutymode
+				(player.isOp || player.hasPermission("group.dutymode")) -> 22
 				//When on planet
 				!player.world.hasFlag(WorldFlag.EXTRA_RENDER_WORLD) -> 7
 				//When in combat but not piloting
