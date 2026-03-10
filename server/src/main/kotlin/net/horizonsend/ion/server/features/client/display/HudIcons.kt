@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -503,6 +504,7 @@ object HudIcons : IonServerComponent() {
 
         val planetList = Space.getAllPlanets().filter { it.spaceWorld == player.world }
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
+		val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
 
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
@@ -785,14 +787,21 @@ object HudIcons : IonServerComponent() {
                 StarshipType.AI_BARGE -> BARGE_ICON
                 else -> STARFIGHTER_ICON
             }
-            val otherNation = starship.playerPilot?.let { PlayerCache[it].frontierNationOid }
+			val fleet = Fleets.findByMember(player)
+			val displayIcon = if (fleet?.lastBroadcast?.contains(starship.identifier.take(maxLength)) == true) {
+				"<< $starshipIcon >>"
+			} else{
+				starshipIcon.toString()
+			}
+
+			val otherNation = starship.playerPilot?.let { PlayerCache[it].frontierNationOid }
             val color = if (otherNation != null && otherNation == PlayerCache[player].frontierNationOid) NamedTextColor.GREEN
             else if (otherNation != null && otherNation != PlayerCache[player].frontierNationOid) NamedTextColor.RED
             else NamedTextColor.GRAY
 
                 player.sendText(
                     location = finalPosition,
-                    text = ofChildren(leftShift(5), text(starshipIcon, color).font(SPECIAL_FONT_KEY)),
+                    text = ofChildren(leftShift(5), text(displayIcon, color).font(SPECIAL_FONT_KEY)),
                     durationTicks = UPDATE_RATE + 1,
                     scale = (5f * hudIconSize).toFloat(),
                     backgroundColor = Color.fromARGB(0x00000000),
