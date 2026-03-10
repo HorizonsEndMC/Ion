@@ -864,8 +864,8 @@ object FrontierNationCommand : SLCommand() {
 	@Description("List available and active buffs for your nation")
 	fun onListBuffs(sender: Player): Unit = asyncCommand(sender) {
 		val frontierNationId = requireFrontierNationIn(sender)
-		val activeBuffs = FrontierNation.getActivatedBuffs(frontierNationId) ?: fail { "Could not get active buffs" }
-		val availableBuffs = FrontierNation.getAvailableBuffs(frontierNationId) ?: fail { "Could not get available buffs" }
+		val activeBuffs = FrontierNationCache[frontierNationId].activatedBuffs
+		val availableBuffs = FrontierNationCache[frontierNationId].availableBuffs
 
 		val activeBuffsString = if (!activeBuffs.isEmpty()) activeBuffs.joinToString { it } else "None"
 		val availableBuffsString = if (!availableBuffs.isEmpty()) availableBuffs.joinToString { it } else "None"
@@ -882,10 +882,10 @@ object FrontierNationCommand : SLCommand() {
 		val frontierNationId = requireFrontierNationIn(sender)
 		requireFrontierNationLeader(sender, frontierNationId)
 
-		val activeBuffs = FrontierNation.getActivatedBuffs(frontierNationId) ?: fail { "Could not get active buffs" }
+		val activeBuffs = FrontierNationCache[frontierNationId].activatedBuffs
 		if (activeBuffs.size >= MAX_ACTIVE_BUFFS) fail { "Your nation can only have $MAX_ACTIVE_BUFFS buffs active at a time" }
 
-		val availableBuffs = FrontierNation.getAvailableBuffs(frontierNationId) ?: fail { "Could not get available buffs" }
+		val availableBuffs = FrontierNationCache[frontierNationId].availableBuffs
 		if (!availableBuffs.contains(buff.key.key)) fail { "The buff ${buff.key.key} is not available for your nation" }
 
 		val nationName = getFrontierNationName(frontierNationId)
@@ -902,7 +902,7 @@ object FrontierNationCommand : SLCommand() {
 		val frontierNationId = requireFrontierNationIn(sender)
 		requireFrontierNationLeader(sender, frontierNationId)
 
-		val activeBuffs = FrontierNation.getActivatedBuffs(frontierNationId) ?: fail { "Could not get active buffs" }
+		val activeBuffs = FrontierNationCache[frontierNationId].activatedBuffs
 		if (activeBuffs.isEmpty()) fail { "Your nation does not have any buffs active" }
 		if (!activeBuffs.contains(buff.key.key)) fail { "The buff ${buff.key.key} is not currently active" }
 

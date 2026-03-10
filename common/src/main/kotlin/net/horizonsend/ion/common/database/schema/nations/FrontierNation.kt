@@ -135,10 +135,6 @@ data class FrontierNation(
 			updateById(sess, frontierNationId, setValue(FrontierNation::leader, slPlayerId))
 		}
 
-		fun getAvailableBuffs(frontierNationId: Oid<FrontierNation>): Set<String>? = trx { _ ->
-            return@trx findPropById(frontierNationId, FrontierNation::availableBuffs)?.toSet()
-		}
-
 		fun addAvailableBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
 			updateById(sess, frontierNationId, addToSet(FrontierNation::availableBuffs, buffKey))
 		}
@@ -149,10 +145,6 @@ data class FrontierNation(
 
 		fun removeAllAvailableBuffs(frontierNationId: Oid<FrontierNation>) = trx { sess ->
 			updateById(sess, frontierNationId, setValue(FrontierNation::availableBuffs, mutableSetOf()))
-		}
-
-		fun getActivatedBuffs(frontierNationId: Oid<FrontierNation>): Set<String>? = trx { _ ->
-			return@trx findPropById(frontierNationId, FrontierNation::activatedBuffs)?.toSet()
 		}
 
 		fun addActivatedBuff(frontierNationId: Oid<FrontierNation>, buffKey: String) = trx { sess ->
