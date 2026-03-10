@@ -1446,6 +1446,33 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 0.0,
 		),
+		val testing: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 10,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 2000,
+			jumpStrength = 5.0,
+			weaponOverrides = listOf(
+				QuadTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true)
+				),
+				ACAPTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true)
+				),
+				ThermonuclearMissileBalancing(
+					fireRestrictions = FireRestrictions(canFire = true)
+				),
+				DoomsdayDeviceBalancing(
+					fireRestrictions = FireRestrictions(canFire = true),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(5)
+				),
+				NeutralizerBalancing(
+					fireRestrictions = FireRestrictions(canFire = true)
+				)
+			),
+			wellStrength = 5.0,
+			hyperspaceRangeMultiplier = 10.0,
+			shieldPowerMultiplier = 2.0
+		),
 		val unidentified: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
