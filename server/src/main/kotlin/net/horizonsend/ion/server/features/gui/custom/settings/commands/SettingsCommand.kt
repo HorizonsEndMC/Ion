@@ -299,6 +299,17 @@ object SettingsCommand : SLCommand() {
         handleBooleanToggleSetting(sender, PlayerSettings::hudPlanetsSelector, enabled)
     }
 
+    @CommandAlias("grahpics hudicon iconsize")
+    @CommandCompletion("1|10")
+    fun onSettingsGraphicsHudIconIconSize(sender: Player, value: Int) = asyncCommand(sender) {
+        handleIntegerInputSetting(sender, PlayerSettings::hudIconSize, value, 1, 10)
+    }
+
+    @CommandAlias("graphics hudicon togglestarshipvisibility")
+    fun onSettingsGraphicsHudIconToggleStarshipVisibility(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
+        handleBooleanToggleSetting(sender, PlayerSettings::hudIconStarships, enabled)
+    }
+
     @CommandAlias("graphics hudicon toggleplanetvisibility")
     @CommandCompletion("true|false")
     fun onSettingsGraphicsHudIconTogglePlanetVisibility(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {

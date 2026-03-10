@@ -538,6 +538,8 @@ object HudIcons : IonServerComponent() {
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
         val hudSelectorEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsSelector)
+        val hudIconSize = (player.getSettingOrThrow(PlayerSettings::hudIconSize) / 5.0)
+        val hudStarshipsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStarships)
         val hudPlanetsEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsImage)
         val hudStarsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStars)
         val hudBeaconsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBeacons)
@@ -743,82 +745,90 @@ object HudIcons : IonServerComponent() {
             deleteSelectorTextEntity(player)
         }
 
-        val starshipList = ActiveStarships.getInWorld(player.world).filter { starship -> starship.playerPilot != player && !starship.onlinePassengers.contains(player) }
+        if (hudStarshipsEnabled) {
+            val starshipList = ActiveStarships.getInWorld(player.world)
+                .filter { starship -> starship.playerPilot != player && !starship.onlinePassengers.contains(player) }
 
-        val playerPosition = player.eyeLocation.toVector()
-        val starshipWithLowestAngle = starshipList.minByOrNull { starship -> starship.centerOfMass.toCenterVector()
-            .subtract(playerPosition).normalize()
-            .angle(player.location.direction)
-        }
-        val angle = starshipWithLowestAngle?.centerOfMass?.toCenterVector()
-            ?.subtract(playerPosition)?.normalize()
-            ?.angle(player.location.direction)
-
-        for (starship in starshipList) {
-            if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
-            val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
-            if (distance > 1000) continue
-            val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
-
-            // calculate position and offset
-            val offset = direction.clone().normalize().multiply(min(distance, 32.0))
-            val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
-            val starshipIcon = when (starship.type) {
-                StarshipType.STARFIGHTER -> STARFIGHTER_ICON
-                StarshipType.GUNSHIP -> GUNSHIP_ICON
-                StarshipType.CORVETTE -> CORVETTE_ICON
-                StarshipType.FRIGATE -> FRIGATE_ICON
-                StarshipType.DESTROYER -> DESTROYER_ICON
-                StarshipType.CRUISER -> CRUISER_ICON
-                StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
-                StarshipType.SHUTTLE -> SHUTTLE_ICON
-                StarshipType.TRANSPORT -> TRANSPORT_ICON
-                StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
-                StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
-                StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
-                StarshipType.BARGE -> BARGE_ICON
-                StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
-                StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
-                StarshipType.AI_CORVETTE -> CORVETTE_ICON
-                StarshipType.AI_FRIGATE -> FRIGATE_ICON
-                StarshipType.AI_DESTROYER -> DESTROYER_ICON
-                StarshipType.AI_CRUISER -> CRUISER_ICON
-                StarshipType.AI_BATTLECRUISER -> BATTLECRUISER_ICON
-                StarshipType.AI_SHUTTLE -> SHUTTLE_ICON
-                StarshipType.AI_TRANSPORT -> TRANSPORT_ICON
-                StarshipType.AI_LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
-                StarshipType.AI_MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
-                StarshipType.AI_HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
-                StarshipType.AI_BARGE -> BARGE_ICON
-                else -> STARFIGHTER_ICON
+            val playerPosition = player.eyeLocation.toVector()
+            val starshipWithLowestAngle = starshipList.minByOrNull { starship ->
+                starship.centerOfMass.toCenterVector()
+                    .subtract(playerPosition).normalize()
+                    .angle(player.location.direction)
             }
-            val color = ContactsSidebar.playerRelationColor(player, starship.controller, false)
+            val angle = starshipWithLowestAngle?.centerOfMass?.toCenterVector()
+                ?.subtract(playerPosition)?.normalize()
+                ?.angle(player.location.direction)
 
-            player.sendText(
-                location = finalPosition,
-                text = ofChildren(leftShift(5), text(starshipIcon, color).font(SPECIAL_FONT_KEY)),
-                durationTicks = UPDATE_RATE + 1,
-                scale = 5f,
-                backgroundColor = Color.fromARGB(0x00000000),
-                defaultBackground = false,
-                seeThrough = true,
-                highlight = true,
-            )
+            for (starship in starshipList) {
+                if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
+                val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
+                if (distance > 1000) continue
+                val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
 
-            val distanceText = if (starshipWithLowestAngle == starship && angle != null && angle < SELECTOR_ANGLE_THRESHOLD * 2) {
-                ofChildren(text(starship.identifier, color), text(" ${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt())))
-            } else text("${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt()))
+                // calculate position and offset
+                val offset = direction.clone().normalize().multiply(min(distance, 32.0))
+                val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
+                val starshipIcon = when (starship.type) {
+                    StarshipType.STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.CORVETTE -> CORVETTE_ICON
+                    StarshipType.FRIGATE -> FRIGATE_ICON
+                    StarshipType.DESTROYER -> DESTROYER_ICON
+                    StarshipType.CRUISER -> CRUISER_ICON
+                    StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
+                    StarshipType.SHUTTLE -> SHUTTLE_ICON
+                    StarshipType.TRANSPORT -> TRANSPORT_ICON
+                    StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+                    StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
+                    StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
+                    StarshipType.BARGE -> BARGE_ICON
+                    StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.AI_CORVETTE -> CORVETTE_ICON
+                    StarshipType.AI_FRIGATE -> FRIGATE_ICON
+                    StarshipType.AI_DESTROYER -> DESTROYER_ICON
+                    StarshipType.AI_CRUISER -> CRUISER_ICON
+                    StarshipType.AI_BATTLECRUISER -> BATTLECRUISER_ICON
+                    StarshipType.AI_SHUTTLE -> SHUTTLE_ICON
+                    StarshipType.AI_TRANSPORT -> TRANSPORT_ICON
+                    StarshipType.AI_LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+                    StarshipType.AI_MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
+                    StarshipType.AI_HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
+                    StarshipType.AI_BARGE -> BARGE_ICON
+                    else -> STARFIGHTER_ICON
+                }
+                val color = ContactsSidebar.playerRelationColor(player, starship.controller, false)
 
-            player.sendText(
-                location = finalPosition.clone().subtract(0.0, 2.0, 0.0),
-                text = distanceText,
-                durationTicks = UPDATE_RATE + 1,
-                scale = 3f,
-                backgroundColor = Color.fromARGB(0x00000000),
-                defaultBackground = false,
-                seeThrough = true,
-                highlight = true,
-            )
+                player.sendText(
+                    location = finalPosition,
+                    text = ofChildren(leftShift(5), text(starshipIcon, color).font(SPECIAL_FONT_KEY)),
+                    durationTicks = UPDATE_RATE + 1,
+                    scale = (5f * hudIconSize).toFloat(),
+                    backgroundColor = Color.fromARGB(0x00000000),
+                    defaultBackground = false,
+                    seeThrough = true,
+                    highlight = true,
+                )
+
+                val distanceText =
+                    if (starshipWithLowestAngle == starship && angle != null && angle < SELECTOR_ANGLE_THRESHOLD * 2) {
+                        ofChildren(
+                            text(starship.identifier, color),
+                            text(" ${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt()))
+                        )
+                    } else text("${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt()))
+
+                player.sendText(
+                    location = finalPosition.clone().subtract(0.0, 2.0, 0.0),
+                    text = distanceText,
+                    durationTicks = UPDATE_RATE + 1,
+                    scale = (3f * hudIconSize).toFloat(),
+                    backgroundColor = Color.fromARGB(0x00000000),
+                    defaultBackground = false,
+                    seeThrough = true,
+                    highlight = true,
+                )
+            }
         }
     }
 

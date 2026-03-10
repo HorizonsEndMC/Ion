@@ -85,6 +85,8 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Graphics Settings",
 			createSettingsPage(player, "HUD Icon Settings",
 				DBCachedBooleanToggle(text("Toggle Planet Selector"), "", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::hudPlanetsSelector),
+				DBCachedIntegerInput(1, 10, text("Icon Size"), "", GuiItem.LIST, 5, PlayerSettings::hudIconSize),
+				DBCachedBooleanToggle(text("Toggle Starship Visibility"), "", GuiItem.GUNSHIP, false, PlayerSettings::hudIconStarships),
 				DBCachedBooleanToggle(text("Toggle Planet Visibility"), "", GuiItem.PLANET, true, PlayerSettings::hudPlanetsImage),
 				DBCachedBooleanToggle(text("Toggle Star Visibility"), "", GuiItem.STAR, true, PlayerSettings::hudIconStars),
 				DBCachedBooleanToggle(text("Toggle Beacon Visibility"), "", GuiItem.BEACON, true, PlayerSettings::hudIconBeacons),
