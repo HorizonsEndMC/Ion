@@ -6,14 +6,20 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation.Companion.getMembers
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.database.schema.nations.KothType
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatFrontierNationName
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -57,6 +63,7 @@ import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -75,6 +82,8 @@ object KingOfTheHills : IonServerComponent() {
 		val type: KothType,
 		val timeLimit: Long
 	)
+
+	data class RewardItem(val name: String, val quantity: Int)
 
 	private val activeKoths = mutableListOf<Koths>()
 	private val activatingKoths = mutableMapOf<RegionKothZone, Long>()
@@ -389,9 +398,11 @@ object KingOfTheHills : IonServerComponent() {
 		val buffRewards = WeightedRandomList<ItemStack>().apply {
 			for (buff in buffs) addEntry(buff.item, buff.chance)
 		}
-		val pvpRewards = WeightedRandomList<ItemStack>().apply {
-			for (pvp in pvps) addEntry(pvp.item, pvp.chance)
-		}
+		val pvpRewards = if (pvps.isNotEmpty()) {
+			WeightedRandomList<ItemStack>().apply {
+				for (pvp in pvps) addEntry(pvp.item, pvp.chance)
+			}
+		} else null
 
 		fun getOreQuantity(item: ItemStack): Int {
 			val quantity = ores.find { it.item == item }?.amount ?: 1..1
@@ -401,99 +412,327 @@ object KingOfTheHills : IonServerComponent() {
 			val quantity = cores.find { it.item == item }?.amount ?: 1..1
 			return safeRandomInt(quantity.first, quantity.last)
 		}
-
 		fun getBuffQuantity(item: ItemStack): Int {
 			val quantity = buffs.find { it.item == item }?.amount ?: 1..1
 			return safeRandomInt(quantity.first, quantity.last)
 		}
-
 		fun getPvpQuantity(item: ItemStack): Int {
-			val quantity = 	pvps.find { it.item == item}?.amount ?: 1..1
+			val quantity = pvps.find { it.item == item}?.amount ?: 1..1
 			return safeRandomInt(quantity.first, quantity.last)
 		}
 
-		fun givePvpRewards(nation: Oid<FrontierNation>, count: Int) {
-			if (pvpRewards.isEmpty()) return
-			repeat(count) {
-				val item = pvpRewards.random()
-				BankedItem.create(nation, GlobalCompletions.toItemString(item), getPvpQuantity(item))
-			}
-		}
 
 		val kothBlock = KOTH_BLOCK.getValue().constructItemStack()
 		val kothBlockItemString = GlobalCompletions.toItemString(kothBlock)
-		val kothBlockQuantity = kothBlocks[0].amount
+		val kothBlockQuantity = kothBlocks.firstOrNull()?.amount ?: (1..1)
+
+		fun createRewardBreakdown(
+			points: Int,
+			oreItems: List<RewardItem>,
+			coreItems: List<RewardItem>,
+			kothBlockCount: Int,
+			buffItems: List<RewardItem>,
+			pvpItems: List<RewardItem>
+		): Component {
+			val breakdown = mutableListOf<Component>()
+
+			breakdown.add(
+				template(
+					message = text("Points: {0}\n", HE_LIGHT_ORANGE),
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = false,
+					points
+				)
+			)
+
+			if (oreItems.isNotEmpty()) {
+				breakdown.add(text("Ores:\n", HE_LIGHT_BLUE))
+				oreItems.forEach { item ->
+					breakdown.add(
+						template(
+							message = text("  - {0} x{1}\n", HE_MEDIUM_GRAY),
+							paramColor = HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							item.name,
+							item.quantity
+						)
+					)
+				}
+			}
+
+			if (coreItems.isNotEmpty()) {
+				breakdown.add(text("Cores:\n", HE_LIGHT_BLUE))
+				coreItems.forEach { item ->
+					breakdown.add(
+						template(
+							message = text("  - {0} x{1}\n", HE_MEDIUM_GRAY),
+							paramColor = HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							item.name,
+							item.quantity
+						)
+					)
+				}
+			}
+
+			if (kothBlockCount > 0) {
+				breakdown.add(
+					template(
+						message = text("KOTH Blocks: {0}\n", HE_LIGHT_BLUE),
+						paramColor = HE_LIGHT_GRAY,
+						useQuotesAroundObjects = false,
+						kothBlockCount
+					)
+				)
+			}
+
+			if (buffItems.isNotEmpty()) {
+				breakdown.add(text("Buffs:\n", HE_LIGHT_BLUE))
+				buffItems.forEach { item ->
+					breakdown.add(
+						template(
+							message = text("  - {0} x{1}\n", HE_MEDIUM_GRAY),
+							paramColor = HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							item.name,
+							item.quantity
+						)
+					)
+				}
+			}
+
+			if (pvpItems.isNotEmpty()) {
+				breakdown.add(text("PVP Items:\n", HE_LIGHT_BLUE))
+				pvpItems.forEach { item ->
+					breakdown.add(
+						template(
+							message = text("  - {0} x{1}", HE_MEDIUM_GRAY),
+							paramColor = HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							item.name,
+							item.quantity
+						)
+					)
+				}
+			}
+
+			return ofChildren(*breakdown.toTypedArray())
+		}
 
 		// FIRST PLACE
 		val firstPlaceName = topThree[0] ?: return@asyncLocked
 		val firstPlaceNation = FrontierNationCache.getByName(firstPlaceName) ?: return@asyncLocked
 
-		FrontierNation.updatePoints(firstPlaceNation, (pointsToGive[0] * pointsMultiplier).toInt())
+		val firstPlacePoints = (pointsToGive[0] * pointsMultiplier).toInt()
+		FrontierNation.updatePoints(firstPlaceNation, firstPlacePoints)
 
-		repeat(3) {
-			val item = oreRewards.random()
-			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), getOreQuantity(item))
+		val firstOres = mutableListOf<RewardItem>()
+		if (ores.isNotEmpty()) {
+			repeat(3) {
+				val item = oreRewards.random()
+				val quantity = getOreQuantity(item)
+				firstOres.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
 		}
-		repeat(6) {
-			val item = coreRewards.random()
-			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), getCoreQuantity(item))
-		}
-		repeat(3) {
-			BankedItem.create(firstPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last)) //!!!
-		}
-		repeat(2) {
-			val item = buffRewards.random()
-			BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), getBuffQuantity(item))
-		}
-		if (pvps.isNotEmpty()) givePvpRewards(firstPlaceNation, 10)
 
+		val firstCores = mutableListOf<RewardItem>()
+		if (cores.isNotEmpty()) {
+			repeat(6) {
+				val item = coreRewards.random()
+				val quantity = getCoreQuantity(item)
+				firstCores.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+		var firstKothBlockTotal = 0
+		if (kothBlocks.isNotEmpty()) {
+			repeat(3) {
+				val quantity = randomInt(kothBlockQuantity.first, kothBlockQuantity.last)
+				firstKothBlockTotal += quantity
+				BankedItem.create(firstPlaceNation, kothBlockItemString, quantity)
+			}
+		}
+
+		val firstBuffs = mutableListOf<RewardItem>()
+		if (buffs.isNotEmpty()) {
+			repeat(2) {
+				val item = buffRewards.random()
+				val quantity = getBuffQuantity(item)
+				firstBuffs.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+
+		val firstPvps = mutableListOf<RewardItem>()
+		if (pvpRewards != null) {
+			repeat(10) {
+				val item = pvpRewards.random()
+				val quantity = getPvpQuantity(item)
+				firstPvps.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(firstPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+
+		val firstBreakdown = createRewardBreakdown(firstPlacePoints, firstOres, firstCores, firstKothBlockTotal, firstBuffs, firstPvps)
+		val firstDetailsText = text("[Details]", HE_LIGHT_BLUE).hoverEvent(firstBreakdown)
+
+		val firstMessage = template(
+			message = text("Your nation placed {0} and received rewards! {1}", HE_LIGHT_GRAY),
+			paramColor = TextColor.fromHexString("#D4AF37"),
+			useQuotesAroundObjects = false,
+			"1st",
+			firstDetailsText
+		)
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (PlayerCache[player].frontierNationOid == firstPlaceNation) {
+				player.sendMessage { firstMessage }
+			}
+		}
 
 		// SECOND PLACE
 		val secondPlaceName = topThree[1] ?: return@asyncLocked
 		val secondPlaceNation = FrontierNationCache.getByName(secondPlaceName) ?: return@asyncLocked
 
-		FrontierNation.updatePoints(secondPlaceNation, (pointsToGive[1] * pointsMultiplier).toInt())
+		val secondPlacePoints = (pointsToGive[1] * pointsMultiplier).toInt()
+		FrontierNation.updatePoints(secondPlaceNation, secondPlacePoints)
 
-		repeat(2) {
-			val item = oreRewards.random()
-			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), getOreQuantity(item))
+		val secondOres = mutableListOf<RewardItem>()
+		if (ores.isNotEmpty()) {
+			repeat(2) {
+				val item = oreRewards.random()
+				val quantity = getOreQuantity(item)
+				secondOres.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
 		}
-		repeat(4) {
-			val item = coreRewards.random()
-			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), getCoreQuantity(item))
-		}
-		repeat(2) {
-			BankedItem.create(secondPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
-		}
-		repeat(2) {
-			val item = buffRewards.random()
-			BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), getBuffQuantity(item))
-		}
-		if (pvps.isNotEmpty()) givePvpRewards(secondPlaceNation, 6)
 
+		val secondCores = mutableListOf<RewardItem>()
+		if (cores.isNotEmpty()) {
+			repeat(4) {
+				val item = coreRewards.random()
+				val quantity = getCoreQuantity(item)
+				secondCores.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+
+		var secondKothBlockTotal = 0
+		if (kothBlocks.isNotEmpty()) {
+			repeat(2) {
+				val quantity = randomInt(kothBlockQuantity.first, kothBlockQuantity.last)
+				secondKothBlockTotal += quantity
+				BankedItem.create(secondPlaceNation, kothBlockItemString, quantity)
+			}
+		}
+
+		val secondBuffs = mutableListOf<RewardItem>()
+		if (buffs.isNotEmpty()) {
+			repeat(2) {
+				val item = buffRewards.random()
+				val quantity = getBuffQuantity(item)
+				secondBuffs.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+
+		val secondPvps = mutableListOf<RewardItem>()
+		if (pvpRewards != null) {
+			repeat(6) {
+				val item = pvpRewards.random()
+				val quantity = getPvpQuantity(item)
+				secondPvps.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(secondPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+
+		val secondBreakdown = createRewardBreakdown(secondPlacePoints, secondOres, secondCores, secondKothBlockTotal, secondBuffs, secondPvps)
+		val secondDetailsText = text("[Details]", HE_LIGHT_BLUE).hoverEvent(secondBreakdown)
+
+		val secondMessage = template(
+			message = text("Your nation placed {0} and received rewards! {1}", HE_LIGHT_GRAY),
+			paramColor = TextColor.fromHexString("#C0C0C0"),
+			useQuotesAroundObjects = false,
+			"2nd",
+			secondDetailsText
+		)
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (PlayerCache[player].frontierNationOid == secondPlaceNation) {
+				player.sendMessage { secondMessage }
+			}
+		}
 
 		// THIRD PLACE
 		val thirdPlaceName = topThree[2] ?: return@asyncLocked
 		val thirdPlaceNation = FrontierNationCache.getByName(thirdPlaceName) ?: return@asyncLocked
 
-		FrontierNation.updatePoints(thirdPlaceNation, (pointsToGive[2] * pointsMultiplier).toInt())
+		val thirdPlacePoints = (pointsToGive[2] * pointsMultiplier).toInt()
+		FrontierNation.updatePoints(thirdPlaceNation, thirdPlacePoints)
 
-		repeat(1) {
-			val item = oreRewards.random()
-			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), getOreQuantity(item))
+		val thirdOres = mutableListOf<RewardItem>()
+		if (ores.isNotEmpty()) {
+			repeat(1) {
+				val item = oreRewards.random()
+				val quantity = getOreQuantity(item)
+				thirdOres.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
 		}
-		repeat(2) {
-			val item = coreRewards.random()
-			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), getCoreQuantity(item))
+
+		val thirdCores = mutableListOf<RewardItem>()
+		if (cores.isNotEmpty()) {
+			repeat(2) {
+				val item = coreRewards.random()
+				val quantity = getCoreQuantity(item)
+				thirdCores.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
 		}
-		repeat(1) {
-			BankedItem.create(thirdPlaceNation, kothBlockItemString, randomInt(kothBlockQuantity.first, kothBlockQuantity.last))
+
+		var thirdKothBlockTotal = 0
+		if (kothBlocks.isNotEmpty()) {
+			repeat(1) {
+				val quantity = randomInt(kothBlockQuantity.first, kothBlockQuantity.last)
+				thirdKothBlockTotal += quantity
+				BankedItem.create(thirdPlaceNation, kothBlockItemString, quantity)
+			}
 		}
-		repeat(1) {
-			val item = buffRewards.random()
-			BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), getBuffQuantity(item))
+
+		val thirdBuffs = mutableListOf<RewardItem>()
+		if (buffs.isNotEmpty()) {
+			repeat(1) {
+				val item = buffRewards.random()
+				val quantity = getBuffQuantity(item)
+				thirdBuffs.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
 		}
-		if (pvps.isNotEmpty()) givePvpRewards(thirdPlaceNation, 4)
+
+		val thirdPvps = mutableListOf<RewardItem>()
+		if (pvpRewards != null) {
+			repeat(4) {
+				val item = pvpRewards.random()
+				val quantity = getPvpQuantity(item)
+				thirdPvps.add(RewardItem(item.type.name, quantity))
+				BankedItem.create(thirdPlaceNation, GlobalCompletions.toItemString(item), quantity)
+			}
+		}
+
+		val thirdBreakdown = createRewardBreakdown(thirdPlacePoints, thirdOres, thirdCores, thirdKothBlockTotal, thirdBuffs, thirdPvps)
+		val thirdDetailsText = text("[Details]", HE_LIGHT_BLUE).hoverEvent(thirdBreakdown)
+
+		val thirdMessage = template(
+			message = text("Your nation placed {0} and received rewards! {1}", HE_LIGHT_GRAY),
+			paramColor = TextColor.fromHexString("#CD7F32"),
+			useQuotesAroundObjects = false,
+			"3rd",
+			thirdDetailsText
+		)
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (PlayerCache[player].frontierNationOid == thirdPlaceNation) {
+				player.sendMessage { thirdMessage }
+			}
+		}
 	}
 
 	//Starts a 15 minute activating timer before starting
