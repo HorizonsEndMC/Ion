@@ -278,7 +278,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "👁")
 			.addDifficultySuffix(3, "👁👁")
-			.addDifficultySuffix(4, "\uD83C\uDF00")
+			.addDifficultySuffix(4, "👁👁👁")
 			.build()
 
 		val 吃饭人 = builder("吃饭人", 吃饭人_STANDARD.value())
@@ -368,7 +368,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "🥖")
 			.addDifficultySuffix(3, "🥖🥖")
-			.addDifficultySuffix(4, "\uD83E\uDD50")
+			.addDifficultySuffix(4, "🥖🥖🥖")
 			.build()
 
 		val miningGuildMini = "<$MINING_CORP_LIGHT_ORANGE>Mining <$MINING_CORP_DARK_ORANGE>Guild"
@@ -387,7 +387,16 @@ class AIFaction private constructor(
 				text("Intern Rik Rihre", MINING_CORP_LIGHT_ORANGE),
 				text("Intern Alanury Addar", MINING_CORP_LIGHT_ORANGE),
 				text("Intern Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
-				text("Intern Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+				text("Apprentice Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Apprentice Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 			)
 			.addNames(
 				1,
@@ -401,10 +410,42 @@ class AIFaction private constructor(
 				text("Employee Rik Rihre", MINING_CORP_LIGHT_ORANGE),
 				text("Employee Alanury Addar", MINING_CORP_LIGHT_ORANGE),
 				text("Employee Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
-				text("Employee Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+				text("Worker Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Worker Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 			)
 			.addNames(
 				2,
+				text("Overseer Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Overseer Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Supervisor Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
+			)
+			.addNames(
+				3,
 				text("Manager Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Alpi Artion", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
@@ -415,21 +456,16 @@ class AIFaction private constructor(
 				text("Manager Rik Rihre", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Alanury Addar", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
-				text("Manager Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
-			)
-			.addNames(
-				3,
-				text("Director Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
-				text("Director Alpi Artion", MINING_CORP_LIGHT_ORANGE),
-				text("Director Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
-				text("Director Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
-				text("Director Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
-				text("Director Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
-				text("Director Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
-				text("Director Rik Rihre", MINING_CORP_LIGHT_ORANGE),
-				text("Director Alanury Addar", MINING_CORP_LIGHT_ORANGE),
-				text("Director Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
-				text("Director Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+				text("Boss Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Boss Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 			)
 			.addNames(
 				4,
@@ -443,72 +479,81 @@ class AIFaction private constructor(
 				text("Executive Rik Rihre", MINING_CORP_LIGHT_ORANGE),
 				text("Executive Alanury Addar", MINING_CORP_LIGHT_ORANGE),
 				text("Executive Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
-				text("Executive Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+				text("Director Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Director Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Director Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Director Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Director Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Director Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Director Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Director Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Director Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Director Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 			)
 			.addFleeMessages(
-				"Hey you! yes you! put out that fire! <#FFA500>Before we get blown up" to true,
-				"<#FFA500>If we die here we will get our pay cut so move it!" to true,
-				"<#FFA500>Engine patched, reengaging!" to false,
-				"Lets try this again" to false,
+				"Damage control, get rid of that fire!" to true,
+				"If we die your family won't get your pension!" to true,
+				"Engine patched, reengaging!" to false,
+				"Shields better work this time." to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Unregistered vessel detected near Guild claim."),
 				"warn" to (0.5 to "<#FFA500>Warning: You are trespassing on Mining Guild property.")
 			)
-			.addAggroMessage("aggro" to "<red>Defense protocols active. You will be removed.")
+			.addAggroMessage("aggro" to "<red>Defense protocols active. You will be removed, one way or another.")
 			.addFriendlyFireMessages(
-				"suspect" to "<gray>Watch where your aiming! We have expensive equipment.",
-				"warn_friendly" to "<#FFA500>Manager is gonna tear me a new one if you keep this up.",
-				"betrayal" to "<red>That's it! For the trouble im selling your ship for scrap!"
+				"suspect" to "<gray>Watch where you're aiming! Our gear is worth more than you think.",
+				"warn_friendly" to "<#FFA500>You better watch yourself, before I put some holes in your hull.",
+				"betrayal" to "<red>That's it! Your wreck will do nicely to pay for repairs!"
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "⛏")
 			.addDifficultySuffix(3, "⛏⛏")
-			.addDifficultySuffix(4, "\uD83D\uDCB0")
+			.addDifficultySuffix(4, "⛏⛏⛏")
 			.build()
 
 		val PERSEUS_EXPLORERS = builder("PERSEUS_EXPLORERS", EXPLORER_LIGHT_CYAN.value())
 			.setMessagePrefix("<$EXPLORER_LIGHT_CYAN>Receiving transmission from civilian vessel")
 			.addNames(
 				0,
-				"<$EXPLORER_LIGHT_CYAN>Rookie <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Newbie <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Novice <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>New Explorer".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Rookie Captain".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Newbie Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Novice Explorer".miniMessage(),
 			)
 			.addNames(
 				1,
-				"<$EXPLORER_LIGHT_CYAN>Regular <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Trained <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Seasoned Explorer".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Regular Captain".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Regular Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Trained Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Regular Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Trained Explorer".miniMessage(),
 			)
 			.addNames(
 				2,
-				"<$EXPLORER_LIGHT_CYAN>Veteran <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Keen <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Master Explorer".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Veteran Captain".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Experienced Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Scout Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Experienced Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Scout Explorer".miniMessage(),
 			)
 			.addNames(
 				3,
-				"<$EXPLORER_LIGHT_CYAN>Senior Veteran <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Eagle Eye <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Epic Explorer".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Senior Veteran Captain".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Seasoned Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Hardened Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Seasoned Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Hardened Explorer".miniMessage(),
 			)
 			.addNames(
 				4,
-				"<$EXPLORER_LIGHT_CYAN>Legendary <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Super Eye <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Trailblazer".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Ultimate Veteran Captain".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Eagle Eye Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Master Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Eagle Eye Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Master Explorer".miniMessage(),
 			)
 			.addFriendlyFireMessages(
-				"suspect" to "<gray>You okay buddy?",
-				"warn" to "<#FFA500>Hey stop that",
-				"betrayal" to "<red>Dammit, I knew I shouldn't have trusted you "
+				"suspect" to "<gray>You doing good?",
+				"warn" to "<#FFA500>Hey, stop that",
+				"betrayal" to "<red>Dammit, I knew I shouldn't have trusted you"
 			)
 			.addSmackMessages(
 				"<white>Please no, I've done nothing wrong!",
@@ -527,46 +572,207 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "🪶")
 			.addDifficultySuffix(3, "🪶🪶")
-			.addDifficultySuffix(4, "🌍")
+			.addDifficultySuffix(4, "🪶🪶🪶")
 			.build()
 
-		val privateerMini = "<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL> Forces"
+		val privateerMini = "<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL> Forces"
 		val SYSTEM_DEFENSE_FORCES = builder("SYSTEM_DEFENSE_FORCES", PRIVATEER_LIGHT_TEAL.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel")
 			.addNames(
 				0,
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie Sanders".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee Fed".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie Smith".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee Cop".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Trainee Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Private Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Cadet Wilsimm".miniMessage(),
+
 			)
 			.addNames(
 				1,
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot Wesley".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Private John".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot Hale".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Private Haren".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Pilot Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Corporal Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ensign Wilsimm".miniMessage(),
 			)
 			.addNames(
 				2,
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran Cotte".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace Russon".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran Paine".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Veteran Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Sergeant Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Lieutenant Wilsimm".miniMessage(),
 			)
 			.addNames(
 				3,
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Master Cotte".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Super Ace Russon".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Master Paine".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Super Ace Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Ace Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Major Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Commander Wilsimm".miniMessage(),
 			)
 			.addNames(
 				4,
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Legendary Cotte".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Hero Russon".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Legendary Paine".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Hero Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Elite Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Colonel Wilsimm".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Ava".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Lori".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Gerard".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Harris".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>SysDef <$PRIVATEER_LIGHT_TEAL>Captain Wilsimm".miniMessage(),
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Monitoring unidentified contact."),
@@ -575,8 +781,8 @@ class AIFaction private constructor(
 			.addAggroMessage("aggro" to "<red>You have violated restricted airspace. Weapons lock in progress.")
 			.addFriendlyFireMessages(
 				"suspect" to "<gray>Watch your fire, pilot.",
-				"warn_friendly" to "<#FFA500>That last hit wasn't an accident.",
-				"betrayal" to "<red>You’ve turned on your squadron. Consider yourself expelled."
+				"warn_friendly" to "<#FFA500>You've got one more chance to not get blasted to dust.",
+				"betrayal" to "<red>A closed casket funeral it is, then!"
 			)
 			.addSmackMessages(
 				"<white>Stand down, we have you outmatched!",
@@ -584,61 +790,139 @@ class AIFaction private constructor(
 				"<white>Ha, you call those weapons?",
 				"<white>Flanking right!",
 				"<white>Flanking left!",
-				"<white>System command, hostile contact is taking severe shield damage."
+				"<white>Command, hostile contact is taking severe shield damage."
+				"<white>You don't know how over it is for you and your rustbucket ship.",
+				"<white>Moving in to assault!",
+				"<white>Take some of this!",
+				"<white>Come on, that all you got?",
+				"<white>You'll die just like the rest of 'em.",
+				"<white>You're no match for me!",
+				"<white>Hit 'em hard!",
+				"<white>Fire at will!",
+				"<white>Blast 'em!",
+				"<white>Target locked, let 'em have it!",
+				"<white>Take that!",
+				"<white>Missile away!",
+				"<white>That's gotta hurt.",
 			)
 			.addFleeMessages(
-				"<white>System command, shields critical, disengaging" to true,
-				"<white>System command, shield stabilized reengaging." to false,
+				"<white>Command, shields critical, disengaging" to true,
+				"<white>Command, I need some help over here!" to true,
+				"<white>Command, get me some backup!" to true,
+				"<white>Dammit! Can't shake 'em!" to true,
+				"<white>Command, shield stabilized, reengaging." to false,
+				"<white>Here goes round two!" to false,
+				"<white>You're toast!" to false,
+				"<white>Now you're gonna hurt for real!" to false,
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "\uD83D\uDEE1")
 			.addDifficultySuffix(3, "\uD83D\uDEE1\uD83D\uDEE1")
-			.addDifficultySuffix(4, "♠")
+			.addDifficultySuffix(4, "\uD83D\uDEE1\uD83D\uDEE1\uD83D\uDEE1")
 			.build()
 
 		val TSAII_RAIDERS = builder("TSAII_RAIDERS", TSAII_MEDIUM_ORANGE.value())
 			.addNames(
 				0,
-				text("pup Dhagdagar", TSAII_DARK_ORANGE),
+				text("wimp Dhagdagar", TSAII_DARK_ORANGE),
 				text("wimp Zazgrord", TSAII_DARK_ORANGE),
-				text("stooge Furriebruh", TSAII_DARK_ORANGE),
+				text("wimp Furriebruh", TSAII_DARK_ORANGE),
+				text("wimp Hrorgrum", TSAII_DARK_ORANGE),
+				text("wimp Rabidstompa", TSAII_DARK_ORANGE),
+				text("wimp Godcooka", TSAII_DARK_ORANGE),
+				text("wimp Skarcrushah", TSAII_DARK_ORANGE),
+				text("pup Dhagdagar", TSAII_DARK_ORANGE),
+				text("pup Zazgrord", TSAII_DARK_ORANGE),
+				text("pup Furriebruh", TSAII_DARK_ORANGE),
+				text("pup Hrorgrum", TSAII_DARK_ORANGE),
+				text("pup Rabidstompa", TSAII_DARK_ORANGE),
+				text("pup Godcooka", TSAII_DARK_ORANGE),
+				text("pup Skarcrushah", TSAII_DARK_ORANGE),
 			)
 			.addNames(
 				1,
-				text("pup Dhagdagar", TSAII_DARK_ORANGE),
-				text("wimp Zazgrord", TSAII_DARK_ORANGE),
+				text("stooge Dhagdagar", TSAII_DARK_ORANGE),
+				text("stooge Zazgrord", TSAII_DARK_ORANGE),
 				text("stooge Furriebruh", TSAII_DARK_ORANGE),
+				text("stooge Hrorgrum", TSAII_DARK_ORANGE),
+				text("stooge Rabidstompa", TSAII_DARK_ORANGE),
+				text("stooge Godcooka", TSAII_DARK_ORANGE),
+				text("stooge Skarcrushah", TSAII_DARK_ORANGE),
+				text("grunt Dhagdagar", TSAII_DARK_ORANGE),
+				text("grunt Zazgrord", TSAII_DARK_ORANGE),
+				text("grunt Furriebruh", TSAII_DARK_ORANGE),
+				text("grunt Hrorgrum", TSAII_DARK_ORANGE),
+				text("grunt Rabidstompa", TSAII_DARK_ORANGE),
+				text("grunt Godcooka", TSAII_DARK_ORANGE),
+				text("grunt Skarcrushah", TSAII_DARK_ORANGE),
 			)
 			.addNames(
 				2,
-				text("Hrorgrum", TSAII_DARK_ORANGE),
-				text("Rabidstompa", TSAII_DARK_ORANGE),
-				text("Godcooka", TSAII_DARK_ORANGE),
-				text("Skarcrushah", TSAII_DARK_ORANGE),
+				text("bruiser Dhagdagar", TSAII_DARK_ORANGE),
+				text("bruiser Zazgrord", TSAII_DARK_ORANGE),
+				text("bruiser Furriebruh", TSAII_DARK_ORANGE),
+				text("bruiser Hrorgrum", TSAII_DARK_ORANGE),
+				text("bruiser Rabidstompa", TSAII_DARK_ORANGE),
+				text("bruiser Godcooka", TSAII_DARK_ORANGE),
+				text("bruiser Skarcrushah", TSAII_DARK_ORANGE),
+				text("slasher Dhagdagar", TSAII_DARK_ORANGE),
+				text("slasher Zazgrord", TSAII_DARK_ORANGE),
+				text("slasher Furriebruh", TSAII_DARK_ORANGE),
+				text("slasher Hrorgrum", TSAII_DARK_ORANGE),
+				text("slasher Rabidstompa", TSAII_DARK_ORANGE),
+				text("slasher Godcooka", TSAII_DARK_ORANGE),
+				text("slasher Skarcrushah", TSAII_DARK_ORANGE),
 			)
 			.addNames(
 				3,
-				text("Hrorgrum", TSAII_DARK_ORANGE),
-				text("Rabidstompa", TSAII_DARK_ORANGE),
-				text("Godcooka", TSAII_DARK_ORANGE),
-				text("Skarcrushah", TSAII_DARK_ORANGE),
+				text("caudillo Dhagdagar", TSAII_DARK_ORANGE),
+				text("caudillo Zazgrord", TSAII_DARK_ORANGE),
+				text("caudillo Furriebruh", TSAII_DARK_ORANGE),
+				text("caudillo Hrorgrum", TSAII_DARK_ORANGE),
+				text("caudillo Rabidstompa", TSAII_DARK_ORANGE),
+				text("caudillo Godcooka", TSAII_DARK_ORANGE),
+				text("caudillo Skarcrushah", TSAII_DARK_ORANGE),
+				text("overlord Dhagdagar", TSAII_DARK_ORANGE),
+				text("overlord Zazgrord", TSAII_DARK_ORANGE),
+				text("overlord Furriebruh", TSAII_DARK_ORANGE),
+				text("overlord Hrorgrum", TSAII_DARK_ORANGE),
+				text("overlord Rabidstompa", TSAII_DARK_ORANGE),
+				text("overlord Godcooka", TSAII_DARK_ORANGE),
+				text("overlord Skarcrushah", TSAII_DARK_ORANGE),
 			)
 			.addNames(
 				4,
-				text("Big Bozz", TSAII_DARK_ORANGE, TextDecoration.BOLD),
-				text("Rizz Master", TSAII_DARK_ORANGE, TextDecoration.BOLD),
-				text("GOATaider", TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("big boss Dhagdagar", TSAII_DARK_ORANGE),
+				text("big boss Zazgrord", TSAII_DARK_ORANGE),
+				text("big boss Furriebruh", TSAII_DARK_ORANGE),
+				text("big boss Hrorgrum", TSAII_DARK_ORANGE),
+				text("big boss Rabidstompa", TSAII_DARK_ORANGE),
+				text("big boss Godcooka", TSAII_DARK_ORANGE),
+				text("big boss Skarcrushah", TSAII_DARK_ORANGE),
+				text("baron Dhagdagar", TSAII_DARK_ORANGE),
+				text("baron Zazgrord", TSAII_DARK_ORANGE),
+				text("baron Furriebruh", TSAII_DARK_ORANGE),
+				text("baron Hrorgrum", TSAII_DARK_ORANGE),
+				text("baron Rabidstompa", TSAII_DARK_ORANGE),
+				text("baron Godcooka", TSAII_DARK_ORANGE),
+				text("baron Skarcrushah", TSAII_DARK_ORANGE),
 			)
 			.addSmackMessages(
-				"I'll leave nothing but scrap",
+				"I'll leave nothing but scrap.",
 				"I'll cut you to bacon",
 				"When I'm done with you, I'll mantle your skull!"
+				"Your next of kin will get your remains in an urn!"
+				"Get some!"
 			)
 			.addFleeMessages(
 				"<#FFA500> is this guy made of sriracha? too spicy!" to true,
 				"<#FFA500> hot! hot! hot!" to true,
-				"<#FFA500> Lets try this again" to false,
+				"<#FFA500> You haven't seen the last of me!" to true,
+				"<#FFA500> Someone is fiesty today." to true,
+				"<#FFA500> Time for a real beatdown!" to false,
+				"<#FFA500> You're mine this time!" to false,
+				"<#FFA500> You thought that was the last of me?" to false,
 				"<#FFA500> Back and hungry!" to false,
 			)
 			.addEnmityMessages(
@@ -647,15 +931,15 @@ class AIFaction private constructor(
 			)
 			.addAggroMessage("aggro" to "<red>You're my dinner!")
 			.addFriendlyFireMessages(
-				"laugh" to "<gray>Someone is fiesty today.",
-				"growl" to "<#FFA500>Better shut it before the beat down.",
-				"rage" to "<red>Thanks for the knife backstabber!"
+				"laugh" to "<gray>Heh. What's this then?",
+				"growl" to "<#FFA500>Is the prey approaching the hunter?",
+				"rage" to "<red>You're my dinner!"
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "🐷")
 			.addDifficultySuffix(3, "🐷🐷")
-			.addDifficultySuffix(4, "😈")
+			.addDifficultySuffix(4, "🐷🐷🐷")
 			.build()
 
 		private val pirateNames = listOf(
@@ -677,7 +961,7 @@ class AIFaction private constructor(
 			"King Crabbe",
 			"Redcap Reid",
 			"Bloodbeard",
-			"Long Johnson",
+			"Long Gerardson",
 			"\"Ripper\" Jack",
 			"Big Boris",
 			"Styles Blackmane",
@@ -745,7 +1029,7 @@ class AIFaction private constructor(
 			"The Khan",
 			"Lucky Larry",
 			"Bruisin' Betty",
-			"Ugluk \"Maneater\" Johnson",
+			"Ugluk \"Maneater\" Gerardson",
 			"Happy Hayden",
 			"Man-Ray",
 			"The Shadow",
@@ -851,7 +1135,7 @@ class AIFaction private constructor(
 			"Jesse Hayeson",
 			"Pauly Hardson",
 			"Arlon Scarte",
-			"Johne Guezal",
+			"Gerarde Guezal",
 			"Willy Hernett",
 			"Sara Ancim",
 			"Magent Tille",
@@ -973,33 +1257,35 @@ class AIFaction private constructor(
 			.addNames(4, pirateNames.map { ("Calamity " + it).toComponent(PIRATE_LIGHT_RED) })
 			.addNames(4, pirateNames.map { ("Woe " + it).toComponent(PIRATE_LIGHT_RED) })
 			.addSmackMessages(
-				"Nice day, Nice Ship. I think ill take it!",
+				"Nice ship you got there. I think ill take it!",
 				"I'll plunder your booty!",
 				"Scram or we'll blow you to pieces!",
 				"Someones too curious for their own good.",
 				"Don't say I didn't warn ya, mate."
 			)
 			.addFleeMessages(
-				"<#FFA500> Screw this this aint worth my hide!" to true,
-				"<#FFA500> time for a tactical retreat" to true,
+				"<#FFA500> Screw it, this aint worth my hide!" to true,
+				"<#FFA500> Time for a tactical retreat" to true,
+				"<#FFA500> I'll be back to get you!" to true,
+				"<#FFA500> You just bought yourself a death warrant!" to false,
 				"<#FFA500> Lets try this again" to false,
 				"<#FFA500> Second time is the charm!" to false,
 			)
 			.addEnmityMessages(
-				"notice" to (0.1 to "<gray>They're watching us..."),
+				"notice" to (0.1 to "<gray>Hey, who the hell are you?"),
 				"warn" to (0.4 to "<#FFA500>Back off!")
 			)
-			.addAggroMessage("aggro" to "<RED>I'll make an example of you!")
+			.addAggroMessage("aggro" to "<RED>Nobody messes with me and lives to tell the tale!")
 			.addFriendlyFireMessages(
-				"laugh" to "<gray>Oi! That better be a mistake.",
-				"growl" to "<#FFA500>You're asking for it.",
-				"rage" to "<red>You just bought yourself a death warrant!"
+				"laugh" to "<gray>Hey, who the hell are you?",
+				"growl" to "<#FFA500>Back off!",
+				"rage" to "<red>Nobody messes with me and lives to tell the tale!"
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "🔥")
 			.addDifficultySuffix(3, "🔥🔥")
-			.addDifficultySuffix(4, "\uD83D\uDCA5")
+			.addDifficultySuffix(4, "🔥🔥🔥")
 			.build()
 
 		val ABYSSAL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
@@ -1022,7 +1308,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "🖤")
 			.addDifficultySuffix(3, "🖤🖤")
-			.addDifficultySuffix(4, "🕳️")
+			.addDifficultySuffix(4, "🖤🖤🖤")
 			.build()
 
 		val PUMPKINS = builder("PUMPKINS", TextColor.fromHexString("#FFA500")!!.value())
@@ -1064,7 +1350,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "💀")
 			.addDifficultySuffix(3, "💀💀")
-			.addDifficultySuffix(4, "☠️")
+			.addDifficultySuffix(4, "💀💀💀")
 			.build()
 	}
 }
