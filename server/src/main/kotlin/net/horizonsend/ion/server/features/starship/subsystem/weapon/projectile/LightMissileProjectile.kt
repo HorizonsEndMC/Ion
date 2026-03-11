@@ -189,6 +189,5 @@ class LightMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 				true
 			)
 		}
-
 	}
 }
