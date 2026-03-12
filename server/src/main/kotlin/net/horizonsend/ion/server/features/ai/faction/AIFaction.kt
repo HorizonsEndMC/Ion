@@ -790,7 +790,7 @@ class AIFaction private constructor(
 				"<white>Ha, you call those weapons?",
 				"<white>Flanking right!",
 				"<white>Flanking left!",
-				"<white>Command, hostile contact is taking severe shield damage."
+				"<white>Command, hostile contact is taking severe shield damage.",
 				"<white>You don't know how over it is for you and your rustbucket ship.",
 				"<white>Moving in to assault!",
 				"<white>Take some of this!",
@@ -911,7 +911,7 @@ class AIFaction private constructor(
 			.addSmackMessages(
 				"I'll leave nothing but scrap.",
 				"I'll cut you to bacon",
-				"When I'm done with you, I'll mantle your skull!"
+				"When I'm done with you, I'll mantle your skull!",
 				"Your next of kin will get your remains in an urn!"
 				"Get some!"
 			)
