@@ -18,7 +18,8 @@ object CreditPrintBlackList {
 		Material.WAXED_WEATHERED_COPPER,
 		Material.WAXED_OXIDIZED_COPPER,
 		Material.REDSTONE_BLOCK,
-		Material.END_PORTAL_FRAME
+		Material.END_PORTAL_FRAME,
+		Material.REDSTONE
 	)
 
 	fun checkForCreditPrintBlacklist(data: BlockData): Boolean {
