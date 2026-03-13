@@ -20,6 +20,7 @@ abstract class ShieldSubsystem(
 	multiblock: ShieldMultiblock
 ) : AbstractMultiblockSubsystem<ShieldMultiblock>(starship, sign, multiblock) {
 	val name: String = sign.front().line(2).plainText()
+	var destroyed: Boolean = false
 
 	open val maxPower: Int = (starship.initialBlockCount.d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 		get() = if (starship.shields.size > starship.maxShields) {

@@ -57,6 +57,8 @@ object StarshipShields : IonServerComponent() {
 		val worldID = starship.world.uid
 
 		for (shield in starship.shields) {
+			if (shield.isIntact()) shield.destroyed
+			else !shield.destroyed
 			val shieldPos = ShieldPos(worldID, shield.pos)
 			shield.power = shields.remove(shieldPos) ?: continue
 		}
@@ -283,6 +285,13 @@ object StarshipShields : IonServerComponent() {
 
 		val percent = shield.powerRatio
 		if (percent < 0.01) {
+			return false
+		}
+
+		//If this is the first time the multiblock has been destroyed then play a sound
+		if (!shield.isIntact() && !shield.destroyed) {
+			starship.world.playSound(shield.pos.toLocation(starship.world), "horizonsend:starship.shield.destroy", 8.0f, 0.5f)
+			shield.destroyed = true
 			return false
 		}
 

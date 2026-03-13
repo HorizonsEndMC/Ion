@@ -310,6 +310,9 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun endKoth(koths: Koths) = asyncLocked {
 		val topThree = determineWinner(koths)
+		for (player in Bukkit.getOnlinePlayers()) {
+			player.world.playSound(player, "horizonsend:server.koth.end", 12f, 0.5f)
+		}
 
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
 
