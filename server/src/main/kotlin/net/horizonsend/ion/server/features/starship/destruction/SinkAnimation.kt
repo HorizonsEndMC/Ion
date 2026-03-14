@@ -218,14 +218,14 @@ class SinkAnimation(
 		open val wrapper: DisplayWrapper,
 		var direction: Vector,
 		val initialScale: Double,
-		val finalScale: Double,
+		var finalScale: Double,
 		val rotationAxis: Vector,
-		val rotationDegrees: Double,
+		var rotationDegrees: Double,
 		val motionAdjuster: SinkAnimationBlock.() -> Unit = {}
 	) {
 		private var iterations: Int = 0
 
-		protected val phase get() = iterations.toDouble() / duration.toDouble()
+		val phase get() = iterations.toDouble() / duration.toDouble()
 
 		open fun update() {
 			iterations++
@@ -252,7 +252,7 @@ class SinkAnimation(
 		}
 	}
 
-	inner class ColoredSinkAnimationBlock(
+	open class ColoredSinkAnimationBlock(
 		duration: Long,
 		override val wrapper: ItemDisplayContainer,
 		direction: Vector,
@@ -261,7 +261,8 @@ class SinkAnimation(
 		rotationAxis: Vector,
 		rotationDegrees: Double,
 		colors: Map<Color, Int>, // Color to weight
-	) : SinkAnimationBlock(duration, wrapper, direction, initialScale, finalScale, rotationAxis, rotationDegrees) {
+		motionAdjuster: SinkAnimationBlock.() -> Unit = {},
+	) : SinkAnimationBlock(duration, wrapper, direction, initialScale, finalScale, rotationAxis, rotationDegrees, motionAdjuster) {
 		val colors = mutableListOf<Color>().apply {
 			for ((color, weight) in colors) {
 				repeat(weight) { add(color) }
