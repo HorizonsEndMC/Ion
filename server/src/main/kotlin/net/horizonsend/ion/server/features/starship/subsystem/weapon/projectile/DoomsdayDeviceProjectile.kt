@@ -1,22 +1,14 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.DyedItemColor
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
-import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
-import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DoomsdayDeviceWeaponSubsystem.Companion.WARM_UP_TIME_SECONDS
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.features.transport.items.util.DYEABLE_CUBE_MONO
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
@@ -26,14 +18,11 @@ import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
-import java.util.function.Supplier
 import kotlin.math.exp
 import kotlin.math.roundToInt
 
@@ -128,35 +117,8 @@ class DoomsdayDeviceProjectile(
 
         lastTick = System.nanoTime()
         reschedule()
+
     }
-
-	private var animationAge = 0
-
-	override fun fire() {
-		repeat(3) {
-			DoomsdayDeviceProjectileAnimation(location.toVector(), Vector(), shooter.color, 0.25, 12.0, 1.0).schedule()
-		}
-		super.fire()
-	}
-
-	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		val line = oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 3)
-
-		for (spawnLoc in line) {
-			if (spawnLoc == line.last()) continue
-
-			DoomsdayDeviceProjectileAnimation(
-				spawnLoc.toVector(),
-				direction.clone().normalize(),
-				shooter.color,
-				1.0,
-				1.0,
-				12.0
-			).schedule()
-		}
-
-		animationAge++
-	}
 
     override fun onHitEntity(entity: LivingEntity) {
         when (shooter) {
@@ -272,45 +234,4 @@ class DoomsdayDeviceProjectile(
 	}
 
 	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
-
-
-	inner class DoomsdayDeviceProjectileAnimation(
-		origin: Vector,
-		moveDir: Vector,
-		color: Color,
-		speed: Double,
-		initialScale: Double,
-		finalScale: Double,
-	) : BukkitRunnable() {
-		val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color, false)) }
-		val rotationAxis = Vector.getRandom()
-
-		val block = object : SinkAnimation.ColoredSinkAnimationBlock(
-			duration = (3 * 20 * speed).toLong(),
-			wrapper = ItemDisplayContainer(
-				world = location.world,
-				initPosition = origin,
-				initHeading = Vector.getRandom(),
-				initScale = 1.0f,
-				item = item,
-			),
-			direction = moveDir.clone().multiply(0.5),
-			initialScale = initialScale,
-			finalScale = finalScale,
-			rotationAxis = rotationAxis,
-			rotationDegrees = 0.5,
-			colors = mapOf(
-				color to 5,
-				Color.BLACK to 2,
-			),
-			motionAdjuster = {}
-		) {}
-
-		override fun run() {
-			block.update()
-			if (block.checkDead()) cancel()
-		}
-
-		fun schedule() = runTaskTimerAsynchronously(IonServer, 1L, 1L)
-	}
 }
