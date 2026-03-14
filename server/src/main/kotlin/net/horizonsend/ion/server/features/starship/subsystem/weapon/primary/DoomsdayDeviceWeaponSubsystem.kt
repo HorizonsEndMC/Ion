@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
@@ -54,9 +55,8 @@ class DoomsdayDeviceWeaponSubsystem(
                 balancing.projectile.particleThickness.toFloat()
             )
 
-            // min radius: 1; max radius: 6
-            newFirePos.toLocation(loc.world).spherePoints(((5.0 / WARM_UP_TIME_SECONDS.toDouble() * (tick / 5)) + 1), 20).forEach {
-                it.world.spawnParticle( 
+            newFirePos.toLocation(loc.world).spherePoints((tick / 2 + 1).toDouble(), 40).forEach {
+                it.world.spawnParticle(
                     Particle.DUST_COLOR_TRANSITION,
                     it.x,
                     it.y,
@@ -70,6 +70,24 @@ class DoomsdayDeviceWeaponSubsystem(
                     true
                 )
             }
+
+			val stopPoint = getFireVec().clone().add(Vector(face.modX * 5.0, face.modY * 5.0, face.modZ * 5.0)).toLocation(loc.world)
+
+			if (tick < ((WARM_UP_TIME_SECONDS - 1) * 20)) {
+				newFirePos.toLocation(loc.world).circlePoints(20.0, 30, face.direction).shuffled().forEach {
+					it.world.spawnParticle(
+						Particle.TRAIL,
+						it,
+						1,
+						0.0,
+						0.0,
+						0.0,
+						0.0,
+						Particle.Trail(stopPoint, Color.WHITE, 20),
+						true
+					)
+				}
+			}
 
             tick += 1
         }.runTaskTimer(IonServer, 0L, 5L)

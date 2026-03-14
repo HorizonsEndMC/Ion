@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
@@ -23,7 +22,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
-import kotlin.math.exp
 import kotlin.math.roundToInt
 
 class DoomsdayDeviceProjectile(
@@ -33,21 +31,20 @@ class DoomsdayDeviceProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : ParticleProjectile<DoomsdayDeviceBalancing.DoomsdayDeviceProjectileBalancing>(source, name, loc, dir, shooter, DoomsdayDeviceWeaponMultiblock.damageType) {
-    private val greenParticleData = Particle.DustTransition(
+    private val outerParticleData = Particle.DustTransition(
         shooter.color,
         Color.BLACK,
         balancing.particleThickness.toFloat()
     )
 
-    private val yellowParticleData = Particle.DustTransition(
+    private val innerParticleData = Particle.DustTransition(
+        shooter.color.mixColors(Color.WHITE),
         shooter.color,
-        Color.BLACK,
         balancing.particleThickness.toFloat()
     )
 
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-
-
+		// Outer core
         Location(location.world, x, y, z).spherePoints(3.0, 20).forEach {
             it.world.spawnParticle(
                 Particle.DUST_COLOR_TRANSITION,
@@ -59,28 +56,27 @@ class DoomsdayDeviceProjectile(
                 0.5,
                 0.5,
                 2.0,
-                greenParticleData,
+                outerParticleData,
                 force
             )
         }
 
-        Tasks.syncDelay(5) {
-            Location(location.world, x, y, z).spherePoints(1.5, 5).forEach {
-                it.world.spawnParticle(
-                    Particle.DUST_COLOR_TRANSITION,
-                    it.x,
-                    it.y,
-                    it.z,
-                    1,
-                    0.25,
-                    0.25,
-                    0.25,
-                    2.0,
-                    yellowParticleData,
-                    force
-                )
-            }
-        }
+		// Inner core
+		Location(location.world, x, y, z).spherePoints(1.5, 5).forEach {
+			it.world.spawnParticle(
+				Particle.DUST_COLOR_TRANSITION,
+				it.x,
+				it.y,
+				it.z,
+				1,
+				0.25,
+				0.25,
+				0.25,
+				2.0,
+				innerParticleData,
+				force
+			)
+		}
     }
 
     // overriding the entire tick() function just to change the raySize :weary:
@@ -185,7 +181,7 @@ class DoomsdayDeviceProjectile(
                     0.5,
                     0.5,
                     2.0,
-                    greenParticleData,
+                    outerParticleData,
                     true
                 )
             }
@@ -203,7 +199,7 @@ class DoomsdayDeviceProjectile(
                     0.5,
                     0.5,
                     2.0,
-                    yellowParticleData,
+                    innerParticleData,
                     true
                 )
             }

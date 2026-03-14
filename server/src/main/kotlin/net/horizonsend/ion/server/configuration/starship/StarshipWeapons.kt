@@ -1245,7 +1245,7 @@ data class DoomsdayDeviceBalancing(
 	override var applyCooldownToAll: Boolean = true,
 
 	override var convergeDistance: Double = 0.0,
-	override var projectileSpawnDistance: Int = 4,
+	override var projectileSpawnDistance: Int = 10,
 	override var angleRadiansHorizontal: Double = 80.0,
 	override var angleRadiansVertical: Double = 80.0,
 	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(60),
