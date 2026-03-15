@@ -98,6 +98,7 @@ import net.horizonsend.ion.server.features.multiblock.type.processing.automason.
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.HornMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
@@ -402,6 +403,7 @@ object MultiblockRegistration : IonServerComponent() {
 		// Starship misc
 		registerMultiblock(StandardGravityWellMultiblock)
 		registerMultiblock(AmplifiedGravityWellMultiblock)
+		registerMultiblock(HornMultiblock)
 
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
