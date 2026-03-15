@@ -43,7 +43,8 @@ fun playSoundInRadius(origin: Location, radius: Double, sound: Sound) {
     }
 }
 
-fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: SoundInfo?, farSound: SoundInfo?, cutoff: Double) {
+fun playDirectionalStarshipSound(
+	origin: Location, player: Player, nearSound: SoundInfo?, farSound: SoundInfo?, cutoff: Double, pitchMod : Float = 1.0f) {
     val distance = player.location.distance(origin)
     val dir = Vector(origin.x - player.location.x, origin.y - player.location.y, origin.z - player.location.z)
     val offsetDistance = min(distance, 16.0)
@@ -61,7 +62,7 @@ fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: So
                 Key.key(nearSound.key),
                 nearSound.source,
                 nearSound.volume * nearSoundVolumeMod(distance, cutoff) * nearPlayerSettingFactor,
-                nearSound.pitch
+                nearSound.pitch * pitchMod
             ),
             soundLoc.x,
             soundLoc.y,
@@ -81,7 +82,7 @@ fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: So
                 Key.key(farSound.key),
                 farSound.source,
                 farSound.volume * farSoundVolumeMod(distance, cutoff) * farPlayerSettingFactor,
-                farSound.pitch
+                farSound.pitch * pitchMod
             ),
             soundLoc.x,
             soundLoc.y,

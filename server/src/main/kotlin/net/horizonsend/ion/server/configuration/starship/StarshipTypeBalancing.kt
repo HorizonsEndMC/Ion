@@ -560,6 +560,7 @@ data class StarshipSounds(
 	val jumpChargeFar: SoundInfo = SoundInfo("horizonsend:starship.jump.charge.far"),
 	val jumpCompleteNear: SoundInfo = SoundInfo("horizonsend:starship.jump.complete.near"),
 	val jumpCompleteFar: SoundInfo = SoundInfo("horizonsend:starship.jump.complete.far"),
+	val horn: SoundInfo = SoundInfo("minecraft:item.goat_horn.sound.6", pitch = 2f)
 ) {
 	@Serializable
 	data class SoundInfo(
