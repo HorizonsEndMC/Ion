@@ -252,7 +252,7 @@ class SinkAnimation(
 		}
 	}
 
-	inner class ColoredSinkAnimationBlock(
+	open class ColoredSinkAnimationBlock(
 		duration: Long,
 		override val wrapper: ItemDisplayContainer,
 		direction: Vector,

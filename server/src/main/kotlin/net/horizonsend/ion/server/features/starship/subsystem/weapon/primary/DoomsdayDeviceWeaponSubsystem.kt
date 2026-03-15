@@ -1,16 +1,21 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.DyedItemColor
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
+import net.horizonsend.ion.server.features.transport.items.util.EXPLOSION_RING
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -23,6 +28,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 
 class DoomsdayDeviceWeaponSubsystem(
@@ -71,10 +77,11 @@ class DoomsdayDeviceWeaponSubsystem(
                 )
             }
 
-			val stopPoint = getFireVec().clone().add(Vector(face.modX * 5.0, face.modY * 5.0, face.modZ * 5.0)).toLocation(loc.world)
+			val stopPoint = getFireVec().clone().add(Vector(face.modX * 10.0, face.modY * 10.0, face.modZ * 10.0)).toLocation(loc.world)
+			val furtherStopPoint = stopPoint.add(face.modX * 10.0, face.modY * 10.0, face.modZ * 10.0)
 
-			if (tick < ((WARM_UP_TIME_SECONDS - 1) * 20)) {
-				newFirePos.toLocation(loc.world).circlePoints(20.0, 30, face.direction).shuffled().forEach {
+			if (tick < ((WARM_UP_TIME_SECONDS - 2) * 20)) {
+				newFirePos.toLocation(loc.world).circlePoints(20.0, 100, face.direction).shuffled().take(50).forEach {
 					it.world.spawnParticle(
 						Particle.TRAIL,
 						it,
@@ -87,6 +94,20 @@ class DoomsdayDeviceWeaponSubsystem(
 						true
 					)
 				}
+
+				newFirePos.toLocation(loc.world).circlePoints(40.0, 500, face.direction).shuffled().take(100).forEach {
+					it.world.spawnParticle(
+						Particle.TRAIL,
+						it,
+						1,
+						0.0,
+						0.0,
+						0.0,
+						0.0,
+						Particle.Trail(furtherStopPoint, Color.WHITE, 20),
+						true
+					)
+				}
 			}
 
             tick += 1
@@ -95,6 +116,7 @@ class DoomsdayDeviceWeaponSubsystem(
         Tasks.syncDelay(20 * WARM_UP_TIME_SECONDS.toLong()) {
             val newFirePos = getFirePos()
             DoomsdayDeviceProjectile(StarshipProjectileSource(starship), getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
+			DoomsdayDeviceFireShockwaveAnimation().schedule()
         }
     }
 
@@ -108,6 +130,38 @@ class DoomsdayDeviceWeaponSubsystem(
 
 	override fun consumeAmmo(itemStack: ItemStack) {
 		consumeItem(itemStack, 1)
+	}
+
+	inner class DoomsdayDeviceFireShockwaveAnimation() : BukkitRunnable() {
+		private val shockwaveItem = object : SinkAnimation.ColoredSinkAnimationBlock(
+			duration = 100,
+			wrapper = ItemDisplayContainer(
+				world = starship.world,
+				initPosition = getFireVec(),
+				initHeading = face.direction.rotateAroundY(Math.toRadians(1.0)), // rotate slightly, because rotateToFaceVector can't handle vectors facing directly north/south
+				initScale = 1.0f,
+				item = EXPLOSION_RING.construct { t -> t.setData(
+					DataComponentTypes.DYED_COLOR,
+					DyedItemColor.dyedItemColor(Color.WHITE, false)
+				) },
+			),
+			direction = Vector(),
+			initialScale = 1.0,
+			finalScale = 50.0,
+			rotationAxis = BlockFace.NORTH.direction,
+			rotationDegrees = 0.0,
+			colors = mapOf(
+				Color.WHITE to 4,
+				Color.BLACK to 1
+			)
+		) {}
+
+		override fun run() {
+			shockwaveItem.update()
+			if (shockwaveItem.checkDead()) cancel()
+		}
+
+		fun schedule() = runTaskTimerAsynchronously(IonServer, 1L, 1L)
 	}
 }
 
