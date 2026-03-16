@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.player
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarBuyFromSellOrderEvent
@@ -12,7 +13,6 @@ import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarDeleteBuyO
 import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarDepositItemToBuyOrderEvent
 import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarDepositItemToSellOrderEvent
 import net.horizonsend.ion.server.features.economy.bazaar.event.BazaarWithdrawItemFromSellOrderEvent
-import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -70,9 +70,7 @@ object EventLogger : IonServerComponent() {
 		listen<BazaarBuyFromSellOrderEvent> { event ->
 			val player = event.player
 			val item = event.item.itemString
-			val city = Regions.findFirstOf<RegionTerritory>(player.location)?.let {
-				TradeCities.getIfCity(it)?.displayName
-			}
+			val city = Regions.get<RegionTerritory>(event.item.cityTerritory).settlement?.let { SettlementCache[it].name }
 			val amount = event.amount
 			val subtotal = event.subtotal
 			val tax = event.tax
