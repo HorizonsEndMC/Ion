@@ -80,7 +80,7 @@ class DoomsdayDeviceWeaponSubsystem(
 			val stopPoint = getFireVec().clone().add(Vector(face.modX * 10.0, face.modY * 10.0, face.modZ * 10.0)).toLocation(loc.world)
 			val furtherStopPoint = stopPoint.add(face.modX * 10.0, face.modY * 10.0, face.modZ * 10.0)
 
-			if (tick < ((WARM_UP_TIME_SECONDS - 2) * 20)) {
+			if (tick < ((WARM_UP_TIME_SECONDS - 1) * 4)) {
 				newFirePos.toLocation(loc.world).circlePoints(20.0, 100, face.direction).shuffled().take(50).forEach {
 					it.world.spawnParticle(
 						Particle.TRAIL,
