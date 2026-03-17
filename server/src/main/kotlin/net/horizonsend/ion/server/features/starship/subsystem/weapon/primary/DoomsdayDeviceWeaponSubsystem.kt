@@ -138,7 +138,7 @@ class DoomsdayDeviceWeaponSubsystem(
 			wrapper = ItemDisplayContainer(
 				world = starship.world,
 				initPosition = getFireVec(),
-				initHeading = face.direction.rotateAroundY(Math.toRadians(1.0)), // rotate slightly, because rotateToFaceVector can't handle vectors facing directly north/south
+				initHeading = face.direction,
 				initScale = 1.0f,
 				item = EXPLOSION_RING.construct { t -> t.setData(
 					DataComponentTypes.DYED_COLOR,
