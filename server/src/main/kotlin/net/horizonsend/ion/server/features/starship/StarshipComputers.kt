@@ -196,6 +196,7 @@ object StarshipComputers : IonServerComponent() {
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::captain, player.slPlayerId))
 		data.pilots.clear()
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
+		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::nations, mutableSetOf()))
 	}
 
 	private fun getComputerTerritory(data: PlayerStarshipData): Territory? {

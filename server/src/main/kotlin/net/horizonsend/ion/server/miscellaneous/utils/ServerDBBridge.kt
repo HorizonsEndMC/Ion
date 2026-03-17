@@ -39,7 +39,7 @@ fun StarshipData.bukkitWorld(): World = requireNotNull(Bukkit.getWorld(levelName
 
 fun PlayerStarshipData.isPilot(player: Player): Boolean {
 	val id = player.slPlayerId
-	return captain == id || pilots.contains(id)
+	return captain == id || pilots.contains(id) || nations?.contains(PlayerCache[player].nationOid) == true
 }
 
 fun Cryopod.bukkitLocation() = Location(Bukkit.getWorld(worldName)!!, x.toDouble(), y.toDouble(), z.toDouble())
