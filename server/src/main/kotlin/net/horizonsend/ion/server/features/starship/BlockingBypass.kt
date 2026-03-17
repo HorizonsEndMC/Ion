@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.miscellaneous.utils.PIPED_INVENTORY_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
@@ -74,8 +75,8 @@ object BlockingBypass {
                 continue
             }
 
-            // always disallow shulker boxes
-            if (material.isShulkerBox) return false
+            // always disallow shulker boxes and blocks that have container data
+            if (material.isShulkerBox || PIPED_INVENTORY_TYPES.contains(material)) return false
 
             // Add the location to the list of blocks that'll be set on the starships
             blockTypes[key] = blockData
