@@ -332,6 +332,9 @@ object ClientDisplayEntities : IonServerComponent() {
         val globalZAxis = Vector3f(0f, 0f, 1f)
         // cross product of initial and final vectors will give the axis of rotation
         val cross = (globalZAxis.clone() as Vector3f).cross((direction.clone() as Vector3f).normalize()).normalize()
+		// if direction is parallel to globalZAxis, the cross product will be NaN (or returns the zero vector), and we
+		// experience gimbal lock. Resort to the 2D version of this function
+		if (cross.lengthSquared() == 0f || cross.lengthSquared().isNaN()) return rotateToFaceVector2d(direction)
         // angle between the initial vector and final vector to determine the rotation needed (in radians)
         val angle = globalZAxis.angle(direction)
         // get the quaternion to rotate the object to face the initial vector
