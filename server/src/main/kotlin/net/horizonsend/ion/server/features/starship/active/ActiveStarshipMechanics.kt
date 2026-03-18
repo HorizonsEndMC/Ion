@@ -261,7 +261,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		ActiveStarships.all().filter { starship -> starship.isJumpBeaconOn }.forEach { starship ->
 			val com = starship.centerOfMass.toLocation(starship.world).toCenterLocation()
-			val points = com.spherePoints(25 * sin(jumpBeaconTick / (2 * Math.PI)) + 30, (140 * sin(jumpBeaconTick / (2 * Math.PI)) + 150).toInt())
+			val points = com.spherePoints(2.5 * sin(jumpBeaconTick / (2 * Math.PI)) + 7.5, (20 * sin(jumpBeaconTick / (2 * Math.PI)) + 60).toInt())
 			for (point in points) {
 				val toCenter = com.toVector().subtract(point.toVector()).normalize().multiply(5)
 
