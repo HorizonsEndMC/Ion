@@ -35,19 +35,43 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtOps
 import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.PalettedContainer
+import net.minecraft.world.level.chunk.Strategy
 import net.minecraft.world.level.chunk.storage.RegionFile
-import net.minecraft.world.level.chunk.storage.SerializableChunkData
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.File
 
+/**
+ * Command for restoring selected world data from backup sources.
+ *
+ * Terrain regeneration reads block-state section data from backup region files.
+ * Ore regeneration reads plugin-owned ore metadata from chunk persistent data.
+ *
+ * Subcommands:
+ * - /regenerate terrain : restore terrain blocks from backup region files
+ * - /regenerate ores    : restore ores from stored ore metadata
+ * - /regenerate all     : restore terrain, then ores
+ */
 @CommandPermission("ion.regenerate")
 @CommandAlias("regenerate")
 object RegenerateCommand : SLCommand() {
-	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
+	/**
+	 * Root folder containing backup world data used for regeneration.
+	 *
+	 * Each child folder is expected to represent a stripped down world and contain region files
+	 * that can be read as the source of truth for terrain restoration.
+	 */
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
+	/**
+	 * Background coroutine scope used for region-file IO and NBT decoding.
+	 *
+	 * Heavy work is done off the server thread, while final chunk mutation is
+	 * deferred to synchronized tasks.
+	 */
 	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	@Subcommand("terrain")
@@ -57,6 +81,15 @@ object RegenerateCommand : SLCommand() {
 		regenerateSelection(sender, selection, sender.world)
 	}
 
+	/**
+	 * Regenerates all selected terrain blocks from backup region files.
+	 *
+	 * The selection is split into chunk sections. Each section is loaded from the
+	 * matching backup region file, decoded from NBT block-state data, converted into
+	 * a {@link CompletedSection}, and then applied back to the live world.
+	 *
+	 * @return a deferred that completes when all selected sections have been placed
+	 */
 	fun regenerateSelection(sender: Audience, selection: Region, world: World): Deferred<Boolean> {
 		sender.information("Started regenerating ${world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
 		val time = System.currentTimeMillis()
@@ -108,8 +141,8 @@ object RegenerateCommand : SLCommand() {
 					}
 
 					@Suppress("UNCHECKED_CAST")
-					val sectionsList = (chunkData.getList("sections", 10).toList() as List<CompoundTag>)
-						.associateBy { it.getByte("Y") }
+					val sectionsList = chunkData.getListOrEmpty("sections").mapNotNull { it as? CompoundTag }
+						.associateBy { it.getByteOr("Y", 0) }
 
 					section@
 					for (sectionY in sectionsHeight) {
@@ -124,9 +157,18 @@ object RegenerateCommand : SLCommand() {
 
 						val deferred = sections[sectionPos]!! // I hope not
 
-						val dataResult = SerializableChunkData.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
+						val blockStateCodec = PalettedContainer.codecRO(
+							BlockState.CODEC,
+							Strategy.createForBlockStates(Block.BLOCK_STATE_REGISTRY),
+							Blocks.AIR.defaultBlockState()
+						)
 
-						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).ifError {
+						val dataResult = blockStateCodec.parse(
+							NbtOps.INSTANCE,
+							storedSection.getCompoundOrEmpty("block_states")
+						)
+
+						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState>>).ifError {
 							sender.serverError("Error reading section blocks: $it")
 							log.warn(it.message())
 						}.getOrThrow()
@@ -149,6 +191,10 @@ object RegenerateCommand : SLCommand() {
 		return deferred
 	}
 
+	/**
+	 * Waits for all section regeneration tasks and applies the resulting sections
+	 * to their live chunks on the main thread.
+	 */
 	private suspend fun complete(world: World, deferredSections: Collection<CompletableDeferred<Pair<ChunkPos, CompletedSection>>>) {
 		val newSections = deferredSections.toMutableSet()
 
@@ -165,11 +211,15 @@ object RegenerateCommand : SLCommand() {
 		}
 	}
 
+	/**
+	 * Converts one decoded stored section into a CompletedSection, copying only
+	 * blocks that fall inside the selected WorldEdit region.
+	 */
 	private fun regenerateSection(
 		audience: Audience,
 		sectionY: Int,
 		chunkPos: ChunkPos,
-		palettedContainer: PalettedContainer<BlockState?>,
+		palettedContainer: PalettedContainer<BlockState>,
 		deferred: CompletableDeferred<Pair<ChunkPos, CompletedSection>>,
 		selection: Region
 	) {
@@ -184,15 +234,8 @@ object RegenerateCommand : SLCommand() {
 				continue
 			}
 
-			val index = PalettedContainer.Strategy.SECTION_STATES.getIndex(x, y, z)
-
-			val state: BlockState? = palettedContainer[index]
-
-			if (state == null) {
-				audience.serverError("Block at $realX, $realY, $realZ was null in the container!")
-				continue
-			}
-
+			val state: BlockState = palettedContainer.get(x, y, z)
+			val index = (y shl 8) or (z shl 4) or x
 			newSection.setBlock(index, BlockData(state, null))
 		}
 
@@ -200,6 +243,11 @@ object RegenerateCommand : SLCommand() {
 		deferred.complete(chunkPos to newSection)
 	}
 
+	/**
+	 * Opens a backup region file for the given world and region file name.
+	 *
+	 * @return the region file, or null if the backup world folder does not exist
+	 */
 	private fun getRegion(world: World, regionFileName: String): RegionFile? {
 		val region = cleanWorldsFolder.resolve(world.name)
 
@@ -220,6 +268,10 @@ object RegenerateCommand : SLCommand() {
 		regenerateOresInSelection(sender, selection, sender.world)
 	}
 
+	/**
+	 * Restores ore blocks inside the selected region using ore metadata stored
+	 * in the chunk persistent data container.
+	 */
 	fun regenerateOresInSelection(feedback: Audience, region: Region, world: World) {
 		feedback.information("Regenerating ores")
 		val chunks = region.chunks
