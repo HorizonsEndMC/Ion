@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import java.net.URI
 
 plugins {
-	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+	id("com.gradleup.shadow") version "9.3.0" apply false
 
 	kotlin("plugin.serialization") version "2.2.20" apply false
 	kotlin("jvm") version "2.2.20" apply false
@@ -36,7 +36,7 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 }
 
 @Suppress("UNCHECKED_CAST")
-fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.4") {
+fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.11") {
 	val targetLoader = "paper"
 
 	logger.log(LogLevel.QUIET, "Downloading $project... ")
@@ -82,6 +82,6 @@ tasks.register("downloadTestServerDependencies") {
 	doFirst {
 		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
 		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
-		downloadModrinthArtifact("unifiedmetrics", targetVersion = "1.19.4")
+		downloadModrinthArtifact("unifiedmetrics", targetVersion = "1.21.11")
 	}
 }

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-	id("com.github.johnrengelman.shadow")
+	id("com.gradleup.shadow")
 
 	kotlin("kapt")
 	kotlin("plugin.serialization")
