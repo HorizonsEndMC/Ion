@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
@@ -71,6 +72,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerModificationItems()
 		registerEnergySwords()
 		registerPlanetIcons()
+		registerFood()
 
 		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
 		unStackable(CustomItemKeys.DEBUG_LINE_GREEN, displayName = Component.text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
@@ -795,6 +797,19 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.REGULUS, displayName = Component.text("Regulus"), model = "planet/regulus")
 		unStackable(key = CustomItemKeys.SIRIUS, displayName = Component.text("Sirius"), model = "planet/sirius")
 		unStackable(key = CustomItemKeys.PLANET_SELECTOR, displayName = Component.text("PLANET_SELECTOR"), model = "planet/planet_selector")
+	}
+
+	private fun registerFood() {
+		register(
+			CustomItemKeys.TEST_FOOD, FoodItem(
+				key = CustomItemKeys.TEST_FOOD,
+				displayName = Component.text("Test Food"),
+				itemModel = "mineral/chetherite",
+				stackSize = 1,
+				hunger = 4,
+				saturation = 2.4f
+			)
+		)
 	}
 
 	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
