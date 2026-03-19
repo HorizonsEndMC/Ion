@@ -1,13 +1,14 @@
 import io.papermc.paperweight.util.path
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.ByteArrayOutputStream
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
 	kotlin("jvm")
 	kotlin("plugin.serialization")
 
-	id("com.github.johnrengelman.shadow")
-	id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
+	id("com.gradleup.shadow")
+	id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
 }
 
 repositories {
@@ -33,9 +34,9 @@ repositories {
 dependencies {
 	implementation(project(":common"))
 
-	compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+	compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
 	// Platform
-	paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }
@@ -88,17 +89,15 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 }
 
 val output = ByteArrayOutputStream()
-project.exec {
-	setCommandLine("git", "rev-parse", "--verify", "--short", "HEAD")
-	standardOutput = output
-}
-val gitHash = String(output.toByteArray()).trim()
+val gitHash = providers.exec {
+	commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+}.standardOutput.asText.get().trim()
 
-val embedHash = tasks.create("embedHash") {
+val embedHash = tasks.register("embedHash") {
 	doLast {
-		val buildDir = layout.buildDirectory.get().path.toAbsolutePath().toString()
-		File("$buildDir/resources/main").mkdirs()
-		File("$buildDir/resources/main/gitHash").writeText(gitHash)
+		val resourcesMain = layout.buildDirectory.dir("resources/main").get().asFile
+		resourcesMain.mkdirs()
+		File(resourcesMain, "gitHash").writeText(gitHash)
 	}
 }
 
@@ -106,11 +105,11 @@ tasks.classes {
 	dependsOn(embedHash)
 }
 
-tasks.shadowJar {
+tasks.named<ShadowJar>("shadowJar") {
 	archiveFileName.set("IonServer.jar")
-	destinationDirectory.set(file(rootProject.projectDir.absolutePath + "/build"))
+	destinationDirectory.set(rootProject.layout.buildDirectory)
 }
 
-tasks.build {
-	dependsOn(tasks.shadowJar)
+tasks.named("build") {
+	dependsOn(tasks.named<ShadowJar>("shadowJar"))
 }
