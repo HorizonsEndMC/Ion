@@ -24,7 +24,10 @@ import net.minecraft.world.level.block.entity.trialspawner.PlayerDetector
 import net.minecraft.world.level.block.entity.vault.VaultConfig
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.AABB
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.block.Vault
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.EnderPearl
 import org.bukkit.entity.Item
@@ -115,7 +118,7 @@ class CancelListeners : SLEventListener() {
 	@Suppress("Unused")
 	fun onPlayerTeleportEvent(event: PlayerTeleportEvent) {
 		event.isCancelled = when (event.cause) {
-			PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT, PlayerTeleportEvent.TeleportCause.ENDER_PEARL -> true
+			PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT, PlayerTeleportEvent.TeleportCause.ENDER_PEARL -> true
 			PlayerTeleportEvent.TeleportCause.SPECTATE -> !event.player.hasPermission("group.dutymode")
 			else -> false
 		}
@@ -248,12 +251,16 @@ class CancelListeners : SLEventListener() {
 	fun onTrialVaultPlacement(event: BlockPlaceEvent) {
 		Tasks.sync {
 			val state = event.block.getState(false)
-			if (state !is CraftVault) return@sync
+			if (state !is Vault) return@sync
 
-			val entity = state.tileEntity
-
-			entity.config = disabledVaultConfig
+			val batLoot = Bukkit.getLootTable(NamespacedKey.minecraft("entities/bat"))!!
+			state.lootTable = batLoot
+			state.displayedLootTable = null
+			state.keyItem = ItemStack(Material.BEDROCK)
+			state.activationRange = 0.0
+			state.deactivationRange = 0.0001
 			state.nextStateUpdateTime = Long.MAX_VALUE
+			state.update(true, false)
 		}
 	}
 

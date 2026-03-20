@@ -16,6 +16,9 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 	val cacheType: CacheType,
 	val identifier: String,
 	val typeClass: Class<T>,
+	/**
+	 * Serializer used to store and retrieve this filter type's value from PDC.
+	 */
 	val persistentDataType: PersistentDataType<*, T>,
 	val metaType: PDCSerializers.RegisteredSerializer<M>
 ) {
@@ -95,6 +98,12 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 //		}
 //	}
 
+	/**
+	 * Filter type for item-based transport filtering.
+	 *
+	 * Stores an example [ItemStack] as the filter value and uses [ItemSerializer]
+	 * so the item can be persisted in PDC as part of a filter entry.
+	 */
 	data object ItemType : FilterType<ItemStack, ItemFilterMeta>(
 		cacheType = CacheType.ITEMS,
 		identifier = "ITEMS",

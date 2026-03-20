@@ -67,7 +67,7 @@ class SinkAnimation(
 
 			val initColor = Color.ORANGE
 
-			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor, false)) }
+			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor)) }
 
 			val originHeading = Vector(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0))
 			val (_, _) = originHeading.orthogonalVectors()
@@ -105,7 +105,7 @@ class SinkAnimation(
 	}
 
 	fun addShockwave() {
-		val explosionRing = EXPLOSION_RING.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.WHITE, false)) }
+		val explosionRing = EXPLOSION_RING.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.WHITE)) }
 		val ringDisplayContainer = ItemDisplayContainer(world, 0.1f, origin.toCenterVector(), Vector(0, 1, 0), explosionRing, playerFilter = playerFilter)
 		ringDisplayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
@@ -288,7 +288,7 @@ class SinkAnimation(
 
 			val newColor = Color.fromRGB(blendedR, blendedG, blendedB)
 
-			wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
+			wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor))
 		}
 	}
 }
