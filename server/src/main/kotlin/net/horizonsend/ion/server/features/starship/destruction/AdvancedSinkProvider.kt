@@ -316,8 +316,9 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
-					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
-					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
+					nmsChunk.`moonrise$getChunkHolder`().vanillaChunkHolder.blockChanged(blockPos)
+					//TODO: PICK OUT FLAGS
+					nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, 0)
 
 					section.setBlockState(localX, localY, localZ, AIR, false)
 
@@ -368,8 +369,9 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 					if (data.isAir) continue
 
 					val blockPos = BlockPos(x, y, z)
-					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
-					nmsChunk.level.onBlockStateChange(blockPos, AIR, data)
+					nmsChunk.`moonrise$getChunkHolder`().vanillaChunkHolder.blockChanged(blockPos)
+					//TODO: PICK OUT FLAGS
+					nmsChunk.level.sendBlockUpdated(blockPos, AIR, data, 0)
 
 					section.setBlockState(localX, localY, localZ, data, false)
 					lightModule.checkBlock(BlockPos(x, y, z))
