@@ -206,7 +206,7 @@ public class BlockPlacementRaw {
 //        sendChunkPacket(nmsChunk, bitmask);
 
 		// Send Chunk Packet
-		ChunkHolder playerChunk = nmsChunk.moonrise$getChunkAndHolder().holder();
+		ChunkHolder playerChunk = nmsChunk.moonrise$getChunkHolder().vanillaChunkHolder;
 		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), true);
 
 		for (ServerPlayer player : playerChunk.moonrise$getPlayers(false)) {
