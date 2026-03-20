@@ -1,16 +1,11 @@
 package net.horizonsend.ion.server.features.ai.reward
 
-import io.papermc.paper.util.ItemComponentSanitizer.override
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.common.utils.miscellaneous.randomFloat
-import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
-import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
-import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -22,7 +17,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Supplier
-import kotlin.math.cbrt
 
 class AIItemBagRewardProvider(
 	override val starship: ActiveControlledStarship,

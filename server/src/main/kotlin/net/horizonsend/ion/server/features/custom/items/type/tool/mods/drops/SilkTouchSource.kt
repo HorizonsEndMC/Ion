@@ -49,7 +49,7 @@ object SilkTouchSource : ItemModification, DropSource {
 	}
 
 	private val silkPick = ItemStack(Material.DIAMOND_PICKAXE)
-		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true))
+		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1)))
 
 	override val usedTool: ItemStack = silkPick
 

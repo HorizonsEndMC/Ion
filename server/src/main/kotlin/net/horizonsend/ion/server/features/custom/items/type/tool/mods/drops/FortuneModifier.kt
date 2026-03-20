@@ -50,7 +50,7 @@ class FortuneModifier(
 	}
 
 	private val fortunePick = ItemStack(Material.DIAMOND_PICKAXE)
-		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.FORTUNE to level), true))
+		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.FORTUNE to level)))
 
 	override val usedTool: ItemStack = fortunePick
 
