@@ -48,6 +48,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.nbt.SnbtPrinterTagVisitor
 import net.minecraft.server.MinecraftServer
@@ -358,7 +359,11 @@ object ChestShops : IonServerComponent() {
 	 **/
 	private fun getStringRepresentation(itemStack: ItemStack): String {
 		val nms = CraftItemStack.asNMSCopy(itemStack)
-		val tag: CompoundTag = nms.save(MinecraftServer.getServer().registryAccess(), CompoundTag()) as CompoundTag
+		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
+
+		val tag = NMSItemStack.CODEC.encodeStart(ops, nms)
+			.getOrThrow { error -> IllegalArgumentException("Failed to encode chest shop item: $error") } as CompoundTag
+
 		return SnbtPrinterTagVisitor().visit(tag)
 	}
 
@@ -367,8 +372,10 @@ object ChestShops : IonServerComponent() {
 	 **/
 	private fun loadItem(string: String): ItemStack? {
 		val nbt = NbtUtils.snbtToStructure(string)
+		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
-		val nmsStack = NMSItemStack.parse(MinecraftServer.getServer().registryAccess(), nbt).getOrNull() ?: return null
+		val nmsStack = NMSItemStack.CODEC.parse(ops, nbt)
+			.getOrThrow { error -> IllegalArgumentException("Failed to decode item stack: $error") }
 
 		return CraftItemStack.asCraftMirror(nmsStack)
 	}

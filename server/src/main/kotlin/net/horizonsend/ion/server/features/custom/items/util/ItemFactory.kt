@@ -96,6 +96,13 @@ class ItemFactory private constructor(
 			return this
 		}
 
+		fun addData(type: DataComponentType.NonValued): Builder {
+			this.itemModifiers += Consumer<ItemStack> {
+				it.setData(type)
+			}
+			return this
+		}
+
 		fun <T : Any> addPDCEntry(key: NamespacedKey, type: PersistentDataType<*, T>, value: T): Builder {
 			return addModifier { item -> item.updatePersistentDataContainer { set(key, type, value) } }
 		}
