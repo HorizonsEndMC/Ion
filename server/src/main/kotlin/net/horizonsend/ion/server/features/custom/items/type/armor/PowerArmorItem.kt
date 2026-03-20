@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.custom.items.type.armor
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
@@ -55,7 +54,12 @@ class PowerArmorItem(
 		.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
 		.setCustomModel(itemModel)
 		.setMaxStackSize(1)
-		.addData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable(false))
+		.addData(DataComponentTypes.UNBREAKABLE)
+		.addModifier { item ->
+			item.editMeta { meta ->
+				meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE)
+			}
+		}
 		.addData(DataComponentTypes.EQUIPPABLE, Equippable
 			.equippable(slot)
 			.damageOnHurt(false)

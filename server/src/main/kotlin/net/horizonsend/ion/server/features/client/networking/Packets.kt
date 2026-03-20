@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.client.networking.packets.PlayerRemov
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.bukkit.entity.Player
 
 abstract class IonPacketHandler {
@@ -27,7 +27,7 @@ abstract class IonPacketHandler {
 	) {
 	}
 
-	fun id(s: String) = ResourceLocation.fromNamespaceAndPath("ion", s)
+	fun id(s: String) = Identifier.fromNamespaceAndPath("ion", s)
 }
 
 enum class Packets(

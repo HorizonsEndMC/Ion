@@ -8,19 +8,15 @@ import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
-import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.minecraft.core.BlockPos
-import net.minecraft.nbt.ListTag
-import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -30,8 +26,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.ShulkerBox
 import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.Piston
-import org.bukkit.craftbukkit.block.CraftShulkerBox
-import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
@@ -50,7 +44,7 @@ object CratePlacer : CustomItem(
 ) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(50_000, 10, true))
-		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@CratePlacer) { event, _, item ->
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@CratePlacer) { event, _, item ->
 			tryPlaceCrate(event.player, item)
 		})
 	}
@@ -88,44 +82,15 @@ object CratePlacer : CustomItem(
 			//attempt to place the crate
 			//I copied gutins code and prayed that it worked
 			//fake block place event
-			val data = item.type.createBlockData()
-			data as Directional
+			val paperItem = itemState.inventory.filterNotNull().first()
+			val replacedState = target.state
 
+			val data = item.type.createBlockData() as Directional
 			data.facing = offset
 
-			target.setBlockData(data, true)
-
-			val paperItem = itemState.inventory.filterNotNull().first()
-			val nms = CraftItemStack.asNMSCopy(paperItem)
-
-			val itemNBT = nms.save(player.world.minecraft.registryAccess())
-
-			val boxEntity = target.state as ShulkerBox
-			boxEntity.customName(item.itemMeta.displayName())
-			boxEntity.update()
-
-			val entity = (target.state as CraftShulkerBox).tileEntity
-			val chunk = entity.location.chunk.minecraft
-
-			// Save the full compound tag
-			val base = entity.saveWithFullMetadata(player.world.minecraft.registryAccess())
-
-			val items = ListTag()
-			items.add(itemNBT)
-
-			base.put("Items", items)
-
-			val blockPos = BlockPos(x, y, z)
-			// Remove old
-			chunk.removeBlockEntity(blockPos)
-
-			val blockEntity = BlockEntity.loadStatic(blockPos, entity.blockState, base, player.world.minecraft.registryAccess())!!
-			chunk.addAndRegisterBlockEntity(blockEntity)
-
-			//event check
 			val event = BlockPlaceEvent(
 				target,
-				state,
+				replacedState,
 				against,
 				item,
 				player,
@@ -133,34 +98,41 @@ object CratePlacer : CustomItem(
 				EquipmentSlot.HAND
 			)
 
-			if (event.callEvent()) {
-				player.inventory.removeItemAnySlot(item.asOne())
-
-				val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
-				powerManager.removePower(itemStack, this, powerManager.getPowerUse(itemStack, this))
-
-				target.world.playSound(
-					target.location,
-					"minecraft:block.stone.place",
-					SoundCategory.PLAYERS,
-					1.0f,
-					1.0f
-				)
-
-				target.world.playSound(
-					target.location,
-					"minecraft:block.honey_block.slide",
-					SoundCategory.PLAYERS,
-					1.0f,
-					1.0f
-				)
-
-				break
-			} else {
-				//placement is invalid, revert back to old state
-				target.setBlockData(tempData, true)
-				break
+			if (!event.callEvent() || !event.canBuild()) {
+				return
 			}
+
+			target.setBlockData(data, true)
+
+			val placedBox = target.state as ShulkerBox
+			placedBox.customName(item.itemMeta.displayName())
+			placedBox.inventory.clear()
+			placedBox.inventory.addItem(paperItem.clone())
+			placedBox.update(true, false)
+
+			player.inventory.removeItemAnySlot(item.asOne())
+
+			val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
+			powerManager.removePower(itemStack, this, powerManager.getPowerUse(itemStack, this))
+
+			player.inventory.removeItemAnySlot(item.asOne())
+
+			target.world.playSound(
+				target.location,
+				"minecraft:block.stone.place",
+				SoundCategory.PLAYERS,
+				1.0f,
+				1.0f
+			)
+
+			target.world.playSound(
+				target.location,
+				"minecraft:block.honey_block.slide",
+				SoundCategory.PLAYERS,
+				1.0f,
+				1.0f
+			)
+			 break
 		}
 	}
 
