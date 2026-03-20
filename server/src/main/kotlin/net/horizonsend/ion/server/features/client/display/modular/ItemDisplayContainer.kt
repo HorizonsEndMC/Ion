@@ -142,7 +142,7 @@ class ItemDisplayContainer(
 
 	override fun update() {
 		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
-		val playerChunk = chunk.minecraft.`moonrise$getChunkAndHolder`().holder ?: return
+		val playerChunk = chunk.minecraft.`moonrise$getChunkHolder`().vanillaChunkHolder ?: return
 
 		val chunkViewers = playerChunk.`moonrise$getPlayers`(false).toSet()
 		val newViewers = chunkViewers.filterNot { shownPlayers.contains(it.uuid) }
