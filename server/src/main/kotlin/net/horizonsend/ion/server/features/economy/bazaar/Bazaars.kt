@@ -336,7 +336,10 @@ object Bazaars : IonServerComponent() {
 			Tasks.async {
 				BazaarItem.addStock(resultItem._id, count)
 				player.information("Added $count of $itemString to listing in $cityName")
-				BazaarDepositItemToSellOrderEvent(player, itemString, count, cityName).callEvent()
+
+				Tasks.sync {
+					BazaarDepositItemToSellOrderEvent(player, itemString, count, cityName).callEvent()
+				}
 
 				result.complete(InputResult.SuccessReason(listOf(template(text("Added {0} of {1} to listing in {2}", GREEN), count, itemString, cityName))))
 			}
