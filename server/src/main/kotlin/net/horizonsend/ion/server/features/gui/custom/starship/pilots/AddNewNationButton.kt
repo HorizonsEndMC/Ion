@@ -85,12 +85,12 @@ class AddNewNationButton(val nationMenu: ManageNationsMenu) : AbstractItem() {
             val nationId = id
             if (nationId != null) Tasks.async {
                 val data = addNation.nationMenu.main.data
-                (data as PlayerStarshipData).name += nationId
 
                 val nationsSet = PlayerStarshipData.findPropById(data._id, PlayerStarshipData::nations)
                 if (nationsSet == null) {
                     PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::nations, mutableSetOf()))
                 }
+                (data as PlayerStarshipData).nations?.plusAssign(nationId)
                 PlayerStarshipData.updateById(data._id, addToSet(PlayerStarshipData::nations, id))
 
                 player.success("Added ${addNation.currentName} as pilots to starship.")
