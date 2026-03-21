@@ -55,7 +55,7 @@ services:
       - ./config/paper:/config
     environment:
       TYPE: "PAPER"
-      VERSION: "1.21.4"
+      VERSION: "1.21.11"
       MEMORY: 2G
       PAPER_CHANNEL: "experimental"
       EULA: "TRUE"
@@ -65,5 +65,5 @@ services:
       JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       CREATE_CONSOLE_IN_PIPE: "TRUE"
       FORCE_REDOWNLOAD: false
-      PAPER_BUILD: 232
+      PAPER_BUILD: 127
 
