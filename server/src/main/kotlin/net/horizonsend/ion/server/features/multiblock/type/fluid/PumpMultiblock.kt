@@ -42,6 +42,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isChiseled
 import net.horizonsend.ion.server.miscellaneous.utils.isLava
+import net.horizonsend.ion.server.miscellaneous.utils.isLightningRod
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -203,7 +204,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			val type = pumpOriginBlock.type
 
 			when {
-				type == Material.LIGHTNING_ROD -> tryPumpWater(pumpOriginBlock, delta)
+				type.isLightningRod -> tryPumpWater(pumpOriginBlock, delta)
 				type.isChiseled -> tryPumpLava(pumpOriginBlock, type)
 			}
 		}
@@ -241,7 +242,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			var block = getPumpOrigin()
 			var data = block.blockData
 
-			while (data.material == Material.LIGHTNING_ROD) {
+			while (data.material.isLightningRod) {
 				// Return the depth if the block is in water & surrounded by water
 				if (data is Waterlogged && data.isWaterlogged) {
 					if (CARDINAL_BLOCK_FACES.all { face ->

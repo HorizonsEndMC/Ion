@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.createPastebinHttpRequest
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
+import net.horizonsend.ion.server.miscellaneous.utils.isLightningRod
 import net.horizonsend.ion.server.miscellaneous.utils.isPipedInventory
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
@@ -201,7 +202,7 @@ object StructureCreator : SLCommand() {
 				".endRod(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.END_ROD.createBlockData()))"
 			}
 
-			data.material == Material.LIGHTNING_ROD -> {
+			data.material.isLightningRod -> {
 				data as Directional
 				val facing = RelativeFace[forwards, data.facing]
 				".lightningRod(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"

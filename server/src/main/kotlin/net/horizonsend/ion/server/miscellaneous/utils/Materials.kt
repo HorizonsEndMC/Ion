@@ -49,6 +49,9 @@ val Material.isSeaLantern: Boolean get() = this == Material.SEA_LANTERN
 
 val PRESSURE_PLATE_TYPES = getMatchingMaterials { it.name.endsWith("_PRESSURE_PLATE") }
 
+val LIGHTNING_ROD_TYPES = getMatchingMaterials { it.name.endsWith("LIGHTNING_ROD") }
+val Material.isLightningRod: Boolean get() = LIGHTNING_ROD_TYPES.contains(this)
+
 val STAIR_TYPES = getMatchingMaterials { it.name.endsWith("_STAIRS") }
 val Material.isStairs: Boolean get() = STAIR_TYPES.contains(this)
 
@@ -115,6 +118,8 @@ val FENCE_TYPES = getMatchingMaterials { it.name.endsWith("_FENCE") }
 val Material.isFence: Boolean get() = FENCE_TYPES.contains(this)
 
 val FENCE_GATE_TYPES = getMatchingMaterials { it.name.endsWith("_FENCE_GATE") }
+
+val SHELF_TYPES = getMatchingMaterials { it.name.endsWith("_SHELF") }
 
 val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)
