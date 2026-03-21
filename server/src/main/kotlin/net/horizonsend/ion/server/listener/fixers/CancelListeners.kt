@@ -30,6 +30,8 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.Vault
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.EnderPearl
+import org.bukkit.entity.Ghast
+import org.bukkit.entity.HappyGhast
 import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -45,6 +47,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.VaultDisplayItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntityMountEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -261,6 +264,16 @@ class CancelListeners : SLEventListener() {
 			state.deactivationRange = 0.0001
 			state.nextStateUpdateTime = Long.MAX_VALUE
 			state.update(true, false)
+		}
+	}
+
+	@EventHandler
+	fun onEntityMount(event: EntityMountEvent) {
+		val rider = event.entity
+		val mount = event.mount
+
+		if (rider is Player && mount is HappyGhast) {
+			event.isCancelled = true
 		}
 	}
 
