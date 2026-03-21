@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.command.economy.CollectorCommand
 import net.horizonsend.ion.server.command.economy.EcoStationCommand
 import net.horizonsend.ion.server.command.economy.TradeDebugCommand
 import net.horizonsend.ion.server.command.misc.AIOpponentCommand
+import net.horizonsend.ion.server.command.starship.ai.AIHeatCommand
 import net.horizonsend.ion.server.command.misc.BlockCommand
 import net.horizonsend.ion.server.command.misc.BountyAdminCommand
 import net.horizonsend.ion.server.command.misc.BountyCommand
@@ -148,6 +149,7 @@ val commands: List<SLCommand> = listOf(
 	BlueprintCommand,
 	StarshipDebugCommand,
 	AIDebugCommand,
+	AIHeatCommand,
 	AIOpponentCommand,
 	EncounterStatusCommand,
 	StarshipCommand,

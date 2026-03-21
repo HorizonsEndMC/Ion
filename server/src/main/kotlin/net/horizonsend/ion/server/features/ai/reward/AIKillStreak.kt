@@ -71,6 +71,18 @@ object AIKillStreak : IonServerComponent() {
 		}
 	}
 
+	fun setHeatLevel(player: Player, level: Int) {
+	    val clampedLevel = level.coerceIn(0, 20)
+
+	    if (clampedLevel == 0) {
+		      playerHeatList.remove(player.uniqueId)
+		      return
+	    }
+
+	    val minimumScore = clampedLevel * 1000 - 500
+	    playerHeatList[player.uniqueId] = PlayerHeat(score = minimumScore, currentHeat = clampedLevel)
+  }
+
 	private fun calculateHeat(score: Int): Int {
 		return ((score + 500) / 1000).coerceAtMost(MAX_LEVELS)
 	}
