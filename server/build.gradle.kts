@@ -40,12 +40,12 @@ dependencies {
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }
-	compileOnly("net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT") { exclude("*") }
+	compileOnly("net.citizensnpcs:citizens-main:2.0.41-SNAPSHOT") { exclude("*") }
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.30.1")
 	compileOnly("net.luckperms:api:5.5")
-	compileOnly("xyz.xenondevs.invui:invui:1.46") // Downloaded via paper library manager for remapping
-	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
+	compileOnly("xyz.xenondevs.invui:invui:1.49") // Downloaded via paper library manager for remapping
+	compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
 
 	// Included Dependencies
 	implementation("com.manya:persistent-data-types:1.0.25")
