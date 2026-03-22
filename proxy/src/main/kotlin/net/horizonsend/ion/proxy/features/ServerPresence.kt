@@ -14,7 +14,7 @@ import java.util.EnumSet
 import javax.imageio.ImageIO
 
 object ServerPresence : IonProxyComponent() {
-	private val primaryVersion = ProtocolVersion.MINECRAFT_1_21_4
+	private val primaryVersion = ProtocolVersion.MINECRAFT_1_21_11
 	private val supportedProtocol = EnumSet.of(
 		ProtocolVersion.MINECRAFT_1_19,
 		ProtocolVersion.MINECRAFT_1_19_1,
@@ -31,6 +31,7 @@ object ServerPresence : IonProxyComponent() {
 		ProtocolVersion.MINECRAFT_1_21_6,
 		ProtocolVersion.MINECRAFT_1_21_7,
 		ProtocolVersion.MINECRAFT_1_21_9,
+		ProtocolVersion.MINECRAFT_1_21_11,
 	)
 
 	private val messages = URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")
