@@ -235,4 +235,5 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE_JUNCTION")
 
 	val TEST_FOOD = registerTypedKey<FoodItem>("TEST_FOOD")
+	val HORIZON_FRIED_EGG = registerTypedKey<FoodItem>("HORIZON_FRIED_EGG")
 }

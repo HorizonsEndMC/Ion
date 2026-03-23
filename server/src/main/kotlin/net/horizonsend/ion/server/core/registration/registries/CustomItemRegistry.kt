@@ -810,6 +810,16 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 2.4f
 			)
 		)
+		register(
+			CustomItemKeys.HORIZON_FRIED_EGG, FoodItem(
+				key = CustomItemKeys.HORIZON_FRIED_EGG,
+				displayName = Component.text("Horizon Fried Egg"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 0.6f
+			)
+		)
 	}
 
 	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {

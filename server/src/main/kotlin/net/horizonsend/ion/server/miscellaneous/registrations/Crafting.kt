@@ -50,6 +50,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARREL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HORIZON_FRIED_EGG
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
@@ -157,6 +158,7 @@ import org.bukkit.Material.DEEPSLATE_REDSTONE_ORE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
+import org.bukkit.Material.EGG
 import org.bukkit.Material.EMERALD
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENCHANTED_BOOK
@@ -232,6 +234,7 @@ import org.bukkit.inventory.RecipeChoice.ExactChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
+import org.bukkit.inventory.SmokingRecipe
 import org.bukkit.inventory.recipe.CookingBookCategory
 import org.bukkit.inventory.recipe.CraftingBookCategory
 
@@ -885,6 +888,60 @@ object Crafting : IonServerComponent() {
 		registerOreType(rawType = RAW_TITANIUM, oreType = TITANIUM_ORE, smeltedType = TITANIUM_INGOT)
 		registerOreType(rawType = RAW_URANIUM, oreType = URANIUM_ORE, smeltedType = URANIUM)
 		registerFurnaceRecipe(smelted = CHETHERITE_BLOCK, result = CHETHERITE)
+	}
+
+	private fun registerFoodFurnaceRecipes() {
+		// Custom item to custom item
+		fun registerFurnaceRecipe(smelted: IonRegistryKey<CustomItem, out CustomItem>, result: IonRegistryKey<CustomItem, out CustomItem>, category: CookingBookCategory = CookingBookCategory.FOOD) {
+			val furnaceRecipe = FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.key.lowercase()}_smelting"),
+				result.getValue().constructItemStack(),
+				ExactChoice(smelted.getValue().constructItemStack()),
+				0.5f,
+				200
+			)
+			furnaceRecipe.category = category
+			Bukkit.addRecipe(furnaceRecipe)
+			listOfCustomRecipes.add(furnaceRecipe.key)
+
+			val smokingRecipe = SmokingRecipe(
+				NamespacedKey(IonServer, "${smelted.key.lowercase()}_smoking"),
+				result.getValue().constructItemStack(),
+				ExactChoice(smelted.getValue().constructItemStack()),
+				0.5f,
+				100
+			)
+			smokingRecipe.category = category
+			Bukkit.addRecipe(smokingRecipe)
+			listOfCustomRecipes.add(smokingRecipe.key)
+		}
+
+		// Normal item to custom item
+		fun registerFurnaceRecipe(smelted: Material, result: IonRegistryKey<CustomItem, out CustomItem>, category: CookingBookCategory = CookingBookCategory.FOOD) {
+			val furnaceRecipe = FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.key.toString().lowercase()}_smelting"),
+				result.getValue().constructItemStack(),
+				MaterialChoice(smelted),
+				0.5f,
+				200
+			)
+			furnaceRecipe.category = category
+			Bukkit.addRecipe(furnaceRecipe)
+			listOfCustomRecipes.add(furnaceRecipe.key)
+
+			val smokingRecipe = SmokingRecipe(
+				NamespacedKey(IonServer, "${smelted.key.toString().lowercase()}_smoking"),
+				result.getValue().constructItemStack(),
+				MaterialChoice(smelted),
+				0.5f,
+				100
+			)
+			smokingRecipe.category = category
+			Bukkit.addRecipe(smokingRecipe)
+			listOfCustomRecipes.add(smokingRecipe.key)
+		}
+
+		registerFurnaceRecipe(EGG, HORIZON_FRIED_EGG)
 	}
 
 	private fun registerTools() {
