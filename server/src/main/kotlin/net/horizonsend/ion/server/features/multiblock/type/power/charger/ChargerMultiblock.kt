@@ -146,9 +146,15 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 			if (itemPowerStorage.getMaxPower(customItem, item) == itemPowerStorage.getPower(item)) {
 				val result = inventory.result
 				if (result != null && result.type != Material.AIR) return
-				inventory.result = inventory.fuel
-				inventory.fuel = null
-				return
+				if (inventory.smelting != null) {
+					inventory.result = inventory.smelting
+					inventory.smelting = null
+					return
+				} else {
+					inventory.result = inventory.fuel
+					inventory.fuel = null
+					return
+				}
 			}
 
 			var multiplier = multiblock.powerPerSecond
