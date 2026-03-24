@@ -86,7 +86,7 @@ val listeners: List<Listener> = listOf(
 	MultiblockEntities,
 	PrePackaged,
 	AIModuleListener,
-	StuckInHyperspaceListener,
+	//StuckInHyperspaceListener,
 
 	// Achievement Listeners
 	AchievementListeners(),
