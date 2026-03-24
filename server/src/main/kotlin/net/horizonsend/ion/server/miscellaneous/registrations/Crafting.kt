@@ -244,6 +244,7 @@ object Crafting : IonServerComponent() {
 
 	override fun onEnable() {
 		registerOreFurnaceRecipes()
+		registerFoodFurnaceRecipes()
 		registerTools()
 		registerMisc()
 
@@ -919,7 +920,7 @@ object Crafting : IonServerComponent() {
 		// Normal item to custom item
 		fun registerFurnaceRecipe(smelted: Material, result: IonRegistryKey<CustomItem, out CustomItem>, category: CookingBookCategory = CookingBookCategory.FOOD) {
 			val furnaceRecipe = FurnaceRecipe(
-				NamespacedKey(IonServer, "${smelted.key.toString().lowercase()}_smelting"),
+				NamespacedKey(IonServer, "${smelted.toString().lowercase()}_smelting"),
 				result.getValue().constructItemStack(),
 				MaterialChoice(smelted),
 				0.5f,
@@ -930,7 +931,7 @@ object Crafting : IonServerComponent() {
 			listOfCustomRecipes.add(furnaceRecipe.key)
 
 			val smokingRecipe = SmokingRecipe(
-				NamespacedKey(IonServer, "${smelted.key.toString().lowercase()}_smoking"),
+				NamespacedKey(IonServer, "${smelted.toString().lowercase()}_smoking"),
 				result.getValue().constructItemStack(),
 				MaterialChoice(smelted),
 				0.5f,
