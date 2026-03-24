@@ -26,10 +26,13 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SHOTGUN
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SNIPER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CANNON_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESEBURGER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUITRY
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUIT_BOARD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COOKED_GROUND_BEEF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRATE_PLACER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DETONATOR
@@ -52,6 +55,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARREL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HORIZON_FRIED_EGG
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LETTUCE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIMETER
@@ -105,6 +109,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SUPERCON
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_INGOT
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_ORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOMATO
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT
@@ -848,6 +853,9 @@ object Crafting : IonServerComponent() {
 		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.getValue().constructItemStack()))
 		registerSwordRecipes(ENERGY_SWORD_ORANGE, MaterialChoice(COPPER_INGOT))
 		registerSwordRecipes(ENERGY_SWORD_PINK, MaterialChoice(PINK_TULIP))
+
+		// Food
+		shapeless("cheeseburger", CHEESEBURGER.getValue().constructItemStack(), CraftingBookCategory.MISC, ItemStack(Material.BREAD), TOMATO.getValue().constructItemStack(), LETTUCE.getValue().constructItemStack(), CHEESE.getValue().constructItemStack(), COOKED_GROUND_BEEF.getValue().constructItemStack())
 	}
 
 	@EventHandler

@@ -817,7 +817,67 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				itemModel = "mineral/chetherite",
 				stackSize = 64,
 				hunger = 2,
-				saturation = 0.6f
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.TOMATO, FoodItem(
+				key = CustomItemKeys.TOMATO,
+				displayName = Component.text("Tomato"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.LETTUCE, FoodItem(
+				key = CustomItemKeys.LETTUCE,
+				displayName = Component.text("Lettuce"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.CHEESE, FoodItem(
+				key = CustomItemKeys.CHEESE,
+				displayName = Component.text("Butter"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.GROUND_BEEF, FoodItem(
+				key = CustomItemKeys.GROUND_BEEF,
+				displayName = Component.text("Raw Ground Beef"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.COOKED_GROUND_BEEF, FoodItem(
+				key = CustomItemKeys.COOKED_GROUND_BEEF,
+				displayName = Component.text("Cooked Ground Beef"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.CHEESEBURGER, FoodItem(
+				key = CustomItemKeys.CHEESEBURGER,
+				displayName = Component.text("Cheeseburger"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
 			)
 		)
 	}
