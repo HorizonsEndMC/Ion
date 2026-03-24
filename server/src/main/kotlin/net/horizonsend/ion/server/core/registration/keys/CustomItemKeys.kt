@@ -236,4 +236,10 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 
 	val TEST_FOOD = registerTypedKey<FoodItem>("TEST_FOOD")
 	val HORIZON_FRIED_EGG = registerTypedKey<FoodItem>("HORIZON_FRIED_EGG")
+	val TOMATO = registerTypedKey<FoodItem>("TOMATO")
+	val LETTUCE = registerTypedKey<FoodItem>("LETTUCE")
+	val CHEESE = registerTypedKey<FoodItem>("CHEESE")
+	val GROUND_BEEF = registerTypedKey<FoodItem>("GROUND_BEEF")
+	val COOKED_GROUND_BEEF = registerTypedKey<FoodItem>("COOKED_GROUND_BEEF")
+	val CHEESEBURGER = registerTypedKey<FoodItem>("CHEESEBURGER")
 }

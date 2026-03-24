@@ -81,6 +81,20 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				.updateFurnace()
 		))
 
+		register(MultiblockRecipeKeys.GROUND_BEEF_PROCESSING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.GROUND_BEEF_PROCESSING,
+			clazz = CompressorMultiblock.CompressorMultiblockEntity::class,
+			smeltingItem = ItemRequirement.MaterialRequirement(Material.BEEF),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(30L),
+				ItemResult.simpleResult(CustomItemKeys.GROUND_BEEF),
+			))
+				.updateProgressText()
+				.updateFurnace()
+		))
+
 		register(MultiblockRecipeKeys.REACTIVE_PLATING_PRESSING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.REACTIVE_PLATING_PRESSING,
 			clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
@@ -152,6 +166,20 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				ItemResult.simpleResult(CustomItemKeys.REINFORCED_FRAME),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.CHEESE_PROCESSING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.CHEESE_PROCESSING,
+			clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
+			smeltingItem = MaterialRequirement(Material.MILK_BUCKET),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofMinutes(10L),
+				ItemResult.simpleResult(CustomItemKeys.CHEESE),
+			))
 				.updateProgressText()
 				.updateFurnace()
 		))
