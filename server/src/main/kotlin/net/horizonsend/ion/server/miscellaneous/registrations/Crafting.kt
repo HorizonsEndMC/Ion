@@ -52,6 +52,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.FUEL_ROD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_OXYGEN
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GROUND_BEEF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARREL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HORIZON_FRIED_EGG
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
@@ -951,6 +952,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		registerFurnaceRecipe(EGG, HORIZON_FRIED_EGG)
+		registerFurnaceRecipe(GROUND_BEEF, COOKED_GROUND_BEEF)
 	}
 
 	private fun registerTools() {
