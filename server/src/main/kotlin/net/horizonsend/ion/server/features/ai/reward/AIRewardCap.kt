@@ -29,7 +29,7 @@ object AIRewardCap : IonServerComponent() {
 			return 1.0
 		}
 		if (score > MAX_SCORE * MAX_CAP_MULTIPLIER) {
-			return 0.0
+			return 0.2
 		}
 		return PENALTY
 	}
@@ -46,10 +46,10 @@ object AIRewardCap : IonServerComponent() {
 		val penalty = getPenalty(player)
 		if (penalty < 1.0) {
 			player.sendMessage(template(
-				message = Component.text("Due to overzealous sinking rewards are reduced by {0}% {1}.", NamedTextColor.DARK_RED),
+				message = Component.text("Due to daily sinking limits, rewards are reduced by {0}% {1}.", NamedTextColor.DARK_RED),
 				paramColor = NamedTextColor.RED,
 				"%.0f".format((1 - penalty) * 100),
-				text("[Details]", HE_LIGHT_BLUE).hoverEvent(text("The cap resets every server restart"))
+				text("[Hover for details]", HE_LIGHT_BLUE).hoverEvent(text("The cap resets every server restart"))
 			))
 		}
 	}
