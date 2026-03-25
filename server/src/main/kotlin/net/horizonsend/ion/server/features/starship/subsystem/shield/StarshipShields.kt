@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.ai.reward.AIKillStreak
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
@@ -254,13 +253,11 @@ object StarshipShields : IonServerComponent() {
 
 		val damagedPercent = blocks.size.toFloat() / size.toFloat()
 
-		val powerMod = starship.playerPilot?.let { AIKillStreak.getHeatMultiplier(it) } ?: 1.0
-
 		shieldLoop@
 		for (shield: ShieldSubsystem in starship.shields) {
 			processShield(
 				shield,
-				radius * powerMod,
+				radius,
 				protectedBlocks,
 				blocks,
 				damagedPercent,
