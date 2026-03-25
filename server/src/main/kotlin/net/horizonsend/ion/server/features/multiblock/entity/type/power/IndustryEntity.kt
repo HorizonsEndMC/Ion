@@ -62,6 +62,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 			return
 		}
 		furnaceActive = true
+		stopCooking() // prevents actual furnace recipes from cooking
 	}
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
