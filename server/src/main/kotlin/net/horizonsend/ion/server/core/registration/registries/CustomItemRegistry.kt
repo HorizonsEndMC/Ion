@@ -843,7 +843,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.CHEESE, FoodItem(
 				key = CustomItemKeys.CHEESE,
-				displayName = Component.text("Butter"),
+				displayName = Component.text("Cheese"),
 				itemModel = "mineral/chetherite",
 				stackSize = 64,
 				hunger = 2,
