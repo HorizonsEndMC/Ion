@@ -880,6 +880,36 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 2.4f
 			)
 		)
+		register(
+			CustomItemKeys.SALAMI, FoodItem(
+				key = CustomItemKeys.SALAMI,
+				displayName = Component.text("Salami"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.PEPPERONI_PIZZA, FoodItem(
+				key = CustomItemKeys.PEPPERONI_PIZZA,
+				displayName = Component.text("Raw Pepperoni Pizza"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.COOKED_PEPPERONI_PIZZA, FoodItem(
+				key = CustomItemKeys.COOKED_PEPPERONI_PIZZA,
+				displayName = Component.text("Cooked Pepperoni Pizza"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
 	}
 
 	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {

@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUITRY
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUIT_BOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COOKED_GROUND_BEEF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COOKED_PEPPERONI_PIZZA
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRATE_PLACER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DETONATOR
@@ -61,6 +62,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBO
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIMETER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NETHERITE_CASING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PEPPERONI_PIZZA
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PISTOL_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_BOOTS
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_CHESTPLATE
@@ -91,6 +93,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REINFORCED_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAMI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMOKE_GRENADE
@@ -227,6 +230,7 @@ import org.bukkit.Material.STRING
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.WHEAT
 import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
@@ -857,6 +861,14 @@ object Crafting : IonServerComponent() {
 
 		// Food
 		shapeless("cheeseburger", CHEESEBURGER.getValue().constructItemStack(), CraftingBookCategory.MISC, ItemStack(Material.BREAD), TOMATO.getValue().constructItemStack(), LETTUCE.getValue().constructItemStack(), CHEESE.getValue().constructItemStack(), COOKED_GROUND_BEEF.getValue().constructItemStack())
+		shaped("pepperoni_pizza", PEPPERONI_PIZZA.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape("sss", "ctc", "www")
+
+			setIngredient('w', WHEAT)
+			setIngredient('c', CHEESE)
+			setIngredient('t', TOMATO)
+			setIngredient('s', SALAMI)
+		}
 	}
 
 	@EventHandler
@@ -953,6 +965,7 @@ object Crafting : IonServerComponent() {
 
 		registerFurnaceRecipe(EGG, HORIZON_FRIED_EGG)
 		registerFurnaceRecipe(GROUND_BEEF, COOKED_GROUND_BEEF)
+		registerFurnaceRecipe(PEPPERONI_PIZZA, COOKED_PEPPERONI_PIZZA)
 	}
 
 	private fun registerTools() {
