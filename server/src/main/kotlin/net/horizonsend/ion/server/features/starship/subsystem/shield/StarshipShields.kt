@@ -13,17 +13,16 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.boss.BarColor
-import org.bukkit.boss.BossBar
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -37,7 +36,7 @@ import kotlin.math.sqrt
 object StarshipShields : IonServerComponent() {
 	var LAST_EXPLOSION_ABSORBED = false
 
-	val updatedStarships = ConcurrentHashMap.newKeySet<ActiveStarship>()
+	val updatedStarships: ConcurrentHashMap.KeySetView<ActiveStarship, Boolean> = ConcurrentHashMap.newKeySet()
 	private var explosionPowerOverride: Double? = null
 
 	override fun onEnable() {
@@ -163,13 +162,14 @@ object StarshipShields : IonServerComponent() {
 			val extraPercents: String = if (percents.size > 1) {
 				" (${
 				percents.joinToString(separator = " + ") {
-					"${percentColor(it, isReinforced)}${formatPercent(it)}%$titleColor"
+					val splitColor = percentColor(it, isReinforced)
+					"<color:${splitColor.asHexString()}>${formatPercent(it)}%<color:${titleColor.asHexString()}>"
 				}
 				})"
 			} else {
 				""
 			}
-			val title = "${SLTextStyle.GRAY}$name$titleColor ${formatPercent(total)}%$extraPercents"
+			val title = "<gray>$name<color:${titleColor.asHexString()}> ${formatPercent(total)}%$extraPercents"
 			if (bossBar.title != title) {
 				bossBar.setTitle(title)
 			}
@@ -186,16 +186,16 @@ object StarshipShields : IonServerComponent() {
 		}
 	}
 
-	private fun percentColor(percent: Double, reinforced: Boolean): SLTextStyle = when {
-		reinforced -> SLTextStyle.LIGHT_PURPLE
-		percent <= 0.05 -> SLTextStyle.RED
-		percent <= 0.10 -> SLTextStyle.GOLD
-		percent <= 0.25 -> SLTextStyle.YELLOW
-		percent <= 0.40 -> SLTextStyle.GREEN
-		percent <= 0.55 -> SLTextStyle.DARK_GREEN
-		percent <= 0.70 -> SLTextStyle.AQUA
-		percent <= 0.85 -> SLTextStyle.DARK_AQUA
-		else -> SLTextStyle.BLUE
+	private fun percentColor(percent: Double, reinforced: Boolean): TextColor = when {
+		reinforced -> TextColor.color(255, 85, 255) // LIGHT_PURPLE
+		percent <= 0.05 -> TextColor.color(255, 85, 85) // RED
+		percent <= 0.10 -> TextColor.color(255, 170, 0) // GOLD
+		percent <= 0.25 -> TextColor.color(255, 255, 85) // YELLOW
+		percent <= 0.40 -> TextColor.color(85, 255, 85) // GREEN
+		percent <= 0.55 -> TextColor.color(0, 170, 0) // DARK_GREEN
+		percent <= 0.70 -> TextColor.color(85, 255, 255) // AQUA
+		percent <= 0.85 -> TextColor.color(0, 170, 170) // DARK_AQUA
+		else -> TextColor.color(85, 85, 255) // BLUE
 	}
 
 	private fun formatPercent(percent: Double): Double = (percent * 1000).toInt().toDouble() / 10.0

@@ -6,13 +6,11 @@ import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
-import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.LegacyChatColorValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.toBukkitColor
 import net.kyori.adventure.text.Component.text
-import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -45,48 +43,97 @@ fun Player.manageRolesGUI(commandName: String, roleItems: List<GuiItem>) {
 }
 
 private fun InventoryClickEvent.createRoleMenu(commandName: String) {
-	var name = ""
-	var color = ChatColor.BLUE
+	// Using lateinit vars to capture state across the nested input chain
+	lateinit var nameValue: String
+	var redValue = 0
+	var greenValue = 0
+	var blueValue = 0
 
-	playerClicker.openInputMenu<String>(
-		prompt = text("Enter role name"),
-		description = text("3-20 characters; alphanumeric"),
-		inputValidator = InputValidator { input: String ->
-			when {
-				!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
-				input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-				else -> ValidatorResult.ValidatorSuccessSingleEntry(input)
-			}
-		}
-	) { _, entry ->
-		name = entry.result
+	// Using lateinit function references to handle forward references in back button handlers
+	lateinit var promptForName: () -> Unit
+	lateinit var promptForRed: () -> Unit
+	lateinit var promptForGreen: () -> Unit
+	lateinit var promptForBlue: () -> Unit
 
+	fun promptForWeight() {
 		playerClicker.openInputMenu(
-			prompt = "Enter <rainbow>Color".miniMessage(),
-			inputValidator = LegacyChatColorValidator
-		) { _, validatorResult ->
-			color = validatorResult.result
-
-			playerClicker.openInputMenu(
-				prompt = text("Enter role weight"),
-				description = text("Must be from 0 to 1000"),
-				inputValidator = RangeIntegerValidator(0..1000)
-			) { _, success ->
-				playerClicker.performCommand("$commandName create $name ${color.name} ${success.result}")
-				Tasks.syncDelay(20) { playerClicker.performCommand("$commandName edit $name") }
-			}
+			prompt = text("Enter role weight"),
+			description = text("Must be from 0 to 1000"),
+			backButtonHandler = { promptForBlue() },
+			inputValidator = RangeIntegerValidator(0..1000)
+		) { _, result ->
+			playerClicker.performCommand("$commandName create $nameValue $redValue $greenValue $blueValue ${result.result}")
+			Tasks.syncDelay(20) { playerClicker.performCommand("$commandName edit $nameValue") }
 		}
 	}
+
+	fun promptForBlue() {
+		playerClicker.openInputMenu(
+			prompt = "Enter <blue>Blue".miniMessage(),
+			description = text("0-255"),
+			backButtonHandler = { promptForGreen() },
+			inputValidator = RangeIntegerValidator(0..255)
+		) { _, result ->
+			blueValue = result.result
+			promptForWeight()
+		}
+	}
+
+	promptForGreen = {
+		playerClicker.openInputMenu(
+			prompt = "Enter <green>Green".miniMessage(),
+			description = text("0-255"),
+			backButtonHandler = { promptForRed() },
+			inputValidator = RangeIntegerValidator(0..255)
+		) { _, result ->
+			greenValue = result.result
+			promptForBlue()
+		}
+	}
+
+	promptForRed = {
+		playerClicker.openInputMenu(
+			prompt = "Enter <red>Red".miniMessage(),
+			description = text("0-255"),
+			backButtonHandler = { promptForName() },
+			inputValidator = RangeIntegerValidator(0..255)
+		) { _, result ->
+			redValue = result.result
+			promptForGreen()
+		}
+	}
+
+	promptForName = {
+		playerClicker.openInputMenu(
+			prompt = text("Enter role name"),
+			description = text("3-20 characters; alphanumeric"),
+			backButtonHandler = { it.performCommand("$commandName manage") },
+			inputValidator = InputValidator { input: String ->
+				when {
+					!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
+					input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
+					else -> ValidatorResult.ValidatorSuccessSingleEntry(input)
+				}
+			}
+		) { _, entry ->
+			nameValue = entry.result
+			promptForRed()
+		}
+	}
+
+	promptForName()
 }
 
 fun editRoleGUI(
     player: Player,
     commandName: String,
     roleName: String,
-    roleColor: SLTextStyle,
+    roleColorDB: String,
     roleWeight: Int
 ) {
-	val gui = ChestGui(1, "Edit Role $roleColor$roleName")
+	val roleColor = roleColorDB.toBukkitColor()
+	val title = "Edit Role $roleName"
+	val gui = ChestGui(1, title)
 
 	gui.addPane(
 		outlinePane(0, 0, 8, 1).apply
@@ -98,6 +145,7 @@ fun editRoleGUI(
 				playerClicker.openInputMenu(
 					prompt = text("Enter role name"),
 					description = text("3-20 characters; alphanumeric"),
+					backButtonHandler = { it.performCommand("$commandName edit $roleName") },
 					inputValidator = InputValidator { input: String ->
 						when {
 							!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
@@ -113,22 +161,52 @@ fun editRoleGUI(
 
 			// Color Button
 			addItem(guiButton(Material.INK_SAC) {
-				playerClicker.openInputMenu(
-					prompt = "Enter <rainbow>Color".miniMessage(),
-					inputValidator = LegacyChatColorValidator
-				) { _, validatorResult ->
-					val color = validatorResult.result
+				fun promptForRed() {
+					playerClicker.openInputMenu(
+						prompt = "Enter <red>Red".miniMessage(),
+						description = text("0-255"),
+						backButtonHandler = { it.performCommand("$commandName edit $roleName") },
+						inputValidator = RangeIntegerValidator(0..255)
+					) { _, redResult ->
+						val red = redResult.result
 
-					playerClicker.performCommand("$commandName edit color $roleName ${color.name}")
-					Tasks.sync { playerClicker.performCommand("$commandName edit $roleName") }
+						fun promptForGreen() {
+							playerClicker.openInputMenu(
+								prompt = "Enter <green>Green".miniMessage(),
+								description = text("0-255"),
+								backButtonHandler = { promptForRed() },
+								inputValidator = RangeIntegerValidator(0..255)
+							) { _, greenResult ->
+								val green = greenResult.result
+
+								playerClicker.openInputMenu(
+									prompt = "Enter <blue>Blue".miniMessage(),
+									description = text("0-255"),
+									backButtonHandler = { promptForGreen() },
+									inputValidator = RangeIntegerValidator(0..255)
+								) { _, blueResult ->
+									val blue = blueResult.result
+
+									playerClicker.performCommand("$commandName edit color $roleName $red $green $blue")
+									Tasks.sync { playerClicker.performCommand("$commandName edit $roleName") }
+								}
+							}
+						}
+						promptForGreen()
+					}
 				}
-			}.name("Color: ${roleColor.name}"))
+				promptForRed()
+			}
+				.name("Color: RGB(${roleColor.red}, ${roleColor.green}, ${roleColor.blue})")
+				.lore("Click to change color", "Enter Red, Green, and Blue values (0-255)")
+			)
 
 			// Weight Button
 			addItem(guiButton(Material.ANVIL) {
 				playerClicker.openInputMenu(
 					prompt = text("Enter role weight"),
 					description = text("Must be from 0 to 1000"),
+					backButtonHandler = { it.performCommand("$commandName edit $roleName") },
 					inputValidator = RangeIntegerValidator(0..1000)
 				) { _, validatorResult ->
 					playerClicker.performCommand("$commandName edit weight $roleName ${validatorResult.result}")
@@ -165,11 +243,11 @@ fun <P : Enum<P>> editRolePermissionGUI(
     player: Player,
     commandName: String,
     roleName: String,
-    roleColor: SLTextStyle,
     rolePermissions: Set<P>,
     pValues: Array<P>
 ) {
-	val gui = ChestGui(1 + (pValues.size + 1) / 9, "Edit Permissions for $roleColor$roleName")
+	val title = "Edit Permissions for $roleName"
+	val gui = ChestGui(1 + (pValues.size + 1) / 9, title)
 
 	val backCommand = "$commandName edit $roleName"
 	gui.addPane(

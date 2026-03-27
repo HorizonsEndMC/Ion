@@ -2,10 +2,8 @@ package net.horizonsend.ion.server.features.nations.gui
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.md_5.bungee.api.ChatColor.GREEN
-import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.Material
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material.BARRIER
 import org.bukkit.Material.LILY_PAD
 import org.bukkit.entity.Player
@@ -19,9 +17,9 @@ fun Player.openConfirmMenu(
 	confirmLore: String? = null,
 	cancelLore: String? = null
 ) = Tasks.sync {
-	val confirmButton = guiButton(LILY_PAD, onConfirm).name("${GREEN}CONFIRM")
+	val confirmButton = guiButton(LILY_PAD, onConfirm).name("<green>CONFIRM")
 	if (confirmLore != null) confirmButton.lore(confirmLore)
-	val cancelButton = guiButton(BARRIER) { whoClicked.closeInventory(); onCancel() }.name("${RED}CANCEL")
+	val cancelButton = guiButton(BARRIER) { whoClicked.closeInventory(); onCancel() }.name("<red>CANCEL")
 	if (cancelLore != null) cancelButton.lore(cancelLore)
 	gui(1, title)
 		.withPane(
@@ -52,26 +50,24 @@ fun Player.openPaginatedMenu(title: String, items: List<GuiItem>, titleItems: Li
 		val topBar = staticPane(0, 0, 3, 1)
 
 		topBar.addItem(guiButton(item(Material.WHITE_STAINED_GLASS_PANE)).name("Page ${page + 1}/$pages"), 1, 0)
-		if (pages > 0) {
-			if (page != 0) {
-				val previous = page - 1
-				topBar.addItem(
-					guiButton(Material.REDSTONE_BLOCK) {
-						rootPane.page = previous; gui.update()
-					}.name("Previous Page (${previous + 1})"),
-					0, 0
-				)
-			}
+		if (page != 0) {
+			val previous = page - 1
+			topBar.addItem(
+				guiButton(Material.REDSTONE_BLOCK) {
+					rootPane.page = previous; gui.update()
+				}.name("Previous Page (${previous + 1})"),
+				0, 0
+			)
+		}
 
-			if (page < pages - 1) {
-				val next = page + 1
-				topBar.addItem(
-					guiButton(Material.EMERALD_BLOCK) {
-						rootPane.page = next; gui.update()
-					}.name("Next Page (${next + 1})"),
-					2, 0
-				)
-			}
+		if (page < pages - 1) {
+			val next = page + 1
+			topBar.addItem(
+				guiButton(Material.EMERALD_BLOCK) {
+					rootPane.page = next; gui.update()
+				}.name("Next Page (${next + 1})"),
+				2, 0
+			)
 		}
 
 		rootPane.addPane(page, topBar)
