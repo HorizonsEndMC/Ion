@@ -24,9 +24,14 @@ import net.minecraft.world.level.block.entity.trialspawner.PlayerDetector
 import net.minecraft.world.level.block.entity.vault.VaultConfig
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.AABB
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.block.Vault
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.EnderPearl
+import org.bukkit.entity.Ghast
+import org.bukkit.entity.HappyGhast
 import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -42,6 +47,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.VaultDisplayItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntityMountEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -115,7 +121,7 @@ class CancelListeners : SLEventListener() {
 	@Suppress("Unused")
 	fun onPlayerTeleportEvent(event: PlayerTeleportEvent) {
 		event.isCancelled = when (event.cause) {
-			PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT, PlayerTeleportEvent.TeleportCause.ENDER_PEARL -> true
+			PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT, PlayerTeleportEvent.TeleportCause.ENDER_PEARL -> true
 			PlayerTeleportEvent.TeleportCause.SPECTATE -> !event.player.hasPermission("group.dutymode")
 			else -> false
 		}
@@ -248,12 +254,26 @@ class CancelListeners : SLEventListener() {
 	fun onTrialVaultPlacement(event: BlockPlaceEvent) {
 		Tasks.sync {
 			val state = event.block.getState(false)
-			if (state !is CraftVault) return@sync
+			if (state !is Vault) return@sync
 
-			val entity = state.tileEntity
-
-			entity.config = disabledVaultConfig
+			val batLoot = Bukkit.getLootTable(NamespacedKey.minecraft("entities/bat"))!!
+			state.lootTable = batLoot
+			state.displayedLootTable = null
+			state.keyItem = ItemStack(Material.BEDROCK)
+			state.activationRange = 0.0
+			state.deactivationRange = 0.0001
 			state.nextStateUpdateTime = Long.MAX_VALUE
+			state.update(true, false)
+		}
+	}
+
+	@EventHandler
+	fun onEntityMount(event: EntityMountEvent) {
+		val rider = event.entity
+		val mount = event.mount
+
+		if (rider is Player && mount is HappyGhast) {
+			event.isCancelled = true
 		}
 	}
 

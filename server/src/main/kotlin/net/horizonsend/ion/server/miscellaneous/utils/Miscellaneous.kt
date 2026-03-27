@@ -132,7 +132,7 @@ fun buildStructureBlock(minPoint: Vec3i, maxPoint: Vec3i, message: String = ""):
 
 	val entity: StructureBlockEntity = block.newBlockEntity(blockPos, state) as StructureBlockEntity
 	entity.showBoundingBox = true
-	entity.structureName = message
+	entity.setStructureName(message)
 
 	entity.setStructureSize(net.minecraft.core.Vec3i(xDiff, yDiff, zDiff))
 

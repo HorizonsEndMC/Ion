@@ -108,7 +108,7 @@ abstract class BlockProjectile<B : StarshipProjectileBalancing>(
 		val nmsBlockPos = BlockPos(block.x, block.y, block.z)
 		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
 
-		val players = block.chunk.minecraft.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false)
+		val players = block.chunk.minecraft.`moonrise$getChunkHolder`().vanillaChunkHolder.`moonrise$getPlayers`(false)
 		players.forEach { it.connection.send(packet) }
 	}
 }

@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.isLightningRod
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
@@ -124,7 +125,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			// Weight gas output based on the number of lightning rods
 			val weight = arrayOf(structureDirection.rightFace, structureDirection.leftFace, BlockFace.UP, BlockFace.DOWN)
 				.count { face ->
-					getOrigin().getRelativeIfLoaded(face)?.type == Material.LIGHTNING_ROD
+					getOrigin().getRelativeIfLoaded(face)?.type?.isLightningRod ?: false
 				}.toDouble().div(4.0)
 
 			val worldConfiguration = world.ion.configuration.gasConfiguration.gasses.shuffled(ThreadLocalRandom.current())

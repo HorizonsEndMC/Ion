@@ -33,7 +33,7 @@ object ShockAbsorbingMod : ItemModification {
 	override fun onAdd(itemStack: ItemStack) {
 		val existing = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
 
-		val builder = ItemAttributeModifiers.itemAttributes().showInTooltip(true)
+		val builder = ItemAttributeModifiers.itemAttributes()
 
 		if (existing != null) {
 			for (modifier in existing.modifiers()) {
@@ -52,7 +52,7 @@ object ShockAbsorbingMod : ItemModification {
 	override fun onRemove(itemStack: ItemStack) {
 		val existing = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS) ?: return
 
-		val builder = ItemAttributeModifiers.itemAttributes().showInTooltip(true)
+		val builder = ItemAttributeModifiers.itemAttributes()
 		val trimmed = existing.modifiers().toMutableList()
 		trimmed.removeAll { it.modifier().key == KNOCKBACK_RESISTANCE_KEY }
 

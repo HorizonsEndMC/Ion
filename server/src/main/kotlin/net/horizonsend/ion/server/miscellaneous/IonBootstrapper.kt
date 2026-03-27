@@ -39,6 +39,18 @@ import org.bukkit.damage.DeathMessageType
 import org.bukkit.event.block.CauldronLevelChangeEvent
 import org.bukkit.plugin.java.JavaPlugin
 
+/**
+ * Performs early startup registration for systems that must be available
+ * before normal plugin runtime begins, such as custom registry entries.
+ * such as minecraft/paper registries
+ *
+ * Currently, registers custom damage types for Ion weapon multiblocks during bootstrap.
+ *
+ * These damage types are created in Paper's registry system before normal plugin
+ * runtime so they can be used consistently by custom combat and death messages.
+ *
+ * and also dyable custom items interacting with cauldrons, for some reason
+ */
 @Suppress("Unused", "UnstableApiUsage")
 class IonBootstrapper : PluginBootstrap {
 	override fun bootstrap(context: BootstrapContext) {
@@ -68,7 +80,7 @@ class IonBootstrapper : PluginBootstrap {
 
 
 
-		context.lifecycleManager.registerEventHandler(RegistryEvents.DAMAGE_TYPE.freeze().newHandler { event ->
+		context.lifecycleManager.registerEventHandler(RegistryEvents.DAMAGE_TYPE.compose().newHandler { event ->
 			for (weapon in damageMultiblocks) {
 				event.registry().register(
 					weapon.damageTypeKey,

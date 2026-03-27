@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.LIGHTNING_ROD_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
@@ -487,7 +488,7 @@ class MultiblockShape {
 
 		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE, alias = "sponge")
 		fun endRod(edit: BlockRequirement.() -> Unit = {}) = type(Material.END_ROD, edit)
-		fun lightningRod(edit: BlockRequirement.() -> Unit = {}) = type(Material.LIGHTNING_ROD, edit)
+		fun lightningRod() = anyType(types = LIGHTNING_ROD_TYPES, alias = "lightning rod")
 
 		fun hopper() = type(Material.HOPPER)
 		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { it.isPipedInventory }

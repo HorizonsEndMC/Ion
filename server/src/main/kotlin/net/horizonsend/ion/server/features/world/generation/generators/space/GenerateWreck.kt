@@ -72,11 +72,19 @@ object GenerateWreck {
 	)
 }
 
+/**
+ * Detects special chest markers encoded in the chest custom name and replaces
+ * the block entity NBT with plugin-managed loot metadata when needed.
+ *
+ * Expected markers:
+ * - "Secondary Chest: <type>"
+ * - "Encounter Chest"
+ */
 private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
 	val (_, blockNBT) = blockData
 
 	if (!blockNBT!!.contains("CustomName")) return
-	val name = blockNBT.getString("CustomName")
+	val name = blockNBT.get("CustomName")?.toString() ?: return
 
 	if (name.contains("Secondary Chest: ", true)) {
 		val chestType = name.substringAfter("Secondary Chest: ").substringBefore("\"")

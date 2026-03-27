@@ -29,8 +29,8 @@ object ClientDisplayEntityFactory {
      * @return the TextDisplay entity object
      * @param player the player that the entity will be visible to
      */
-    fun createTextDisplay(player: Player): CraftTextDisplay =
-        CraftTextDisplay(player.minecraft.server.server, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
+	fun createTextDisplay(player: Player): CraftTextDisplay =
+		CraftTextDisplay(IonServer.server as CraftServer, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
 
     /**
      * Converts a Bukkit TextDisplay to a NMS TextDisplay.
