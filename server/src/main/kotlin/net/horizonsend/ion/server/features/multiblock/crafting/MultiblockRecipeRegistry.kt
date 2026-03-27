@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.FermenterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType
@@ -240,6 +241,20 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				ItemResult.simpleResult(CustomItemKeys.ARSENAL_MISSILE),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.SALAMI_CURING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.SALAMI_CURING,
+			clazz = FermenterMultiblock.FermenterMultiblockEntity::class,
+			smeltingItem = MaterialRequirement(Material.PORKCHOP),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				duration = Duration.ofMinutes(5),
+				normalResult = ItemResult.simpleResult(CustomItemKeys.SALAMI),
+			))
 				.updateProgressText()
 				.updateFurnace()
 		))
