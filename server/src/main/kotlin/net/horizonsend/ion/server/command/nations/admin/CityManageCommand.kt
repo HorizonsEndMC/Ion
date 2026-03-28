@@ -26,7 +26,7 @@ internal object CityManageCommand : net.horizonsend.ion.server.command.SLCommand
 		failIf(settlementData.cityState != null) { "Settlement ${settlementData.name} is already a city." }
 
 		Settlement.setCityState(settlementId, Settlement.CityState.ACTIVE)
-		sender msg "&aRegistered ${settlementData.name} as a trade city."
+		sender.success("Registered ${settlementData.name} as a trade city.")
 	}
 
 	@Subcommand("unregister")
@@ -38,12 +38,12 @@ internal object CityManageCommand : net.horizonsend.ion.server.command.SLCommand
 		failIf(settlementData.cityState == null) { "${settlementData.name} is not a city" }
 
 		Settlement.setCityState(settlementId, null)
-		sender msg "&aUnregistered ${settlementData.name} as a trade city."
+		sender.success("Unregistered ${settlementData.name} as a trade city.")
 	}
 
 	@Subcommand("list")
 	fun onList(sender: CommandSender) = asyncCommand(sender) {
-		sender msg Settlement.all().filter { it.cityState != null }.joinToString { it.name }
+		sender.information(Settlement.all().filter { it.cityState != null }.joinToString { it.name })
 	}
 
 	@Subcommand("setstate")
@@ -55,6 +55,6 @@ internal object CityManageCommand : net.horizonsend.ion.server.command.SLCommand
 		failIf(settlementData.cityState == null) { "${settlementData.name} is not a city" }
 
 		Settlement.setCityState(settlementId, state)
-		sender msg "&aChanged state of ${settlementData.name} from ${settlementData.cityState} to $state"
+		sender.success("Changed state of ${settlementData.name} from ${settlementData.cityState} to $state")
 	}
 }
