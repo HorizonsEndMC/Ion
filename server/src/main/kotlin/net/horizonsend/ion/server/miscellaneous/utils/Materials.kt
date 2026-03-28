@@ -168,7 +168,7 @@ val Material.isAnvil: Boolean get() = ANVIL_TYPES.contains(this)
 val COPPER_TYPES = getMatchingMaterials { it.name.contains("COPPER") }
 val Material.isCopper: Boolean get() = COPPER_TYPES.contains(this)
 
-val SAPLING_TYPES = getMatchingMaterials { it.name.endsWith("_SAPLING") }
+val SAPLING_TYPES = getMatchingMaterials { it.name.endsWith("_SAPLING") && !it.name.startsWith("POTTED") && !it.name.startsWith("BAMBOO") }
 val Material.isTankPassable: Boolean get() = TANK_PASSABLE_TYPES.contains(this)
 
 // Bisected is double plants

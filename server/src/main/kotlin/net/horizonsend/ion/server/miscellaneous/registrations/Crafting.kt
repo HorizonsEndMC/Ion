@@ -56,12 +56,14 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GROUND_BEEF
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARREL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HORIZON_FRIED_EGG
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ICE_CREAM_MIXTURE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LETTUCE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIMETER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NETHERITE_CASING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NUTRIENT_CUBE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PEPPERONI_PIZZA
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PISTOL_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_BOOTS
@@ -137,10 +139,12 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ROD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.SAPLING_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -186,6 +190,7 @@ import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.HONEYCOMB_BLOCK
 import org.bukkit.Material.HOPPER
+import org.bukkit.Material.ICE
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_NUGGET
@@ -194,6 +199,7 @@ import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LAPIS_LAZULI
 import org.bukkit.Material.LEATHER
 import org.bukkit.Material.MELON
+import org.bukkit.Material.MILK_BUCKET
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
 import org.bukkit.Material.NAME_TAG
@@ -217,6 +223,7 @@ import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.RED_TERRACOTTA
 import org.bukkit.Material.RESIN_CLUMP
+import org.bukkit.Material.ROTTEN_FLESH
 import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
@@ -227,6 +234,7 @@ import org.bukkit.Material.SPONGE
 import org.bukkit.Material.SPORE_BLOSSOM
 import org.bukkit.Material.STICK
 import org.bukkit.Material.STRING
+import org.bukkit.Material.SUGAR
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
@@ -868,6 +876,19 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', CHEESE)
 			setIngredient('t', TOMATO)
 			setIngredient('s', SALAMI)
+		}
+		shapeless("ice_cream_mixture", ICE_CREAM_MIXTURE.getValue().constructItemStack(), CraftingBookCategory.MISC, MILK_BUCKET, SUGAR, ICE)
+		shapeless("nutrient_cube", NUTRIENT_CUBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(ROTTEN_FLESH))
+			addIngredient(MaterialChoice(ROTTEN_FLESH))
+		}
+		shapeless("vegetarian_nutrient_cube", VEGETARIAN_NUTRIENT_CUBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
+			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
 		}
 	}
 

@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMul
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.DehydratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FermenterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
@@ -178,8 +179,22 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Duration.ofMinutes(10L),
+				Duration.ofMinutes(1L),
 				ItemResult.simpleResult(CustomItemKeys.CHEESE),
+			))
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.ICE_CREAM_FREEZING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.ICE_CREAM_FREEZING,
+			clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.ICE_CREAM_MIXTURE),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofMinutes(1L),
+				ItemResult.simpleResult(CustomItemKeys.ICE_CREAM),
 			))
 				.updateProgressText()
 				.updateFurnace()
@@ -252,8 +267,22 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				duration = Duration.ofMinutes(5),
+				duration = Duration.ofMinutes(1),
 				normalResult = ItemResult.simpleResult(CustomItemKeys.SALAMI),
+			))
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.ASTRONAUT_ICE_CREAM_DEHYDRATING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.ASTRONAUT_ICE_CREAM_DEHYDRATING,
+			clazz = DehydratorMultiblock.DehydratorMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.ICE_CREAM),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				duration = Duration.ofMinutes(1),
+				normalResult = ItemResult.simpleResult(CustomItemKeys.ASTRONAUT_ICE_CREAM),
 			))
 				.updateProgressText()
 				.updateFurnace()
