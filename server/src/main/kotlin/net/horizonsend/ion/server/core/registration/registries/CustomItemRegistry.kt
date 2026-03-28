@@ -875,7 +875,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.CHEESEBURGER,
 				displayName = Component.text("Cheeseburger"),
 				itemModel = "mineral/chetherite",
-				stackSize = 64,
+				stackSize = 1,
 				hunger = 2,
 				saturation = 2.4f
 			)
@@ -895,7 +895,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.PEPPERONI_PIZZA,
 				displayName = Component.text("Raw Pepperoni Pizza"),
 				itemModel = "mineral/chetherite",
-				stackSize = 64,
+				stackSize = 1,
 				hunger = 2,
 				saturation = 2.4f
 			)
@@ -904,6 +904,57 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.COOKED_PEPPERONI_PIZZA, FoodItem(
 				key = CustomItemKeys.COOKED_PEPPERONI_PIZZA,
 				displayName = Component.text("Cooked Pepperoni Pizza"),
+				itemModel = "mineral/chetherite",
+				stackSize = 1,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		unStackable(key = CustomItemKeys.ICE_CREAM_MIXTURE, model = "mineral/chetherite", displayName = Component.text("Ice Cream Mixture"))
+		register(
+			CustomItemKeys.ICE_CREAM, FoodItem(
+				key = CustomItemKeys.ICE_CREAM,
+				displayName = Component.text("Ice Cream"),
+				itemModel = "mineral/chetherite",
+				stackSize = 1,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.ICE_CREAM, FoodItem(
+				key = CustomItemKeys.ICE_CREAM,
+				displayName = Component.text("Ice Cream"),
+				itemModel = "mineral/chetherite",
+				stackSize = 1,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.ASTRONAUT_ICE_CREAM, FoodItem(
+				key = CustomItemKeys.ASTRONAUT_ICE_CREAM,
+				displayName = Component.text("Astronaut Ice Cream"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.NUTRIENT_CUBE, FoodItem(
+				key = CustomItemKeys.NUTRIENT_CUBE,
+				displayName = Component.text("Nutrient Cube"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
+		register(
+			CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE, FoodItem(
+				key = CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE,
+				displayName = Component.text("Vegetarian Nutrient Cube"),
 				itemModel = "mineral/chetherite",
 				stackSize = 64,
 				hunger = 2,

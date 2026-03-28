@@ -16,11 +16,13 @@ object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	val FABRICATED_ASSEMBLY_FABRICATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("FABRICATED_ASSEMBLY_FABRICATION")
 	val REINFORCED_FRAME_FABRICATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("REINFORCED_FRAME_FABRICATION")
 	val CHEESE_PROCESSING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("CHEESE_PROCESSING")
+	val ICE_CREAM_FREEZING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("ICE_CREAM_FREEZING")
 	val CIRCUIT_BOARD_FABRICATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("CIRCUIT_BOARD_FABRICATION")
 	val LOADED_SHELL_LOADING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("LOADED_SHELL_LOADING")
 	val UNCHARGED_SHELL_CHARGING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("UNCHARGED_SHELL_CHARGING")
 	val ARSENAL_MISSILE_LOADING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("ARSENAL_MISSILE_LOADING")
 	val SALAMI_CURING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("SALAMI_CURING")
+	val ASTRONAUT_ICE_CREAM_DEHYDRATING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("ASTRONAUT_ICE_CREAM_DEHYDRATING")
 
 	val COPPER_BLOCK_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("COPPER_BLOCK_OXIDATION")
 	val EXPOSED_COPPER_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("EXPOSED_COPPER_OXIDATION")

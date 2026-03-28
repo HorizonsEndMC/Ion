@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFl
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.DehydratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FermenterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
@@ -273,6 +274,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AutoMasonMultiblock.AutoMasonRightMergable)
 		registerMultiblock(AutoMasonMultiblock.AutoMasonLeftMergable)
 		registerMultiblock(FermenterMultiblock)
+		registerMultiblock(DehydratorMultiblock)
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
