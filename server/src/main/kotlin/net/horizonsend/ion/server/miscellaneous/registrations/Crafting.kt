@@ -95,6 +95,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REINFORCED_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAMI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
@@ -890,6 +891,7 @@ object Crafting : IonServerComponent() {
 			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
 			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
 		}
+		shapeless("salad", result = SALAD.getValue().constructItemStack(), CraftingBookCategory.MISC, LETTUCE.getValue().constructItemStack(4))
 	}
 
 	@EventHandler

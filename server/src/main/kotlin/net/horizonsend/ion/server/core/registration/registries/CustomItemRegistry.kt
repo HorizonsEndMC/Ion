@@ -961,6 +961,16 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 2.4f
 			)
 		)
+		register(
+			CustomItemKeys.SALAD, FoodItem(
+				key = CustomItemKeys.SALAD,
+				displayName = Component.text("Salad"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			)
+		)
 	}
 
 	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
