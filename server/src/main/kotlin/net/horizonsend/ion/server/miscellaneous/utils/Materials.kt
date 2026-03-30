@@ -240,3 +240,10 @@ val PIPED_INVENTORY_TYPES = enumSetOf(
 )
 
 val Material.isPipedInventory get() = PIPED_INVENTORY_TYPES.contains(this)
+
+val MUSHROOM_TYPES = enumSetOf(
+	Material.BROWN_MUSHROOM,
+	Material.RED_MUSHROOM,
+	Material.CRIMSON_FUNGUS,
+	Material.WARPED_FUNGUS
+)

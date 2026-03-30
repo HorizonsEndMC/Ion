@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LETTUCE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIMETER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MUSHROOM_SKEWER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NETHERITE_CASING
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NUTRIENT_CUBE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PEPPERONI_PIZZA
@@ -145,6 +146,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.MUSHROOM_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SAPLING_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
@@ -892,6 +894,11 @@ object Crafting : IonServerComponent() {
 			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
 		}
 		shapeless("salad", result = SALAD.getValue().constructItemStack(), CraftingBookCategory.MISC, LETTUCE.getValue().constructItemStack(4))
+		shapeless("mushroom_skewer", MUSHROOM_SKEWER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(MaterialChoice(STICK))
+			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
+			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
+		}
 	}
 
 	@EventHandler
