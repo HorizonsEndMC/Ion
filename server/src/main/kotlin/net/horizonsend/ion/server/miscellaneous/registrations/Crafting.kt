@@ -118,6 +118,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_INGOT
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_ORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOMATO
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOMATO_SOUP
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT
@@ -158,6 +159,7 @@ import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
+import org.bukkit.Material.BOWL
 import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.CHARCOAL
 import org.bukkit.Material.CHERRY_LEAVES
@@ -898,6 +900,10 @@ object Crafting : IonServerComponent() {
 			addIngredient(MaterialChoice(STICK))
 			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
 			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
+		}
+		shapeless("tomato_soup", TOMATO_SOUP.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(ExactChoice(TOMATO.getValue().constructItemStack()))
+			addIngredient(MaterialChoice(BOWL))
 		}
 	}
 
