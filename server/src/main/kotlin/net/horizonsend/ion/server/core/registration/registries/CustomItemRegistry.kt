@@ -805,7 +805,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.HORIZON_FRIED_EGG, FoodItem(
 				key = CustomItemKeys.HORIZON_FRIED_EGG,
 				displayName = Component.text("Horizon Fried Egg"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/horizon_fried_egg",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -815,7 +815,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.TOMATO, FoodItem(
 				key = CustomItemKeys.TOMATO,
 				displayName = Component.text("Tomato"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/tomato",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -825,7 +825,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.LETTUCE, FoodItem(
 				key = CustomItemKeys.LETTUCE,
 				displayName = Component.text("Lettuce"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/lettuce",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -835,7 +835,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.CHEESE, FoodItem(
 				key = CustomItemKeys.CHEESE,
 				displayName = Component.text("Cheese"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/cheese",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -845,7 +845,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.GROUND_BEEF, FoodItem(
 				key = CustomItemKeys.GROUND_BEEF,
 				displayName = Component.text("Raw Ground Beef"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/raw_ground_beef",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -855,7 +855,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.COOKED_GROUND_BEEF, FoodItem(
 				key = CustomItemKeys.COOKED_GROUND_BEEF,
 				displayName = Component.text("Cooked Ground Beef"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/cooked_ground_beef",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -865,7 +865,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.CHEESEBURGER, FoodItem(
 				key = CustomItemKeys.CHEESEBURGER,
 				displayName = Component.text("Cheeseburger"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/cheeseburger",
 				stackSize = 1,
 				hunger = 2,
 				saturation = 2.4f
@@ -875,7 +875,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.SALAMI, FoodItem(
 				key = CustomItemKeys.SALAMI,
 				displayName = Component.text("Salami"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/salami",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -885,7 +885,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.PEPPERONI_PIZZA, FoodItem(
 				key = CustomItemKeys.PEPPERONI_PIZZA,
 				displayName = Component.text("Raw Pepperoni Pizza"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/pepperoni_pizza",
 				stackSize = 1,
 				hunger = 2,
 				saturation = 2.4f
@@ -895,28 +895,18 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.COOKED_PEPPERONI_PIZZA, FoodItem(
 				key = CustomItemKeys.COOKED_PEPPERONI_PIZZA,
 				displayName = Component.text("Cooked Pepperoni Pizza"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/cooked_pepperoni_pizza",
 				stackSize = 1,
 				hunger = 2,
 				saturation = 2.4f
 			)
 		)
-		unStackable(key = CustomItemKeys.ICE_CREAM_MIXTURE, model = "mineral/chetherite", displayName = Component.text("Ice Cream Mixture"))
+		unStackable(key = CustomItemKeys.ICE_CREAM_MIXTURE, model = "food/ice_cream_mixture", displayName = Component.text("Ice Cream Mixture"))
 		register(
 			CustomItemKeys.ICE_CREAM, FoodItem(
 				key = CustomItemKeys.ICE_CREAM,
 				displayName = Component.text("Ice Cream"),
-				itemModel = "mineral/chetherite",
-				stackSize = 1,
-				hunger = 2,
-				saturation = 2.4f
-			)
-		)
-		register(
-			CustomItemKeys.ICE_CREAM, FoodItem(
-				key = CustomItemKeys.ICE_CREAM,
-				displayName = Component.text("Ice Cream"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/ice_cream",
 				stackSize = 1,
 				hunger = 2,
 				saturation = 2.4f
@@ -926,7 +916,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.ASTRONAUT_ICE_CREAM, FoodItem(
 				key = CustomItemKeys.ASTRONAUT_ICE_CREAM,
 				displayName = Component.text("Astronaut Ice Cream"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/astronaut_ice_cream",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -936,7 +926,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.NUTRIENT_CUBE, FoodItem(
 				key = CustomItemKeys.NUTRIENT_CUBE,
 				displayName = Component.text("Nutrient Cube"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/nutrient_cube",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -946,7 +936,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE, FoodItem(
 				key = CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE,
 				displayName = Component.text("Vegetarian Nutrient Cube"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/vegetarian_nutrient_cube",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
@@ -956,27 +946,31 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			CustomItemKeys.SALAD, FoodItem(
 				key = CustomItemKeys.SALAD,
 				displayName = Component.text("Salad"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/salad",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
-			)
+			) { event, _, _ ->
+				event.replacement = ItemStack(Material.BOWL)
+			}
 		)
 		register(
 			CustomItemKeys.MUSHROOM_SKEWER, FoodItem(
 				key = CustomItemKeys.MUSHROOM_SKEWER,
 				displayName = Component.text("Mushroom Skewer"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/mushroom_skewer",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
-			)
+			) { event, _, _ ->
+				event.replacement = ItemStack(Material.STICK)
+			}
 		)
 		register(
 			CustomItemKeys.TOMATO_SOUP, FoodItem(
 				key = CustomItemKeys.TOMATO_SOUP,
 				displayName = Component.text("Tomato Soup"),
-				itemModel = "mineral/chetherite",
+				itemModel = "food/tomato_soup",
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f
