@@ -51,6 +51,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -980,6 +981,18 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 2,
 				saturation = 2.4f
 			)
+		)
+		register(
+			CustomItemKeys.TOMATO_SOUP, FoodItem(
+				key = CustomItemKeys.TOMATO_SOUP,
+				displayName = Component.text("Tomato Soup"),
+				itemModel = "mineral/chetherite",
+				stackSize = 64,
+				hunger = 2,
+				saturation = 2.4f
+			) { event, _, _ ->
+				event.replacement = ItemStack(Material.BOWL)
+            }
 		)
 	}
 

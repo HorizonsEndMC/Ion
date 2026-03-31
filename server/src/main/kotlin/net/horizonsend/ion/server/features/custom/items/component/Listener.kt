@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
@@ -117,6 +118,15 @@ class Listener<E: Event, T: CustomItem>(
 				(itemInOffHand != null && offHandcustomItem != null) || (itemInMainHand != null && mainHandcustomItem != null)
 			},
 			eventReceiver =  handleEvent
+		)
+
+		inline fun <reified T: CustomItem> playerConsumeListener(
+			customItem: T,
+			noinline handleEvent: (PlayerItemConsumeEvent, T, ItemStack) -> Unit
+		): Listener<PlayerItemConsumeEvent, T> = Listener(
+			customItem,
+			PlayerItemConsumeEvent::class,
+			eventReceiver = handleEvent
 		)
 	}
 }
