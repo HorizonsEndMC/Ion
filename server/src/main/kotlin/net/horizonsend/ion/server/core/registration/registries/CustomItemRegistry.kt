@@ -802,16 +802,6 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 	private fun registerFood() {
 		register(
-			CustomItemKeys.TEST_FOOD, FoodItem(
-				key = CustomItemKeys.TEST_FOOD,
-				displayName = Component.text("Test Food"),
-				itemModel = "mineral/chetherite",
-				stackSize = 1,
-				hunger = 4,
-				saturation = 2.4f
-			)
-		)
-		register(
 			CustomItemKeys.HORIZON_FRIED_EGG, FoodItem(
 				key = CustomItemKeys.HORIZON_FRIED_EGG,
 				displayName = Component.text("Horizon Fried Egg"),
