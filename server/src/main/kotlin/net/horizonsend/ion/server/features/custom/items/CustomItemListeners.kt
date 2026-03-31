@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -35,6 +36,7 @@ object CustomItemListeners : SLEventListener() {
 	private val entityShootBowListeners: MutableMap<CustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
 	private val craftListeners: MutableMap<CustomItem, MutableSet<Listener<PrepareItemCraftEvent, *>>> = mutableMapOf()
 	private val damageEntityListeners: MutableMap<CustomItem, MutableSet<Listener<EntityDamageByEntityEvent, *>>> = mutableMapOf()
+	private val playerItemConsumeListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerItemConsumeEvent, *>>> = mutableMapOf()
 
 	private val tickRecievers: MutableMap<CustomItem, MutableSet<TickReceiverModule>> = mutableMapOf()
 
@@ -56,6 +58,7 @@ object CustomItemListeners : SLEventListener() {
 			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getEntries(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
 			components.filterIsInstance<Listener<PrepareItemCraftEvent, *>>().filterTo(getEntries(craftListeners, newCustomItem)) { it.eventType == PrepareItemCraftEvent::class }
 			components.filterIsInstance<Listener<EntityDamageByEntityEvent, *>>().filterTo(getEntries(damageEntityListeners, newCustomItem)) { it.eventType == EntityDamageByEntityEvent::class }
+			components.filterIsInstance<Listener<PlayerItemConsumeEvent, *>>().filterTo(getEntries(playerItemConsumeListeners, newCustomItem)) { it.eventType == PlayerItemConsumeEvent::class }
 			getEntries(tickRecievers, newCustomItem).addAll(components.filterIsInstance<TickReceiverModule>())
 		}
 	}
@@ -235,5 +238,17 @@ object CustomItemListeners : SLEventListener() {
 		val dyed = DyeCommand.applyDye(dyeable.clone(), dyes.values)
 
 		event.inventory.result = dyed
+	}
+
+	@EventHandler
+	fun onPlayerItemConsume(event: PlayerItemConsumeEvent) {
+		val itemStack = event.item
+		val customItem = itemStack.customItem ?: return
+
+		val listeners = getEntries(playerItemConsumeListeners, customItem)
+
+		if (listeners.isNotEmpty()) {
+			listeners.forEach { it.handleEvent(event, itemStack) }
+		}
 	}
 }

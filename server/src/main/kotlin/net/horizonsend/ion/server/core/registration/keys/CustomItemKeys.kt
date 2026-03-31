@@ -252,4 +252,5 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val VEGETARIAN_NUTRIENT_CUBE = registerTypedKey<FoodItem>("VEGETARIAN_NUTRIENT_CUBE")
 	val SALAD = registerTypedKey<FoodItem>("SALAD")
 	val MUSHROOM_SKEWER = registerTypedKey<FoodItem>("MUSHROOM_SKEWER")
+	val TOMATO_SOUP = registerTypedKey<FoodItem>("TOMATO_SOUP")
 }

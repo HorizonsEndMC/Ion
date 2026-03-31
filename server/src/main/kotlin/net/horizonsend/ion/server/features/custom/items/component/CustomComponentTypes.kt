@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
 class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> private constructor(val storageType: ComponentType, val componentName: String) {
@@ -85,6 +86,11 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		 * Called when someone is damaged while holding this item
 		 **/
 		val LISTENER_DAMAGED_HOLDING = newComponentType<Listener<EntityDamageByEntityEvent, *>, AllowMultiple<Listener<EntityDamageByEntityEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
+
+		/**
+		 * Called when someone consumes this item
+		 */
+		val LISTENER_PLAYER_CONSUME = newComponentType<Listener<PlayerItemConsumeEvent, *>, AllowMultiple<Listener<PlayerItemConsumeEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
 		 * General interact listener
