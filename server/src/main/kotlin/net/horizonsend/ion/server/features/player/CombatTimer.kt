@@ -55,7 +55,7 @@ import java.util.UUID
 object CombatTimer : IonServerComponent() {
 	private val PVP_TIMER_MINS = Duration.ofMinutes(5)
 	private val NPC_TIMER_MINS = Duration.ofMinutes(2).plusSeconds(30)
-	private const val SVP_ENTER_COMBAT_DIST = 500.0
+	private const val PROXIMITY_COMBAT_DIST = 500.0
 	private const val MAINTAIN_COMBAT_DIST = 1000.0
 	private const val REASON_NPC_SVS_COMBAT = "Engaging in combat with an NPC starship"
 	private const val REASON_PVP_SVS_COMBAT = "Engaging in combat with another player's starship"
@@ -103,7 +103,7 @@ object CombatTimer : IonServerComponent() {
 
 				// Three types of proximity combat tag triggers:
 				// - Starship enters the interdiction range of an enemy starship that is currently interdicting
-				// - Player enters the SvP range of an enemy ship
+				// - Player or starship enters the combat range of an enemy ship
 				// - Ship pilot is already combat tagged and there is an enemy ship within the maintain combat range
 
 				// If the aggressing ship is less than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, they can only incur proximity tag on other ships that are smaller than 4000 blocks
@@ -129,11 +129,10 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will place combat tags on other players that are unfriendly if they are within SVP_ENTER_COMBAT_DIST blocks, the defender is not piloting a ship, not in a protected city, and
+					// Piloted ships will place combat tags on other players and starships that are unfriendly if they are within SVP_ENTER_COMBAT_DIST blocks, the defender is not piloting a ship, not in a protected city, and
 					// larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT
-					toPlayersInRadius(starshipCom, SVP_ENTER_COMBAT_DIST) { otherPlayer ->
-						if (PilotedStarships[otherPlayer] == null &&
-							!ProtectionListener.isProtectedCity(otherPlayer.location) &&
+					toPlayersInRadius(starshipCom, PROXIMITY_COMBAT_DIST) { otherPlayer ->
+						if (!ProtectionListener.isProtectedCity(otherPlayer.location) &&
 							pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT) {
 							evaluatePvp(
 								player,
