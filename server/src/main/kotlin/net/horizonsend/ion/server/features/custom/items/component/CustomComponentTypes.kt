@@ -58,6 +58,11 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val MULTIBLOCK_TYPE = newComponentType<StoredMultiblock, OnlyOne<StoredMultiblock>>(ComponentType.ONLY_ONE)
 
 		/**
+		 * Gives this item lore
+		 */
+		val FLAVOR_TEXT = newComponentType<FlavorText, OnlyOne<FlavorText>>(ComponentType.ONLY_ONE)
+
+		/**
 		 * General interact listener
 		 **/
 		val LISTENER_PLAYER_INTERACT = newComponentType<Listener<PlayerInteractEvent, *>, AllowMultiple<Listener<PlayerInteractEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
