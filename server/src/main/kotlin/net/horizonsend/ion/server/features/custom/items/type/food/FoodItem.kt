@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.component.FlavorText
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.playerConsumeListener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.key.Key
@@ -28,6 +29,7 @@ class FoodItem(
     sound: Key = Key.key("minecraft", "entity.generic.eat"),
     consumeEffects: MutableList<ConsumeEffect> = mutableListOf<ConsumeEffect>(),
     canAlwaysEat: Boolean = false,
+    lore: List<Component> = listOf(),
     callback: (PlayerItemConsumeEvent, FoodItem, ItemStack) -> Unit = { _, _, _ -> }
 ) : CustomItem(
     key,
@@ -53,9 +55,12 @@ class FoodItem(
         )
         .build()
 ) {
+    val loreComponent = FlavorText(lore)
+
     override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
         addComponent(CustomComponentTypes.LISTENER_PLAYER_CONSUME, playerConsumeListener(this@FoodItem) { event, foodItem, itemStack ->
             callback(event, foodItem, itemStack)
         })
+        addComponent(CustomComponentTypes.FLAVOR_TEXT, loreComponent)
     }
 }
