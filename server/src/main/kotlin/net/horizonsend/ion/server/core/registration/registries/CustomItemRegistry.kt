@@ -810,7 +810,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				itemModel = "food/horizon_fried_egg",
 				stackSize = 64,
 				hunger = 2,
-				saturation = 2.4f,
+				saturation = 1.2f,
 				lore = Component.text("A fried egg. The round, creamy yolk glistens and shines like a blazing star.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
@@ -831,8 +831,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Lettuce"),
 				itemModel = "food/lettuce",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 1,
+				saturation = 1.2f,
 				lore = Component.text("A leafy vegetable that is high in fiber.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
@@ -842,7 +842,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Cheese"),
 				itemModel = "food/cheese",
 				stackSize = 64,
-				hunger = 2,
+				hunger = 4,
 				saturation = 2.4f,
 				lore = Component.text("A processed dairy product formed from the coagulation of milk proteins.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
@@ -853,8 +853,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Raw Ground Beef"),
 				itemModel = "food/raw_ground_beef",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 3,
+				saturation = 1.8f,
 				lore = Component.text("Finely chopped beef. Just don't think about what this mixture used to be...", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
@@ -864,8 +864,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Cooked Ground Beef"),
 				itemModel = "food/cooked_ground_beef",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 8,
+				saturation = 12.8f,
 				lore = Component.text("Finely chopped beef, fried to a golden-brown crisp. Juicy, tender, and melts in your mouth.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
@@ -875,8 +875,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Cheeseburger"),
 				itemModel = "food/cheeseburger",
 				stackSize = 1,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 15,
+				saturation = 14.4f,
 				lore = Component.text("A sandwich-class food item composed of stacks of meat patties, lettuce, tomatoes, " +
 							"and cheese, with sliced bread completing the outer layers. The juicy beef patty is complemented " +
 							"by the crunch of the vegetables. And thanks to the bun, your fingers remain clean!", NamedTextColor.GRAY, ITALIC).wrap(200),
@@ -888,8 +888,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Salami"),
 				itemModel = "food/salami",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 3,
+				saturation = 1.8f,
 				lore = Component.text("Pork sausage, cured via fermentation. The first person to make salami must have been " +
 							"extremely desperate if they were willing to eat spoiled meat.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
@@ -900,8 +900,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Raw Pepperoni Pizza"),
 				itemModel = "food/pepperoni_pizza",
 				stackSize = 1,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 4,
+				saturation = 2.8f,
 				lore = Component.text("A flavored flatbread covered with cheese, tomato paste and meat. This one needs to be " +
 							"cooked before becoming palatable.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
@@ -912,8 +912,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Cooked Pepperoni Pizza"),
 				itemModel = "food/cooked_pepperoni_pizza",
 				stackSize = 1,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 12,
+				saturation = 12f,
 				lore = Component.text("A flavored flatbread covered with cheese, tomato paste and meat. Stringy, gooey cheese mingles " +
 							"with flavorful pepperoni sausage to create a flavorful concoction, and the crust offers " +
 							"the perfect balance between fluffiness and crunch.", NamedTextColor.GRAY, ITALIC).wrap(200),
@@ -926,8 +926,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Ice Cream"),
 				itemModel = "food/ice_cream",
 				stackSize = 1,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 6,
+				saturation = 6f,
 				lore = Component.text("A frozen dessert made from a mixture of milk, sugar, and other flavors. Eating such a " +
 							"sweet treat on Isik would probably improve the overall experience of visiting such a hellish planet, " +
 							"if you could even keep it frozen for long enough.", NamedTextColor.GRAY, ITALIC).wrap(200),
@@ -939,8 +939,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Astronaut Ice Cream"),
 				itemModel = "food/astronaut_ice_cream",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 3,
+				saturation = 3f,
 				lore = Component.text("A frozen dessert that was compressed and dried. The dried chunks expand and release " +
 							"the familiar, sweet flavor of its hydrated cousin upon consumption. The lack of water in its " +
 							"composition makes this a convenient treat to pack.", NamedTextColor.GRAY, ITALIC).wrap(200),
@@ -952,8 +952,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Nutrient Cube"),
 				itemModel = "food/nutrient_cube",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 4,
+				saturation = 4.8f,
 				lore = Component.text("A compressed mixture of starch fibers and flesh. Stale yet somewhat pungent, but " +
 							"you won't be complaining about its flavor when this is the only consumable available on a " +
 							"months-long starship voyage.", NamedTextColor.GRAY, ITALIC).wrap(200),
@@ -965,8 +965,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Vegetarian Nutrient Cube"),
 				itemModel = "food/vegetarian_nutrient_cube",
 				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				hunger = 3,
+				saturation = 3.6f,
 				lore = Component.text("A compressed mixture of starch fibers and plant material. It goes down rough from " +
 							"all the leaves scratching your esophagus.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
@@ -976,9 +976,9 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.SALAD,
 				displayName = Component.text("Salad"),
 				itemModel = "food/salad",
-				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				stackSize = 1,
+				hunger = 6,
+				saturation = 3.2f,
 				lore = Component.text("Chopped and shredded lettuce leaves. Crunchy, refreshing and satisfying.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
@@ -990,7 +990,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				displayName = Component.text("Mushroom Skewer"),
 				itemModel = "food/mushroom_skewer",
 				stackSize = 64,
-				hunger = 2,
+				hunger = 3,
 				saturation = 2.4f,
 				lore = Component.text("A skewer of chopped mushroom and other fungi. An earthy, chewy texture accompanies every " +
 							"piece yanked off of the stick.", NamedTextColor.GRAY, ITALIC).wrap(200),
@@ -1003,9 +1003,9 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.TOMATO_SOUP,
 				displayName = Component.text("Tomato Soup"),
 				itemModel = "food/tomato_soup",
-				stackSize = 64,
-				hunger = 2,
-				saturation = 2.4f,
+				stackSize = 1,
+				hunger = 4,
+				saturation = 6.4f,
 				lore = Component.text("A liquid dish formed primarily from pureed tomato. Warm, creamy and savory, this " +
 							"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			) { event, _, _ ->
