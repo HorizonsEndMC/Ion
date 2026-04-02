@@ -35,6 +35,7 @@ object FermenterMultiblock : Multiblock(), EntityMultiblock<FermenterMultiblock.
             }
             y(-1) {
                 x(-1).anyWall()
+                x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
                 x(1).anyWall()
             }
             y(0) {
@@ -61,6 +62,7 @@ object FermenterMultiblock : Multiblock(), EntityMultiblock<FermenterMultiblock.
             }
             y(-1) {
                 x(-1).anyWall()
+                x(0).powerInput()
                 x(1).anyWall()
             }
             y(0) {
@@ -70,7 +72,7 @@ object FermenterMultiblock : Multiblock(), EntityMultiblock<FermenterMultiblock.
             }
             y(1) {
                 x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-                x(0).aluminumBlock()
+                x(0).extractor()
                 x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
             }
             y(2) {
@@ -88,7 +90,7 @@ object FermenterMultiblock : Multiblock(), EntityMultiblock<FermenterMultiblock.
             }
             y(0) {
                 x(-1).aluminumBlock()
-                x(0).extractor()
+                x(0).anyGlass()
                 x(1).aluminumBlock()
             }
             y(1) {

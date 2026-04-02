@@ -30,53 +30,53 @@ object DehydratorMultiblock : Multiblock(), EntityMultiblock<DehydratorMultibloc
 
     override fun MultiblockShape.buildStructure() {
         z(2) {
-            y(0) {
+            y(-1) {
                 x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
                 x(0).aluminumBlock()
                 x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
             }
-            y(1) {
+            y(0) {
                 x(-1).type(Material.IRON_BARS)
                 x(0).type(Material.IRON_BARS)
                 x(1).type(Material.IRON_BARS)
             }
-            y(2) {
+            y(1) {
                 x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
                 x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
                 x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
             }
         }
         z(1) {
-            y(0) {
+            y(-1) {
                 x(-1).aluminumBlock()
                 x(0).anyGlass()
                 x(1).aluminumBlock()
             }
-            y(1) {
+            y(0) {
                 x(-1).type(Material.IRON_BARS)
                 x(0).anyGlass()
                 x(1).type(Material.IRON_BARS)
             }
-            y(2) {
+            y(1) {
                 x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
                 x(0).ironBlock()
                 x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
             }
         }
         z(0) {
-            y(0) {
-                x(-1).extractor()
-                x(0).machineFurnace()
-                x(1).extractor()
+            y(-1) {
+                x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+                x(0).powerInput()
+                x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
             }
-            y(1) {
+            y(0) {
                 x(-1).type(Material.IRON_BARS)
-                x(0).type(Material.IRON_BARS)
+                x(0).machineFurnace()
                 x(1).type(Material.IRON_BARS)
             }
-            y(2) {
+            y(1) {
                 x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-                x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+                x(0).extractor()
                 x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
             }
         }
