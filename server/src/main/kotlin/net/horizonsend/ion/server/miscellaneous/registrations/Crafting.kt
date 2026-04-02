@@ -895,7 +895,7 @@ object Crafting : IonServerComponent() {
 			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
 			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
 		}
-		shapeless("salad", result = SALAD.getValue().constructItemStack(), CraftingBookCategory.MISC, LETTUCE.getValue().constructItemStack(4))
+		shapeless("salad", result = SALAD.getValue().constructItemStack(), CraftingBookCategory.MISC, LETTUCE.getValue().constructItemStack(4), ItemStack(BOWL))
 		shapeless("mushroom_skewer", MUSHROOM_SKEWER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			addIngredient(MaterialChoice(STICK))
 			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
