@@ -48,7 +48,9 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
+import org.litote.kmongo.contains
 import org.litote.kmongo.eq
+import org.litote.kmongo.or
 import org.litote.kmongo.save
 import java.util.LinkedList
 import java.util.Locale
@@ -60,7 +62,15 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		registerAsyncCompletion(manager, "blueprints") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val slPlayerId = player.slPlayerId
-			Blueprint.col.find(Blueprint::owner eq slPlayerId).map { it.name }.toList()
+			Blueprint.col.find(
+				or(
+					Blueprint::owner eq slPlayerId,
+					or(
+						Blueprint::trustedPlayers contains slPlayerId,
+						Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation
+					)
+				)
+			).map { it.name }.toList()
 		}
 	}
 
@@ -130,6 +140,12 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	private fun getBlueprint(sender: SLPlayerId, name: String): Blueprint {
 		return Blueprint.find(and(Blueprint::owner eq sender, Blueprint::name eq name)).first()
 			?: fail { "You don't have a blueprint named $name." }
+	}
+
+	private fun getSharedBlueprint(sender: SLPlayerId, name: String): Blueprint {
+		return Blueprint.find(and(or(Blueprint::trustedPlayers contains sender, Blueprint::trustedNations contains SLPlayer[sender]?.nation), Blueprint::name eq name)).first()
+			?: fail { "You don't have a shared blueprint named $name." }
+
 	}
 
 	private fun saveBlueprint(blueprint: Blueprint) {
@@ -228,7 +244,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("@blueprints")
 	fun onInfo(sender: Player, name: String) = asyncCommand(sender) {
 		val target = sender.slPlayerId
-		val blueprint = getBlueprint(target, name)
+		val blueprint = getSharedBlueprint(target, name)
 		sender.sendRichMessage(blueprintInfo(blueprint).joinToString("\n"))
 	}
 
@@ -237,7 +253,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("@blueprints")
 	fun onMaterials(sender: Player, name: String) = asyncCommand(sender) {
 		val target = sender.slPlayerId
-		val blueprint = getBlueprint(target, name)
+		val blueprint = getSharedBlueprint(target, name)
 		showMaterials(sender, blueprint)
 	}
 
@@ -247,7 +263,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("@blueprints")
 	fun onLoad(sender: Player, name: String) = asyncCommand(sender) {
 		val target = sender.slPlayerId
-		val blueprint = getBlueprint(target, name)
+		val blueprint = getSharedBlueprint(target, name)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
 
