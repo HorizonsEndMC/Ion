@@ -65,10 +65,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			Blueprint.col.find(
 				or(
 					Blueprint::owner eq slPlayerId,
-					or(
-						Blueprint::trustedPlayers contains slPlayerId,
-						Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation
-					)
+					Blueprint::trustedPlayers contains slPlayerId,
+					Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation
 				)
 			).map { it.name }.toList()
 		}
@@ -143,7 +141,15 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	private fun getSharedBlueprint(sender: SLPlayerId, name: String): Blueprint {
-		return Blueprint.find(and(or(Blueprint::trustedPlayers contains sender, Blueprint::trustedNations contains SLPlayer[sender]?.nation), Blueprint::name eq name)).first()
+		return Blueprint.find(
+			and(
+				or(
+					Blueprint::owner eq sender,
+					Blueprint::trustedPlayers contains sender,
+					Blueprint::trustedNations contains SLPlayer[sender]?.nation
+				),
+				Blueprint::name eq name
+			)).first()
 			?: fail { "You don't have a shared blueprint named $name." }
 
 	}
