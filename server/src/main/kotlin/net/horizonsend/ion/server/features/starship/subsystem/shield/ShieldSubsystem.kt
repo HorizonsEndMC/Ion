@@ -21,7 +21,7 @@ abstract class ShieldSubsystem(
 
 	open val maxPower: Int = (starship.initialBlockCount.d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 		get() = if (starship.shields.size > starship.maxShields) {
-			(field * ((starship.maxShields / starship.shields.size) * starship.balancing.shieldPowerMultiplier)).toInt()
+			(field * ((starship.maxShields.toDouble() / starship.shields.size) * starship.balancing.shieldPowerMultiplier)).toInt()
 		}
 		else {
 			(field * starship.balancing.shieldPowerMultiplier).toInt()
