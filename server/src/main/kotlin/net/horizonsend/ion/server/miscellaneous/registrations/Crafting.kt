@@ -220,6 +220,9 @@ import org.bukkit.Material.PINK_PETALS
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.BRAIN_CORAL
 import org.bukkit.Material.BRAIN_CORAL_BLOCK
+import org.bukkit.Material.DEEPSLATE_COAL_ORE
+import org.bukkit.Material.CLOSED_EYEBLOSSOM
+import org.bukkit.Material.PALE_MOSS_SAPLING
 import org.bukkit.Material.PISTON
 import org.bukkit.Material.PRISMARINE
 import org.bukkit.Material.PRISMARINE_BRICKS
@@ -312,7 +315,7 @@ object Crafting : IonServerComponent() {
 		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), CraftingBookCategory.BUILDING, Material.OAK_SAPLING, Material.BONE)
 		shapeless("pale_moss", ItemStack(Material.PALE_MOSS_BLOCK), CraftingBookCategory.BUILDING, MOSS_BLOCK, Material.PALE_OAK_LEAVES)
 		shapeless("pale_hanging_moss", ItemStack(Material.PALE_HANGING_MOSS, 2), CraftingBookCategory.BUILDING, Material.PALE_MOSS_BLOCK, Material.VINE)
-		shapeless("closed_eyeblossom", ItemStack(Material.CLOSED_EYEBLOSSON), CraftingBookCategory.BUILDING, Material.PALE_MOSS_SAPLING, Material.ORANGE_TULIP)
+		shapeless("closed_eyeblossom", ItemStack(Material.CLOSED_EYEBLOSSOM), CraftingBookCategory.BUILDING, Material.PALE_MOSS_SAPLING, Material.ORANGE_TULIP)
 		shapedMaterial("verdant_froglight", VERDANT_FROGLIGHT, " x ", "xlx", " x ", CraftingBookCategory.BUILDING, 'x' to SLIME_BALL, 'l' to SHROOMLIGHT)
 		shapedMaterial("pearlescent_froglight", PEARLESCENT_FROGLIGHT, " x ", "xlx", " x ", CraftingBookCategory.BUILDING, 'x' to AMETHYST_SHARD, 'l' to SHROOMLIGHT)
 		shapedMaterial("sculk_sensor", Material.SCULK_SENSOR, "   ", "t t", "sss", CraftingBookCategory.BUILDING, 't' to Material.TWISTING_VINES, 's' to Material.SCULK)
