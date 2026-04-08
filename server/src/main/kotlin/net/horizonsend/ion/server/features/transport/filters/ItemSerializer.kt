@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.server.features.space.data.CompoundTagType
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtOps
 import net.minecraft.server.MinecraftServer
@@ -42,8 +43,11 @@ object ItemSerializer : PersistentDataType<PersistentDataContainer, BukkitItemSt
 		val nms = CraftItemStack.asNMSCopy(complex)
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
-		val compound = NMSItemStack.CODEC.encodeStart(ops, nms)
-			.getOrThrow { error -> IllegalArgumentException("Failed to encode item stack: $error") } as CompoundTag
+		val compound = if (nms.isEmpty) {
+			CompoundTag()
+		} else {
+			NMSItemStack.CODEC.encode(nms, ops, CompoundTag()).orThrow as CompoundTag
+		}
 
 		return CompoundTagType.toPrimitive(compound, context)
 	}
@@ -58,8 +62,9 @@ object ItemSerializer : PersistentDataType<PersistentDataContainer, BukkitItemSt
 		val compound = CompoundTagType.fromPrimitive(primitive, context)
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
-		val nms = NMSItemStack.CODEC.parse(ops, compound)
-			.getOrThrow { error -> IllegalArgumentException("Failed to decode item stack: $error") }
+		val nms = NMSItemStack.CODEC.parse(ops, compound).resultOrPartial { itemId ->
+            ComponentLogger.logger("Ion").error("Tried to load invalid item: $itemId")
+        }.get()
 
 		return CraftItemStack.asBukkitCopy(nms)
 	}
