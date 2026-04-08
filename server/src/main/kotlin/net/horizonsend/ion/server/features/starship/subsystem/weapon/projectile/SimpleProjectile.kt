@@ -207,7 +207,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 									(base / 2.0),
 									(base / 2.0),
 									0.0,
-									null,
+									Color.WHITE,
 									true
 								)
 								return@toPlayersInRadius

@@ -172,7 +172,7 @@ class ArsenalRocketProjectile(
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		newLoc.world.spawnParticle(Particle.EXPLOSION, newLoc, 4)
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
-		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
+		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3, Color.WHITE)
 		for (nearbyPlayer in newLoc.world.getNearbyPlayers(newLoc, 200.0)) {
 			nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.arsenal_missile.impact"), Sound.Source.AMBIENT, 5f, 1.0f))
 		}
