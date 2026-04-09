@@ -76,6 +76,10 @@ data class PrintItem(val itemString: String) {
 					return PrintItem(Material.REDSTONE_TORCH)
 				}
 
+				data.material == Material.COPPER_WALL_TORCH -> {
+					return PrintItem(Material.COPPER_TORCH)
+				}
+
 				else -> {
 					log.warn("No item material for $data")
 					return null
