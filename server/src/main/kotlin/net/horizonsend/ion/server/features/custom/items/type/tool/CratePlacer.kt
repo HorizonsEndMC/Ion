@@ -110,8 +110,6 @@ object CratePlacer : CustomItem(
 			placedBox.inventory.addItem(paperItem.clone())
 			placedBox.update(true, false)
 
-			player.inventory.removeItemAnySlot(item.asOne())
-
 			val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 			powerManager.removePower(itemStack, this, powerManager.getPowerUse(itemStack, this))
 
