@@ -62,6 +62,12 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		registerAsyncCompletion(manager, "blueprints") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val slPlayerId = player.slPlayerId
+			Blueprint.col.find(Blueprint::owner eq slPlayerId).map { it.name }.toList()
+		}
+
+		registerAsyncCompletion(manager, "sharedblueprints") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val slPlayerId = player.slPlayerId
 			Blueprint.col.find(
 				or(
 					Blueprint::owner eq slPlayerId,
@@ -247,7 +253,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("info")
-	@CommandCompletion("@blueprints")
+	@CommandCompletion("@sharedblueprints")
 	fun onInfo(sender: Player, name: String) = asyncCommand(sender) {
 		val target = sender.slPlayerId
 		val blueprint = getSharedBlueprint(target, name)
@@ -256,7 +262,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("materials")
-	@CommandCompletion("@blueprints")
+	@CommandCompletion("@sharedblueprints")
 	fun onMaterials(sender: Player, name: String) = asyncCommand(sender) {
 		val target = sender.slPlayerId
 		val blueprint = getSharedBlueprint(target, name)
@@ -266,7 +272,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("load")
 	@CommandPermission("starships.blueprint.load")
-	@CommandCompletion("@blueprints")
+	@CommandCompletion("@sharedblueprints")
 	fun onLoad(sender: Player, name: String) = asyncCommand(sender) {
 		val target = sender.slPlayerId
 		val blueprint = getSharedBlueprint(target, name)
