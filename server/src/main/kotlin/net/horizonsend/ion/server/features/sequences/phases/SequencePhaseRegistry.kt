@@ -43,7 +43,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FI
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_START
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_STOP
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_TURN
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_IDLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_HYPERSPACE_JUMP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_IN_HYPERSPACE
@@ -85,7 +85,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -132,9 +131,18 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         EffectTiming.START
     )
 
+
     private fun registerTutorial() {
+        // Place cruiser at: world Tutorial, starship computer (in front of ship) at absolute position:
+        // world: Tutorial, x: 1250, y: 192, z: 2000 (world border should be (2500, 2500)) (facing south)
+        // Place exit gate at world Tutorial, at absolute position:
+        // world: Tutorial, x: 1250, y: 192, z: 1000 (player travels around 900 blocks in ship)
+        // gate should point to world Tutorial2, at absolute position:
+        // world: TransitHub, x: 1000, y: 192, z: 1000 (when the player finishes the tutorial, they will
+        // be teleported to the actual hub world)
         registerTutorialBranches()
 
+        // TUTORIAL.TUTORIAL_START
         bootstrapPhase(
             phaseKey = TUTORIAL_START,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -154,7 +162,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 SendMessage(text("Welcome to Horizon's End!"), EffectTiming.START),
-                SendMessage(text("This is the start of the intro sequence."), EffectTiming.START),
+                SendMessage(text("This is the start of the tutorial."), EffectTiming.START),
                 SendMessage(text("Exit the cryopod room to begin."), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
@@ -188,6 +196,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.EXIT_CRYOPOD_ROOM
         bootstrapPhase(
             phaseKey = EXIT_CRYOPOD_ROOM,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -263,6 +272,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.BROKEN_ELEVATOR
         bootstrapPhase(
             phaseKey = BROKEN_ELEVATOR,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -357,6 +367,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.LOOK_AT_TRACTOR
         bootstrapPhase(
             phaseKey = LOOK_AT_TRACTOR,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -416,14 +427,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.CREW_QUARTERS
         bootstrapPhase(
             phaseKey = CREW_QUARTERS,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(
-					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(1, -4, -21), Vec3i(2, -7, -17)))),
-					triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
+                    type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                    settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(1, -4, -21), Vec3i(2, -7, -17)))),
+                    triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
             description = PhaseDescription(
@@ -446,45 +458,46 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.FIRE_OBSTACLE
         bootstrapPhase(
             phaseKey = FIRE_OBSTACLE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(
-					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-2, -8, -58), Vec3i(2, -5, -58)))),
-					triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
+                    type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                    settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-2, -8, -58), Vec3i(2, -5, -58)))),
+                    triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
                 ),
-				SequenceTrigger(
-					SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-						// If looking out window
-						SequenceTrigger(
-							SequenceTriggerTypes.PLAYER_MOVEMENT,
-							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-3, -8, -34), Vec3i(-9, -3, -39)), distance = 10.0)),
-							triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
-						),
-						// Only trigger this branch if first time
-						SequenceTrigger(
-							SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_navigation") { it != true },
-							triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
-						)
-					), triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-						// If looking out window
-						SequenceTrigger(
-							SequenceTriggerTypes.PLAYER_MOVEMENT,
-							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -8, -31), Vec3i(7, -3, -41)), distance = 10.0)),
-							triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
-						),
-						// Only trigger this branch if first time
-						SequenceTrigger(
-							SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_multiblocks") { it != true },
-							triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
-						)
-					), triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
-				)
+                SequenceTrigger(
+                    SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-3, -8, -34), Vec3i(-9, -3, -39)), distance = 10.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_navigation") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
+                        )
+                    ), triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -8, -31), Vec3i(7, -3, -41)), distance = 10.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_multiblocks") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
+                        )
+                    ), triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
+                )
             ),
             description = PhaseDescription(
                 description = ofChildren(
@@ -496,13 +509,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
 
-				ifPreviousPhase(
-					CREW_QUARTERS, EffectTiming.START,
-					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), EffectTiming.START),
-					SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
-					SendMessage(Component.empty(), EffectTiming.START),
-				),
+                ifPreviousPhase(
+                    CREW_QUARTERS, EffectTiming.START,
+                    NEXT_PHASE_SOUND,
+                    SendMessage(Component.empty(), EffectTiming.START),
+                    SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
+                    SendMessage(Component.empty(), EffectTiming.START),
+                ),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayText(
                         position = Vec3i(0, -6, -58),
@@ -534,14 +547,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.GET_CHETHERITE
         bootstrapPhase(
             phaseKey = GET_CHETHERITE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(
-					type = SequenceTriggerTypes.CONTAINS_ITEM,
-					settings = ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE },
-					triggerResult = SequenceTrigger.startPhase(GO_TO_ESCAPE_POD)
+                    type = SequenceTriggerTypes.CONTAINS_ITEM,
+                    settings = ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE },
+                    triggerResult = SequenceTrigger.startPhase(GO_TO_ESCAPE_POD)
                 )
             ),
             description = PhaseDescription(
@@ -589,29 +603,31 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 )
             )
         )
+
+        // TUTORIAL.GO_TO_ESCAPE_POD
         bootstrapPhase(
-			GO_TO_ESCAPE_POD, SequenceKeys.TUTORIAL, listOf(
-				SequenceTrigger(
-					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-1, -4, -93), Vec3i(1, -1, -93)))),
-					triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-						// If looking out window
-						SequenceTrigger(
-							SequenceTriggerTypes.PLAYER_MOVEMENT,
-							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-14, -7, -83), Vec3i(-12, -4, -83)), distance = 5.0)),
-							triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
-						),
-						// Only trigger this branch if first time
-						SequenceTrigger(
-							SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_crates") { it != true },
-							triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
-						)
-					), triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
-				)
-			),
+            GO_TO_ESCAPE_POD, SequenceKeys.TUTORIAL, listOf(
+                SequenceTrigger(
+                    type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                    settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-1, -4, -93), Vec3i(1, -1, -93)))),
+                    triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-14, -7, -83), Vec3i(-12, -4, -83)), distance = 5.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_crates") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
+                        )
+                    ), triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
+                )
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Enter the escape pod at: "),
@@ -620,7 +636,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 position = Vec3i(0, -2, -93)
             ),
             listOf(
-				RANDOM_EXPLOSION_SOUND,
+                RANDOM_EXPLOSION_SOUND,
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayText(
                         position = Vec3i(0, -3, -98),
@@ -650,65 +666,68 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     2
                 ),
 
-				ifPreviousPhase(
-					GET_CHETHERITE,
-					EffectTiming.START,
-					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), EffectTiming.START),
-					SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
-					SendMessage(text("Now quick! Make your way to the escape pod before the ship is completely lost!", GRAY, ITALIC), EffectTiming.START),
-					SendMessage(Component.empty(), EffectTiming.START),
-				)
-			)
-		)
+                ifPreviousPhase(
+                    GET_CHETHERITE,
+                    EffectTiming.START,
+                    NEXT_PHASE_SOUND,
+                    SendMessage(Component.empty(), EffectTiming.START),
+                    SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
+                    SendMessage(text("Now quick! Make your way to the escape pod before the ship is completely lost!", GRAY, ITALIC), EffectTiming.START),
+                    SendMessage(Component.empty(), EffectTiming.START),
+                )
+            )
+        )
+
+        // TUTORIAL.ENTERED_ESCAPE_POD
         bootstrapPhase(
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.WAIT_TIME,
-					WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(5)),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_START)
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				)
-			),
+                SequenceTrigger(
+                    SequenceTriggerTypes.WAIT_TIME,
+                    WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(5)),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_START)
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                )
+            ),
             description = PhaseDescription(
                 description = text("Pilot the escape pod")
             ),
             effects = listOf(
                 NEXT_PHASE_SOUND,
-				SequencePhaseEffect.RunCode({ player, _ ->
-					Tasks.async {
-						StarshipDealers.loadDealerShipUnchecked(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip), silent = true)
-					}
-				}, EffectTiming.START),
-				SequencePhaseEffect.RunCode({ player, _ -> player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 1)) }, EffectTiming.START),
-				SequencePhaseEffect.PlaySound(
-					org.bukkit.Registry.SOUNDS.getKeyOrThrow(ENTITY_BREEZE_WIND_BURST).key(),
-					StaticFloatAmount(1.0f),
-					StaticFloatAmount(0.0f),
-					EffectTiming.START
-				),
+                SequencePhaseEffect.RunCode({ player, _ ->
+                    Tasks.async {
+                        StarshipDealers.loadDealerShipUnchecked(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip), silent = true)
+                    }
+                }, EffectTiming.START),
+                SequencePhaseEffect.RunCode({ player, _ -> player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 1)) }, EffectTiming.START),
+                SequencePhaseEffect.PlaySound(
+                    org.bukkit.Registry.SOUNDS.getKeyOrThrow(ENTITY_BREEZE_WIND_BURST).key(),
+                    StaticFloatAmount(1.0f),
+                    StaticFloatAmount(0.0f),
+                    EffectTiming.START
+                ),
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("You are now piloting the escape pod!", YELLOW, BOLD), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
-				//SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
-				//SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
-				//SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("You are now piloting the escape pod!", YELLOW, BOLD), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                //SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
+                //SendMessage(text("Attention all escape pods, the Horizon's End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
+                //SendMessage(Component.empty(), EffectTiming.START),
 
-				SequencePhaseEffect.SuppliedSetSequenceData("ENTERED_ESCAPE_POD_START", { System.currentTimeMillis() }, EffectTiming.START),
+                SequencePhaseEffect.SuppliedSetSequenceData("ENTERED_ESCAPE_POD_START", { System.currentTimeMillis() }, EffectTiming.START),
             )
         )
 
-		val janeColor = TextColor.color(45, 45, 170)
-		val janeTitle = text("J.A.N.E.", janeColor)
-		val janePrefix = ofChildren(janeTitle, text(" » ", HEColorScheme.HE_DARK_GRAY))
+        val janeColor = TextColor.color(45, 45, 170)
+        val janeTitle = text("J.A.N.E.", janeColor)
+        val janePrefix = ofChildren(janeTitle, text(" » ", HEColorScheme.HE_DARK_GRAY))
 
+        // TUTORIAL.FLIGHT_START
         bootstrapPhase(
             phaseKey = FLIGHT_START,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -733,20 +752,30 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(text("A robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
-                SendDelayedMessage(ofChildren(janePrefix, text("Hello! I am the Journey Assistive Navigational Educator, or "), janeTitle), 40L, EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START),
-                SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 80L, EffectTiming.START),
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("Hello! I am the Journey Assistive Navigational Educator, or "),
+                    janeTitle
+                ), 40L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("I am here to assist you and teach you how to pilot this spacecraft.")
+                ), 80L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
             )
         )
-		bootstrapPhase(
-			phaseKey = FLIGHT_SHIFT,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
+
+        // TUTORIAL.FLIGHT_SHIFT
+        bootstrapPhase(
+            phaseKey = FLIGHT_SHIFT,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
                 // data predicate MUST come before movement detection, as these are only checked on movement and break if the first trigger result is fulfilled
                 SequenceTrigger(
                     SequenceTriggerTypes.DATA_PREDICATE,
@@ -762,7 +791,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         SequenceManager.getSequenceData(player, context.sequence).set("flight_shift_count", currentMovements + 1)
                     }
                 ),
-			),
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Test ship movement by holding your controller and pressing your "),
@@ -770,11 +799,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("key")
                 )
             ),
-			effects = listOf(
+            effects = listOf(
                 SendMessage(
-					ofChildren(
-						janePrefix,
-						ofChildren(
+                    ofChildren(
+                        janePrefix,
+                        ofChildren(
                             text("Move the spacecraft ", LIGHT_PURPLE),
                             text("by pressing your "),
                             text("SNEAK ", AQUA),
@@ -783,8 +812,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             text(").")
                         ),
                         newline(),
-					), EffectTiming.START
-				),
+                    ), EffectTiming.START
+                ),
                 SendDelayedMessage(
                     ofChildren(
                         janePrefix,
@@ -813,26 +842,28 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     2
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_ROTATION_LEFT,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_ROTATE,
-					ShipRotationTriggerSettings { player, movement -> if (!movement.clockwise) true else {
-						player.userError("Not quite! Try the other direction.")
-						false
-					} },
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_RIGHT)
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-			),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_ROTATION_LEFT
+        bootstrapPhase(
+            phaseKey = FLIGHT_ROTATION_LEFT,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_ROTATE,
+                    ShipRotationTriggerSettings { player, movement -> if (!movement.clockwise) true else {
+                        player.userError("Not quite! Try the other direction.")
+                        false
+                    } },
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_RIGHT)
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Turn the escape pod left by pressing your "),
@@ -840,11 +871,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("key")
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(
                     ofChildren(
                         janePrefix,
                         text("Very well! You can "),
@@ -857,7 +888,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     EffectTiming.START
                 ),
-				SendDelayedMessage(
+                SendDelayedMessage(
                     ofChildren(
                         janePrefix,
                         text("Now give it a try! Press your " ),
@@ -869,7 +900,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     40L, EffectTiming.START
                 ),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
@@ -889,26 +920,28 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     2
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_ROTATION_RIGHT,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_ROTATE,
-					ShipRotationTriggerSettings { player, movement -> if (movement.clockwise) true else {
-						player.userError("Not quite! Try the other direction.")
-						false
-					} },
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_INTERMISSION)
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				)
-			),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_ROTATION_RIGHT
+        bootstrapPhase(
+            phaseKey = FLIGHT_ROTATION_RIGHT,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_ROTATE,
+                    ShipRotationTriggerSettings { player, movement -> if (movement.clockwise) true else {
+                        player.userError("Not quite! Try the other direction.")
+                        false
+                    } },
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_INTERMISSION)
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                )
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Turn the escape pod right by pressing your "),
@@ -916,11 +949,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("key"),
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(
                     ofChildren(
                         janePrefix,
                         text("Now press your " ),
@@ -932,7 +965,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     EffectTiming.START
                 ),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
@@ -952,54 +985,83 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     2
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_INTERMISSION,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.WAIT_TIME,
-					WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(5)),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_START)
-				) // TODO replace
-			),
-            description = PhaseDescription(text("Move to the objective")),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
-				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_INTERMISSION_START", { System.currentTimeMillis() }, EffectTiming.START),
+            )
+        )
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Now you know the basics, it is time for you to start moving towards your destination.\nMove upwards and fly over the cruiser, heading *insert wind direction*" )), EffectTiming.START), //TODO - finalize direction
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("The comms crackle to life and you hear the voice of the captain", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(text("The pirates are too busy shooting the cruiser, go now!", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("I've marked an escape route on the starship's HUD, move there and we can engage cruise to escape!")), 40L, EffectTiming.START),
-				// TODO some kind of objective marker
-				SendMessage(Component.empty(), EffectTiming.START),
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_CRUISE_START,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_CRUISE_START,
-					StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_TURN)
-				),
-			),
+        // TUTORIAL.FLIGHT_INTERMISSION
+        bootstrapPhase(
+            phaseKey = FLIGHT_INTERMISSION,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.WAIT_TIME,
+                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(7)),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_START)
+                ) // TODO replace
+            ),
+            description = PhaseDescription(text("Move to the objective")),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+                SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_INTERMISSION_START", { System.currentTimeMillis() }, EffectTiming.START),
+
+                SendMessage(ofChildren(
+                    janePrefix,
+                    text("Now you know the basics, it is time for you to start moving towards your destination.")
+                ), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+
+                SendDelayedMessage(text("The comms crackle to life and you hear the voice of the captain", GRAY, ITALIC), 40L, EffectTiming.START),
+                SendDelayedMessage(text("The pirates are too busy shooting the cruiser, go now!", GRAY, ITALIC), 40L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    ofChildren(
+                        text("I've marked an escape route on the starship's HUD. Engaging "),
+                        text("cruising mode ", AQUA),
+                        text("will give you the best chance of escaping."),
+                    )
+                ), 80L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayText(
+                        position = Vec3i(0, 0, -1000),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_CRUISE_START
+        bootstrapPhase(
+            phaseKey = FLIGHT_CRUISE_START,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_CRUISE_START,
+                    StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_IDLE)
+                ),
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Activate cruise mode by "),
@@ -1007,21 +1069,50 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("the Cruise sign, or by running the /cruise command"),
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("In order to arrive safely at the Transit Hub, you must fly through the asteroid field, but we must move quickly.")), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("Cruising lets your ship move faster than manual flight, you can engage it by "), Component.keybind("key.use"), text("ing the cruise control sign, or using the /cruise command.")), 40L, EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("When cruise is engaged, your ship will start to accelerate up to its cruise speed, in the direction you were looking when it started. You can cruise diagonally at full speed, but you " +
-					"need thrusters to cruise in other directions.")), 80L, EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), 80L, EffectTiming.START),
-				SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
+                SendMessage(ofChildren(
+                    janePrefix,
+                    text("You will cruise through an asteroid belt to reach a hyperspace beacon.")
+                ), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("Cruising lets your ship move faster than manual flight, you can engage it by clicking the "),
+                    text("cruise control sign ", GREEN),
+                    text("using your "),
+                    Component.keybind("key.use", AQUA),
+                    text(" key.")
+                ), 40L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("Your ship will move "),
+                    text("in the direction you were looking ", AQUA),
+                    text("when you activate cruising mode. You can also cruise diagonally.")
+                ), 100L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 100L, EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("You can stop cruising by clicking the "),
+                    text("cruise control sign ", GREEN),
+                    text("using your "),
+                    Component.keybind("key.attack"),
+                    text(" key.")
+                ), 160L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 160L, EffectTiming.START),
+
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
                         text = ofChildren(
-                            text("Right click the \"cruise sign\" to enable cruise mode"),
+                            text("Right click the "),
+                            text("\"cruise sign\" ", AQUA),
+                            text("to enable cruise mode"),
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
@@ -1032,24 +1123,41 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         EffectTiming.TICKED
                     ),
                     2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayText(
+                        position = Vec3i(0, 0, -1000),
+                        text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_CRUISE_IDLE
+        bootstrapPhase(
+            phaseKey = FLIGHT_CRUISE_IDLE,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.WAIT_TIME,
+                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_CRUISE_TURN_START", TimeUnit.SECONDS.toMillis(5)),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_STOP)
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_CRUISE_TURN,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.WAIT_TIME,
-					WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_CRUISE_TURN_START", TimeUnit.SECONDS.toMillis(5)),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_STOP)
-				)
-			),
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Turn the escape pod while cruising by pressing your "),
@@ -1059,15 +1167,31 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("key"),
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
-				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_CRUISE_TURN_START", { System.currentTimeMillis() }, EffectTiming.START),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+                SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_CRUISE_TURN_START", { System.currentTimeMillis() }, EffectTiming.START),
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, template(text("To steer your ship while cruising, turning using {0} or {1} will cause the ship to start to accelerate in the new forward direction."), Component.keybind("key.drop"), Component.keybind("key.swapOffhand"))), EffectTiming.START),
-				SendDelayedMessage(ofChildren(janePrefix, text("Manual flight is also possible during cruise, and can be used to make small adjustments.")), 0L, EffectTiming.START), //TODO - redo messages
-				SendDelayedMessage(ofChildren(janePrefix, text("Now make your way through the asteroid belt.")), 0L, EffectTiming.START), //TODO - redo messages
-				SendDelayedMessage(Component.empty(), 0L, EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(ofChildren(
+                    janePrefix,
+                    template(
+                        text("To steer your ship while cruising, turning using {0} or {1} will cause the ship to start to accelerate in the new forward direction."),
+                        Component.keybind("key.drop"),
+                        Component.keybind("key.swapOffhand"))
+                ), EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("Manual flight is also possible during cruise, and can be used to make small adjustments.")
+                ), 0L, EffectTiming.START), //TODO - redo messages
+                SendDelayedMessage(Component.empty(), 0L, EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    text("Now make your way through the asteroid belt.")
+                ), 0L, EffectTiming.START), //TODO - redo messages
+                SendDelayedMessage(Component.empty(), 0L, EffectTiming.START),
+
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
@@ -1084,23 +1208,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     2
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_CRUISE_STOP,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger( // TODO - location predicate
-					SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
-					StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
-				)
-			),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_CRUISE_STOP
+        bootstrapPhase(
+            phaseKey = FLIGHT_CRUISE_STOP,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger( // TODO - location predicate
+                    SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
+                    StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
+                )
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Deactivate cruise mode by "),
@@ -1108,13 +1234,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("the Cruise sign, or by running the /cruise command"),
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field, congratulations! You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO - better messages
-				SendMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field, congratulations! You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO - better messages
+                SendMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
@@ -1131,23 +1257,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     2
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_CHETHERITE,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.HYPERDRIVE_HAS_FUEL,
-					SimpleContextTriggerPredicate(),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_HYPERSPACE_JUMP)
-				),
-			),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_CHETHERITE
+        bootstrapPhase(
+            phaseKey = FLIGHT_CHETHERITE,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.HYPERDRIVE_HAS_FUEL,
+                    SimpleContextTriggerPredicate(),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_HYPERSPACE_JUMP)
+                ),
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Load the hyperdrive hoppers with the "),
@@ -1155,13 +1283,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("you obtained earlier (at the back of the ship)")
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("You're going to need to load the Chetherite you grabbed earlier into the hyperdrive. Each hopper needs at least 2 to make a jump.")), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("I've highlighted the hyperdrive, its in the back of the ship, above the door.")), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("You're going to need to load the Chetherite you grabbed earlier into the hyperdrive. Each hopper needs at least 2 to make a jump.")), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("I've highlighted the hyperdrive, its in the back of the ship, above the door.")), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.RunCode({ player, _ ->
@@ -1181,35 +1309,37 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     }, EffectTiming.TICKED),
                     interval = 2,
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_HYPERSPACE_JUMP,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
-					ShipEnterHyperspaceJumpTriggerSettings(),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE)
-				),
-			),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_HYPERSPACE_JUMP
+        bootstrapPhase(
+            phaseKey = FLIGHT_HYPERSPACE_JUMP,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
+                    ShipEnterHyperspaceJumpTriggerSettings(),
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE)
+                ),
+            ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Jump to a new star system by entering the command: "),
                     text("/jump Horizons_End_Transit_Hub", AQUA)
                 )
             ),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Now that the hyperdrive is fueled, execute the command ‘/jump Horizons_End_Transit_Hub’.")), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("Now that the hyperdrive is fueled, execute the command '/jump Horizons_End_Transit_Hub'.")), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
@@ -1230,52 +1360,54 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     2
                 )
-			)
-		)
-		bootstrapPhase(
-			phaseKey = FLIGHT_IN_HYPERSPACE,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				),
-				SequenceTrigger(
-					SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
-					ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
-					triggerResult = handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
-						event.exitLocation.x = 0.0
-						event.exitLocation.y = 205.0
-						event.exitLocation.z = 0.0
-					}
-				),
-			),
+            )
+        )
+
+        // TUTORIAL.FLIGHT_IN_HYPERSPACE
+        bootstrapPhase(
+            phaseKey = FLIGHT_IN_HYPERSPACE,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
+                    ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
+                    triggerResult = handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
+                        event.exitLocation.x = 0.0
+                        event.exitLocation.y = 205.0
+                        event.exitLocation.z = 0.0
+                    }
+                ),
+            ),
             description = PhaseDescription(text("- Wait until the escape pod completes the hyperspace transit")),
-			effects = listOf(
-				NEXT_PHASE_SOUND,
+            effects = listOf(
+                NEXT_PHASE_SOUND,
 
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Your starship is now in hyperspace!")), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Moving through this dimension allows travel immensely faster than real space, but real space can still interfere with travel.")), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("We are in deep space, so this isn't an issue, but strong gravity wells such as planets and stars can pull you out of hyperspace.")), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START)
-			)
-		)
-
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("Your starship is now in hyperspace!")), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("Moving through this dimension allows travel immensely faster than real space, but real space can still interfere with travel.")), EffectTiming.START),
+                SendMessage(ofChildren(janePrefix, text("We are in deep space, so this isn't an issue, but strong gravity wells such as planets and stars can pull you out of hyperspace.")), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START)
+            )
+        )
     }
 
     private fun registerTutorialBranches() {
+        // TUTORIAL.BRANCH_LOOK_OUTSIDE
         bootstrapPhase(
             phaseKey = BRANCH_LOOK_OUTSIDE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_UNPILOT,
-					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				)
-			),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_UNPILOT,
+                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+                )
+            ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 SendMessage(Component.empty(), EffectTiming.START),
@@ -1288,6 +1420,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.BRANCH_DYNMAP
         bootstrapPhase(
             phaseKey = BRANCH_DYNMAP,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -1303,6 +1436,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL.BRANCH_SHIP_COMPUTER
         bootstrapPhase(
             phaseKey = BRANCH_SHIP_COMPUTER,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -1322,61 +1456,64 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
-		bootstrapPhase(
-			phaseKey = BRANCH_NAVIGATION,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(),
-			effects = listOf(
-				RANDOM_EXPLOSION_SOUND,
-				NEXT_PHASE_SOUND,
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("These are navigation machines and the ship's hyperdrives." +
+        // TUTORIAL.BRANCH_NAVIGATION
+        bootstrapPhase(
+            phaseKey = BRANCH_NAVIGATION,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf(
+                RANDOM_EXPLOSION_SOUND,
+                NEXT_PHASE_SOUND,
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("These are navigation machines and the ship's hyperdrives. " +
                         "Their damaged state prevents this cruiser from escaping into hyperspace.", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
 
-				GoToPreviousPhase(EffectTiming.START),
+                GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_navigation", true, EffectTiming.END),
-			)
-		)
+                SequencePhaseEffect.SetSequenceData("seen_navigation", true, EffectTiming.END),
+            )
+        )
 
-		bootstrapPhase(
-			phaseKey = BRANCH_MULTIBLOCKS,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(),
-			effects = listOf(
-				RANDOM_EXPLOSION_SOUND,
-				NEXT_PHASE_SOUND,
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("These are power machines. They would normally be used by the" +
+        // TUTORIAL.BRANCH_MULTIBLOCKS
+        bootstrapPhase(
+            phaseKey = BRANCH_MULTIBLOCKS,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf(
+                RANDOM_EXPLOSION_SOUND,
+                NEXT_PHASE_SOUND,
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("These are power machines. They would normally be used by the" +
                         "crew to supply power to their gear, but you don't think the crew will be returning while" +
                         "the ship is in this state.", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
 
-				GoToPreviousPhase(EffectTiming.START),
+                GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_multiblocks", true, EffectTiming.END),
-			)
-		)
+                SequencePhaseEffect.SetSequenceData("seen_multiblocks", true, EffectTiming.END),
+            )
+        )
 
-		bootstrapPhase(
-			phaseKey = BRANCH_CARGO_CRATES,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(
+        // TUTORIAL.BRANCH_CARGO_CRATES
+        bootstrapPhase(
+            phaseKey = BRANCH_CARGO_CRATES,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
 
-			),
-			effects = listOf(
-				RANDOM_EXPLOSION_SOUND,
-				NEXT_PHASE_SOUND,
-				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("These cargo crates won't be making it to their destination.", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(Component.empty(), EffectTiming.START),
+            ),
+            effects = listOf(
+                RANDOM_EXPLOSION_SOUND,
+                NEXT_PHASE_SOUND,
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("These cargo crates won't be making it to their destination.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
 
-				GoToPreviousPhase(EffectTiming.START),
+                GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_crates", true, EffectTiming.END),
-			)
-		)
+                SequencePhaseEffect.SetSequenceData("seen_crates", true, EffectTiming.END),
+            )
+        )
     }
 
 	private fun fullBoundingBox(pos1: Vec3i, pos2: Vec3i): BoundingBox {
