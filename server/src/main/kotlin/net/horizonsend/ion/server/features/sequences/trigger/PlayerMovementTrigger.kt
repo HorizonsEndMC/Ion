@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.sequences.trigger
 
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -42,5 +43,10 @@ object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
 		debugAudience.audiences().filterIsInstance<Player>().forEach { player -> cube.forEach { cubePoint -> player.spawnParticle(Particle.SOUL_FIRE_FLAME, cubePoint.x, cubePoint.y, cubePoint.z, 1, 0.0, 0.0, 0.0, 0.0) } }
 
 		return@PlayerLocationPredicate box.rayTrace(player.eyeLocation.toVector(), player.location.direction, distance) != null
+	}
+
+	fun withinRadius(center: Vec3i, radius: Int) = PlayerLocationPredicate { player, context ->
+		val absoluteCenter = center.toVector().add(context.sequenceContext.getOrigin().toVector())
+		return@PlayerLocationPredicate player.location.toVector().distanceSquared(absoluteCenter) <= radius * radius
 	}
 }
