@@ -58,6 +58,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TU
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
@@ -79,6 +80,7 @@ import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.event.StarshipPreExitHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -685,7 +687,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
-                    WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(5)),
+                    WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(6)),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_START)
                 ),
                 SequenceTrigger(
@@ -1153,23 +1155,21 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
                 ),
                 SequenceTrigger(
-                    SequenceTriggerTypes.WAIT_TIME,
-                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_CRUISE_TURN_START", TimeUnit.SECONDS.toMillis(5)),
+                    type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                    settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_STOP)
                 )
             ),
             description = PhaseDescription(
                 description = ofChildren(
-                    text("- Turn the escape pod while cruising by pressing your "),
-                    text("DROP ITEM ", AQUA),
-                    text("or "),
-                    text("SWAP ITEM TO OFFHAND ", AQUA),
-                    text("key"),
-                )
+                    text("- Wait until your starship cruises to the hyperspace beacon at: "),
+                    text("{0}")
+                ),
+                position = Vec3i(0, 0, -1000)
             ),
+
             effects = listOf(
                 NEXT_PHASE_SOUND,
-                SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_CRUISE_TURN_START", { System.currentTimeMillis() }, EffectTiming.START),
 
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(ofChildren(
