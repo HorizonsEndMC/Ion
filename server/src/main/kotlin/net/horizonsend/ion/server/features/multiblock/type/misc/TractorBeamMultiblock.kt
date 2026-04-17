@@ -143,6 +143,11 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 					continue
 				}
 
+				val above = getBlockIfLoaded(world, x, y + 1, z) ?: return player.debug("Block above not loaded, cancelled")
+				val aboveType = above.getTypeSafe() ?: return player.debug("Block above type could not be obtained, cancelled")
+
+				if (!aboveType.isAir && aboveType.isCollidable) break // obstructed
+
 				val newLocation = Location(player.world, player.location.x, block.y + 1.0, player.location.z)
 
 				finishTeleport(player, newLocation, event, SoundType.BLOCK_PISTON_EXTEND, "Ascending")
