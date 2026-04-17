@@ -217,6 +217,7 @@ object ProtectionListener : SLEventListener() {
 					region.onFailedToAccess(player)
 				}
 				denied = true
+				break
 			}
 		}
 
