@@ -1,7 +1,9 @@
 {
-	"pack": {
-		"description": "Horizon's End Datapack"	,
-		"min_format": 61,
-		"max_format": 94.1
+    "pack": {
+		"description": "Horizon's End Datapack",
+        "pack_format": 94,
+        "supported_formats": [61, 94],
+        "min_format": 61,
+        "max_format": 94
 	}
 }
