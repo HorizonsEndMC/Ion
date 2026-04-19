@@ -58,7 +58,8 @@ public class SignUtils {
 			if (messageType.name().equalsIgnoreCase(LinTagType.stringTag().name())) {
 				var messages = textCompound.getListTag("messages", LinTagType.stringTag()).value();
 
-				return messages.stream().map( (tag)-> convertLine(tag.value()) ).toArray(Component[]::new);
+				//return messages.stream().map( (tag)-> convertLine(tag.value()) ).toArray(Component[]::new);
+				return messages.stream().map( (tag)-> Component.text(tag.value()) ).toArray(Component[]::new);
 			}
 
 			// Beyond this point, handle signs post 1.21.11
