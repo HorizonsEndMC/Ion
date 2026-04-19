@@ -52,6 +52,16 @@ public class SignUtils {
 		if (keys.contains("front_text") && !keys.contains("Text1")) {
 			LinCompoundTag textCompound = nbt.getTag("front_text", LinTagType.compoundTag());
 
+			var messageType = textCompound.getTag("messages", LinTagType.listTag()).elementType();
+
+			// Kind of a stupid way to check textCompound's internal list tags for string tags (pre 1.21.11?) or compounds tags (1.21.11+)
+			if (messageType.name().equalsIgnoreCase(LinTagType.stringTag().name())) {
+				var messages = textCompound.getListTag("messages", LinTagType.stringTag()).value();
+
+				return messages.stream().map( (tag)-> convertLine(tag.value()) ).toArray(Component[]::new);
+			}
+
+			// Beyond this point, handle signs post 1.21.11
 			var messages = textCompound.getListTag("messages", LinTagType.compoundTag()).value();
 
 			return messages.stream().map(tag -> {
