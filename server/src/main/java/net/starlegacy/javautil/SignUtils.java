@@ -3,6 +3,7 @@ package net.starlegacy.javautil;
 import net.horizonsend.ion.server.IonServer;
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -13,6 +14,7 @@ import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer;
 import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry;
 import org.enginehub.linbus.format.snbt.impl.LinSnbtWriter;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinStringTag;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.StringWriter;
@@ -50,9 +52,41 @@ public class SignUtils {
 		if (keys.contains("front_text") && !keys.contains("Text1")) {
 			LinCompoundTag textCompound = nbt.getTag("front_text", LinTagType.compoundTag());
 
-			var messages = textCompound.getListTag("messages", LinTagType.stringTag()).value();
+			var messages = textCompound.getListTag("messages", LinTagType.compoundTag()).value();
 
-			return messages.stream().map( (tag)-> convertLine(tag.value()) ).toArray(Component[]::new);
+			return messages.stream().map(tag -> {
+				var map = tag.value();
+				// The text tag can either have the key "text" or an empty string. In the empty string case, the color
+				// should be black. In the "text" case, the compound tag also has a second string tag "color" that
+				// contains color information.
+				LinStringTag textEntry = map.containsKey("text") ? (LinStringTag) map.get("text")
+						: map.containsKey("") ? (LinStringTag) map.get("")
+						: null;
+				String text = textEntry != null ? textEntry.value() : "";
+
+				// Cursed color parser
+				LinStringTag colorEntry = map.containsKey("color") ? (LinStringTag) map.get("color") : null;
+				NamedTextColor color = colorEntry != null ? switch (colorEntry.value()) {
+                    case "dark_blue" -> NamedTextColor.DARK_BLUE;
+					case "dark_green" -> NamedTextColor.DARK_GREEN;
+					case "dark_aqua" -> NamedTextColor.DARK_AQUA;
+					case "dark_red" -> NamedTextColor.DARK_RED;
+					case "dark_purple" -> NamedTextColor.DARK_PURPLE;
+					case "gold" -> NamedTextColor.GOLD;
+					case "gray" -> NamedTextColor.GRAY;
+					case "dark_gray" -> NamedTextColor.DARK_GRAY;
+					case "blue" -> NamedTextColor.BLUE;
+					case "green" -> NamedTextColor.GREEN;
+					case "aqua" -> NamedTextColor.AQUA;
+					case "red" -> NamedTextColor.RED;
+					case "light_purple" -> NamedTextColor.LIGHT_PURPLE;
+					case "yellow" -> NamedTextColor.YELLOW;
+					case "white" -> NamedTextColor.WHITE;
+					default -> NamedTextColor.BLACK;
+				} : NamedTextColor.BLACK;
+
+				return Component.text(text, color);
+			}).toArray(Component[]::new);
 		}
 
 		// Handle legacy signs
