@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.World
@@ -29,7 +31,7 @@ class BoxShieldSubsystem(
 	private val cachedShapes = mutableMapOf<BlockFace, RectangularPrism>()
 
 	init {
-		val dimensions = sign.getLine(3)
+		val dimensions = sign.front().line(3).plainText()
 			.replace(",", " ")
 			.split(" ")
 			.map { it.toInt() }
