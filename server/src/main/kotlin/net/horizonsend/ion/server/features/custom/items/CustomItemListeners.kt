@@ -157,6 +157,8 @@ object CustomItemListeners : SLEventListener() {
 			for ((slot, item) in tickedHandheldGear) {
 				if (item == null) continue
 				val customItem = item.customItem ?: continue
+				// Holding power armor caused them to tick; they should only tick in the above armor handler
+				if (customItem is PowerArmorItem) continue
 
 				val tickListeners = getEntries(tickRecievers, customItem)
 				if (tickListeners.isEmpty()) continue
