@@ -374,8 +374,9 @@ object ChestShops : IonServerComponent() {
 		val nbt = NbtUtils.snbtToStructure(string)
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
-		val nmsStack = NMSItemStack.CODEC.parse(ops, nbt)
-			.getOrThrow { error -> IllegalArgumentException("Failed to decode item stack: $error") }
+		val nmsStack = NMSItemStack.CODEC.parse(ops, nbt).resultOrPartial { itemId ->
+			throw IllegalArgumentException("Failed to decode chest shop item: $itemId")
+		}.getOrNull() ?: return null
 
 		return CraftItemStack.asCraftMirror(nmsStack)
 	}
