@@ -34,7 +34,7 @@ val serverPlugins = listOf(
 		name = "ProtocolLib",
 		mode = PluginMode.REQUIRED,
 		downloadType = DownloadType.GITHUB_RELEASE_TAG,
-		tag = "dev-build",
+		tag = "5.4.0",
 		jarName = "ProtocolLib.jar",
 		source = "dmulloy2/ProtocolLib",
 		assetName = "ProtocolLib.jar"
@@ -44,7 +44,7 @@ val serverPlugins = listOf(
 		mode = PluginMode.EXTENDED,
 		downloadType = DownloadType.DIRECT,
 		jarName = "Citizens.jar",
-		source = "https://ci.citizensnpcs.co/job/Citizens2/lastSuccessfulBuild/artifact/dist/target/Citizens-2.0.41-b4134.jar"
+		source = "https://ci.citizensnpcs.co/view/Citizens/job/Citizens2/4134/artifact/dist/target/Citizens-2.0.41-b4134.jar"
 	),
 	ServerPlugin(
 		name = "LuckPerms",
