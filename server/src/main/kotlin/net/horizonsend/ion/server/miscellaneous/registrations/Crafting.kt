@@ -260,13 +260,36 @@ import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.inventory.SmokingRecipe
 import org.bukkit.inventory.recipe.CookingBookCategory
 import org.bukkit.inventory.recipe.CraftingBookCategory
+import org.bukkit.Material.ALLIUM
+import org.bukkit.Material.AZURE_BLUET
+import org.bukkit.Material.BLUE_ORCHID
+import org.bukkit.Material.BROWN_MUSHROOM
+import org.bukkit.Material.CORNFLOWER
+import org.bukkit.Material.CRYING_OBSIDIAN
+import org.bukkit.Material.DANDELION
+import org.bukkit.Material.DEAD_BUSH
+import org.bukkit.Material.HANGING_ROOTS
+import org.bukkit.Material.LILAC
+import org.bukkit.Material.LILY_OF_THE_VALLEY
+import org.bukkit.Material.LILY_PAD
+import org.bukkit.Material.MANGROVE_PROPAGULE
+import org.bukkit.Material.ORANGE_TULIP
+import org.bukkit.Material.OXEYE_DAISY
+import org.bukkit.Material.PEONY
+import org.bukkit.Material.POPPY
+import org.bukkit.Material.RED_MUSHROOM
+import org.bukkit.Material.RED_TULIP
+import org.bukkit.Material.ROSE_BUSH
+import org.bukkit.Material.SUNFLOWER
+import org.bukkit.Material.WHITE_TULIP
+import org.bukkit.Material.WITHER_ROSE
 
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
 	val listOfCustomRecipes = mutableListOf<NamespacedKey>()
 
 	override fun onEnable() {
-		registerOreFurnaceRecipes()
+	registerOreFurnaceRecipes()
 		registerFoodFurnaceRecipes()
 		registerTools()
 		registerMisc()
@@ -905,6 +928,184 @@ object Crafting : IonServerComponent() {
 			addIngredient(ExactChoice(TOMATO.getValue().constructItemStack()))
 			addIngredient(MaterialChoice(BOWL))
 		}
+
+		//Flowers and fauna
+
+		shaped("dandelion", ItemStack(Material.DANDELION, 8), CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.DANDELION)
+	    setIngredient('u', URANIUM)
+    }
+
+		shaped("poppy", ItemStack(Material.POPPY, 8), CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.POPPY)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.BLUE_ORCHID)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("allium", ItemStack(Material.ALLIUM, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.ALLIUM)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.AZURE_BLUET)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("red_tulip", ItemStack(Material.RED_TULIP, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.RED_TULIP)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.PINK_TULIP)
+	    setIngredient('u', URANIUM)
+    }
+
+		shaped("orange_tulip", ItemStack(Material.ORANGE_TULIP, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.ORANGE_TULIP)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.WHITE_TULIP)
+	    setIngredient('u', URANIUM.getValue().constructItemStack())
+    }
+
+    shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.OXEYE_DAISY)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("cornflower", ItemStack(Material.CORNFLOWER, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.CORNFLOWER)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.LILY_OF_THE_VALLEY)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("sunflower", ItemStack(Material.SUNFLOWER, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.SUNFLOWER)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("lilac", ItemStack(Material.LILAC, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.LILAC)
+	    setIngredient('u', URANIUM)
+    }
+
+		shaped("rose_bush", ItemStack(Material.ROSE_BUSH, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.ROSE_BUSH)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("peony", ItemStack(Material.PEONY, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.PEONY)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.HANGING_ROOTS)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.STICK)
+	    setIngredient('f', Material.DEAD_BUSH)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("lily_pad", ItemStack(Material.LILY_PAD, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.LILY_PAD)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.RED_MUSHROOM)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.BROWN_MUSHROOM)
+	    setIngredient('u', URANIUM)
+    }
+
+    shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8) CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.CRYING_OBSIDIAN)
+	    setIngredient('f', Material.ROSE_BUSH)
+	    setIngredient('u', URANIUM)
+    }
 	}
 
 	@EventHandler
