@@ -18,6 +18,7 @@ import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.wrap
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
@@ -359,10 +360,10 @@ object ChestShops : IonServerComponent() {
 	 **/
 	private fun getStringRepresentation(itemStack: ItemStack): String {
 		val nms = CraftItemStack.asNMSCopy(itemStack)
+		if (nms.isEmpty) throw IllegalStateException("Cannot encode empty ItemStack")
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
-		val tag = NMSItemStack.CODEC.encodeStart(ops, nms)
-			.getOrThrow { error -> IllegalArgumentException("Failed to encode chest shop item: $error") } as CompoundTag
+		val tag = NMSItemStack.CODEC.encode(nms, ops, CompoundTag()).getOrThrow() as CompoundTag
 
 		return SnbtPrinterTagVisitor().visit(tag)
 	}
@@ -375,7 +376,7 @@ object ChestShops : IonServerComponent() {
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
 		val nmsStack = NMSItemStack.CODEC.parse(ops, nbt).resultOrPartial { itemId ->
-			throw IllegalArgumentException("Failed to decode chest shop item: $itemId")
+			IonServer.logger.warning("Tried to load invalid item: $itemId")
 		}.getOrNull() ?: return null
 
 		return CraftItemStack.asCraftMirror(nmsStack)
