@@ -1,4 +1,3 @@
-import io.papermc.paperweight.util.path
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.ByteArrayOutputStream
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -22,11 +21,11 @@ repositories {
 	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
-	maven("https://repo.decalium.ru/releases") // Persistent Data Types
+	//maven("https://repo.decalium.ru/releases") // Persistent Data Types
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
 	maven("https://repo.papermc.io/repository/maven-public/") // FAWE api
 	maven("https://maven.enginehub.org/repo/") // FAWE Alt
-	maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
+	//maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
 
 	maven("https://repo.horizonsend.net/mirror")
 }
