@@ -19,6 +19,9 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
@@ -384,6 +387,11 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		val cache: DeactivatedShipWorldCache = getCache(world)
 		cache.remove(data)
 		getSaveFile(world, data).delete()
+
+		@Suppress("DEPRECATION") val x = blockKeyX(data.blockKey)
+		@Suppress("DEPRECATION") val y = blockKeyY(data.blockKey)
+		@Suppress("DEPRECATION") val z = blockKeyZ(data.blockKey)
+		IonServer.logger.info("Starship destroyed at ${world.name}, $x, $y, $z")
 
 		data.companion().remove(data._id)
 	}

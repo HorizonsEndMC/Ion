@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -129,6 +130,7 @@ object PilotedStarships : IonServerComponent() {
 			saveLoadshipData(ship, player)
 			StarshipPilotedEvent(ship, player).callEvent()
 		}
+		log.info("${player.name} piloted ${starship.getDisplayNamePlain()} (${starship.initialBlockCount}) at ${starship.world.name}, ${starship.centerOfMass}")
 	}
 
 	fun changeController(starship: ActiveControlledStarship, newController: Controller) {
@@ -453,6 +455,8 @@ object PilotedStarships : IonServerComponent() {
 					.append(activePlayerStarship.getDisplayName())
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
+			log.info("${player.displayName().plainText()} piloted ${activePlayerStarship.getDisplayName().plainText()}" +
+					" with ${activePlayerStarship.initialBlockCount} blocks, at ${player.world.name}, ${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ}")
 
 			if (activePlayerStarship.isOversized()) {
 				player.userError("Ship is over max block count! Power output reduced by ${(ReactorSubsystem.OVERSIZE_POWER_PENALTY * 100).toInt()}%!")
@@ -481,6 +485,8 @@ object PilotedStarships : IonServerComponent() {
 		val controller = starship.controller
 
 		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
+		log.info("${starship.controller.name} unpiloted ${starship.getDisplayNamePlain()} (${starship.initialBlockCount}) at ${starship.world.name}, ${starship.centerOfMass}")
+
 		if (Hyperspace.isMoving(starship)) {
 			starship.alertSubtitle("Cannot release while in hyperspace!")
 			return false

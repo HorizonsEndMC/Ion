@@ -132,6 +132,7 @@ object StarshipComputers : IonServerComponent() {
 
 		DeactivatedPlayerStarships.destroyAsync(computer) {
 			player.successActionMessage("Destroyed starship computer")
+			log.info("${player.name} destroyed starship computer at ${block.location.world.name}, ${block.location.x}, ${block.location.y}, ${block.location.z}")
 		}
 	}
 
@@ -144,6 +145,7 @@ object StarshipComputers : IonServerComponent() {
 
 		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
 			player.successActionMessage("Registered starship computer!")
+			log.info("${player.name} registered starship computer at ${block.location.world.name}, ${block.location.x}, ${block.location.y}, ${block.location.z}")
 			tryOpenMenu(player, it)
 		}
 	}
@@ -176,6 +178,7 @@ object StarshipComputers : IonServerComponent() {
 				.clickEvent(ClickEvent.callback {
 					DeactivatedPlayerStarships.destroyAsync(data) {
 						player.successActionMessage("Destroyed starship computer")
+						log.info("${player.name} destroyed AI starship computer at ${player.location.world.name}, ${player.location.x}, ${player.location.y}, ${player.location.z}")
 					}
 				})
 				.hoverEvent(text("Remove Computer"))

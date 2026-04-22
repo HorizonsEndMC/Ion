@@ -59,7 +59,7 @@ object ShipKillXP : IonServerComponent() {
 	private fun onShipKill(starship: ActiveStarship) {
 		log.info(
 			"""
-				ship "${starship.getDisplayNamePlain()}" killed at ${starship.centerOfMass}.
+				ship "${starship.getDisplayNamePlain()}" killed at ${starship.centerOfMass}, ${starship.world.name}.
 				Pilot: ${starship.controller}.
 				Damagers: ${starship.damagers.entries.joinToString { "(Damager: ${it.key}, Points: ${it.value.points})" }}
 				Rewards provider: ${starship.rewardsProviders.joinToString { it.javaClass.simpleName }}

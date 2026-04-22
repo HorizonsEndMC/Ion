@@ -21,6 +21,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.litote.kmongo.descendingSort
+import org.litote.kmongo.contains
+import org.litote.kmongo.or
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -28,7 +30,7 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import kotlin.reflect.KMutableProperty1
 
-class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
+class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, val shared: Boolean = false, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
 	override val listingsPerPage: Int = 36
 
 	private var sortTypes: List<KMutableProperty1<Blueprint, out Any>> = listOf(
@@ -40,6 +42,15 @@ class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, 
 	private var filterType: Int = 0
 
 	override fun generateEntries(): List<Blueprint> {
+		if (shared) {
+			return Blueprint.find(
+				or(
+					Blueprint::trustedPlayers contains target,
+					Blueprint::trustedNations contains net.horizonsend.ion.common.database.schema.misc.SLPlayer[target]?.nation
+				)
+			).descendingSort(sortTypes[filterType]).toList()
+		}
+
 		return Blueprint
 			.find(Blueprint::owner eq target)
 			.descendingSort(sortTypes[filterType])
@@ -115,6 +126,7 @@ class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, 
 	)
 
 	override fun buildTitle(): Component {
-		return withPageNumber(GuiText("Your blueprints").addBackground())
+		val title = if (shared) "Shared blueprints" else "Your blueprints"
+		return withPageNumber(GuiText(title).addBackground())
 	}
 }

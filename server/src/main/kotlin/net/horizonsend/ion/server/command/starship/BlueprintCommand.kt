@@ -198,8 +198,10 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		list.add("<gray>Size<dark_gray>: <gold>${blueprint.size}")
 		list.add("<gray>Cost<dark_gray>: <gold>$$cost")
 		list.add("<gray>Class<dark_gray>: <light_purple>${blueprint.type}")
-		if (blueprint.trustedNations.isNotEmpty()) {
+		if (blueprint.trustedPlayers.isNotEmpty()) {
 			list.add("<gray>Trusted Players<dark_gray>: <aqua>${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
+		}
+		if (blueprint.trustedNations.isNotEmpty()) {
 			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { NationCache[it].name }}")
 		}
 		return list
@@ -217,38 +219,70 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("list")
-	fun onList(sender: Player) {
+	fun onList(sender: Player) = asyncCommand(sender) {
 		val slPlayerId = sender.slPlayerId
 
-		Tasks.async {
-			failIf(!Blueprint.any(Blueprint::owner eq slPlayerId)) {
-				sender.userError("You have no blueprints!").toString()
-			}
+		failIf(!Blueprint.any(Blueprint::owner eq slPlayerId)) { "You have no blueprints!" }
 
-			BlueprintMenu(sender) { blueprint, player ->
-				player.closeInventory()
-				Tasks.async { showMaterials(player, blueprint) }
-			}.openGui()
-		}
+		BlueprintMenu(sender) { blueprint, player ->
+			player.closeInventory()
+			Tasks.async { showMaterials(player, blueprint) }
+		}.openGui()
+	}
+
+	@Suppress("Unused")
+	@Subcommand("listshared")
+	fun onListShared(sender: Player) = asyncCommand(sender) {
+		val slPlayerId = sender.slPlayerId
+
+		val accessibleBlueprints = or(
+			Blueprint::trustedPlayers contains slPlayerId,
+			Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation
+		)
+
+		failIf(!Blueprint.any(accessibleBlueprints)) { "You have no shared blueprints!" }
+
+		BlueprintMenu(sender, shared = true) { blueprint, player ->
+			player.closeInventory()
+			Tasks.async { showMaterials(player, blueprint) }
+		}.openGui()
 	}
 
 	@Suppress("Unused")
 	@Subcommand("list other")
 	@CommandPermission("starships.blueprint.list.other")
 	@CommandCompletion("@players")
-	fun onListOther(sender: Player, player: String) {
-		val target = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found or not online.") // Database lookup so it works when the player is offline
+	fun onListOther(sender: Player, player: String) = asyncCommand(sender) {
+		val target = SLPlayer[player] ?: fail { "Player $player not found or not online." } // Database lookup so it works when the player is offline
 
-		Tasks.async {
-			failIf(!Blueprint.any(Blueprint::owner eq target._id)) {
-				sender.userError("${target.lastKnownName} has no blueprints!").toString()
-			}
+		failIf(!Blueprint.any(Blueprint::owner eq target._id)) { "${target.lastKnownName} has no blueprints!" }
 
-			BlueprintMenu(sender, target._id) { blueprint, player ->
-				sender.closeInventory()
-				Tasks.async { showMaterials(sender, blueprint) }
-			}.openGui()
+		BlueprintMenu(sender, target._id) { blueprint, _ ->
+			sender.closeInventory()
+			Tasks.async { showMaterials(sender, blueprint) }
+		}.openGui()
+	}
+
+	@Suppress("Unused")
+	@Subcommand("listshared other")
+	@CommandPermission("starships.blueprint.list.other")
+	@CommandCompletion("@players")
+	fun onListSharedOther(sender: Player, player: String) = asyncCommand(sender) {
+		val target = SLPlayer[player] ?: fail { "Player $player not found or not online." } // Database lookup so it works when the player is offline
+
+		val accessibleBlueprints = or(
+			Blueprint::trustedPlayers contains target._id,
+			Blueprint::trustedNations contains SLPlayer[target._id]?.nation
+		)
+
+		failIf(!Blueprint.any(accessibleBlueprints)) {
+			sender.userError("${target.lastKnownName} have no shared blueprints!").toString()
 		}
+
+		BlueprintMenu(sender, shared = true) { blueprint, _ ->
+			sender.closeInventory()
+			Tasks.async { showMaterials(sender, blueprint) }
+		}.openGui()
 	}
 
 	@Suppress("Unused")
@@ -293,8 +327,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load.other")
 	@CommandCompletion("@players blueprintName")
 	fun onLoadOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
-		val target = SLPlayer[player]?._id ?: return@asyncCommand // Database lookup so it works when the player is offline
-		val blueprint = getBlueprint(target, blueprint)
+		val target = SLPlayer[player]?._id ?: fail { "Player $player not found" }
+		val blueprint = getSharedBlueprint(target, blueprint)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
 
