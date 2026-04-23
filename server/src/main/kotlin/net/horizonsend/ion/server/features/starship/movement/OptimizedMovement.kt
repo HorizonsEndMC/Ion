@@ -24,6 +24,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ChunkHolder
+import net.minecraft.world.entity.ai.village.poi.PoiTypes
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
@@ -310,10 +311,19 @@ object OptimizedMovement {
 					}
 
 					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
+
+					// The "POI data mismatch" error may originate from this part of the code (along with the similar
+					// section in processNewBlocks()). Claude says that it was because sendBlockUpdated() was called
+					// before setBlockState(), and that the POI manager is called somewhere in sendBlockUpdated().
+					// Supposedly, setting the block state before broadcasting the update, and updating the
+					// POI manager of any changed block entities would fix the issue. I get that this is vibe coded
+					// to hell, but I'm not being paid to understand NMS code. This will be tested thoroughly on non-prod.
+					section.setBlockState(localX, localY, localZ, AIR, false)
+					PoiTypes.forState(type).ifPresent { _ ->
+						nmsChunk.level.poiManager.remove(blockPos)
+					}
 					//TODO: PICK OUT FLAGS
 					nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, 0)
-
-					section.setBlockState(localX, localY, localZ, AIR, false)
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
 
@@ -374,10 +384,15 @@ object OptimizedMovement {
 
 					val blockPos = BlockPos(x, y, z)
 					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
+
+					section.setBlockState(localX, localY, localZ, data, false)
+					PoiTypes.forState(data).ifPresent { poiTypeHolder ->
+						nmsChunk.level.poiManager.add(blockPos, poiTypeHolder)
+					}
+
 					//TODO: PICK OUT FLAGS
 					nmsChunk.level.sendBlockUpdated(blockPos, AIR /*TODO hangars */, data, 0)
 
-					section.setBlockState(localX, localY, localZ, data, false)
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
 
