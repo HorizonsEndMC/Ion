@@ -176,6 +176,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -252,6 +253,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -347,6 +349,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -527,6 +530,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -584,6 +588,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -648,6 +653,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -1044,6 +1050,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -1146,6 +1153,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
@@ -1279,6 +1287,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         defaultBackground = false,
                         seeThrough = true,
                         highlight = false,
+                        positionOffset = Vec3i(0, 0, 0).toVector(),
                         EffectTiming.TICKED
                     ),
                     2
