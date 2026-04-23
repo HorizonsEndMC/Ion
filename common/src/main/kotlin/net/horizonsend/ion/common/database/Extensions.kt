@@ -27,7 +27,7 @@ import java.util.*
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSubclassOf
 
-typealias SLTextStyleDB = String
+typealias ColorDB = String // Format: "R,G,B"
 typealias StarshipTypeDB = String
 
 /** Runs code with multi document transaction, only things that use the clientsession use the transaction,

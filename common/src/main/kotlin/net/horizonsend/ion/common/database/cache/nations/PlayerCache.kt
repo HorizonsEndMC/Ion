@@ -1,8 +1,8 @@
 package net.horizonsend.ion.common.database.cache.nations
 
+import net.horizonsend.ion.common.database.ColorDB
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.double
@@ -146,7 +146,12 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		fun <Parent : DbObject, T : Role<Parent, *>> watchRoles(companion: RoleCompanion<Parent, *, T>) {
 			companion.watchUpdates {
-				if (it.containsUpdated(companion.membersProperty)) {
+				if (
+					it.containsUpdated(companion.membersProperty) ||
+					// we have to check for name and color to correctly update the role.
+					it.containsUpdated(companion.nameProperty) ||
+					it.containsUpdated(companion.colorProperty)
+					) {
 					recalculateTags()
 				}
 			}
@@ -189,7 +194,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		)
 	}
 
-	abstract fun getColoredTag(nameColorPair: Pair<String, SLTextStyleDB>?): String?
+	abstract fun getColoredTag(nameColorPair: Pair<String, ColorDB>?): String?
 
 	operator fun get(playerId: UUID): PlayerData = PLAYER_DATA[playerId]
 		?: error("Data wasn't cached for $playerId")

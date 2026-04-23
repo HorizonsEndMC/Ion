@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.command.starship.ai.AIHeatCommand
 import net.horizonsend.ion.server.command.misc.BlockCommand
 import net.horizonsend.ion.server.command.misc.BountyAdminCommand
 import net.horizonsend.ion.server.command.misc.BountyCommand
+import net.horizonsend.ion.server.command.misc.ChatAliasCommands
 import net.horizonsend.ion.server.command.misc.ChatCommand
 import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
@@ -98,6 +99,7 @@ import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
 	GToggleCommand,
+	ChatAliasCommands,
 	PlayerInfoCommand,
 	DyeCommand,
 	GlobalGameRuleCommand,

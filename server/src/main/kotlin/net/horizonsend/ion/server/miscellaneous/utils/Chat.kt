@@ -84,6 +84,7 @@ enum class SLTextStyle(val wrappedColor: ChatColor, val textColor: TextColor?) {
 	DARK_AQUA(ChatColor.DARK_AQUA, NamedTextColor.DARK_AQUA),
 	DARK_RED(ChatColor.DARK_RED, NamedTextColor.DARK_RED),
 	DARK_PURPLE(ChatColor.DARK_PURPLE, NamedTextColor.DARK_PURPLE),
+	DARK_BLUE(ChatColor.DARK_BLUE, NamedTextColor.DARK_BLUE),
 	GOLD(ChatColor.GOLD, NamedTextColor.GOLD),
 	GRAY(ChatColor.GRAY, NamedTextColor.GRAY),
 	DARK_GRAY(ChatColor.DARK_GRAY, NamedTextColor.DARK_GRAY),
