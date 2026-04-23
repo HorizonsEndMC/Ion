@@ -936,324 +936,176 @@ object Crafting : IonServerComponent() {
 
 	    setIngredient('p', Material.MANGROVE_PROPAGULE)
 	    setIngredient('f', Material.DANDELION)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-=======
 	    setIngredient('u', Material.SHORT_GRASS)
->>>>>>> Stashed changes
-    }
+        }
 
 		shaped("poppy", ItemStack(Material.POPPY, 8), CraftingBookCategory.BUILDING) {
 	    shape("ppp", "pfp", "pup")
 
 	    setIngredient('p', Material.MANGROVE_PROPAGULE)
 	    setIngredient('f', Material.POPPY)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8) CraftingBookCategory.BUILDING) {
-=======
 	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        }
 
-    shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
+        shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8), CraftingBookCategory.BUILDING) {
 	    shape("ppp", "pfp", "pup")
 
 	    setIngredient('p', Material.MANGROVE_PROPAGULE)
 	    setIngredient('f', Material.BLUE_ORCHID)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("allium", ItemStack(Material.ALLIUM, 8) CraftingBookCategory.BUILDING) {
-=======
 	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        }
 
-    shaped("allium", ItemStack(Material.ALLIUM, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
+        shaped("allium", ItemStack(Material.ALLIUM, 8), CraftingBookCategory.BUILDING) {
 	    shape("ppp", "pfp", "pup")
 
 	    setIngredient('p', Material.MANGROVE_PROPAGULE)
 	    setIngredient('f', Material.ALLIUM)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8) CraftingBookCategory.BUILDING) {
-=======
 	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        }
 
-    shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+        shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.AZURE_BLUET)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.AZURE_BLUET)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("red_tulip", ItemStack(Material.RED_TULIP, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        shaped("red_tulip", ItemStack(Material.RED_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("red_tulip", ItemStack(Material.RED_TULIP, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.RED_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.RED_TULIP)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+        shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
-
-    shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
-
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.PINK_TULIP)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-		shaped("orange_tulip", ItemStack(Material.ORANGE_TULIP, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.PINK_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
 		shaped("orange_tulip", ItemStack(Material.ORANGE_TULIP, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.ORANGE_TULIP)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.ORANGE_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.WHITE_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.WHITE_TULIP)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM.getValue().constructItemStack())
-    }
+        shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.OXEYE_DAISY)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+        shaped("cornflower", ItemStack(Material.CORNFLOWER, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.OXEYE_DAISY)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.CORNFLOWER)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("cornflower", ItemStack(Material.CORNFLOWER, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("cornflower", ItemStack(Material.CORNFLOWER, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.LILY_OF_THE_VALLEY)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.CORNFLOWER)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+        shaped("sunflower", ItemStack(Material.SUNFLOWER, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.SUNFLOWER)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+        shaped("lilac", ItemStack(Material.LILAC, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.LILY_OF_THE_VALLEY)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("sunflower", ItemStack(Material.SUNFLOWER, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
-
-    shaped("sunflower", ItemStack(Material.SUNFLOWER, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
-
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.SUNFLOWER)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("lilac", ItemStack(Material.LILAC, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
-
-    shaped("lilac", ItemStack(Material.LILAC, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
-
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.LILAC)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-		shaped("rose_bush", ItemStack(Material.ROSE_BUSH, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.LILAC)
+	      setIngredient('u', URANIUM)
+        }
 
 		shaped("rose_bush", ItemStack(Material.ROSE_BUSH, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.ROSE_BUSH)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+          setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.ROSE_BUSH)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("peony", ItemStack(Material.PEONY, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        shaped("peony", ItemStack(Material.PEONY, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("peony", ItemStack(Material.PEONY, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.PEONY)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.PEONY)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+        shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.HANGING_ROOTS)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+        shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.HANGING_ROOTS)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+	      setIngredient('p', Material.STICK)
+	      setIngredient('f', Material.DEAD_BUSH)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        shaped("lily_pad", ItemStack(Material.LILY_PAD, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.LILY_PAD)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-	    setIngredient('p', Material.STICK)
-	    setIngredient('f', Material.DEAD_BUSH)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+        shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("lily_pad", ItemStack(Material.LILY_PAD, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.RED_MUSHROOM)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("lily_pad", ItemStack(Material.LILY_PAD, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
+        shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.LILY_PAD)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.BROWN_MUSHROOM)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
 
-    shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
+        shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
 
-    shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
-
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.RED_MUSHROOM)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
-
-    shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
-
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.BROWN_MUSHROOM)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-    }
-
-    shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8) CraftingBookCategory.BUILDING) {
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
-    }
-
-    shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8), CraftingBookCategory.BUILDING) {
->>>>>>> Stashed changes
-	    shape("ppp", "pfp", "pup")
-
-	    setIngredient('p', Material.CRYING_OBSIDIAN)
-	    setIngredient('f', Material.ROSE_BUSH)
-<<<<<<< Updated upstream
-	    setIngredient('u', URANIUM)
-=======
-	    setIngredient('u', Material.SHORT_GRASS)
->>>>>>> Stashed changes
-    }
+	      setIngredient('p', Material.CRYING_OBSIDIAN)
+	      setIngredient('f', Material.ROSE_BUSH)
+	      setIngredient('u', Material.SHORT_GRASS)
+      }
 	}
 
 	@EventHandler
