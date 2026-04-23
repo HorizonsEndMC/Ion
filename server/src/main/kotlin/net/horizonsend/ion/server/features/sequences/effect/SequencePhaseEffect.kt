@@ -109,7 +109,11 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 
 
 	class SendDelayedMessage(val message: Component, val delayTicks: Long, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { Tasks.asyncDelay(delayTicks) { player.sendMessage(message) } }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val dataStore = SequenceManager.getSequenceData(player, sequenceKey)
+			val scheduledTick = MinecraftServer.getServer().tickCount + delayTicks
+			dataStore.queueDelayedMessage(scheduledTick, message)
+		}
 	}
 
 	class SendTitle(val title: Title, timing: EffectTiming?) : SequencePhaseEffect(timing) {
