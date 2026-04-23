@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
 import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.BushBlock
 import net.minecraft.world.level.block.DoublePlantBlock
@@ -322,8 +323,7 @@ object OptimizedMovement {
 					PoiTypes.forState(type).ifPresent { _ ->
 						nmsChunk.level.poiManager.remove(blockPos)
 					}
-					//TODO: PICK OUT FLAGS
-					nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, 0)
+					nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, Block.UPDATE_NONE)
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
 
@@ -390,8 +390,7 @@ object OptimizedMovement {
 						nmsChunk.level.poiManager.add(blockPos, poiTypeHolder)
 					}
 
-					//TODO: PICK OUT FLAGS
-					nmsChunk.level.sendBlockUpdated(blockPos, AIR /*TODO hangars */, data, 0)
+					nmsChunk.level.sendBlockUpdated(blockPos, AIR /*TODO hangars */, data, Block.UPDATE_NONE)
 
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
