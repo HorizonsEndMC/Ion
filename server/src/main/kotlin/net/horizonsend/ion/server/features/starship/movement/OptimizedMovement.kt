@@ -323,7 +323,7 @@ object OptimizedMovement {
 					PoiTypes.forState(type).ifPresent { _ ->
 						nmsChunk.level.poiManager.remove(blockPos)
 					}
-					nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, Block.UPDATE_NONE)
+					//nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, Block.UPDATE_ALL)
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
 
@@ -390,7 +390,7 @@ object OptimizedMovement {
 						nmsChunk.level.poiManager.add(blockPos, poiTypeHolder)
 					}
 
-					nmsChunk.level.sendBlockUpdated(blockPos, AIR /*TODO hangars */, data, Block.UPDATE_NONE)
+					//nmsChunk.level.sendBlockUpdated(blockPos, AIR /*TODO hangars */, data, Block.UPDATE_ALL)
 
 //					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
