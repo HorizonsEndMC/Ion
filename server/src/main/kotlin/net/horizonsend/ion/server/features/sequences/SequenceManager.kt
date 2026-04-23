@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SEQUENCES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.minecraft.server.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.entity.Player
@@ -98,9 +99,19 @@ object SequenceManager : IonServerComponent() {
 	}
 
 	fun tickPhases() {
+		val currentTick = MinecraftServer.getServer().tickCount.toLong()
+
 		for ((playerId, sequenceData) in phaseMap.rowMap()) {
-			for ((_, sequencePhaseKey) in sequenceData) {
-				val player = getPlayer(playerId) ?: continue
+			val player = getPlayer(playerId) ?: continue
+
+			for ((sequenceKey, sequencePhaseKey) in sequenceData) {
+				val dataStore = getSequenceData(player, sequenceKey)
+
+				// Process message queue
+				while (dataStore.messageQueue.peek()?.let { it.scheduledTick <= currentTick } == true) {
+					player.sendMessage(dataStore.messageQueue.poll().message)
+				}
+
 				sequencePhaseKey.getValue().tick(player)
 			}
 		}

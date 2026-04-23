@@ -762,13 +762,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("Hello! I am the Journey Assistive Navigational Educator, or "),
                     janeTitle
                 ), 40L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 41L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(
                     janePrefix,
                     text("I am here to assist you and teach you how to pilot this spacecraft.")
                 ), 80L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 81L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
             )
         )
 
@@ -906,7 +906,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ),
                     40L, EffectTiming.START
                 ),
-                SendDelayedMessage(Component.empty(), 41L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1023,7 +1023,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 SendDelayedMessage(text("The comms crackle to life and you hear the voice of the captain.", GRAY, ITALIC), 40L, EffectTiming.START),
                 SendDelayedMessage(text("\"The pirates are too busy shooting the cruiser, go now!\"", GRAY, ITALIC), 40L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 41L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(
                     janePrefix,
@@ -1032,7 +1032,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("cruising mode", AQUA),
                     ),
                 ), 80L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 81L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 80L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayText(
@@ -1106,7 +1106,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Component.keybind("key.use", YELLOW),
                     ),
                 ), 40L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 41L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(
                     janePrefix,
@@ -1116,7 +1116,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("You can also cruise diagonally.", AQUA)
                     ),
                 ), 100L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 101L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 100L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1211,21 +1211,39 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     template(
                         text("To steer your ship while cruising, turning using {0} or {1} will cause the ship to start to accelerate in the new forward direction."),
                         Component.keybind("key.drop", YELLOW),
-                        Component.keybind("key.swapOffhand", YELLOW))
+                        Component.keybind("key.swapOffhand", YELLOW)
+                    )
                 ), 60L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 61L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 60L, EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(
                     janePrefix,
-                    text("Manual flight is also possible during cruise, and can be used to make small adjustments.")
+                    template(
+                        text("Manual flight ({0}) is also possible during cruise, and can be used to make small adjustments."),
+                        Component.keybind("key.sneak", YELLOW),
+                    )
                 ), 120L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 121L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 120L, EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(
                     janePrefix,
-                    text("Now make your way through the asteroid belt.")
+                    text("Now make your way through the asteroid belt."),
                 ), 160L, EffectTiming.START), //TODO - redo messages
-                SendDelayedMessage(Component.empty(), 161L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 160L, EffectTiming.START),
+
+                SendDelayedMessage(ofChildren(
+                    janePrefix,
+                    template(
+                        text("Remember to manually fly ({0}) and turn left ({1}) or right ({2}) to navigate around asteroids."),
+                        template(
+                            text("{0} while holding a controller and looking in a direction", AQUA),
+                            Component.keybind("key.sneak", YELLOW),
+                        ),
+                        Component.keybind("key.drop", YELLOW),
+                        Component.keybind("key.swapOffhand", YELLOW)
+                    )
+                ), 200L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 200L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1313,7 +1331,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), 40L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 41L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1351,10 +1369,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ),
             ),
             description = PhaseDescription(
-                description = ofChildren(
-                    text("- Load the hyperdrive hoppers with the "),
-                    text("chetherite ", LIGHT_PURPLE),
-                    text("you obtained earlier (at the back of the ship)")
+                description = template(
+                    text("- Load the hyperdrive hoppers with the {0} you obtained earlier ({1})"),
+                    text("chetherite", LIGHT_PURPLE),
+                    text("at the back of the ship", AQUA)
                 )
             ),
             effects = listOf(
@@ -1365,7 +1383,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
 
                 SendDelayedMessage(ofChildren(janePrefix, text("I've highlighted the hyperdrive, its in the back of the ship, above the door.")), 60L, EffectTiming.START),
-                SendDelayedMessage(Component.empty(), 61L, EffectTiming.START),
+                SendDelayedMessage(Component.empty(), 60L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.RunCode({ player, _ ->
