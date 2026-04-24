@@ -86,6 +86,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -1234,8 +1235,16 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 emptyMessage(),
-                janeMessage(text("Now that the hyperdrive is fueled, execute the command '/jump Horizons_End_Transit_Hub'.")),
+                janeMessage(
+                    template(
+                        text("Now that the hyperdrive is fueled, execute (or click in chat) the command '{0}'."),
+                        text("/jump Horizons_End_Transit_Hub", AQUA)
+                            .hoverEvent(text("Run '/jump Horizons_End_Transit_Hub'"))
+                            .clickEvent(ClickEvent.runCommand("/jump Horizons_End_Transit_Hub"))
+                    )
+                ),
                 emptyMessage(),
+
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
@@ -1281,9 +1290,36 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 emptyMessage(),
                 janeMessage(text("Your starship is now in hyperspace!")),
-                janeMessage(text("Moving through this dimension allows travel immensely faster than real space, but real space can still interfere with travel.")),
-                janeMessage(text("We are in deep space, so this isn't an issue, but strong gravity wells such as planets and stars can pull you out of hyperspace.")),
-                emptyMessage(),
+
+                janeMessage(
+                    template(
+                        text("This alternate dimension allows your ship to {0}"),
+                        text("travel much faster than in real space.", LIGHT_PURPLE)
+                    ),
+                    delayTicks = 60L
+                ),
+                emptyMessage(60L),
+
+                janeMessage(
+                    template(
+                        text("However, {0} from {1}, {2}, and {3}, can {4} and {5}."),
+                        text("gravity wells", AQUA),
+                        text("planets", GREEN),
+                        text("stars", GREEN),
+                        text("interdicting starships", GREEN),
+                        text("pull your ship out of hyperspace", LIGHT_PURPLE),
+                        text("prevent you from jumping into hyperspace", LIGHT_PURPLE),
+                    ),
+                    delayTicks = 120L
+                ),
+                emptyMessage(120L),
+
+                janeMessage(
+                    text("Our journey through deep space avoids all of these, so we will exit hyperspace at the" +
+                            "Transit Hub."),
+                    delayTicks = 180L
+                ),
+                emptyMessage(180L),
             )
         )
     }
@@ -1436,10 +1472,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 		return BoundingBox(minX, minY, minZ, maxX, maxY, maxZ)
 	}
 
-    private fun emptyMessage(delay: Long = 0L) = if (delay <= 0) {
+    private fun emptyMessage(delayTicks: Long = 0L) = if (delayTicks <= 0) {
         SendMessage(Component.empty(), EffectTiming.START)
     } else {
-        SendDelayedMessage(Component.empty(), delay, EffectTiming.START)
+        SendDelayedMessage(Component.empty(), delayTicks, EffectTiming.START)
     }
 
     private fun janeMessage(vararg message: Component, delayTicks: Long = 0L) = if (delayTicks <= 0) {
