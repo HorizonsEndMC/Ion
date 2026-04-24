@@ -27,6 +27,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Optional
 import java.util.function.Supplier
+import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.min
 
@@ -82,6 +83,25 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 		@OptIn(InternalSerializationApi::class)
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
 			SequenceManager.getSequenceData(player, sequenceKey).set(key, value)
+		}
+	}
+
+	/**
+	 * Represents an effect that performs an arithmetic operation on a key-value pair in the sequence data store for a player.
+	 *
+	 * @param T The type of the value to be stored in the sequence data store.
+	 * @param key The key used to identify the data to be stored.
+	 * @param otherValue The value to be used in the arithmetic operation.
+	 * @param defaultValue The default value to be used if the key is not present in the sequence data store.
+	 * @param operation The arithmetic operation to be performed.
+	 * @param timing The timing at which this effect should be executed (e.g., START, TICKED, or END).
+	 */
+	class ArithmeticSetSequenceData<T : Any>(val key: String, val otherValue: T, val defaultValue: T, val operation: (T, T) -> T, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		@OptIn(InternalSerializationApi::class)
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val currentData = SequenceManager.getSequenceData(player, sequenceKey).get<T>(key)
+			val currentValue = currentData.getOrDefault(defaultValue)
+			SetSequenceData(key, operation(currentValue, otherValue), timing).playEffect(player, sequenceKey, context)
 		}
 	}
 
