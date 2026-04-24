@@ -22,7 +22,6 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
-import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
@@ -31,6 +30,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_SHIFT_INCREMENT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_LOOK_OUTSIDE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_MULTIBLOCKS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_NAVIGATION
@@ -100,6 +100,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
 import java.util.concurrent.TimeUnit
+import kotlin.jvm.optionals.getOrNull
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
     companion object {
@@ -579,17 +580,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(6)),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_START)
-                ),
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
                 )
             ),
             description = PhaseDescription(
@@ -644,13 +639,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(7)),
@@ -692,13 +681,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_SHIFT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 // data predicate MUST come before movement detection, as these are only checked on movement and break if the first trigger result is fulfilled
                 SequenceTrigger(
                     SequenceTriggerTypes.DATA_PREDICATE,
@@ -708,13 +691,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
                     ShipManualFlightTrigger.ShiftFlightTriggerSettings(),
-                    triggerResult = { player, context ->
-                        val currentMovementsData =
-                            SequenceManager.getSequenceData(player, context.sequence).get<Int>("flight_shift_count")
-                        val currentMovements = if (currentMovementsData.isPresent) currentMovementsData.get() else 0
-                        SequenceManager.getSequenceData(player, context.sequence)
-                            .set("flight_shift_count", currentMovements + 1)
-                    }
+                    triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_SHIFT_INCREMENT)
                 ),
             ),
             description = PhaseDescription(
@@ -769,6 +746,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_ROTATION_LEFT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -778,14 +756,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         }
                     },
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_RIGHT)
-                ),
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                )
             ),
             description = PhaseDescription(
                 description = template(
@@ -844,6 +815,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_ROTATION_RIGHT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -854,13 +826,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     },
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_INTERMISSION)
                 ),
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                )
             ),
             description = PhaseDescription(
                 description = template(
@@ -908,13 +873,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_INTERMISSION,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(7)),
@@ -966,13 +925,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_CRUISE_START,
                     StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
@@ -1040,13 +993,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_IDLE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
@@ -1147,13 +1094,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_STOP,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger( // TODO - location predicate
                     SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
                     StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
@@ -1214,13 +1155,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CHETHERITE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.HYPERDRIVE_HAS_FUEL,
                     SimpleContextTriggerPredicate(),
@@ -1282,13 +1217,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_HYPERSPACE_JUMP,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
                     ShipEnterHyperspaceJumpTriggerSettings(),
@@ -1335,13 +1264,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_IN_HYPERSPACE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-                        event.isCancelled = true; player.userError("You can't release your ship right now!")
-                    }
-                ),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
                     ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
@@ -1370,13 +1293,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         bootstrapPhase(
             phaseKey = BRANCH_LOOK_OUTSIDE,
             sequenceKey = SequenceKeys.TUTORIAL,
-            triggers = listOf(
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-                    triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-                )
-            ),
+            triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 emptyMessage(),
@@ -1468,9 +1385,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         bootstrapPhase(
             phaseKey = BRANCH_CARGO_CRATES,
             sequenceKey = SequenceKeys.TUTORIAL,
-            triggers = listOf(
-
-            ),
+            triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
@@ -1481,6 +1396,28 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 GoToPreviousPhase(EffectTiming.START),
 
                 SequencePhaseEffect.SetSequenceData("seen_crates", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL.BRANCH_FLIGHT_SHIFT_INCREMENT
+        bootstrapPhase(
+            phaseKey = BRANCH_FLIGHT_SHIFT_INCREMENT,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf(
+                SequencePhaseEffect.DataConditionalEffects<Int>(
+                    "flight_shift_increment",
+                    { it.getOrNull() == 0 },
+                    EffectTiming.START,
+                    janeMessage(
+                        text("Good job! Continue to practice your manual flying controls.")
+                    ),
+                    emptyMessage(),
+                ),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.ArithmeticSetSequenceData("flight_shift_increment", 1, 0, Int::plus, EffectTiming.END),
             )
         )
     }
@@ -1562,5 +1499,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         ),
         triggerResult = SequenceTrigger.startPhase(phaseKey)
+    )
+
+    private fun disallowStarshipUnpilotTrigger() = SequenceTrigger(
+        SequenceTriggerTypes.STARSHIP_UNPILOT,
+        StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+        triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
+            event.isCancelled = true; player.userError("You can't release your ship right now!")
+        }
     )
 }
