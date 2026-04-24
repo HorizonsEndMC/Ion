@@ -1336,10 +1336,26 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field. You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO - better messages
+                SendMessage(
+                    ofChildren(
+                        janePrefix,
+                        template(
+                            text("You have cleared the asteroid field. You can now stop cruising and {0}."),
+                            text("prepare to jump to hyperspace.", LIGHT_PURPLE)
+                        )
+                    ), EffectTiming.START), //TODO - better messages
                 SendMessage(Component.empty(), EffectTiming.START),
 
-                SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.attack"), text("ing the cruise control sign, or repeating the /cruise command.")), 40L, EffectTiming.START),
+                SendDelayedMessage(
+                    ofChildren(
+                        janePrefix,
+                        template(
+                            text("You can stop cruising by {0} ({1}) the cruise control sign, or by running the {2} command."),
+                            text("ATTACKING", AQUA),
+                            Component.keybind("key.attack", YELLOW),
+                            text("/cruise", AQUA)
+                        )
+                    ), 40L, EffectTiming.START),
                 SendDelayedMessage(Component.empty(), 40L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
@@ -1388,10 +1404,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(ofChildren(janePrefix, text("You're going to need to load the Chetherite you grabbed earlier into the hyperdrive. Each hopper needs at least 2 to make a jump.")), EffectTiming.START),
+                SendMessage(
+                    ofChildren(
+                        janePrefix,
+                        template(
+                            text("Load the {0} you grabbed earlier into the hyperdrive. {1}"),
+                            text("chetherite", LIGHT_PURPLE),
+                            text("Each hopper needs at least 2 to make a jump.", AQUA)
+                        )
+                    ), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
 
-                SendDelayedMessage(ofChildren(janePrefix, text("I've highlighted the hyperdrive, its in the back of the ship, above the door.")), 60L, EffectTiming.START),
+                SendDelayedMessage(
+                    ofChildren(
+                        janePrefix,
+                        ofChildren(
+                            text("I've highlighted the hyperdrive."),
+                            text("It is in the back of the ship, above the door.", AQUA)
+                        )
+                    ), 60L, EffectTiming.START),
                 SendDelayedMessage(Component.empty(), 60L, EffectTiming.START),
 
                 SequencePhaseEffect.OnTickInterval(
