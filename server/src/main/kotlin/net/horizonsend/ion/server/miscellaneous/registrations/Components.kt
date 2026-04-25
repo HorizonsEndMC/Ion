@@ -57,6 +57,7 @@ import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
 import net.horizonsend.ion.server.features.player.ServerMutesHook
+import net.horizonsend.ion.server.features.player.WaypointVisibility
 import net.horizonsend.ion.server.features.progression.Bounties
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -103,6 +104,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
 val components: List<IonComponent> = listOf(
 	GameplayTweaks,
+	WaypointVisibility,
 	DBManager,
 	RedisActions,
 	AutoRestart,

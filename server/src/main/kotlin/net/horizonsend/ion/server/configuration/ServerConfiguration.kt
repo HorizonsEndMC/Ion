@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import java.time.DayOfWeek
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class ServerConfiguration(
@@ -30,6 +31,12 @@ data class ServerConfiguration(
 	val rentalZoneCollectionDay: DayOfWeek = DayOfWeek.SUNDAY,
 	val deleteInvalidMultiblockData: Boolean = false,
 	val pastebinApiDevKey: String? = null,
+
+	@SerialName("waypoint_transmit_range")
+	val waypointTransmitRange: Double = 200.0,
+
+	@SerialName("waypoint_receive_range")
+	val waypointReceiveRange: Double = 200.0,
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
