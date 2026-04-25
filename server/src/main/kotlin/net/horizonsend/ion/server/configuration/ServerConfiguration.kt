@@ -43,7 +43,7 @@ data class ServerConfiguration(
 		protectionCanBypass = true,
 		shipClass = StarshipType.SHUTTLE.name,
 		lore = listOf(),
-		pilotOffset = Vec3i(0, 0, 6)
+		pilotOffset = Vec3i(0, 0, 5)
 	),
 	val tutorialOrigin: DBVec3i = Vec3i(1250, 192, 2000)
 ) {

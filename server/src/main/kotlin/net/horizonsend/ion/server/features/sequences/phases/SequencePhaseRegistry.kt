@@ -43,7 +43,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FI
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_START
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_STOP
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_IDLE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_NAVIGATE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_HYPERSPACE_JUMP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_IN_HYPERSPACE
@@ -101,6 +101,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
 import java.util.concurrent.TimeUnit
+import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
@@ -339,13 +340,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ),
             ),
             description = PhaseDescription(
-                description = ofChildren(
-                    text("- Activate the elevator by "),
-                    text("holding your controller (Clock) ", AQUA),
-                    text("and "),
+                description = template(
+                    text("- Activate the elevator by {0} and {1} while standing on the {2}"),
+                    text("holding your controller (Clock) ", GREEN),
                     text("SNEAKING ", AQUA),
-                    text("while standing on the "),
-                    text("Glass Block ", AQUA),
+                    text("Glass Block ", GREEN),
                 )
             ),
             effects = listOf(
@@ -667,6 +666,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     janeTitle,
                     delayTicks = 40L
                 ),
+                emptyMessage(40L),
 
                 janeMessage(
                     text("I am here to assist you and teach you how to pilot this spacecraft."),
@@ -702,22 +702,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 )
             ),
             effects = listOf(
-                janeMessage(
-                    template(
-                        text("{0} by pressing your {1} key ({2}) {3}."),
-                        text("Move the spacecraft", LIGHT_PURPLE),
-                        text("SNEAK", AQUA),
-                        Component.keybind("key.sneak", YELLOW),
-                        text("while holding your controller", GREEN)
+                ifPreviousPhase(FLIGHT_START, EffectTiming.START,
+                    NEXT_PHASE_SOUND,
+                    janeMessage(
+                        template(
+                            text("{0} by pressing your {1} key ({2}) {3}."),
+                            text("Move the spacecraft", LIGHT_PURPLE),
+                            text("SNEAK", AQUA),
+                            Component.keybind("key.sneak", YELLOW),
+                            text("while holding your controller", GREEN)
+                        ),
                     ),
-                ),
-                emptyMessage(),
+                    emptyMessage(),
 
-                janeMessage(
-                    text("The ship will move in the direction you are looking. Try it out!"),
-                    delayTicks = 40L
+                    janeMessage(
+                        text("The ship will move in the direction you are looking. Try it out!"),
+                        delayTicks = 40L
+                    ),
+                    emptyMessage(40L),
                 ),
-                emptyMessage(40L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -884,6 +887,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             description = PhaseDescription(template(text("Listen to {0} for further instructions"), janeTitle)),
             effects = listOf(
                 NEXT_PHASE_SOUND,
+
                 SequencePhaseEffect.SuppliedSetSequenceData(
                     "FLIGHT_INTERMISSION_START",
                     { System.currentTimeMillis() },
@@ -930,7 +934,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_CRUISE_START,
                     StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
-                    triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_IDLE)
+                    triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_NAVIGATE)
                 ),
             ),
             description = PhaseDescription(
@@ -960,7 +964,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 janeMessage(
                     template(
                         text("Your ship will move {0} when you activate cruising mode. {1}"),
-                        text("in the direction you were looking", AQUA),
+                        text("in the direction you were looking", LIGHT_PURPLE),
                         text("You can also cruise diagonally.", AQUA)
                     ),
                     delayTicks = 100L
@@ -989,9 +993,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
-        // TUTORIAL.FLIGHT_CRUISE_IDLE
+        // TUTORIAL.FLIGHT_CRUISE_NAVIGATE
         bootstrapPhase(
-            phaseKey = FLIGHT_CRUISE_IDLE,
+            phaseKey = FLIGHT_CRUISE_NAVIGATE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
@@ -1044,9 +1048,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 janeMessage(
                     text("Now make your way through the asteroid belt."),
-                    delayTicks = 160L
+                    delayTicks = 180L
                 ),
-                emptyMessage(160L),
+                emptyMessage(180L),
 
                 janeMessage(
                     template(
@@ -1058,9 +1062,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Component.keybind("key.drop", YELLOW),
                         Component.keybind("key.swapOffhand", YELLOW)
                     ),
-                    delayTicks = 200L
+                    delayTicks = 220L
                 ),
-                emptyMessage(200L),
+                emptyMessage(220L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1185,7 +1189,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 janeMessage(
                     ofChildren(
-                        text("I've highlighted the hyperdrive."),
+                        text("I've highlighted the hyperdrive. "),
                         text("It is in the back of the ship, above the door.", AQUA)
                     ),
                     delayTicks = 60L
@@ -1251,9 +1255,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text = ofChildren(
                             text("Run the command: "),
                             newline(),
-                            text("/jump Horizons_End_Transit_Hub"),
+                            text("/jump Horizons_End_Transit_Hub", AQUA),
                             newline(),
-                            text("to jump to hyperspace"),
+                            text("to jump to hyperspace", LIGHT_PURPLE),
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
@@ -1315,7 +1319,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 emptyMessage(120L),
 
                 janeMessage(
-                    text("Our journey through deep space avoids all of these, so we will exit hyperspace at the" +
+                    text("Our journey through deep space avoids all of these, so we will exit hyperspace at the " +
                             "Transit Hub."),
                     delayTicks = 180L
                 ),
@@ -1442,8 +1446,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 SequencePhaseEffect.DataConditionalEffects<Int>(
-                    "flight_shift_increment",
-                    { it.getOrNull() == 0 },
+                    "flight_shift_count",
+                    { it.getOrDefault(0) == 0 },
                     EffectTiming.START,
                     janeMessage(
                         text("Good job! Continue to practice your manual flying controls.")
@@ -1453,7 +1457,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.ArithmeticSetSequenceData("flight_shift_increment", 1, 0, Int::plus, EffectTiming.END),
+                SequencePhaseEffect.ArithmeticSetSequenceData("flight_shift_count", 1, 0, Int::plus, EffectTiming.END),
             )
         )
     }
