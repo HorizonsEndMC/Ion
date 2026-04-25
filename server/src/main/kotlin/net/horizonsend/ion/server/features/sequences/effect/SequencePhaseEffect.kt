@@ -150,11 +150,12 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 	 * @param effects All of the [SequencePhaseEffect] to be wrapped.
 	 */
 	class DataConditionalEffects<T : Any>(val key: String, val condition: (Optional<T>) -> Boolean, timing: EffectTiming, vararg val effects: SequencePhaseEffect) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { if (condition(SequenceManager.getSequenceData(player, sequenceKey).get<T>(key))) effects.forEach { it.playEffect(
-			player,
-			sequenceKey,
-			context
-		) } }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val data = SequenceManager.getSequenceData(player, sequenceKey).get<T>(key)
+			if (condition(data)) effects.forEach {
+				it.playEffect(player, sequenceKey, context)
+			}
+		}
 	}
 
 	/**
