@@ -284,8 +284,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		} ?: ConfigurationFiles.serverConfiguration().beacons.firstOrNull {
 			// Check if the destination is a beacon
 			it.name.replace(" ", "_") == destination
-		}?.spaceLocation
-		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
+		}?.let { if (starship.beacon != null && starship.beacon!!.name == it.name.replace("_", " ")) {
+			// Use the beacon if the player is close enough, otherwise return the beacon's location
+			onUseBeacon(sender)
+			return
+		} else it.spaceLocation
+		} ?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
 			// Check if the destination is a saved player bookmark
 			Pos(
 				it.worldName,
