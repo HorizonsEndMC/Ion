@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 @CommandAlias("starshipsell|shipsell")
 object SellStarshipCommand : SLCommand() {
 	@Default
-	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional priceConfirm: Double?, @Optional description: String?) = asyncCommand(sender) {
+	fun onSellStarship(sender: Player, shipModelName: String, shipName: String, price: Double, @Optional priceConfirm: Double?, @Optional description: String?) = asyncCommand(sender) {
 		requireEconomyEnabled()
 		requireNotInCombat(sender)
 		val starship = getStarshipPiloting(sender)
@@ -45,12 +45,12 @@ object SellStarshipCommand : SLCommand() {
 		// Do a fuzzy comparison to avoid floating point inaccuracy
 		failIf(priceConfirm?.roundToInt() != listingTax.roundToInt()) {
 			"Listing a ship requires a tax of 10% of the asking price. You must acknowledge the price to list the ship." +
-				"Enter /starshipsell $className $shipName $price ${description ?: ""} ${listingTax.roundToHundredth()} to confirm."
+				"Enter /starshipsell $shipModelName $shipName $price ${description ?: ""} ${listingTax.roundToHundredth()} to confirm."
 		}
 		requireMoney(sender, listingTax)
 
 		// Verify all sold ships of the same class name are the same type
-		failIf(PlayerSoldShip.any(and(PlayerSoldShip::owner eq sender.slPlayerId, PlayerSoldShip::className eq className, PlayerSoldShip::type ne starship.type.name))) {
+		failIf(PlayerSoldShip.any(and(PlayerSoldShip::owner eq sender.slPlayerId, PlayerSoldShip::className eq shipModelName, PlayerSoldShip::type ne starship.type.name))) {
 			"All ships of the same class must be of the same type!"
 		}
 
@@ -77,7 +77,7 @@ object SellStarshipCommand : SLCommand() {
 					sendWithdrawMessage(sender, listingTax)
 
 					val parsedDescription = description?.let(miniMessage::deserialize)?.wrap(150)?.map(gson::serialize)
-					createSoldShip(sender, territory.id, className, shipName, parsedDescription, price, pilotLoc, starship.type, blockCount, clipboardData)
+					createSoldShip(sender, territory.id, shipModelName, shipName, parsedDescription, price, pilotLoc, starship.type, blockCount, clipboardData)
 				}
 				else {
 					sender.serverError("There was an error when processing the starship, it will not be marked for sale. Please contact staff for a refund if it was removed.")
