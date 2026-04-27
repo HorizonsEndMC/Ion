@@ -155,20 +155,22 @@ object Hyperspace : IonServerComponent() {
 
 		starship.playSound(starship.balancing.shipSounds.enterHyperspace.sound)
 
+		val mass = starship.mass
+		val speed = (if (warmup.drive != null) calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass)
+		else calculateSpeed(3, mass)) / 10
+		val movement = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
+
 		StarshipTeleportation.teleportStarship(starship, loc) {
 			// Happens after the teleport finishes
 			Tasks.syncDelay(2L) {
-				StarshipEnterHyperspaceEvent(starship).callEvent()
+				StarshipEnterHyperspaceEvent(starship, movement).callEvent()
 			}
 		}.thenAccept { success ->
 			if (!success) {
 				return@thenAccept
 			}
 
-			val mass = starship.mass
-			val speed = (if (warmup.drive != null) calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass)
-				 else calculateSpeed(3, mass)) / 10
-			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
+			movementTasks[starship] = movement
 		}
 	}
 

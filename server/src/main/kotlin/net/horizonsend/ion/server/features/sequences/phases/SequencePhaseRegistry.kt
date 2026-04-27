@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_SHIFT_INCREMENT
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_STOP_CRUISE_INITIATED
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_LOOK_OUTSIDE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_MULTIBLOCKS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_NAVIGATION
@@ -72,12 +73,15 @@ import net.horizonsend.ion.server.features.sequences.trigger.ShipRotateTrigger.S
 import net.horizonsend.ion.server.features.sequences.trigger.SimpleContextTriggerPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStartTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStopTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger.belowCruiseSpeed
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
+import net.horizonsend.ion.server.features.starship.event.StarshipEnterHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPreExitHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -1100,10 +1104,39 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
-                SequenceTrigger( // TODO - location predicate
-                    SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
-                    StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
+                // Go to FLIGHT_CHETHERITE when the player is nearby the hyperspace beacon and their cruise speed is low enough
+                SequenceTrigger(
+                    SequenceTriggerTypes.COMBINED_AND,
+                    CombinedAndTrigger.CombinedAndTriggerSettings(
+                        SequenceTrigger(
+                            type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
+                            triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
+                        ),
+                        SequenceTrigger(
+                            SequenceTriggerTypes.STARSHIP_MOVEMENT,
+                            StarshipMovementTrigger.StarshipMovementTriggerSettings(belowCruiseSpeed(3.0)),
+                            triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
+                        )
+                    ),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
+                ),
+                // Go to BRANCH_FLIGHT_STOP_CRUISE_INITIATED when the player stops cruising for the first time
+                SequenceTrigger(
+                    SequenceTriggerTypes.COMBINED_AND,
+                    CombinedAndTrigger.CombinedAndTriggerSettings(
+                        SequenceTrigger(
+                            type = SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
+                            settings = StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
+                        ),
+                        SequenceTrigger(
+                            type = SequenceTriggerTypes.DATA_PREDICATE,
+                            settings = DataPredicate.DataPredicateSettings<Boolean>("stopped_cruise") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
+                        ),
+                    ),
+                    triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
                 )
             ),
             description = PhaseDescription(
@@ -1116,25 +1149,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
-                emptyMessage(),
-                janeMessage(
-                    template(
-                        text("You have cleared the asteroid field. You can now stop cruising and {0}."),
-                        text("prepare to jump to hyperspace.", LIGHT_PURPLE)
-                    )
-                ),
-                emptyMessage(),
-
-                janeMessage(
-                    template(
-                        text("You can stop cruising by {0} ({1}) the cruise control sign, or by running the {2} command."),
-                        text("ATTACKING", AQUA),
-                        Component.keybind("key.attack", YELLOW),
-                        text("/cruise", AQUA)
+                ifPreviousPhase(phase = FLIGHT_CRUISE_NAVIGATE, timing = EffectTiming.START,
+                    emptyMessage(),
+                    janeMessage(
+                        template(
+                            text("You have cleared the asteroid field. You can now stop cruising and {0}."),
+                            text("prepare to jump to hyperspace.", LIGHT_PURPLE)
+                        )
                     ),
-                    delayTicks = 40L
+                    emptyMessage(),
+
+                    janeMessage(
+                        template(
+                            text("You can stop cruising by {0} ({1}) the cruise control sign, or by running the {2} command."),
+                            text("ATTACKING", AQUA),
+                            Component.keybind("key.attack", YELLOW),
+                            text("/cruise", AQUA)
+                        ),
+                        delayTicks = 40L
+                    ),
+                    emptyMessage(40L),
                 ),
-                emptyMessage(40L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1151,7 +1186,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         EffectTiming.TICKED
                     ),
                     2
-                )
+                ),
+
+                *questMarkerEffects(Vec3i(0, 0, -1000)),
             )
         )
 
@@ -1228,6 +1265,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ShipEnterHyperspaceJumpTriggerSettings(),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE)
                 ),
+                SequenceTrigger(
+                    SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
+                    ShipEnterHyperspaceJumpTriggerSettings(),
+                    triggerResult = handleEvent<StarshipEnterHyperspaceEvent> { _, _, event ->
+                        event.movement.totalDistance = 10000.0
+                    }
+                ),
             ),
             description = PhaseDescription(
                 description = ofChildren(
@@ -1282,9 +1326,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
                     ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
                     triggerResult = handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
-                        event.exitLocation.x = 0.0
+                        event.exitLocation.x = 1000.0
                         event.exitLocation.y = 205.0
-                        event.exitLocation.z = 0.0
+                        event.exitLocation.z = 1100.0
                     }
                 ),
             ),
@@ -1445,7 +1489,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(),
             effects = listOf(
-                SequencePhaseEffect.DataConditionalEffects<Int>(
+                SequencePhaseEffect.DataConditionalEffects(
                     "flight_shift_count",
                     { it.getOrDefault(0) == 0 },
                     EffectTiming.START,
@@ -1458,6 +1502,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 GoToPreviousPhase(EffectTiming.START),
 
                 SequencePhaseEffect.ArithmeticSetSequenceData("flight_shift_count", 1, 0, Int::plus, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL.BRANCH_FLIGHT_STOP_CRUISE_INITIATED
+        bootstrapPhase(
+            phaseKey = BRANCH_FLIGHT_STOP_CRUISE_INITIATED,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf(
+                emptyMessage(),
+                janeMessage(
+                    ofChildren(
+                        text("Wait until the ship has fully stopped. "),
+                        text("You may need to turn and cruise back to the hyperspace beacon if you are not nearby.", AQUA)
+                    )
+                ),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("stopped_cruise", true, EffectTiming.END),
             )
         )
     }
