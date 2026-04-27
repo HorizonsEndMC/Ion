@@ -30,6 +30,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import java.time.Duration
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
@@ -121,14 +122,22 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.hasProtection(): Boolean {
-		if (hasMetadata("NPC")) return false
+		return this.protectionTime() > 0L // If playtime is less then 48^((100-x)*0.001) hours
+	}
+
+	fun Player.protectionTime(): Long {
+		if (hasMetadata("NPC")) return 0L
 
 		val player = PlayerCache[this]
-		val playerLevel = PlayerXPLevelCache[this]
+		val playerLevel = PlayerXPLevelCache[this].level
 
-		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
-		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
-		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+		if (hasPermission("ion.core.protection.removed")) return 0L // If protection has been removed by staff.
+		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return 0L // If owns a nation
+
+		val playTime = this.getStatistic(PLAY_ONE_MINUTE) / 72000.0
+		val protectionTime = 48.0.pow((100.0 - playerLevel) * 0.01)
+
+		return Duration.ofHours((protectionTime - playTime).coerceAtLeast(0.0).toLong()).toHours() // If playtime is less then 48^((100-x)*0.001) hours
 	}
 
 //	fun UUID.hasProtection(): CompletableFuture<Boolean?> {
