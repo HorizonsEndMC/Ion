@@ -10,7 +10,7 @@ object SequenceTriggerTypes {
 	val DATA_PREDICATE = register(DataPredicate)
 	val USE_TRACTOR_BEAM = register(UsedTractorBeamTrigger)
 	val CONTAINS_ITEM = register(ContainsItemTrigger)
-	val STARSHIP_CRUISE = register(StarshipCruiseTrigger)
+	val STARSHIP_MOVEMENT = register(StarshipMovementTrigger)
 	val STARSHIP_CRUISE_START = register(StarshipCruiseStartTrigger)
 	val STARSHIP_CRUISE_STOP = register(StarshipCruiseStopTrigger)
 	val STARSHIP_MANUAL_FLIGHT = register(ShipManualFlightTrigger)

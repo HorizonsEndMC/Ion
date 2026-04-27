@@ -33,7 +33,7 @@ class HyperspaceMovement(
 	val originZ = z
 
 	private val direction = dest.toVector().subtract(ship.centerOfMass.toVector()).normalize()
-	private val totalDistance = remainingDistance()
+	var totalDistance = remainingDistance()
 	private var travelled = 0.0
 
 	init {
