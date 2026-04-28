@@ -25,5 +25,11 @@ class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: Sequenc
 			@Suppress("UNCHECKED_CAST") val event = context.event as? T ?: return@handler
 			handle.invoke(player, context, event)
 		}
+
+		fun multiTriggerResult(vararg triggerResults: (Player, TriggerContext) -> Unit): (Player, TriggerContext) -> Unit = { player, context ->
+			for (triggerResult in triggerResults) {
+				triggerResult.invoke(player, context)
+			}
+		}
 	}
 }
