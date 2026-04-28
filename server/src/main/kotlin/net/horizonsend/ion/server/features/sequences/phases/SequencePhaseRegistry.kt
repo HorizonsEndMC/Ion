@@ -65,6 +65,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
+import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.multiTriggerResult
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.features.sequences.trigger.ShipEnterHyperspaceJumpTrigger.ShipEnterHyperspaceJumpTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger
@@ -592,7 +593,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 )
             ),
             description = PhaseDescription(
-                description = text("Pilot the escape pod")
+                description = text("- Pilot the escape pod")
             ),
             effects = listOf(
                 NEXT_PHASE_SOUND,
@@ -648,6 +649,12 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(7)),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_SHIFT)
+                )
+            ),
+            description = PhaseDescription(
+                description = template(
+                    text("- Get acquainted with {0}"),
+                    janeTitle
                 )
             ),
             effects = listOf(
@@ -838,7 +845,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             description = PhaseDescription(
                 description = template(
                     text("- Turn the escape pod right by pressing your {0} key"),
-                    text("SWAP ITEM TO OFFHAND ", AQUA),
+                    text("SWAP ITEM TO OFFHAND", AQUA),
                 )
             ),
             effects = listOf(
@@ -1174,8 +1181,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
                         distance = 10.0,
-                        text = ofChildren(
-                            text("Left click the \"cruise sign\" to disable cruise mode"),
+                        text = template(
+                            text("Left click the {0} to disable cruise mode"),
+                            text("cruise sign", GREEN)
                         ),
                         durationTicks = 2L,
                         scale = 2.0f,
@@ -1263,14 +1271,12 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
                     ShipEnterHyperspaceJumpTriggerSettings(),
-                    triggerResult = SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE)
-                ),
-                SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
-                    ShipEnterHyperspaceJumpTriggerSettings(),
-                    triggerResult = handleEvent<StarshipEnterHyperspaceEvent> { _, _, event ->
-                        event.movement.totalDistance = 10000.0
-                    }
+                    triggerResult = multiTriggerResult(
+                        SequenceTrigger.startPhase(FLIGHT_IN_HYPERSPACE),
+                        handleEvent<StarshipEnterHyperspaceEvent> { _, _, event ->
+                            event.movement.totalDistance = 10000.0
+                        }
+                    )
                 ),
             ),
             description = PhaseDescription(
