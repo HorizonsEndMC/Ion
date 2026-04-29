@@ -4,9 +4,13 @@ import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTri
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import org.bukkit.Particle
 import org.bukkit.entity.Player
+import org.bukkit.util.BoundingBox
 
 object StarshipMovementTrigger : SequenceTriggerType<StarshipMovementTriggerSettings>() {
 	override fun setupChecks() {
@@ -29,6 +33,19 @@ object StarshipMovementTrigger : SequenceTriggerType<StarshipMovementTriggerSett
 	 fun interface StarshipMovementPredicate {
 		 fun check(starship: Starship?, context: TriggerContext): Boolean
 	 }
+
+	fun inBoundingBox(box: BoundingBox) = StarshipMovementPredicate { starship, context ->
+		if (starship == null) return@StarshipMovementPredicate false
+
+		val box = box.clone().shift(context.sequenceContext.getOrigin().toVector())
+		val cube = cube(box.min, box.max)
+		@Suppress("OverrideOnly")
+		debugAudience.audiences().filterIsInstance<Player>().forEach { player ->
+			cube.forEach { cubePoint -> player.spawnParticle(Particle.SOUL_FIRE_FLAME, cubePoint.x, cubePoint.y, cubePoint.z, 1, 0.0, 0.0, 0.0, 0.0) }
+		}
+
+		return@StarshipMovementPredicate box.contains(starship.centerOfMass.toVector())
+	}
 
 	fun withinRadius(center: Vec3i, radius: Int) = StarshipMovementPredicate { starship, context ->
 		if (starship == null) return@StarshipMovementPredicate false
