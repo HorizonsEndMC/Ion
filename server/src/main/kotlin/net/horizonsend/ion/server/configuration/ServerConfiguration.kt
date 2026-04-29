@@ -53,7 +53,8 @@ data class ServerConfiguration(
 		lore = listOf(),
 		pilotOffset = Vec3i(0, 0, 5)
 	),
-	val tutorialOrigin: DBVec3i = Vec3i(1250, 192, 2000)
+	val tutorialOrigin: DBVec3i = Vec3i(1250, 192, 2000),
+	val tutorialTransitHubOrigin: DBVec3i = Vec3i(1000, 192, 1000)
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk

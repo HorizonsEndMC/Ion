@@ -31,5 +31,7 @@ class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: Sequenc
 				triggerResult.invoke(player, context)
 			}
 		}
+
+		fun emptyTriggerResult(): (Player, TriggerContext) -> Unit = { _, _ -> }
 	}
 }
