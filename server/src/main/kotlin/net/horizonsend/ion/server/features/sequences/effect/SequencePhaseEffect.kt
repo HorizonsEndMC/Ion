@@ -35,12 +35,21 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 	abstract fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext)
 
 	/**
-	 * Represents an effect that signals the end of a sequence's current phase.
+	 * Represents an effect that starts a sequence.
+	 *
+	 * @param sequence The key of the sequence to start.
+	 * @param timing The timing at which this effect should be executed (e.g., START, TICKED, or END).
+	 */
+	class StartSequence(val sequence: IonRegistryKey<Sequence, Sequence>, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.startPhase(player, sequence, sequence.getValue().firstPhase) }
+	}
+	/**
+	 * Represents an effect that ends a sequence.
 	 *
 	 * @param timing The timing at which this effect should be executed (e.g., START, TICKED, or END).
 	 */
 	class EndSequence(timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.endPhase(player, sequenceKey) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.endSequence(player, sequenceKey.getValue()) }
 	}
 
 	/**

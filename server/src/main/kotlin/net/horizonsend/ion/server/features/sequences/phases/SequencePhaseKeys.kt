@@ -35,7 +35,11 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val FLIGHT_IN_HYPERSPACE = registerKey("FLIGHT_IN_HYPERSPACE")
 	val FLIGHT_EXIT_HYPERSPACE = registerKey("FLIGHT_EXIT_HYPERSPACE")
 	val TUTORIAL_END = registerKey("TUTORIAL_END")
-//	val FLIGHT_PARKING = registerKey("FLIGHT_PARKING")
-//	val FLIGHT_LEAVE_POD = registerKey("FLIGHT_LEAVE_POD")
+
+	val TUTORIAL_TRANSIT_HUB_START = registerKey("TUTORIAL_TRANSIT_HUB_START")
+	val FLIGHT_PARKING = registerKey("FLIGHT_PARKING")
+	val FLIGHT_LEAVE_POD = registerKey("FLIGHT_LEAVE_POD")
+	//val TUTORIAL_TRANSIT_HUB_END = registerKey("TUTORIAL_TRANSIT_HUB_END")
+
 //	val TRANSIT_HUB = registerKey("TRANSIT_HUB")
 }

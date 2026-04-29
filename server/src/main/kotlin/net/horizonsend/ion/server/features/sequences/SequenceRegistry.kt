@@ -14,7 +14,7 @@ class SequenceRegistry : Registry<Sequence>(RegistryKeys.SEQUENCE) {
 		register(SequenceKeys.TUTORIAL, object : Sequence(SequenceKeys.TUTORIAL, SequencePhaseKeys.TUTORIAL_START) {
 			override fun getOrigin(): Vec3i = Vec3i(ConfigurationFiles.serverConfiguration().tutorialOrigin)
 		})
-		register(SequenceKeys.TUTORIAL_TRANSIT_HUB, object : Sequence(SequenceKeys.TUTORIAL_TRANSIT_HUB, SequencePhaseKeys.TUTORIAL_START) {
+		register(SequenceKeys.TUTORIAL_TRANSIT_HUB, object : Sequence(SequenceKeys.TUTORIAL_TRANSIT_HUB, SequencePhaseKeys.TUTORIAL_TRANSIT_HUB_START) {
 			override fun getOrigin(): Vec3i = Vec3i(ConfigurationFiles.serverConfiguration().tutorialTransitHubOrigin)
 		})
 	}
