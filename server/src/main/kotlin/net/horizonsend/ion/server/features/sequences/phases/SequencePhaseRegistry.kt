@@ -1,18 +1,14 @@
 package net.horizonsend.ion.server.features.sequences.phases
 
-import io.papermc.paper.registry.RegistryAccess
-import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.QUEST_OBJECTIVE_ICON
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
-import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
@@ -22,6 +18,15 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.JANE_TITLE
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipUnpilotTrigger
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.emptyMessage
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.fullBoundingBox
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.janeMessage
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.lookingBranchTrigger
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.questMarkerEffects
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
@@ -45,6 +50,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FL
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_START
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_STOP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_NAVIGATE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_EXIT_HYPERSPACE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_HYPERSPACE_JUMP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_IN_HYPERSPACE
@@ -55,6 +61,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FL
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO_TO_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_END
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
@@ -64,6 +71,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.emptyTriggerResult
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.multiTriggerResult
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
@@ -76,7 +84,6 @@ import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStart
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStopTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger.belowCruiseSpeed
-import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -84,7 +91,6 @@ import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.event.StarshipEnterHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPreExitHyperspaceEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -97,25 +103,15 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
-import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Color
-import org.bukkit.Sound
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.util.BoundingBox
 import java.util.concurrent.TimeUnit
 import kotlin.jvm.optionals.getOrDefault
-import kotlin.jvm.optionals.getOrNull
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
-    companion object {
-        val janeColor = TextColor.color(45, 45, 170)
-        val janeTitle = text("J.A.N.E.", janeColor)
-        val janePrefix = ofChildren(janeTitle, text(" » ", HEColorScheme.HE_DARK_GRAY))
-    }
-
     override fun getKeySet(): KeyRegistry<SequencePhase> = SequencePhaseKeys
 
     override fun boostrap() {
@@ -129,23 +125,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         description: PhaseDescription? = null,
 		effects: List<SequencePhaseEffect>,
 	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, description, effects))
-
-    private val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
-        SequencePhaseEffect.PlaySound(
-            RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_GENERIC_EXPLODE)!!,
-            VariableFloatAmount(0.05f, 1.0f),
-            StaticFloatAmount(1.0f),
-            EffectTiming.TICKED
-        ),
-        0.02
-    )
-    private val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
-        RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,
-        StaticFloatAmount(1.0f),
-        StaticFloatAmount(2.0f),
-        EffectTiming.START
-    )
-
 
     private fun registerTutorial() {
         // Place cruiser at: world Tutorial, starship computer (in front of ship) at absolute position:
@@ -162,6 +141,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
         registerTutorialBranches()
     }
+
     private fun registerTutorialPlayerSection() {
         // TUTORIAL.TUTORIAL_START
         bootstrapPhase(
@@ -654,7 +634,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             description = PhaseDescription(
                 description = template(
                     text("- Get acquainted with {0}"),
-                    janeTitle
+                    JANE_TITLE
                 )
             ),
             effects = listOf(
@@ -674,7 +654,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 janeMessage(
                     text("Hello! I am the Journey Assistive Navigational Educator, or "),
-                    janeTitle,
+                    JANE_TITLE,
                     delayTicks = 40L
                 ),
                 emptyMessage(40L),
@@ -895,7 +875,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_START)
                 ) // TODO replace
             ),
-            description = PhaseDescription(template(text("Listen to {0} for further instructions"), janeTitle)),
+            description = PhaseDescription(template(text("- Listen to {0} for further instructions"), JANE_TITLE)),
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
@@ -1118,12 +1098,12 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         SequenceTrigger(
                             type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                             settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
-                            triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
+                            triggerResult = emptyTriggerResult()
                         ),
                         SequenceTrigger(
                             SequenceTriggerTypes.STARSHIP_MOVEMENT,
                             StarshipMovementTrigger.StarshipMovementTriggerSettings(belowCruiseSpeed(3.0)),
-                            triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
+                            triggerResult = emptyTriggerResult()
                         )
                     ),
                     triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
@@ -1135,12 +1115,12 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         SequenceTrigger(
                             type = SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
                             settings = StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
-                            triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
+                            triggerResult = emptyTriggerResult()
                         ),
                         SequenceTrigger(
                             type = SequenceTriggerTypes.DATA_PREDICATE,
                             settings = DataPredicate.DataPredicateSettings<Boolean>("stopped_cruise") { it != true },
-                            triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
+                            triggerResult = emptyTriggerResult()
                         ),
                     ),
                     triggerResult = SequenceTrigger.startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
@@ -1331,11 +1311,14 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequenceTrigger(
                     SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
                     ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
-                    triggerResult = handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
-                        event.exitLocation.x = 1000.0
-                        event.exitLocation.y = 205.0
-                        event.exitLocation.z = 1100.0
-                    }
+                    triggerResult = multiTriggerResult(
+                        handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
+                            event.exitLocation.x = 1000.0
+                            event.exitLocation.y = 205.0
+                            event.exitLocation.z = 1100.0
+                        },
+                        SequenceTrigger.startPhase(FLIGHT_EXIT_HYPERSPACE)
+                    )
                 ),
             ),
             description = PhaseDescription(text("- Wait until the escape pod completes the hyperspace transit")),
@@ -1344,6 +1327,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 emptyMessage(),
                 janeMessage(text("Your starship is now in hyperspace!")),
+                emptyMessage(),
 
                 janeMessage(
                     template(
@@ -1375,6 +1359,47 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ),
                 emptyMessage(180L),
             )
+        )
+
+        // TUTORIAL.FLIGHT_EXIT_HYPERSPACE
+        bootstrapPhase(
+            phaseKey = FLIGHT_EXIT_HYPERSPACE,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.WAIT_TIME,
+                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_EXIT_HYPERSPACE_START", TimeUnit.SECONDS.toMillis(5L)),
+                    triggerResult = SequenceTrigger.startPhase(TUTORIAL_END)
+                )
+            ),
+            description = PhaseDescription(template(text("- Listen to {0} for further instructions"), JANE_TITLE)),
+            effects = listOf(
+                SequencePhaseEffect.SuppliedSetSequenceData(
+                    "FLIGHT_EXIT_HYPERSPACE_START",
+                    { System.currentTimeMillis() },
+                    EffectTiming.START
+                ),
+
+                emptyMessage(),
+                janeMessage(
+                    template(
+                        text("You have arrived at the {0}."),
+                        text("Horizon's End Transit Hub", GREEN),
+                    )
+                ),
+                emptyMessage(),
+
+                SequencePhaseEffect.EndSequence(EffectTiming.END),
+                SequencePhaseEffect.ClearSequenceData(EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL.TUTORIAL_END
+        bootstrapPhase(
+            phaseKey = TUTORIAL_END,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf()
         )
     }
 
@@ -1532,91 +1557,4 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
     }
-
-	private fun fullBoundingBox(pos1: Vec3i, pos2: Vec3i): BoundingBox {
-		val (x1: Int, y1: Int, z1: Int) = pos1
-		val (x2: Int, y2: Int, z2: Int) = pos2
-
-		val minX: Double = (minOf(x1, x2)).toDouble()
-		val minY: Double = (minOf(y1, y2)).toDouble()
-		val minZ: Double = (minOf(z1, z2)).toDouble()
-		val maxX: Double = (maxOf(x1, x2) + 1).toDouble()
-		val maxY: Double = (maxOf(y1, y2) + 1).toDouble()
-		val maxZ: Double = (maxOf(z1, z2) + 1).toDouble()
-
-		return BoundingBox(minX, minY, minZ, maxX, maxY, maxZ)
-	}
-
-    private fun emptyMessage(delayTicks: Long = 0L) = if (delayTicks <= 0) {
-        SendMessage(Component.empty(), EffectTiming.START)
-    } else {
-        SendDelayedMessage(Component.empty(), delayTicks, EffectTiming.START)
-    }
-
-    private fun janeMessage(vararg message: Component, delayTicks: Long = 0L) = if (delayTicks <= 0) {
-        SendMessage(ofChildren(janePrefix, *message), EffectTiming.START)
-    } else {
-        SendDelayedMessage(ofChildren(janePrefix, *message), delayTicks, EffectTiming.START)
-    }
-
-    private fun questMarkerEffects(position: Vec3i): Array<SequencePhaseEffect> = listOf(
-        SequencePhaseEffect.OnTickInterval(
-            SequencePhaseEffect.DisplayText(
-                position = position,
-                text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
-                durationTicks = 2L,
-                scale = 2.0f,
-                backgroundColor = Color.fromARGB(0x00000000),
-                defaultBackground = false,
-                seeThrough = true,
-                highlight = false,
-                positionOffset = Vec3i(0, 0, 0).toVector(),
-                EffectTiming.TICKED
-            ),
-            2
-        ),
-        SequencePhaseEffect.OnTickInterval(
-            SequencePhaseEffect.DisplayDistanceText(
-                position = position,
-                durationTicks = 2L,
-                scale = 2.0f,
-                backgroundColor = Color.fromARGB(0x00000000),
-                defaultBackground = false,
-                seeThrough = true,
-                highlight = false,
-                EffectTiming.TICKED
-            ),
-            2
-        )
-    ).toTypedArray()
-
-    private fun lookingBranchTrigger(
-        phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
-        lookingAtBoundingBox: BoundingBox,
-        distance: Double,
-        dataKey: String
-    ): SequenceTrigger<*> = SequenceTrigger(
-        SequenceTriggerTypes.COMBINED_AND,
-        CombinedAndTrigger.CombinedAndTriggerSettings(
-            SequenceTrigger(
-                SequenceTriggerTypes.PLAYER_MOVEMENT,
-                MovementTriggerSettings(lookingAtBoundingBox(box = lookingAtBoundingBox, distance = distance)),
-                triggerResult = SequenceTrigger.startPhase(phaseKey)
-            ),
-            SequenceTrigger(
-                SequenceTriggerTypes.DATA_PREDICATE,
-                DataPredicate.DataPredicateSettings<Boolean>(dataKey) { it != true },
-                triggerResult = SequenceTrigger.startPhase(phaseKey)
-            )
-        ),
-        triggerResult = SequenceTrigger.startPhase(phaseKey)
-    )
-
-    private fun disallowStarshipUnpilotTrigger() = SequenceTrigger(
-        SequenceTriggerTypes.STARSHIP_UNPILOT,
-        StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-        triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-            event.isCancelled = true; player.userError("You can't release your ship right now!")
-        }
-    )
 }

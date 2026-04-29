@@ -11,6 +11,11 @@ class SequenceRegistry : Registry<Sequence>(RegistryKeys.SEQUENCE) {
 	override fun getKeySet(): KeyRegistry<Sequence> = SequenceKeys
 
 	override fun boostrap() {
-		register(SequenceKeys.TUTORIAL, object : Sequence(SequenceKeys.TUTORIAL, SequencePhaseKeys.TUTORIAL_START) { override fun getOrigin(): Vec3i = Vec3i(ConfigurationFiles.serverConfiguration().tutorialOrigin) })
+		register(SequenceKeys.TUTORIAL, object : Sequence(SequenceKeys.TUTORIAL, SequencePhaseKeys.TUTORIAL_START) {
+			override fun getOrigin(): Vec3i = Vec3i(ConfigurationFiles.serverConfiguration().tutorialOrigin)
+		})
+		register(SequenceKeys.TUTORIAL_TRANSIT_HUB, object : Sequence(SequenceKeys.TUTORIAL_TRANSIT_HUB, SequencePhaseKeys.TUTORIAL_START) {
+			override fun getOrigin(): Vec3i = Vec3i(ConfigurationFiles.serverConfiguration().tutorialTransitHubOrigin)
+		})
 	}
 }
