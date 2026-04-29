@@ -5,4 +5,5 @@ import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 
 object SequenceKeys : KeyRegistry<Sequence>(RegistryKeys.SEQUENCE, Sequence::class) {
 	val TUTORIAL = registerKey("TUTORIAL")
+	val TUTORIAL_TRANSIT_HUB = registerKey("TUTORIAL_TRANSIT_HUB")
 }
