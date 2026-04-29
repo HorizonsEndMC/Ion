@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
+import net.horizonsend.ion.server.features.sequences.SequenceKeys.TUTORIAL_TRANSIT_HUB
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.JANE_TITLE
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
@@ -54,6 +55,8 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FL
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_HYPERSPACE_JUMP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_IN_HYPERSPACE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_LEAVE_POD
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_PARKING
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_LEFT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_RIGHT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_SHIFT
@@ -63,9 +66,11 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_END
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_TRANSIT_HUB_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
+import net.horizonsend.ion.server.features.sequences.trigger.ImmediateTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
@@ -108,6 +113,7 @@ import org.bukkit.Color
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.util.BoundingBox
 import java.util.concurrent.TimeUnit
 import kotlin.jvm.optionals.getOrDefault
 
@@ -116,6 +122,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
     override fun boostrap() {
         registerTutorial()
+        registerTutorialTransitHub()
     }
 
     private fun bootstrapPhase(
@@ -134,6 +141,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         // gate should point to world Tutorial2, at absolute position:
         // world: TransitHub, x: 1000, y: 192, z: 1000 (when the player finishes the tutorial, they will
         // be teleported to the actual hub world)
+        // (When the ship jumps, move the actual jump to the side of the station)
 
         registerTutorialPlayerSection()
 
@@ -1313,9 +1321,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
                     triggerResult = multiTriggerResult(
                         handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
-                            event.exitLocation.x = 1000.0
                             event.exitLocation.y = 205.0
-                            event.exitLocation.z = 1100.0
+                            event.exitLocation.z += 150.0
                         },
                         SequenceTrigger.startPhase(FLIGHT_EXIT_HYPERSPACE)
                     )
@@ -1391,6 +1398,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 SequencePhaseEffect.EndSequence(EffectTiming.END),
                 SequencePhaseEffect.ClearSequenceData(EffectTiming.END),
+                SequencePhaseEffect.StartSequence(TUTORIAL_TRANSIT_HUB, EffectTiming.END),
             )
         )
 
@@ -1554,6 +1562,85 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 GoToPreviousPhase(EffectTiming.START),
 
                 SequencePhaseEffect.SetSequenceData("stopped_cruise", true, EffectTiming.END),
+            )
+        )
+    }
+
+    private fun registerTutorialTransitHub() {
+        registerTutorialTransitHubFlightSection()
+    }
+    
+    private fun registerTutorialTransitHubFlightSection() {
+        // TUTORIAL_TRANSIT_HUB.TUTORIAL_TRANSIT_HUB_START
+        bootstrapPhase(
+            phaseKey = TUTORIAL_TRANSIT_HUB_START,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.IMMEDIATE,
+                    ImmediateTrigger.ImmediateTriggerSettings(),
+                    SequenceTrigger.startPhase(FLIGHT_PARKING)
+                )
+            ),
+            effects = listOf()
+        )
+
+        // TUTORIAL_TRANSIT_HUB.FLIGHT_PARKING
+        bootstrapPhase(
+            phaseKey = FLIGHT_PARKING,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(
+                disallowStarshipUnpilotTrigger(),
+                SequenceTrigger(
+                    type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
+                    settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(
+                        StarshipMovementTrigger.inBoundingBox(
+                            fullBoundingBox(
+                                Vec3i(-20, 3, 35),
+                                Vec3i(20, 27, 55)
+                            )
+                        )
+                    ),
+                    triggerResult = emptyTriggerResult()
+                )
+            ),
+            description = PhaseDescription(text("- Move your ship to the docking platform")),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                janeMessage(
+                    template(
+                        text("Move your starship to the docking platform. Remember to manually " +
+                                "fly ({0}, {1}) to move your ship accurately."),
+                        text("SNEAK", AQUA),
+                        Component.keybind("key.sneak", YELLOW),
+                    )
+                ),
+
+                *questMarkerEffects(Vec3i(0, 15, 45)),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.FLIGHT_LEAVE_POD
+        bootstrapPhase(
+            phaseKey = FLIGHT_LEAVE_POD,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(
+
+            ),
+            description = PhaseDescription(
+                template(
+                    text("- Release your starship by {0} the {1}"),
+                    text("USING/RIGHT CLICKING", AQUA),
+                    text("starship computer", GREEN)
+                )
+            ),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                janeMessage(
+                    text("TODO: Placeholder")
+                )
             )
         )
     }

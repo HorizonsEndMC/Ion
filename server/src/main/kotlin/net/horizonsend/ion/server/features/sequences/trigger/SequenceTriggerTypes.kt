@@ -20,6 +20,7 @@ object SequenceTriggerTypes {
 	val PRE_EXIT_HYPERSPACE = register(ShipPreExitHyperspaceJumpTrigger)
 	val STARSHIP_UNPILOT = register(StarshipUnpilotTrigger)
 	val HYPERDRIVE_HAS_FUEL = register(HyperdriveHasFuelTrigger)
+	val IMMEDIATE = register(ImmediateTrigger)
 
 	fun <T : SequenceTriggerType<*>> register(type: T): T {
 		types.add(type)
