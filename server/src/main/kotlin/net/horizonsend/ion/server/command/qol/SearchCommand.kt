@@ -177,7 +177,7 @@ object SearchCommand : SLCommand() {
 				return containsItem(searcher, inventory, item)
 			}
 		}
-		for (i in startIndex..stopIndex) {
+		for (i in startIndex..<stopIndex) {
 			val invItem = inventory.getItem(i) ?: continue
 			if (itemsMatch(invItem, item)) return true
 		}
