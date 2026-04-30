@@ -40,6 +40,7 @@ import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Switch
 import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Animals
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
@@ -53,6 +54,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.EntitySpawnEvent
+import org.bukkit.event.hanging.HangingBreakEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerBucketFillEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -118,7 +120,8 @@ object ProtectionListener : SLEventListener() {
 	@EventHandler
 	fun onAnimalHurt(event: EntityDamageByEntityEvent) {
 		val damager = event.damager as? Player ?: return
-		if (event.entity !is Animals) return
+		val entity = event.entity
+		if (entity !is Animals || entity !is ArmorStand) return
 
 		if (denyBlockAccess(damager, event.entity.location, event)) {
 			event.isCancelled = true
@@ -375,6 +378,14 @@ object ProtectionListener : SLEventListener() {
 		}
 
 		if (Regions.find(event.location).any { it is RegionTerritory && it.npcOwner != null }) {
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onHangingBreak(event: HangingBreakEvent) {
+		val cause = event.cause
+		if (cause == HangingBreakEvent.RemoveCause.EXPLOSION || cause == HangingBreakEvent.RemoveCause.PHYSICS) {
 			event.isCancelled = true
 		}
 	}
