@@ -18,7 +18,6 @@ import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.wrap
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
@@ -216,7 +215,7 @@ object ChestShops : IonServerComponent() {
 		if (itemType == null) {
 			val id: UUID = UUID.randomUUID()
 
-			log.info("Could not load item data! Id: $id, data: $itemData")
+			log.info("Could not load item data! Id: $id, data: $itemData, at: ${shop.location}, ${shop.world}")
 			player.serverError("That item could not be loaded. Please file a bug report. Id: $id")
 			return
 		}
@@ -376,7 +375,7 @@ object ChestShops : IonServerComponent() {
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
 		val nmsStack = NMSItemStack.CODEC.parse(ops, nbt).resultOrPartial { itemId ->
-			IonServer.logger.warning("Tried to load invalid item: $itemId")
+			log.info("Tried to load invalid item: $itemId")
 		}.getOrNull() ?: return null
 
 		return CraftItemStack.asCraftMirror(nmsStack)
@@ -485,7 +484,11 @@ object ChestShops : IonServerComponent() {
 			if (worldShops.isEmpty()) continue
 
 			for ((vec3i, shop) in worldShops) {
-				val soldItem = shop.soldItem?.let(::loadItem) ?: continue
+				val soldItem = shop.soldItem?.let(::loadItem)
+				if (soldItem == null) {
+					log.info("Could not load item data! at: ${shop.location}, ${shop.world}")
+					continue
+				}
 
 				val data = getBlockDataSafe(world, vec3i.x, vec3i.y, vec3i.z) as? WallSign
 
