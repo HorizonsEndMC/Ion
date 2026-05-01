@@ -1,19 +1,31 @@
 {
-	"name": "overworld",
 	"min_y": 0,
 	"height": 384,
-	"ultrawarm": false,
-	"respawn_anchor_works": false,
-	"piglin_safe": false,
-	"natural": true,
 	"logical_height": 384,
+
+	"skybox": "overworld",
+	"cardinal_light": "default",
+	"timelines": "#minecraft:in_overworld",
+	"attributes": {
+		"minecraft:gameplay/bed_rule": {
+			"can_set_spawn": "always",
+			"can_sleep": "when_dark",
+			"error_message": {
+				"translate": "block.minecraft.bed.no_sleep"
+			}
+		},
+		"minecraft:gameplay/respawn_anchor_works": false,
+		"minecraft:gameplay/nether_portal_spawns_piglin": false,
+		"minecraft:visual/cloud_color": "#ccffffff",
+		"minecraft:visual/cloud_height": 256.33,
+		"minecraft:visual/fog_color": "#c0d8ff",
+		"minecraft:visual/sky_color": "#78a7ff"
+	},
 	"infiniburn": "#infiniburn_overworld",
+
 	"has_skylight": true,
-	"has_raids": true,
 	"has_ceiling": false,
-	"effects": "minecraft:overworld",
 	"coordinate_scale": 1.0,
-	"bed_works": true,
 	"ambient_light": 0.0,
 	"monster_spawn_block_light_limit": 0,
 	"monster_spawn_light_level": {
