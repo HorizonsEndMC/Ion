@@ -311,10 +311,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.y,
 				it.z
 			)
-		} ?: if (otherPlayer != null && PlayerCache[otherPlayer].frontierNationOid == PlayerCache[sender].frontierNationOid) {
-			// Check if the destination is a nation member
-			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
-		} else if (otherPlayer != null && otherFleet != null && otherFleet == Fleets.findByMember(sender)) {
+		} ?: if (otherPlayer != null && otherFleet != null && otherFleet == Fleets.findByMember(sender)) {
 			// Check if the destination is a fleet member
 			otherPlayer.location.let {
 				Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt())
@@ -326,36 +323,34 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
+		val addToRouteMessage =
+			"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
+					"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
+					"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
 
 		if (destinationPos.bukkitWorld() != sender.world) {
-			//Check if the other player exists and if they have a jump beacon enabled
+			// Jump beacon handling conditions
 			if (otherPlayer != null) {
 				val otherPlayerStarship = ActiveStarships.findByPilot(otherPlayer)
 				if (otherPlayerStarship == null) {
-					sender.sendRichMessage(
-						"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
-							"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
-							"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
-					)
+					// Fail if target player is not piloting a starship
+					sender.userError("Player $destination is not in a starship! You may set a navigation waypoint to the target fleet member instead.")
+					sender.sendRichMessage(addToRouteMessage)
+					return
+				} else if (jumpFieldGen == null) {
+					// Fail if the sender's starship does not have a jump field generator
+					sender.userError("Your starship does not have a jump field generator! You may set a navigation waypoint to the target fleet member instead.")
+					sender.sendRichMessage(addToRouteMessage)
+					return
+				} else if (!otherPlayerStarship.isJumpBeaconOn) {
+					// Fail if the other player's starship does not have an active jump beacon
+					sender.userError("The other player's starship does not have an active jump beacon! You may set a navigation waypoint to the target fleet member instead.")
+					sender.sendRichMessage(addToRouteMessage)
 					return
 				}
-				if (!otherPlayerStarship.isJumpBeaconOn || jumpFieldGen == null) {
-					// if they dont have a beacon enabled or if the jumper has no field generators
-					sender.sendRichMessage(
-						"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
-							"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
-							"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
-					)
-					return
-				}
-			}
-			// if the person isnt jumping to another player at all then fail the jump
-			else {
-				sender.sendRichMessage(
-					"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
-						"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
-						"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
-				)
+			} else {
+				// Sender was not jumping to a player, always fail and ask to add to route
+				sender.sendRichMessage(addToRouteMessage)
 				return
 			}
 		}
