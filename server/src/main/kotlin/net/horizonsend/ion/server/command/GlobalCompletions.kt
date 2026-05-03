@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
+import kotlin.jvm.optionals.getOrElse
 
 object GlobalCompletions {
 	fun onEnable(manager: PaperCommandManager) {
@@ -43,7 +44,7 @@ object GlobalCompletions {
 		CacheLoader.from { string -> Optional.ofNullable(stringToItem(string)) }
 	)
 
-	fun fromItemString(string: String): ItemStack = stringItemCache[string].get().clone()
+	fun fromItemString(string: String): ItemStack = stringItemCache[string].getOrElse { throw NoSuchElementException("No value present for $string in stringItemCache") }.clone()
 
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
