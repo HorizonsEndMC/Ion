@@ -375,7 +375,7 @@ object ChestShops : IonServerComponent() {
 		val ops = MinecraftServer.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
 		val nmsStack = NMSItemStack.CODEC.parse(ops, nbt).resultOrPartial { itemId ->
-			log.info("Tried to load invalid item: $itemId")
+			//log.info("Tried to load invalid item: $itemId")
 		}.getOrNull() ?: return null
 
 		return CraftItemStack.asCraftMirror(nmsStack)
