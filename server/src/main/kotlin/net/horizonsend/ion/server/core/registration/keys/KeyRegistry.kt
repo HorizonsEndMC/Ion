@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.persistence.ListPersistentDataType
-import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.NamespacedKey
 import kotlin.reflect.KClass
@@ -43,7 +42,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	fun getOrTrow(string: String): IonRegistryKey<T, out T> = keys[string] ?: throw IllegalArgumentException("Key $string not found for registry ${registryId.key}")
 
 	fun allStrings() = keys.keys
-	fun allkeys() = allKeys
+	fun allKeys() = allKeys
 
 	val serializer: IonRegistryKey.Serializer<T> = IonRegistryKey.Serializer(this)
 	val listSerializer: ListPersistentDataType<String, IonRegistryKey<T, out T>> = PersistentDataType.LIST.listTypeFrom(serializer)
