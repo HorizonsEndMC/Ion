@@ -23,7 +23,7 @@ object HandshakePacket : IonPacketHandler() {
 	}
 
 	override fun s2c(buf: FriendlyByteBuf, player: Player, vararg arguments: Any) {
-		val items = CustomItemKeys.allkeys().map { it.getValue().constructItemStack() }.map { CraftItemStack.asNMSCopy(it) }
+		val items = CustomItemKeys.allKeys().map { it.getValue().constructItemStack() }.map { CraftItemStack.asNMSCopy(it) }
 
 		buf.writeInt(items.size)
 		val regAccess = player.world.minecraft.registryAccess()

@@ -41,7 +41,7 @@ object ItemDebugCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.registerCompletion("tool_mods") {
-			return@registerCompletion ItemModKeys.allkeys().map { key -> key.key }
+			return@registerCompletion ItemModKeys.allKeys().map { key -> key.key }
 		}
 
 		manager.commandCompletions.setDefaultCompletion("tool_mods", ItemModification::class.java)

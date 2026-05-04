@@ -30,7 +30,7 @@ class ModificationItem(
 	private val descriptionLines = Array(description.size) { description[it].itemLore }
 
 	override fun assembleLore(itemStack: ItemStack): List<Component> {
-		val applicableTo = CustomItemKeys.allkeys()
+		val applicableTo = CustomItemKeys.allKeys()
 			.filter { customItem ->
 				modKey.getValue().applicationPredicates.any { predicate -> predicate.canApplyTo(customItem.getValue()) }
 			}
