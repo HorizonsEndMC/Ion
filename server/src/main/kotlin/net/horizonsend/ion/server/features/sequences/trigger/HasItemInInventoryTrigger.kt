@@ -5,13 +5,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-object ContainsItemTrigger : SequenceTriggerType<ContainsItemTrigger.ContainsItemTriggerSettings>() {
+object HasItemInInventoryTrigger : SequenceTriggerType<HasItemInInventoryTrigger.HasItemInInventoryTriggerSetting>() {
 	override fun setupChecks() {
 		// Check every time the client is ticked
 		listen<ClientTickEndEvent> { checkAllSequences(it.player, it) }
 	}
 
-	class ContainsItemTriggerSettings(private val itemPredicate: (ItemStack?) -> Boolean) : TriggerSettings() {
+	class HasItemInInventoryTriggerSetting(private val itemPredicate: (ItemStack?) -> Boolean) : TriggerSettings() {
 		override fun shouldProceed(player: Player, context: TriggerContext): Boolean {
 			return player.inventory.contents.any(itemPredicate)
 		}

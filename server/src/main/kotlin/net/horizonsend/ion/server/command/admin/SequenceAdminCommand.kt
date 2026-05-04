@@ -38,6 +38,15 @@ object SequenceAdminCommand : SLCommand() {
 		SequenceManager.clearSequenceData(sender)
 	}
 
+	@Subcommand("sequence endall")
+	fun endAll(sender: Player) {
+		val activeSequenceKeys = SequenceManager.getCurrentSequences(sender)
+		for (sequenceKeys in activeSequenceKeys) {
+			val currentPhase = SequenceManager.getCurrentPhase(sender, sequenceKeys)
+			if (currentPhase != null) end(sender, sequenceKeys.getValue())
+		}
+	}
+
 	@Subcommand("phase start")
 	fun start(sender: Player, phase: SequencePhase) {
 		sender.information("Starting ${phase.phaseKey.key}")
@@ -71,5 +80,14 @@ object SequenceAdminCommand : SLCommand() {
 		val maxPoint = Vec3i(selection.maximumPoint.x(), selection.maximumPoint.y(), selection.maximumPoint.z()).minus(sequence.getOrigin())
 
 		sender.information("Minimum: {0}, Maximum: {1}", minPoint, maxPoint)
+	}
+
+	@Subcommand("get current")
+	fun getCurrentSequencesAndPhases(sender: Player) {
+		val activeSequenceKeys = SequenceManager.getCurrentSequences(sender)
+		for (sequenceKeys in activeSequenceKeys) {
+			val currentPhase = SequenceManager.getCurrentPhase(sender, sequenceKeys)
+			if (currentPhase != null) sender.information("Sequence: ${sequenceKeys.key} Phase: ${currentPhase.key}")
+		}
 	}
 }

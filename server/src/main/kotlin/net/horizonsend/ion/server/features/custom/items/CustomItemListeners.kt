@@ -48,7 +48,7 @@ object CustomItemListeners : SLEventListener() {
 	}
 
 	fun sortCustomItemListeners() {
-		for (newCustomItemKey in CustomItemKeys.allkeys()) {
+		for (newCustomItemKey in CustomItemKeys.allKeys()) {
 			val newCustomItem = newCustomItemKey.getValue()
 			val components = newCustomItem.allComponents()
 
