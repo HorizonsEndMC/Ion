@@ -129,7 +129,7 @@ data class TorpedoBalancing(
 
 	@Serializable
 	data class TorpedoProjectileBalancing(
-        override val range: Double = 300.0,
+        override val range: Double = 240.0,
         override val speed: Double = 70.0,
         override val explosionPower: Float = 7.0f,
         override val starshipShieldDamageMultiplier: Double = 2.0,
