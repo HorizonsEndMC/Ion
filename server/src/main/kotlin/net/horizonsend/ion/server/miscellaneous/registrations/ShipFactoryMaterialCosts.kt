@@ -135,6 +135,7 @@ import org.bukkit.Material.ROOTED_DIRT
 import org.bukkit.Material.SAND
 import org.bukkit.Material.SANDSTONE
 import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.SHROOMLIGHT
 import org.bukkit.Material.SMOOTH_BASALT
 import org.bukkit.Material.SMOOTH_QUARTZ
 import org.bukkit.Material.SMOOTH_RED_SANDSTONE
@@ -199,6 +200,7 @@ object ShipFactoryMaterialCosts {
 		OCHRE_FROGLIGHT to 25.0,
 		VERDANT_FROGLIGHT to 25.0,
 		PEARLESCENT_FROGLIGHT to 25.0,
+		SHROOMLIGHT to 25.0,
 		IRON_TRAPDOOR to 50.0,
 		NOTE_BLOCK to 20.0,
 		IRON_BARS to 10.0,
