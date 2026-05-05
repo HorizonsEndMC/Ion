@@ -29,24 +29,30 @@ import net.horizonsend.ion.server.features.sequences.SequenceUtils.fullBoundingB
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.janeMessage
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.lookingBranchTrigger
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.questMarkerEffects
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.textInWorld
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.GoToPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BOARD_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ASTERI
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ASTERI_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_SHIFT_INCREMENT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_STOP_CRUISE_INITIATED
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ILIOS
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ILIOS_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_LOOK_OUTSIDE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_MULTIBLOCKS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_NAVIGATION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_REGULUS
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_REGULUS_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SHIP_COMPUTER
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SIRIUS
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SIRIUS_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BROKEN_ELEVATOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CREW_QUARTERS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTERED_ESCAPE_POD
@@ -1719,7 +1725,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 janeMessage(
                     template(
                         text("Before leaving your starship, you must first equip your {0}. We " +
-                                "wouldn't want you to go through all this trouble only to get lost in space!"),
+                                "wouldn't want you to go through all this trouble only to get spaced!"),
                         text("space suit", AQUA)
                     ),
                 )
@@ -1952,6 +1958,153 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 )
             )
         )
+
+        // TUTORIAL_TRANSIT_HUB.BOARD_SHUTTLE
+        bootstrapPhase(
+            phaseKey = BOARD_SHUTTLE,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(
+                // Shuttle confirmation messages
+                // TODO: Add correct bounding boxes
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_ASTERI_SHUTTLE,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(-25, 4, 5),
+                        Vec3i(-21, 8, 13)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_asteri_shuttle"
+                ),
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_SIRIUS_SHUTTLE,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(21, 4, -13),
+                        Vec3i(25, 8, -5)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_sirius_shuttle"
+                ),
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_REGULUS_SHUTTLE,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(-25, 4, -13),
+                        Vec3i(-21, 8, -5)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_regulus_shuttle"
+                ),
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_ILIOS_SHUTTLE,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(21, 4, 5),
+                        Vec3i(25, 8, 13)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_ilios_shuttle"
+                ),
+
+                // Looking at previous displays
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_ASTERI,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(-25, 4, 5),
+                        Vec3i(-21, 8, 13)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_asteri"
+                ),
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_SIRIUS,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(21, 4, -13),
+                        Vec3i(25, 8, -5)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_sirius"
+                ),
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_REGULUS,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(-25, 4, -13),
+                        Vec3i(-21, 8, -5)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_regulus"
+                ),
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_ILIOS,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(21, 4, 5),
+                        Vec3i(25, 8, 13)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_ilios"
+                ),
+            ),
+            description = PhaseDescription(
+                text("- Board one of the shuttles and depart for another system"),
+            ),
+            effects = listOf(
+                ifPreviousPhase(
+                    EXPLORE_TRANSIT_HUB, EffectTiming.START,
+                    NEXT_PHASE_SOUND,
+
+                    emptyMessage(),
+                    janeMessage(
+                        text("Now that you're well-informed, please board a shuttle and take a " +
+                                "ride to the system's transit port.")
+                    ),
+                    emptyMessage(),
+
+                    janeMessage(
+                        template(
+                            text("Don't worry too much about your choice. {0}."),
+                            text("You can always travel or move to another system later on " +
+                                    "if you so choose", GREEN),
+                        ),
+                        delayTicks = 40L
+                    ),
+                    emptyMessage(delayTicks = 40L),
+
+                    janeMessage(
+                        text("If you need a moment to think, you can go back to the transit hub displays " +
+                                "and read more about the systems."),
+                        delayTicks = 80L
+                    ),
+                    emptyMessage(80L),
+                ),
+
+                // TODO: quest markers for each shuttle
+                *questMarkerEffects(Vec3i(39, 6, 0)),
+                textInWorld(Vec3i(39, 6, 0), text("To Asteri")),
+
+                // In case the player did not see the displays in the previous step
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_asteri",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(-23, 8, 9)),
+                ),
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_sirius",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(23, 8, -9)),
+                ),
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_regulus",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(-23, 8, -9)),
+                ),
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_ilios",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(23, 8, 9)),
+                )
+            ),
+        )
     }
 
     private fun registerTutorialTransitHubBranches() {
@@ -1969,7 +2122,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_asteri", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_asteri_shuttle", true, EffectTiming.END),
             )
         )
 
@@ -1987,7 +2140,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_sirius", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_sirius_shuttle", true, EffectTiming.END),
             )
         )
 
@@ -2005,7 +2158,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_regulus", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_regulus_shuttle", true, EffectTiming.END),
             )
         )
 
@@ -2023,7 +2176,79 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_ilios", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_ilios_shuttle", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_ASTERI_SHUTTLE
+        bootstrapPhase(
+            phaseKey = BRANCH_ASTERI_SHUTTLE,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Are you sure you want to travel to Asteri, the Refuge System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_asteri_shuttle", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_SIRIUS_SHUTTLE
+        bootstrapPhase(
+            phaseKey = BRANCH_SIRIUS_SHUTTLE,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Are you sure you want to travel to Sirius, the Prosperous System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_sirius_shuttle", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_REGULUS_SHUTTLE
+        bootstrapPhase(
+            phaseKey = BRANCH_REGULUS_SHUTTLE,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Are you sure you want to travel to Sirius, the Crossroads System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_regulus_shuttle", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_ILIOS_SHUTTLE
+        bootstrapPhase(
+            phaseKey = BRANCH_ILIOS_SHUTTLE,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Are you sure you want to travel to Sirius, the Abundant System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_ilios_shuttle", true, EffectTiming.END),
             )
         )
     }

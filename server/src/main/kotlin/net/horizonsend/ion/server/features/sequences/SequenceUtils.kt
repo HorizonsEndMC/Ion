@@ -67,6 +67,22 @@ object SequenceUtils {
         SendDelayedMessage(ofChildren(JANE_PREFIX, *message), delayTicks, EffectTiming.START)
     }
 
+    fun textInWorld(position: Vec3i, vararg message: Component) = SequencePhaseEffect.OnTickInterval(
+        SequencePhaseEffect.DisplayText(
+            position = position,
+            text = ofChildren(*message),
+            durationTicks = 2L,
+            scale = 2.0f,
+            backgroundColor = Color.fromARGB(0x00000000),
+            defaultBackground = false,
+            seeThrough = true,
+            highlight = false,
+            positionOffset = Vec3i(0, 0, 0).toVector(),
+            EffectTiming.TICKED
+        ),
+        2
+    )
+
     fun questMarkerEffects(position: Vec3i): Array<SequencePhaseEffect> = listOf(
         SequencePhaseEffect.OnTickInterval(
             SequencePhaseEffect.DisplayText(
@@ -95,7 +111,7 @@ object SequenceUtils {
                 EffectTiming.TICKED
             ),
             2
-        )
+        ),
     ).toTypedArray()
     //endregion
 
