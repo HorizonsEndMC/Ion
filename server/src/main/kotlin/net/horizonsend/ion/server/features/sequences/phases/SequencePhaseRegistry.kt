@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.sequences.SequenceKeys.TUTORIAL_TRANS
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.JANE_TITLE
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowOpeningDoor
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.emptyMessage
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.fullBoundingBox
@@ -34,19 +35,24 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.GoToPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ASTERI
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_SHIFT_INCREMENT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_STOP_CRUISE_INITIATED
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ILIOS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_LOOK_OUTSIDE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_MULTIBLOCKS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_NAVIGATION
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_REGULUS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SHIP_COMPUTER
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SIRIUS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BROKEN_ELEVATOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CREW_QUARTERS
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTERED_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTER_TRANSIT_HUB
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXPLORE_TRANSIT_HUB
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_START
@@ -119,6 +125,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.concurrent.TimeUnit
 import kotlin.jvm.optionals.getOrDefault
+import kotlin.jvm.optionals.getOrNull
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
     override fun getKeySet(): KeyRegistry<SequencePhase> = SequencePhaseKeys
@@ -459,7 +466,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     emptyMessage(),
                     SendMessage(
                         text(
-                            "The ship's gravity generators have failed in the attack! Fly over the obstacle!",
+                            "The ship's gravity generators have failed in the attack! Fly over the flames!",
                             GRAY,
                             ITALIC
                         ), EffectTiming.START
@@ -577,6 +584,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(6)),
@@ -636,6 +644,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(7)),
@@ -685,6 +694,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 // data predicate MUST come before movement detection, as these are only checked on movement and break if the first trigger result is fulfilled
                 SequenceTrigger(
                     SequenceTriggerTypes.DATA_PREDICATE,
@@ -753,6 +763,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -822,6 +833,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -880,6 +892,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(7)),
@@ -941,6 +954,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_CRUISE_START,
                     StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
@@ -1009,6 +1023,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
@@ -1110,6 +1125,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 // Go to FLIGHT_CHETHERITE when the player is nearby the hyperspace beacon and their cruise speed is low enough
                 SequenceTrigger(
                     SequenceTriggerTypes.COMBINED_AND,
@@ -1206,6 +1222,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.HYPERDRIVE_HAS_FUEL,
                     SimpleContextTriggerPredicate(),
@@ -1268,6 +1285,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
                     ShipEnterHyperspaceJumpTriggerSettings(),
@@ -1328,6 +1346,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
                     ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
@@ -1386,6 +1405,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_EXIT_HYPERSPACE_START", TimeUnit.SECONDS.toMillis(5L)),
@@ -1417,6 +1437,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
             ),
             effects = listOf(
                 SequencePhaseEffect.EndSequence(EffectTiming.START),
@@ -1583,6 +1604,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
     private fun registerTutorialTransitHub() {
         registerTutorialTransitHubFlightSection()
+
+        registerTutorialTransitHubBranches()
     }
     
     private fun registerTutorialTransitHubFlightSection() {
@@ -1592,6 +1615,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("TUTORIAL_TRANSIT_HUB_START_TIME", TimeUnit.SECONDS.toMillis(1L)),
@@ -1613,13 +1637,14 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
                     settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(
                         StarshipMovementTrigger.inBoundingBox(
                             fullBoundingBox(
-                                Vec3i(-20, -6, 10),
-                                Vec3i(20, 27, 75)
+                                Vec3i(-35, -6, 10),
+                                Vec3i(35, 27, 75)
                             )
                         )
                     ),
@@ -1648,11 +1673,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL_TRANSIT_HUB.FLIGHT_SPACE_SUIT
         bootstrapPhase(
             phaseKey = FLIGHT_SPACE_SUIT,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
                 disallowStarshipUnpilotTrigger(),
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.COMBINED_AND,
                     settings = CombinedAndTrigger.CombinedAndTriggerSettings(
@@ -1704,6 +1731,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_LEAVE_POD,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowOpeningDoor(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_UNPILOT,
                     StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
@@ -1770,6 +1798,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
 
+        // TUTORIAL_TRANSIT_HUB.ENTER_TRANSIT_HUB
         bootstrapPhase(
             phaseKey = ENTER_TRANSIT_HUB,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
@@ -1784,7 +1813,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             )
                         )
                     ),
-                    triggerResult = SequenceTrigger.emptyTriggerResult() // TODO: Next phase
+                    triggerResult = startPhase(EXPLORE_TRANSIT_HUB)
                 )
             ),
             description = PhaseDescription(
@@ -1804,6 +1833,197 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 emptyMessage(),
 
                 *questMarkerEffects(Vec3i(0, 6, 31)),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.EXPLORE_TRANSIT_HUB
+        bootstrapPhase(
+            phaseKey = EXPLORE_TRANSIT_HUB,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(
+                SequenceTrigger(
+                    type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                    settings = MovementTriggerSettings(
+                        inBoundingBox(
+                            fullBoundingBox(
+                                Vec3i(37, 4, -2),
+                                Vec3i(41, 7, 2)
+                            )
+                        )
+                    ),
+                    triggerResult = SequenceTrigger.emptyTriggerResult() // TODO: next phase
+                ),
+                // Bottom left
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_ASTERI,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(-25, 4, 5),
+                        Vec3i(-21, 8, 13)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_asteri"
+                ),
+                // Top right
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_SIRIUS,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(21, 4, -13),
+                        Vec3i(25, 8, -5)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_sirius"
+                ),
+                // Top left
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_REGULUS,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(-25, 4, -13),
+                        Vec3i(-21, 8, -5)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_regulus"
+                ),
+                // Bottom right
+                lookingBranchTrigger(
+                    phaseKey = BRANCH_ILIOS,
+                    lookingAtBoundingBox = fullBoundingBox(
+                        Vec3i(21, 4, 5),
+                        Vec3i(25, 8, 13)
+                    ),
+                    distance = 5.0,
+                    dataKey = "seen_ilios"
+                ),
+            ),
+            description = PhaseDescription(
+                text("- Get to the shuttle platforms at {0}, or read about the different systems"),
+                position = Vec3i(39, 6, 0)
+            ),
+            effects = listOf(
+                ifPreviousPhase(
+                    ENTER_TRANSIT_HUB, EffectTiming.START,
+                    NEXT_PHASE_SOUND,
+
+                    emptyMessage(),
+                    janeMessage(
+                        template(
+                            text("Unfortunately, the attack on the transport cruiser leaves you stranded " +
+                                    "from your original destination. One of the four systems here will have to do " +
+                                    "while you sort things out.")
+                        )
+                    ),
+                    emptyMessage(),
+
+                    janeMessage(
+                        template(
+                            text("Feel free to {0}. When you're finished, {1} to board a shuttle to that system."),
+                            text("read about the different systems", AQUA),
+                            text("proceed to the system shuttles", AQUA)
+                        ),
+                        delayTicks = 60L
+                    ),
+                    emptyMessage(delayTicks = 60L),
+                ),
+
+                *questMarkerEffects(Vec3i(39, 6, 0)),
+
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_asteri",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(-23, 8, 9)),
+                ),
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_sirius",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(23, 8, -9)),
+                ),
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_regulus",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(-23, 8, -9)),
+                ),
+                SequencePhaseEffect.DataConditionalEffects<Boolean>(
+                    "seen_ilios",
+                    { it.getOrNull() != true },
+                    EffectTiming.TICKED,
+                    *questMarkerEffects(Vec3i(23, 8, 9)),
+                )
+            )
+        )
+    }
+
+    private fun registerTutorialTransitHubBranches() {
+        // TUTORIAL_TRANSIT_HUB.BRANCH_ASTERI
+        bootstrapPhase(
+            phaseKey = BRANCH_ASTERI,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Asteri is the safest system, with many planets and enough resources to support the aspiring colonist.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_asteri", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_SIRIUS
+        bootstrapPhase(
+            phaseKey = BRANCH_SIRIUS,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Sirius is a highly populated system with many civilized worlds.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_sirius", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_REGULUS
+        bootstrapPhase(
+            phaseKey = BRANCH_REGULUS,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Regulus is a hub system, with many hyperspace beacons connected to other systems.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_regulus", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL_TRANSIT_HUB.BRANCH_ILIOS
+        bootstrapPhase(
+            phaseKey = BRANCH_ILIOS,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                SendMessage(text("Ilios is a frontier system outside of the Core Worlds, with many resources waiting to be exploited by industrial nations.", GRAY, ITALIC), EffectTiming.START),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("seen_ilios", true, EffectTiming.END),
             )
         )
     }

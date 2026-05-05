@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerInteractTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
@@ -25,12 +26,14 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Com
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.Sound
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.BoundingBox
 
 object SequenceUtils {
@@ -124,6 +127,17 @@ object SequenceUtils {
         StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
         triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
             event.isCancelled = true; player.userError("You can't release your ship right now!")
+        }
+    )
+
+    fun disallowOpeningDoor() = SequenceTrigger(
+        SequenceTriggerTypes.PLAYER_INTERACT,
+        PlayerInteractTrigger.InteractTriggerSettings(),
+        triggerResult = handleEvent<PlayerInteractEvent> { player, _, event ->
+            if (DOOR_TYPES.contains(event.clickedBlock?.type)) {
+                player.userError("You can't open the starship airlock right now!")
+                event.isCancelled = true
+            }
         }
     )
     //endregion
