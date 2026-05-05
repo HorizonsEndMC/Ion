@@ -46,6 +46,11 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val BRANCH_SIRIUS = registerKey("BRANCH_SIRIUS")
 	val BRANCH_REGULUS = registerKey("BRANCH_REGULUS")
 	val BRANCH_ILIOS = registerKey("BRANCH_ILIOS")
+	val BOARD_SHUTTLE = registerKey("BOARD_SHUTTLE")
+	val BRANCH_ASTERI_SHUTTLE = registerKey("BRANCH_ASTERI_SHUTTLE")
+	val BRANCH_SIRIUS_SHUTTLE = registerKey("BRANCH_SIRIUS_SHUTTLE")
+	val BRANCH_REGULUS_SHUTTLE = registerKey("BRANCH_REGULUS_SHUTTLE")
+	val BRANCH_ILIOS_SHUTTLE = registerKey("BRANCH_ILIOS_SHUTTLE")
 	//val TUTORIAL_TRANSIT_HUB_END = registerKey("TUTORIAL_TRANSIT_HUB_END")
 
 //	val TRANSIT_HUB = registerKey("TRANSIT_HUB")
