@@ -6,6 +6,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -56,6 +58,9 @@ object AutoRestart : IonServerComponent() {
 				Bukkit.broadcast(template(text("The server is rebooting in {0} seconds", YELLOW, BOLD), i))
 				sleep(1, TimeUnit.SECONDS)
 			}
+
+			// Force release all ships
+			ActiveStarships.allControlledStarships().forEach { DeactivatedPlayerStarships.deactivateNow(it) }
 
 			Bukkit.broadcast(ofChildren(text("The server is rebooting in ", YELLOW, BOLD), text("1", WHITE, BOLD), text(" second", YELLOW, BOLD)))
 			sleep(1, TimeUnit.SECONDS)

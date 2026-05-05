@@ -104,13 +104,6 @@ object PilotedStarships : IonServerComponent() {
 		}
 	}
 
-	override fun onDisable() {
-		// Deactivate all active starships on server shutdown
-		ActiveStarships.allControlledStarships().forEach {
-			DeactivatedPlayerStarships.deactivateNow(it)
-		}
-	}
-
 	fun pilot(starship: ActiveControlledStarship, controller: Controller, callback: (ActiveControlledStarship) -> Unit = {}) {
 		Tasks.checkMainThread()
 
