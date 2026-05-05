@@ -41,6 +41,11 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val FLIGHT_SPACE_SUIT = registerKey("FLIGHT_SPACE_SUIT")
 	val FLIGHT_LEAVE_POD = registerKey("FLIGHT_LEAVE_POD")
 	val ENTER_TRANSIT_HUB = registerKey("ENTER_TRANSIT_HUB")
+	val EXPLORE_TRANSIT_HUB = registerKey("EXPLORE_TRANSIT_HUB")
+	val BRANCH_ASTERI = registerKey("BRANCH_ASTERI")
+	val BRANCH_SIRIUS = registerKey("BRANCH_SIRIUS")
+	val BRANCH_REGULUS = registerKey("BRANCH_REGULUS")
+	val BRANCH_ILIOS = registerKey("BRANCH_ILIOS")
 	//val TUTORIAL_TRANSIT_HUB_END = registerKey("TUTORIAL_TRANSIT_HUB_END")
 
 //	val TRANSIT_HUB = registerKey("TRANSIT_HUB")
