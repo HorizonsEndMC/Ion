@@ -634,9 +634,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(text("You are now piloting the escape pod!", YELLOW, BOLD), EffectTiming.START),
                 emptyMessage(),
                 emptyMessage(),
-                //SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
-                //SendMessage(text("Attention all escape pods, the Horizon's End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
-                //SendMessage(Component.empty(), EffectTiming.START),
 
                 SequencePhaseEffect.SuppliedSetSequenceData(
                     "ENTERED_ESCAPE_POD_START",
@@ -905,7 +902,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(7)),
                     triggerResult = startPhase(FLIGHT_CRUISE_START)
-                ), // TODO replace
+                ),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -1931,9 +1928,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             text("read about the different systems", AQUA),
                             text("proceed to the system shuttles", AQUA)
                         ),
-                        delayTicks = 60L
+                        delayTicks = 80L
                     ),
-                    emptyMessage(delayTicks = 60L),
+                    emptyMessage(delayTicks = 80L),
                 ),
 
                 *questMarkerEffects(Vec3i(39, 6, 0)),
@@ -1979,12 +1976,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ),
 
                 // Shuttle confirmation messages
-                // TODO: Add correct bounding boxes
                 lookingBranchTrigger(
                     phaseKey = BRANCH_ASTERI_SHUTTLE,
                     lookingAtBoundingBox = fullBoundingBox(
-                        Vec3i(-25, 4, 5),
-                        Vec3i(-21, 8, 13)
+                        Vec3i(104, 2, 23),
+                        Vec3i(112, 6, 40)
                     ),
                     distance = 5.0,
                     dataKey = "seen_asteri_shuttle"
@@ -1992,8 +1988,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 lookingBranchTrigger(
                     phaseKey = BRANCH_SIRIUS_SHUTTLE,
                     lookingAtBoundingBox = fullBoundingBox(
-                        Vec3i(21, 4, -13),
-                        Vec3i(25, 8, -5)
+                        Vec3i(82, 2, -40),
+                        Vec3i(90, 6, -23)
                     ),
                     distance = 5.0,
                     dataKey = "seen_sirius_shuttle"
@@ -2001,8 +1997,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 lookingBranchTrigger(
                     phaseKey = BRANCH_REGULUS_SHUTTLE,
                     lookingAtBoundingBox = fullBoundingBox(
-                        Vec3i(-25, 4, -13),
-                        Vec3i(-21, 8, -5)
+                        Vec3i(104, 2, -40),
+                        Vec3i(112, 6, -23)
                     ),
                     distance = 5.0,
                     dataKey = "seen_regulus_shuttle"
@@ -2010,8 +2006,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 lookingBranchTrigger(
                     phaseKey = BRANCH_ILIOS_SHUTTLE,
                     lookingAtBoundingBox = fullBoundingBox(
-                        Vec3i(21, 4, 5),
-                        Vec3i(25, 8, 13)
+                        Vec3i(126, 2, 23),
+                        Vec3i(134, 6, 40)
                     ),
                     distance = 5.0,
                     dataKey = "seen_ilios_shuttle"
@@ -2094,9 +2090,14 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     emptyMessage(80L),
                 ),
 
-                // TODO: quest markers for each shuttle
-                *questMarkerEffects(Vec3i(39, 6, 0)),
-                textInWorld(Vec3i(39, 6, 0), text("To Asteri")),
+                *questMarkerEffects(Vec3i(110, 6, 38)),
+                textInWorld(Vec3i(110, 10, 38), text("Shuttle to Asteri")),
+                *questMarkerEffects(Vec3i(88, 6, -38)),
+                textInWorld(Vec3i(88, 10, -38), text("Shuttle to Sirius")),
+                *questMarkerEffects(Vec3i(110, 6, -38)),
+                textInWorld(Vec3i(110, 10, -38), text("Shuttle to Regulus")),
+                *questMarkerEffects(Vec3i(132, 6, 38)),
+                textInWorld(Vec3i(132, 10, 38), text("Shuttle to Ilios")),
 
                 // In case the player did not see the displays in the previous step
                 SequencePhaseEffect.DataConditionalEffects<Boolean>(
@@ -2142,7 +2143,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_asteri_shuttle", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_asteri", true, EffectTiming.END),
             )
         )
 
@@ -2160,7 +2161,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_sirius_shuttle", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_sirius", true, EffectTiming.END),
             )
         )
 
@@ -2178,7 +2179,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_regulus_shuttle", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_regulus", true, EffectTiming.END),
             )
         )
 
@@ -2196,7 +2197,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_ilios_shuttle", true, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_ilios", true, EffectTiming.END),
             )
         )
 
@@ -2209,7 +2210,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 emptyMessage(),
-                SendMessage(text("Are you sure you want to travel to Asteri, the Refuge System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Are you sure you want to travel to Asteri, the Sanctuary System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
                 GoToPreviousPhase(EffectTiming.START),
