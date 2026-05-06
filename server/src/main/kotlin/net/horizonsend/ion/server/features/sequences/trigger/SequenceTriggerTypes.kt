@@ -5,6 +5,7 @@ object SequenceTriggerTypes {
 
 	val PLAYER_MOVEMENT = register(PlayerMovementTrigger)
 	val PLAYER_INTERACT = register(PlayerInteractTrigger)
+	val PLAYER_CHANGED_WORLD = register(PlayerChangedWorldTrigger)
 	val COMBINED_AND = register(CombinedAndTrigger)
 	val COMBINED_OR = register(CombinedOrTrigger)
 	val DATA_PREDICATE = register(DataPredicate)

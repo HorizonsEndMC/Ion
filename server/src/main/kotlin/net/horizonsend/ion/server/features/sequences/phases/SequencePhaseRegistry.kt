@@ -85,6 +85,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.HasItemInInventoryTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.HasItemEquippedTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerChangedWorldTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
@@ -127,6 +128,7 @@ import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
+import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.concurrent.TimeUnit
@@ -1611,6 +1613,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
     private fun registerTutorialTransitHub() {
         registerTutorialTransitHubFlightSection()
 
+        registerTutorialTransitHubStationSection()
+
         registerTutorialTransitHubBranches()
     }
     
@@ -1803,7 +1807,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 )
             )
         )
+    }
 
+    private fun registerTutorialTransitHubStationSection() {
         // TUTORIAL_TRANSIT_HUB.ENTER_TRANSIT_HUB
         bootstrapPhase(
             phaseKey = ENTER_TRANSIT_HUB,
@@ -1857,7 +1863,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             )
                         )
                     ),
-                    triggerResult = SequenceTrigger.emptyTriggerResult() // TODO: next phase
+                    triggerResult = startPhase(BOARD_SHUTTLE)
                 ),
                 // Bottom left
                 lookingBranchTrigger(
@@ -1911,10 +1917,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                     emptyMessage(),
                     janeMessage(
-                        template(
-                            text("Unfortunately, the attack on the transport cruiser leaves you stranded " +
+                        text(
+                            "Unfortunately, the attack on the transport cruiser leaves you stranded " +
                                     "from your original destination. One of the four systems here will have to do " +
-                                    "while you sort things out.")
+                                    "while you sort things out."
                         )
                     ),
                     emptyMessage(),
@@ -1964,6 +1970,14 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = BOARD_SHUTTLE,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                SequenceTrigger(
+                    type = SequenceTriggerTypes.PLAYER_CHANGED_WORLD,
+                    settings = PlayerChangedWorldTrigger.PlayerChangedWorldTriggerSettings(
+                        { _, context -> (context.event as? PlayerChangedWorldEvent)?.from?.name == "TransitHub" }
+                    ),
+                    triggerResult = SequenceTrigger.emptyTriggerResult() // TODO: next phase
+                ),
+
                 // Shuttle confirmation messages
                 // TODO: Add correct bounding boxes
                 lookingBranchTrigger(
@@ -2051,24 +2065,30 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                     emptyMessage(),
                     janeMessage(
-                        text("Now that you're well-informed, please board a shuttle and take a " +
-                                "ride to the system's transit port.")
+                        text(
+                            "Now that you're well-informed, please board a shuttle and take a " +
+                                    "ride to the system's transit port."
+                        )
                     ),
                     emptyMessage(),
 
                     janeMessage(
                         template(
                             text("Don't worry too much about your choice. {0}."),
-                            text("You can always travel or move to another system later on " +
-                                    "if you so choose", GREEN),
+                            text(
+                                "You can always travel or move to another system later on " +
+                                        "if you so choose", GREEN
+                            ),
                         ),
                         delayTicks = 40L
                     ),
                     emptyMessage(delayTicks = 40L),
 
                     janeMessage(
-                        text("If you need a moment to think, you can go back to the transit hub displays " +
-                                "and read more about the systems."),
+                        text(
+                            "If you need a moment to think, you can go back to the transit hub displays " +
+                                    "and read more about the systems."
+                        ),
                         delayTicks = 80L
                     ),
                     emptyMessage(80L),
