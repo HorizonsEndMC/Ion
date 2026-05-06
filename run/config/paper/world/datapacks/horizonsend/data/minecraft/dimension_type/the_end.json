@@ -6,7 +6,7 @@
 	"has_skylight": true,
 	"has_ceiling": false,
 	"has_fixed_time": true,
-	"ambient_light": 0.0,
+	"ambient_light": 0.1,
 
 	"skybox": "end",
 	"cardinal_light": "default",
@@ -22,7 +22,7 @@
 		"minecraft:visual/fog_color": "#0c0c14",
 		"minecraft:visual/sky_color": "#000000",
 		"minecraft:visual/sky_light_color": "#ffffff",
-		"minecraft:visual/sky_light_factor": 1.0
+		"minecraft:visual/sky_light_factor": 0.95
 	},
 
 
