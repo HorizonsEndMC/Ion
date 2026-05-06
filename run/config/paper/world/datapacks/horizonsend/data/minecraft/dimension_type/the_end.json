@@ -6,11 +6,11 @@
 	"has_skylight": true,
 	"has_ceiling": false,
 	"has_fixed_time": true,
-	"ambient_light": 0.25,
+	"ambient_light": 0.0,
 
 	"skybox": "end",
 	"cardinal_light": "default",
-	"timelines": "#minecraft:in_overworld",
+	"timelines": "#minecraft:in_end",
 
 	"attributes": {
 		"minecraft:gameplay/bed_rule": {
@@ -21,8 +21,8 @@
 		"minecraft:gameplay/respawn_anchor_works": false,
 		"minecraft:visual/fog_color": "#0c0c14",
 		"minecraft:visual/sky_color": "#000000",
-		"minecraft:visual/sky_light_color": "#434c4c",
-		"minecraft:visual/sky_light_factor": 0.0
+		"minecraft:visual/sky_light_color": "#ffffff",
+		"minecraft:visual/sky_light_factor": 1.0
 	},
 
 

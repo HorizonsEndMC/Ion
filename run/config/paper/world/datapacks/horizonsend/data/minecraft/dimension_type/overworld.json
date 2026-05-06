@@ -6,6 +6,7 @@
 	"skybox": "overworld",
 	"cardinal_light": "default",
 	"timelines": "#minecraft:in_overworld",
+	"has_fixed_time": false,
 	"attributes": {
 		"minecraft:gameplay/bed_rule": {
 			"can_set_spawn": "always",
