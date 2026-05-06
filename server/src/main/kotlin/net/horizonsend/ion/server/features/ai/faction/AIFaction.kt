@@ -912,7 +912,7 @@ class AIFaction private constructor(
 				"I'll leave nothing but scrap.",
 				"I'll cut you to bacon",
 				"When I'm done with you, I'll mantle your skull!",
-				"Your next of kin will get your remains in an urn!"
+				"Your next of kin will get your remains in an urn!",
 				"Get some!"
 			)
 			.addFleeMessages(
