@@ -148,7 +148,7 @@ object SequenceUtils {
 
     fun disallowOpeningDoor() = SequenceTrigger(
         SequenceTriggerTypes.PLAYER_INTERACT,
-        PlayerInteractTrigger.InteractTriggerSettings(),
+        PlayerInteractTrigger.PlayerInteractTriggerSettings(),
         triggerResult = handleEvent<PlayerInteractEvent> { player, _, event ->
             if (DOOR_TYPES.contains(event.clickedBlock?.type)) {
                 player.userError("You can't open the starship airlock right now!")
