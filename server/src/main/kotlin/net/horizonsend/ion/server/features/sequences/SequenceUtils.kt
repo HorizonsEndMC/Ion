@@ -55,6 +55,13 @@ object SequenceUtils {
         EffectTiming.START
     )
 
+    val ACHIEVEMENT_SOUND = SequencePhaseEffect.PlaySound(
+        RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.UI_TOAST_CHALLENGE_COMPLETE)!!,
+        StaticFloatAmount(1.0f),
+        StaticFloatAmount(1.0f),
+        EffectTiming.START
+    )
+
     fun emptyMessage(delayTicks: Long = 0L) = if (delayTicks <= 0) {
         SendMessage(Component.empty(), EffectTiming.START)
     } else {

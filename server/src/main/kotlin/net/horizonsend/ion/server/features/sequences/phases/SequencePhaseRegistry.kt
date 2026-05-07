@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
 import net.horizonsend.ion.server.features.sequences.SequenceKeys.TUTORIAL_TRANSIT_HUB
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.ACHIEVEMENT_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.JANE_TITLE
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
@@ -36,6 +37,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.GoToPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ARRIVE_AT_PORT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BOARD_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ASTERI
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ASTERI_SHUTTLE
@@ -80,6 +82,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_END
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_TRANSIT_HUB_END
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_TRANSIT_HUB_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.HasItemInInventoryTrigger
@@ -120,11 +123,14 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import net.kyori.adventure.title.Title
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
@@ -1841,6 +1847,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ),
                 emptyMessage(),
 
+                janeMessage(
+                    text("I've transferred my communication link to your auditory uplink, so I'll still be" +
+                            "able to assist you while disconnected from the starship."),
+                    delayTicks = 40L
+                ),
+                emptyMessage(delayTicks = 40L),
+
                 *questMarkerEffects(Vec3i(0, 6, 31)),
             )
         )
@@ -1972,7 +1985,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     settings = PlayerChangedWorldTrigger.PlayerChangedWorldTriggerSettings(
                         { _, context -> (context.event as? PlayerChangedWorldEvent)?.from?.name == "TransitHub" }
                     ),
-                    triggerResult = SequenceTrigger.emptyTriggerResult() // TODO: next phase
+                    triggerResult = startPhase(ARRIVE_AT_PORT)
                 ),
 
                 // Shuttle confirmation messages
@@ -2076,18 +2089,18 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                                         "if you so choose", GREEN
                             ),
                         ),
-                        delayTicks = 40L
+                        delayTicks = 60L
                     ),
-                    emptyMessage(delayTicks = 40L),
+                    emptyMessage(delayTicks = 60L),
 
                     janeMessage(
                         text(
                             "If you need a moment to think, you can go back to the transit hub displays " +
                                     "and read more about the systems."
                         ),
-                        delayTicks = 80L
+                        delayTicks = 140L
                     ),
-                    emptyMessage(80L),
+                    emptyMessage(140L),
                 ),
 
                 *questMarkerEffects(Vec3i(110, 6, 38)),
@@ -2125,6 +2138,120 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     *questMarkerEffects(Vec3i(23, 8, 9)),
                 )
             ),
+        )
+
+        bootstrapPhase(
+            phaseKey = ARRIVE_AT_PORT,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(
+                SequenceTrigger(
+                    SequenceTriggerTypes.WAIT_TIME,
+                    WaitTimeTrigger.WaitTimeTriggerSettings("ARRIVED_AT_STATION_DELAY_TIMER", TimeUnit.SECONDS.toMillis(35)),
+                    triggerResult = startPhase(TUTORIAL_TRANSIT_HUB_END)
+                )
+            ),
+            description = PhaseDescription(template(text("- Listen to {0} for further instructions"), JANE_TITLE)),
+            effects = listOf(
+                NEXT_PHASE_SOUND,
+
+                emptyMessage(),
+                janeMessage(text("You have now arrived at this system's port terminal.")),
+                emptyMessage(),
+
+                janeMessage(
+                    template(
+                        text("You will respawn here by default (unless you build a {0}), and you can also purchase a ship at that {1} over there."),
+                        text("cryopod", AQUA),
+                        text("Ship Dealer", GOLD)
+                    ),
+                    delayTicks = 60L
+                ),
+                emptyMessage(60L),
+
+                janeMessage(
+                    template(
+                        text("If you would like to {0} and become a prospector for ores, purchase an {1} equipped with a {2} and on-board refining systems."),
+                        text("mine asteroids", LIGHT_PURPLE),
+                        text("Ozark", AQUA),
+                        text("Mining Laser", GREEN),
+                    ),
+                    delayTicks = 120L
+                ),
+                emptyMessage(120L),
+
+                janeMessage(
+                    template(
+                        text("Or, if you prefer {0}, buy a {1} equipped with {2} and blast the starships of various {3}, or {4} like yourself."),
+                        text("starship combat", LIGHT_PURPLE),
+                        text("Vulture", AQUA),
+                        text("Plasma Cannons", GREEN),
+                        text("NPC factions", YELLOW),
+                        text("other pilots", RED),
+                    ),
+                    delayTicks = 220L
+                ),
+                emptyMessage(220L),
+
+                janeMessage(
+                    template(
+                        text("If you're not sure on what you want to do, I'd recommend the {0}, as it can {1} to {2} and is well-suited for any colonization effort."),
+                        text("Vesta", AQUA),
+                        text("haul cargo crates", LIGHT_PURPLE),
+                        text("trade cities", GREEN),
+                    ),
+                    delayTicks = 320L
+                ),
+                emptyMessage(320L),
+
+                janeMessage(
+                    template(
+                        text("From here, the possibilities are endless. {0} to form {1} and {2}, {3} to impose your economic and military influence, and {4} to discover new locations and cultures."),
+                        text("Team up with other pilots", LIGHT_PURPLE),
+                        text("settlements", AQUA),
+                        text("nations", AQUA),
+                        text("build starships", LIGHT_PURPLE),
+                        text("explore new planets and star systems", LIGHT_PURPLE),
+                    ),
+                    delayTicks = 420L
+                ),
+                emptyMessage(420L),
+
+                janeMessage(
+                    template(
+                        text("If you're ever lost on what to do, {0} as they will surely be able to help."),
+                        text("ask other pilots in chat for help", LIGHT_PURPLE),
+                    ),
+                    delayTicks = 560L
+                ),
+                emptyMessage(560L),
+
+                janeMessage(
+                    template(
+                        text("Wherever your path takes you, {0}."),
+                        text("may your journey lead you towards the stars", GOLD),
+                    ),
+                    delayTicks = 620L
+                ),
+                emptyMessage(620L),
+
+                SequencePhaseEffect.SuppliedSetSequenceData(
+                    "ARRIVED_AT_STATION_DELAY_TIMER",
+                    { System.currentTimeMillis() },
+                    EffectTiming.START
+                ),
+            )
+        )
+
+        bootstrapPhase(
+            phaseKey = TUTORIAL_TRANSIT_HUB_END,
+            sequenceKey = TUTORIAL_TRANSIT_HUB,
+            triggers = listOf(),
+            effects = listOf(
+                ACHIEVEMENT_SOUND,
+                SequencePhaseEffect.EndSequence(EffectTiming.START),
+                SequencePhaseEffect.ClearSequenceData(EffectTiming.START),
+                SequencePhaseEffect.SendTitle(Title.title(text("MISSION COMPLETE", GOLD), text("Tutorial", AQUA)), EffectTiming.START)
+            )
         )
     }
 
@@ -2246,7 +2373,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 emptyMessage(),
-                SendMessage(text("Are you sure you want to travel to Sirius, the Crossroads System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Are you sure you want to travel to Regulus, the Crossroads System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
                 GoToPreviousPhase(EffectTiming.START),
@@ -2264,7 +2391,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 emptyMessage(),
-                SendMessage(text("Are you sure you want to travel to Sirius, the Abundant System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Are you sure you want to travel to Ilios, the Abundant System? You can always travel to the other systems later on.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
                 GoToPreviousPhase(EffectTiming.START),
