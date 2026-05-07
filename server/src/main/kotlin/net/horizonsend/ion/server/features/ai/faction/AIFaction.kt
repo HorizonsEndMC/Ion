@@ -872,7 +872,7 @@ class AIFaction private constructor(
 			.addFriendlyFireMessages(
 				"suspect" to "<gray>Watch your fire, pilot.",
 				"warn_friendly" to "<#FFA500>You've got one more chance to not get blasted to dust.",
-				"betrayal" to "<red>A closed casket funeral it is, then!"
+				"betrayal" to "<red>Locking target on confirmed hostile signature. Say your prayers while you still can, scum."
 			)
 			.addSmackMessages(
 				"<white>Stand down, we have you outmatched!",
@@ -983,13 +983,13 @@ class AIFaction private constructor(
 			)
 			.addNames(
 				4,
-				text("big boss Dhagdagar", TSAII_DARK_ORANGE),
-				text("big boss Zazgrord", TSAII_DARK_ORANGE),
-				text("big boss Furriebruh", TSAII_DARK_ORANGE),
-				text("big boss Hrorgrum", TSAII_DARK_ORANGE),
-				text("big boss Rabidstompa", TSAII_DARK_ORANGE),
-				text("big boss Godcooka", TSAII_DARK_ORANGE),
-				text("big boss Skarcrushah", TSAII_DARK_ORANGE),
+				text("big bozz Dhagdagar", TSAII_DARK_ORANGE),
+				text("big bozz Zazgrord", TSAII_DARK_ORANGE),
+				text("big bozz Furriebruh", TSAII_DARK_ORANGE),
+				text("big bozz Hrorgrum", TSAII_DARK_ORANGE),
+				text("big bozz Rabidstompa", TSAII_DARK_ORANGE),
+				text("big bozz Godcooka", TSAII_DARK_ORANGE),
+				text("big bozz Skarcrushah", TSAII_DARK_ORANGE),
 				text("baron Dhagdagar", TSAII_DARK_ORANGE),
 				text("baron Zazgrord", TSAII_DARK_ORANGE),
 				text("baron Furriebruh", TSAII_DARK_ORANGE),
@@ -1021,8 +1021,8 @@ class AIFaction private constructor(
 			)
 			.addAggroMessage("aggro" to "<red>You're my dinner!")
 			.addFriendlyFireMessages(
-				"laugh" to "<gray>Heh. What's this then?",
-				"growl" to "<#FFA500>Is the prey approaching the hunter?",
+				"laugh" to "<gray>If you leave me alone, I'll consider not pulverizing your puny rustbucket.",
+				"growl" to "<#FFA500>Just give me a reason to fire my guns up.",
 				"rage" to "<red>You're my dinner!"
 			)
 			.addDifficultySuffix(0, "✦")
@@ -1332,7 +1332,9 @@ class AIFaction private constructor(
 			"Nicol Jaenke",
 			"Bjorn Wynn",
 			"Garrison Burcham",
-			"Zebulon Leath"
+			"Zebulon Leath",
+			"Rizz Master",
+			"The GOAT"
 		)
 		val PIRATES = builder("PIRATES", PIRATE_SATURATED_RED.value())
 			.setMessagePrefix("<$PIRATE_SATURATED_RED>Receiving transmission from pirate vessel")
@@ -1358,7 +1360,7 @@ class AIFaction private constructor(
 				"<#FFA500> Time for a tactical retreat." to true,
 				"<#FFA500> I'll be back to get you!" to true,
 				"<#FFA500> You just bought yourself a death warrant!" to false,
-				"<#FFA500> Lets try this again." to false,
+				"<#FFA500> A closed casket funeral it is, then!" to false,
 				"<#FFA500> Second time is the charm!" to false,
 			)
 			.addEnmityMessages(
@@ -1367,8 +1369,8 @@ class AIFaction private constructor(
 			)
 			.addAggroMessage("aggro" to "<RED>Nobody messes with me and lives to tell the tale!")
 			.addFriendlyFireMessages(
-				"laugh" to "<gray>Hey, who the hell are you?",
-				"growl" to "<#FFA500>Back off!",
+				"laugh" to "<gray>Hey, who the hell are you? Stay back if you want to live.",
+				"growl" to "<#FFA500>Knock it off, before you incur my wrath!",
 				"rage" to "<red>Nobody messes with me and lives to tell the tale!"
 			)
 			.addDifficultySuffix(0, "✦")
