@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.RemovalState.IfPlayerSink
 import org.bukkit.Material
 import org.bukkit.scheduler.BukkitRunnable
+import java.time.Duration
 
 /**
  * When executed at the time the starship sinks, it will handle the mechanics there of
@@ -54,7 +55,7 @@ abstract class SinkProvider(
 		/**
 		 * Starship sinking can run at most 60 seconds
 		 **/
-		private const val MAX_LIFE = 60_000L
+		private const val MAX_LIFE = 20_000L
 	}
 
 	enum class SinkProviders {
