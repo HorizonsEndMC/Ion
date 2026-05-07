@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -26,6 +28,7 @@ import java.util.concurrent.TimeUnit
 object UnusedSoldShipPurge : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.asyncAtHour(8, ::purgeNoobShuttles)
+		Tasks.async(::purgeTutorialShuttles)
 	}
 
 	// Inactive for 7 days
@@ -55,6 +58,31 @@ object UnusedSoldShipPurge : IonServerComponent() {
 			val failures = results.count { !it }
 
 			log.info("Finished clearing sold ships! There were $successes successes, and $failures failures.")
+		}
+	}
+
+	fun purgeTutorialShuttles() = Tasks.async {
+		val unused = PlayerStarshipData.find(
+			PlayerStarshipData::shipDealerInformation ne null, // Sold by ship dealer
+		)
+
+		val tasks = mutableListOf<CompletableFuture<Boolean>>()
+
+		val tutorialWorlds = IonWorld.all().filter { ionWorld -> ionWorld.hasFlag(WorldFlag.TUTORIAL_WORLD) }
+		for (data in unused) {
+			// starship is inside a world with the tutorial flag
+			if (tutorialWorlds.none { ionWorld -> ionWorld.world.name == data.levelName }) continue
+
+			tasks += clearShip(data)
+		}
+
+		CompletableFuture.allOf(*tasks.toTypedArray()).thenAccept {
+			val results = tasks.map { it.get() }
+
+			val successes = results.count { it }
+			val failures = results.count { !it }
+
+			log.info("Finished clearing tutorial ships! There were $successes successes, and $failures failures.")
 		}
 	}
 
