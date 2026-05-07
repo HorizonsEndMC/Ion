@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.Component
@@ -33,5 +35,15 @@ object PlayerDeathListener : SLEventListener() {
 		if (player.location.y < player.location.world.maxHeight + 64) return
 
 		event.deathMessage(Component.text("${player.name} ascended above the world"))
+	}
+
+	@EventHandler
+	fun onPlayerDeathInTutorialWorld(event: PlayerDeathEvent) {
+		if (event.isCancelled) return
+
+		if (!event.player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
+
+		event.drops.clear()
+		event.keepInventory = true
 	}
 }
