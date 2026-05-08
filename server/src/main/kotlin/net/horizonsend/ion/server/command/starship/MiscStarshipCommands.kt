@@ -55,6 +55,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.event.StarshipJumpWarmupEvent
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
@@ -438,6 +439,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					"Automatically shortening jump. New Coordinates: $x1, $z1"
 			)
 		}
+
+		val jumpWarmupEvent = StarshipJumpWarmupEvent(
+			starship,
+			origin.toLocation(starship.world),
+			Location(destinationWorld, x1.toDouble(), 0.0, z1.toDouble())
+		)
+		failIf(!jumpWarmupEvent.callEvent()) { "Jump warmup cancelled!" }
 
 		sender.success("Initiating hyperspace jump to ${destinationWorld.name} ($x1, $z1)")
 

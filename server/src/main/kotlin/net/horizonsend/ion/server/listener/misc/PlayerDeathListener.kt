@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.listener.misc
 
+import net.horizonsend.ion.server.command.admin.SequenceAdminCommand.end
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.sequences.SequenceKeys
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -45,5 +48,11 @@ object PlayerDeathListener : SLEventListener() {
 
 		event.drops.clear()
 		event.keepInventory = true
+
+		// Restart tutorial on death
+		SequenceManager.endSequence(event.player, SequenceKeys.TUTORIAL.getValue())
+		SequenceManager.endSequence(event.player, SequenceKeys.TUTORIAL_TRANSIT_HUB.getValue())
+		SequenceManager.clearSequenceData(event.player)
+		SequenceManager.startPhase(event.player, SequenceKeys.TUTORIAL, SequenceKeys.TUTORIAL.getValue().firstPhase)
 	}
 }
