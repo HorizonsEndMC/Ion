@@ -22,6 +22,7 @@ object SequenceTriggerTypes {
 	val PRE_EXIT_HYPERSPACE = register(ShipPreExitHyperspaceJumpTrigger)
 	val STARSHIP_UNPILOT = register(StarshipUnpilotTrigger)
 	val HYPERDRIVE_HAS_FUEL = register(HyperdriveHasFuelTrigger)
+	val STARSHIP_JUMP_WARMUP = register(StarshipJumpWarmupTrigger)
 
 	fun <T : SequenceTriggerType<*>> register(type: T): T {
 		types.add(type)
