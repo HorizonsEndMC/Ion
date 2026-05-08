@@ -24,7 +24,9 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.emptyTriggerResult
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.features.sequences.trigger.SimpleContextTriggerPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
+import net.horizonsend.ion.server.features.starship.event.StarshipJumpWarmupEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -161,6 +163,15 @@ object SequenceUtils {
                 player.userError("You can't open the starship airlock right now!")
                 event.isCancelled = true
             }
+        }
+    )
+
+    fun disallowJumpWarmup() = SequenceTrigger(
+        SequenceTriggerTypes.STARSHIP_JUMP_WARMUP,
+        SimpleContextTriggerPredicate(),
+        triggerResult = handleEvent<StarshipJumpWarmupEvent> { player, _, event ->
+            player.userError("You can't jump to hyperspace right now!")
+            event.isCancelled = true
         }
     )
     //endregion
