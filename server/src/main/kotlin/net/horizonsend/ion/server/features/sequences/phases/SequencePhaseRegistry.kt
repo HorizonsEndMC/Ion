@@ -201,9 +201,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 position = Vec3i(-9, -1, -56)
             ),
             effects = listOf(
-                SendMessage(text("Welcome to Horizon's End!"), EffectTiming.START),
-                SendMessage(text("This is the start of the tutorial."), EffectTiming.START),
-                SendMessage(text("Exit the cryopod room to begin."), EffectTiming.START),
+                emptyMessage(),
+                SendMessage(text("Welcome to Horizon's End!", GOLD, BOLD), EffectTiming.START),
+                SendMessage(text("This is the start of the tutorial.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Exit the cryopod room to begin.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
                 *questMarkerEffects(Vec3i(-9, -1, -56)),
@@ -251,9 +252,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     NEXT_PHASE_SOUND,
                     emptyMessage(),
                     SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), null),
-                    SendMessage(text("This is your captain speaking, we're under attack by pirates!"), null),
-                    SendMessage(text("They hit the main reactor! All passengers, abandon ship!"), null),
-                    SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
+                    SendMessage(text("This is your captain speaking, we're under attack by pirates!", YELLOW, ITALIC), null),
+                    SendMessage(text("They hit the main reactor! All passengers, abandon ship!", YELLOW, ITALIC), null),
+                    SendMessage(text("Proceed to the elevator down to the hangar bay!", AQUA, ITALIC), null),
                     emptyMessage(),
                 ),
 
@@ -319,7 +320,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         ), null
                     ),
 
-                    SendMessage(text("There is a backup crew elevator other side of the ship!"), null),
+                    SendMessage(text("There is a backup crew elevator other side of the ship!", AQUA, ITALIC), null),
                     emptyMessage(),
                 ),
 
@@ -375,7 +376,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(
                         text(
                             "To use the elevator, hold your controller (clock), stand on the glass block, and sneak.",
-                            GRAY,
+                            AQUA,
                             ITALIC
                         ), null
                     ),
@@ -479,10 +480,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     NEXT_PHASE_SOUND,
                     emptyMessage(),
                     SendMessage(
-                        text(
-                            "The ship's gravity generators have failed in the attack! Fly over the flames!",
-                            GRAY,
-                            ITALIC
+                        template(
+                            text("The ship's gravity generators have failed in the attack! {0}!", GRAY, ITALIC),
+                            text("Fly over the flames", AQUA, ITALIC)
                         ), EffectTiming.START
                     ),
                     emptyMessage(),
@@ -517,10 +517,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
                 SendMessage(
-                    text(
-                        "Quick, you'll need to grab some fuel for the escape pod's emergency hyperdrive. You can find some in that cargo container.",
-                        GRAY,
-                        ITALIC
+                    template(
+                        text("Quick, you'll need to grab some fuel for the escape pod's emergency hyperdrive. {0}.", GRAY, ITALIC),
+                        text("You can find some in that cargo container", AQUA, ITALIC)
                     ), EffectTiming.START
                 ),
                 emptyMessage(),
@@ -579,10 +578,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         ), EffectTiming.START
                     ),
                     SendMessage(
-                        text(
-                            "Now quick! Make your way to the escape pod before the ship is completely lost!",
-                            GRAY,
-                            ITALIC
+                        template(
+                            text("Now quick! {0} before the ship is completely lost!", GRAY, ITALIC),
+                            text("Make your way to the escape pod", AQUA, ITALIC)
                         ), EffectTiming.START
                     ),
                     emptyMessage(),
@@ -940,7 +938,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     ), 40L, EffectTiming.START
                 ),
                 SendDelayedMessage(
-                    text("\"The pirates are too busy shooting the cruiser, go now!\"", GRAY, ITALIC),
+                    text("\"The pirates are too busy shooting the cruiser, go now!\"", YELLOW, ITALIC),
                     40L,
                     EffectTiming.START
                 ),
@@ -1286,7 +1284,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         }
                     }, EffectTiming.TICKED),
                     interval = 2,
-                )
+                ),
+
+                *questMarkerEffects(Vec3i(0, 0, -1000)),
             )
         )
 
