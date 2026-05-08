@@ -684,16 +684,16 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 janeMessage(
                     text("Hello! I am the Journey Assistive Navigational Educator, or "),
                     JANE_TITLE,
-                    delayTicks = 40L
+                    delayTicks = 60L
                 ),
-                emptyMessage(40L),
+                emptyMessage(60L),
 
                 janeMessage(
                     text("I am here to assist you and teach you how to pilot this spacecraft."),
-                    delayTicks = 80L
+                    delayTicks = 150L
                 ),
 
-                emptyMessage(80L),
+                emptyMessage(150L),
             )
         )
 
@@ -738,9 +738,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                     janeMessage(
                         text("The ship will move in the direction you are looking. Try it out!"),
-                        delayTicks = 40L
+                        delayTicks = 130L
                     ),
-                    emptyMessage(40L),
+                    emptyMessage(130L),
                 ),
 
                 SequencePhaseEffect.OnTickInterval(
@@ -811,9 +811,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Component.keybind("key.drop", YELLOW),
                         text("turn left", LIGHT_PURPLE)
                     ),
-                    delayTicks = 40L
+                    delayTicks = 160L
                 ),
-                emptyMessage(40L),
+                emptyMessage(160L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -935,23 +935,23 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         "The comms crackle to life and you hear the voice of the captain.",
                         GRAY,
                         ITALIC
-                    ), 40L, EffectTiming.START
+                    ), 160L, EffectTiming.START
                 ),
                 SendDelayedMessage(
                     text("\"The pirates are too busy shooting the cruiser, go now!\"", YELLOW, ITALIC),
-                    40L,
+                    160L,
                     EffectTiming.START
                 ),
-                emptyMessage(40L),
+                emptyMessage(160L),
 
                 janeMessage(
                     template(
                         text("I've marked an escape route on the starship's HUD. Engaging {0} will give you the best chance of escaping."),
                         text("cruising mode", AQUA),
                     ),
-                    delayTicks = 80L
+                    delayTicks = 220L
                 ),
-                emptyMessage(80L),
+                emptyMessage(220L),
 
                 *questMarkerEffects(Vec3i(0, 0, -1000)),
             )
@@ -990,9 +990,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("USE", AQUA),
                         Component.keybind("key.use", YELLOW),
                     ),
-                    delayTicks = 40L
+                    delayTicks = 120L
                 ),
-                emptyMessage(40L),
+                emptyMessage(120L),
 
                 janeMessage(
                     template(
@@ -1000,9 +1000,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("in the direction you were looking", LIGHT_PURPLE),
                         text("You can also cruise diagonally.", AQUA)
                     ),
-                    delayTicks = 100L
+                    delayTicks = 360L
                 ),
-                emptyMessage(100L),
+                emptyMessage(360L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1067,24 +1067,24 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Component.keybind("key.drop", YELLOW),
                         Component.keybind("key.swapOffhand", YELLOW)
                     ),
-                    delayTicks = 60L
+                    delayTicks = 140L
                 ),
-                emptyMessage(60L),
+                emptyMessage(140L),
 
                 janeMessage(
                     template(
                         text("Manual flight ({0}) is also possible during cruise, and can be used to make small adjustments."),
                         Component.keybind("key.sneak", YELLOW),
                     ),
-                    delayTicks = 120L
+                    delayTicks = 300L
                 ),
-                emptyMessage(120L),
+                emptyMessage(300L),
 
                 janeMessage(
                     text("Now make your way through the asteroid belt."),
-                    delayTicks = 180L
+                    delayTicks = 400L
                 ),
-                emptyMessage(180L),
+                emptyMessage(400L),
 
                 janeMessage(
                     template(
@@ -1096,9 +1096,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Component.keybind("key.drop", YELLOW),
                         Component.keybind("key.swapOffhand", YELLOW)
                     ),
-                    delayTicks = 220L
+                    delayTicks = 455L
                 ),
-                emptyMessage(220L),
+                emptyMessage(455L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1197,9 +1197,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             Component.keybind("key.attack", YELLOW),
                             text("/cruise", AQUA)
                         ),
-                        delayTicks = 40L
+                        delayTicks = 120L
                     ),
-                    emptyMessage(40L),
+                    emptyMessage(120L),
                 ),
 
                 SequencePhaseEffect.OnTickInterval(
@@ -1263,9 +1263,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("I've highlighted the hyperdrive. "),
                         text("It is in the back of the ship, above the door.", AQUA)
                     ),
-                    delayTicks = 60L
+                    delayTicks = 190L
                 ),
-                emptyMessage(60L),
+                emptyMessage(190L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.RunCode({ player, _ ->
@@ -1383,9 +1383,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("This alternate dimension allows your ship to {0}"),
                         text("travel much faster than in real space.", LIGHT_PURPLE)
                     ),
-                    delayTicks = 60L
+                    delayTicks = 100L
                 ),
-                emptyMessage(60L),
+                emptyMessage(100L),
 
                 janeMessage(
                     template(
@@ -1397,16 +1397,16 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("pull your ship out of hyperspace", LIGHT_PURPLE),
                         text("prevent you from jumping into hyperspace", LIGHT_PURPLE),
                     ),
-                    delayTicks = 120L
+                    delayTicks = 200L
                 ),
-                emptyMessage(120L),
+                emptyMessage(200L),
 
                 janeMessage(
                     text("Our journey through deep space avoids all of these, so we will exit hyperspace at the " +
                             "Transit Hub."),
-                    delayTicks = 180L
+                    delayTicks = 360L
                 ),
-                emptyMessage(180L),
+                emptyMessage(360L),
             )
         )
 
@@ -1540,8 +1540,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
-                SendMessage(text("These are power machines. They would normally be used by the" +
-                        "crew to supply power to their gear, but you don't think the crew will be returning while" +
+                SendMessage(text("These are power machines. They would normally be used by the " +
+                        "crew to supply power to their gear, but you don't think the crew will be returning while " +
                         "the ship is in this state.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
@@ -1850,9 +1850,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 janeMessage(
                     text("I've transferred my communication link to your auditory uplink, so I'll still be" +
                             "able to assist you while disconnected from the starship."),
-                    delayTicks = 40L
+                    delayTicks = 100L
                 ),
-                emptyMessage(delayTicks = 40L),
+                emptyMessage(delayTicks = 100L),
 
                 *questMarkerEffects(Vec3i(0, 6, 31)),
             )
@@ -1941,9 +1941,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             text("read about the different systems", AQUA),
                             text("proceed to the system shuttles", AQUA)
                         ),
-                        delayTicks = 80L
+                        delayTicks = 200L
                     ),
-                    emptyMessage(delayTicks = 80L),
+                    emptyMessage(delayTicks = 200L),
                 ),
 
                 *questMarkerEffects(Vec3i(39, 6, 0)),
@@ -2089,18 +2089,18 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                                         "if you so choose", GREEN
                             ),
                         ),
-                        delayTicks = 60L
+                        delayTicks = 120L
                     ),
-                    emptyMessage(delayTicks = 60L),
+                    emptyMessage(delayTicks = 120L),
 
                     janeMessage(
                         text(
                             "If you need a moment to think, you can go back to the transit hub displays " +
                                     "and read more about the systems."
                         ),
-                        delayTicks = 140L
+                        delayTicks = 260L
                     ),
-                    emptyMessage(140L),
+                    emptyMessage(260L),
                 ),
 
                 *questMarkerEffects(Vec3i(110, 6, 38)),
@@ -2175,9 +2175,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("Ozark", AQUA),
                         text("Mining Laser", GREEN),
                     ),
-                    delayTicks = 120L
+                    delayTicks = 220L
                 ),
-                emptyMessage(120L),
+                emptyMessage(220L),
 
                 janeMessage(
                     template(
@@ -2188,9 +2188,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("NPC factions", YELLOW),
                         text("other pilots", RED),
                     ),
-                    delayTicks = 220L
+                    delayTicks = 380L
                 ),
-                emptyMessage(220L),
+                emptyMessage(380L),
 
                 janeMessage(
                     template(
@@ -2199,9 +2199,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("haul cargo crates", LIGHT_PURPLE),
                         text("trade cities", GREEN),
                     ),
-                    delayTicks = 320L
+                    delayTicks = 560L
                 ),
-                emptyMessage(320L),
+                emptyMessage(560L),
 
                 janeMessage(
                     template(
@@ -2212,27 +2212,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("build starships", LIGHT_PURPLE),
                         text("explore new planets and star systems", LIGHT_PURPLE),
                     ),
-                    delayTicks = 420L
+                    delayTicks = 760L
                 ),
-                emptyMessage(420L),
+                emptyMessage(760L),
 
                 janeMessage(
                     template(
                         text("If you're ever lost on what to do, {0} as they will surely be able to help."),
                         text("ask other pilots in chat for help", LIGHT_PURPLE),
                     ),
-                    delayTicks = 560L
+                    delayTicks = 1020L
                 ),
-                emptyMessage(560L),
+                emptyMessage(1020L),
 
                 janeMessage(
                     template(
                         text("Wherever your path takes you, {0}."),
                         text("may your journey lead you towards the stars", GOLD),
                     ),
-                    delayTicks = 620L
+                    delayTicks = 1180L
                 ),
-                emptyMessage(620L),
+                emptyMessage(1180L),
 
                 SequencePhaseEffect.SuppliedSetSequenceData(
                     "ARRIVED_AT_STATION_DELAY_TIMER",
@@ -2283,7 +2283,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 emptyMessage(),
-                SendMessage(text("Sirius is a highly populated system with many civilized worlds.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Sirius is home to many trade cities and highly populated worlds, and also borders the frontier system of Horizon.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
                 GoToPreviousPhase(EffectTiming.START),
@@ -2301,7 +2301,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 
                 emptyMessage(),
-                SendMessage(text("Regulus is a hub system, with many hyperspace beacons connected to other systems.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Regulus is considered the central system of the Core Worlds, with lots of traffic in both trade and piracy.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
 
                 GoToPreviousPhase(EffectTiming.START),
