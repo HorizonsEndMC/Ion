@@ -54,6 +54,13 @@ object StarshipMovementTrigger : SequenceTriggerType<StarshipMovementTriggerSett
 		return@StarshipMovementPredicate starship.centerOfMass.toVector().distanceSquared(absoluteCenter) <= radius * radius
 	}
 
+	fun outsideRadius(center: Vec3i, radius: Int) = StarshipMovementPredicate { starship, context ->
+		if (starship == null) return@StarshipMovementPredicate false
+
+		val absoluteCenter = center.toVector().add(context.sequenceContext.getOrigin().toVector())
+		return@StarshipMovementPredicate starship.centerOfMass.toVector().distanceSquared(absoluteCenter) > radius * radius
+	}
+
 	fun aboveCruiseSpeed(targetSpeed: Double) = StarshipMovementPredicate { starship, _ ->
 		if (starship == null) return@StarshipMovementPredicate false
 

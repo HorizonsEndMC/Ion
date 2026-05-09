@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerInteractTrigger
@@ -25,11 +26,15 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Com
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.features.sequences.trigger.SimpleContextTriggerPredicate
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipJumpWarmupTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.starship.event.StarshipJumpWarmupEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
@@ -48,6 +53,31 @@ object SequenceUtils {
             EffectTiming.TICKED
         ),
         0.02
+    )
+
+    val RANDOM_HEAVY_TURRET_SOUND = SequencePhaseEffect.Chance(
+        SequencePhaseEffect.PlaySound(
+            Key.key("horizonsend:starship.weapon.heavy_turret.shoot.near"),
+            VariableFloatAmount(0.05f, 1.0f),
+            StaticFloatAmount(1.0f),
+            EffectTiming.TICKED
+        ),
+        0.02
+    )
+
+    val RANDOM_PHASER_SOUND = SequencePhaseEffect.Chance(
+        SequencePhaseEffect.PlaySound(
+            Key.key("horizonsend:starship.weapon.phaser.shoot.near"),
+            VariableFloatAmount(0.05f, 1.0f),
+            StaticFloatAmount(1.0f),
+            EffectTiming.TICKED
+        ),
+        0.01
+    )
+
+    val PLAY_PROJECTILES = SequencePhaseEffect.Chance(
+        SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+        0.5
     )
 
     val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
@@ -168,9 +198,18 @@ object SequenceUtils {
 
     fun disallowJumpWarmup() = SequenceTrigger(
         SequenceTriggerTypes.STARSHIP_JUMP_WARMUP,
-        SimpleContextTriggerPredicate(),
+        StarshipJumpWarmupTrigger.StarshipJumpWarmupTriggerSettings(),
         triggerResult = handleEvent<StarshipJumpWarmupEvent> { player, _, event ->
             player.userError("You can't jump to hyperspace right now!")
+            event.isCancelled = true
+        }
+    )
+
+    fun disallowStarshipMovement() = SequenceTrigger(
+        SequenceTriggerTypes.STARSHIP_MOVEMENT,
+        StarshipMovementTrigger.StarshipMovementTriggerSettings(),
+        triggerResult = handleEvent<StarshipMoveEvent> { player, _, event ->
+            player.userError("You can't move your starship right now!")
             event.isCancelled = true
         }
     )
