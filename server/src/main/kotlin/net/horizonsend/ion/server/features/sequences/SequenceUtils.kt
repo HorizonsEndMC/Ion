@@ -6,10 +6,21 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.QUEST_OBJECTIVE_ICON
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
 import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
+import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.GoalTarget
+import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
@@ -33,6 +44,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -40,8 +52,11 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.Sound
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.BoundingBox
+import org.slf4j.LoggerFactory
+import java.util.function.Supplier
 
 object SequenceUtils {
     //region Common Effects
@@ -79,6 +94,41 @@ object SequenceUtils {
         SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
         0.5
     )
+
+	private val spawnPirates = { player : Player, key : IonRegistryKey<Sequence, Sequence> ->
+		val mechanic = SingleSpawn(
+			RandomShipSupplier(
+				PIRATES.asSpawnedShip(AITemplateRegistry.VENDETTA).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.ANAAN).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.CORMORANT).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.MANTIS).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.HERNSTEIN).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.FYR).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.ISKAT).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.VOSS).withRandomRadialOffset(300.0,400.0, 0.0),
+				PIRATES.asSpawnedShip(AITemplateRegistry.HECTOR).withRandomRadialOffset(300.0,400.0, 0.0),
+			),
+			{ player.location },
+			null,
+			{ _ -> Supplier { 2} },
+			{ AITarget.TargetMode.PLAYER_ONLY },
+			{null},
+		) {
+			val targeting = getCoreModuleByType<EnmityModule>() ?: return@SingleSpawn
+			targeting.enmityFilter = EnmityModule.noAutoTargetFilter()
+			targeting.addTarget(GoalTarget(Vec3i(1230, 187,1948), player.world, hyperspace = false, attack = true, orbitDistance = 130.0),decay = false, aggroed = true)
+			targeting.addTarget(GoalTarget(Vec3i(1260, 194,1966), player.world, hyperspace = false, attack = true, orbitDistance = 130.0),decay = false, aggroed = true)
+			targeting.addTarget(GoalTarget(Vec3i(1250, 196,1976), player.world, hyperspace = false, attack = true, orbitDistance = 130.0),decay = false, aggroed = true)
+		}
+		for (i in 0..3) {
+			Tasks.sync{
+				mechanic.trigger(LoggerFactory.getLogger(javaClass)) //trigger 3 times
+			}
+		}
+	}
+
+	val SPAWN_PIRATES = SequencePhaseEffect.RunCode(spawnPirates, EffectTiming.START)
 
     val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
         RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,

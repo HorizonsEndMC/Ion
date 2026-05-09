@@ -509,5 +509,9 @@ open class EnmityModule(
 				// All other cases fall back on normal targeting
 				targetFilter(starship, target, targetMode)
 			}
+		fun noAutoTargetFilter(): (Starship, AITarget, AITarget.TargetMode) -> Boolean =
+			{ starship, target, targetMode ->
+				false
+			}
 	}
 }
