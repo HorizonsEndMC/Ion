@@ -20,6 +20,10 @@ class SequenceDataStore(val keyedData: MutableMap<String, Any> = mutableMapOf(),
 	private var messageInsertionCounter: Long = 0
 	val messageQueue: PriorityQueue<QueuedMessage> = PriorityQueue()
 
+	fun clearDelayedMessages() {
+		messageQueue.clear()
+	}
+
 	fun queueDelayedMessage(scheduledTick: Long, message: Component) {
 		messageQueue.add(QueuedMessage(scheduledTick, messageInsertionCounter++, message))
 	}

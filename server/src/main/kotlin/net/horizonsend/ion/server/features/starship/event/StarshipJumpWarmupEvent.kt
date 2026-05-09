@@ -6,16 +6,18 @@ import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
 class StarshipJumpWarmupEvent(ship: Starship, val from: Location, val to: Location) : StarshipEvent(ship), Cancellable {
+    private var cancelled: Boolean = false
+
     override fun getHandlers(): HandlerList {
         return handlerList
     }
 
     override fun isCancelled(): Boolean {
-        return this.isCancelled
+        return cancelled
     }
 
     override fun setCancelled(cancelled: Boolean) {
-        this.isCancelled = cancelled
+        this.cancelled = cancelled
     }
 
     companion object {
