@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -26,6 +27,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Optional
+import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
@@ -244,6 +246,22 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 	}
 
 	/**
+	 * Represents an effect that clears delayed messages in the context of a sequence phase.
+	 * This effect interacts with the sequence data store associated with a player and sequence key
+	 * to remove queued delayed messages.
+	 *
+	 * @constructor
+	 * Creates an instance of the effect with the specified timing.
+	 * @param timing The timing during which this effect is executed (e.g., START, TICKED, END).
+	 */
+	class ClearDelayedMessages(timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			val dataStore = SequenceManager.getSequenceData(player, sequenceKey)
+			dataStore.clearDelayedMessages()
+		}
+	}
+
+	/**
 	 * Represents an effect that sends a title to a player.
 	 *
 	 * @param title The title to be sent.
@@ -288,6 +306,32 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
 			VisualProjectile(location.clone().add(context.getOrigin().toLocation(location.world)), direction, 100.0, 10.0, color, 1.0f, 0)
+		}
+	}
+
+	/**
+	 * Represents an effect that displays a visual projectile around a player.
+	 *
+	 * @param color The color of the projectile.
+	 * @param timing The timing at which this effect should be executed (e.g., START, TICKED, or END).
+	 */
+	class PlayVisualProjectilesAtPlayer(val color: Color, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			player.location.spherePoints(150.0, 30).shuffled().take(1).forEach { startLocation ->
+				VisualProjectile(
+					startLocation,
+					player.location.toVector().subtract(startLocation.toVector())
+						.rotateAroundX(ThreadLocalRandom.current().nextDouble(-Math.PI / 6, Math.PI / 6))
+						.rotateAroundY(ThreadLocalRandom.current().nextDouble(-Math.PI / 6, Math.PI / 6))
+						.rotateAroundZ(ThreadLocalRandom.current().nextDouble(-Math.PI / 6, Math.PI / 6)),
+					100.0,
+					5.0,
+					color,
+					4.0f,
+					10,
+					true
+				).fire()
+			}
 		}
 	}
 

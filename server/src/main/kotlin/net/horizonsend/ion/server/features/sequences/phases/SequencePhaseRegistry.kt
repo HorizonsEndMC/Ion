@@ -22,9 +22,13 @@ import net.horizonsend.ion.server.features.sequences.SequenceKeys.TUTORIAL_TRANS
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.ACHIEVEMENT_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.JANE_TITLE
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.PLAY_PROJECTILES
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_HEAVY_TURRET_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_PHASER_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowJumpWarmup
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowOpeningDoor
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipMovement
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.emptyMessage
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.fullBoundingBox
@@ -44,6 +48,8 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ASTERI_SHUTTLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_INSIDE_BEACON_RANGE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_SHIFT_INCREMENT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_STOP_CRUISE_INITIATED
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_ILIOS
@@ -248,6 +254,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
+
                 ifPreviousPhase(
                     TUTORIAL_START, EffectTiming.START,
                     NEXT_PHASE_SOUND,
@@ -308,6 +318,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
 
                 ifPreviousPhase(
                     EXIT_CRYOPOD_ROOM, EffectTiming.START,
@@ -368,6 +381,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
 
                 ifPreviousPhase(
                     BROKEN_ELEVATOR,
@@ -413,6 +429,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
+
                 ifPreviousPhase(
                     LOOK_AT_TRACTOR,
                     EffectTiming.START,
@@ -475,6 +495,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
 
                 ifPreviousPhase(
                     CREW_QUARTERS, EffectTiming.START,
@@ -515,6 +538,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
+
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
                 SendMessage(
@@ -563,6 +590,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                PLAY_PROJECTILES,
 
                 *questMarkerEffects(Vec3i(0, -3, -98)),
 
@@ -659,7 +689,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 disallowJumpWarmup(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
-                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(7)),
+                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(10)),
                     triggerResult = startPhase(FLIGHT_SHIFT)
                 )
             ),
@@ -677,6 +707,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     EffectTiming.START
                 ),
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 SendMessage(text("A light starts flickering on the control panel.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
@@ -693,10 +725,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 janeMessage(
                     text("I am here to assist you and teach you how to pilot this spacecraft."),
-                    delayTicks = 150L
+                    delayTicks = 120L
                 ),
 
-                emptyMessage(150L),
+                emptyMessage(120L),
             )
         )
 
@@ -729,6 +761,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 ifPreviousPhase(FLIGHT_START, EffectTiming.START,
                     NEXT_PHASE_SOUND,
+
+                    SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                     janeMessage(
                         template(
                             text("{0} by pressing your {1} key ({2}) {3}."),
@@ -742,9 +777,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                     janeMessage(
                         text("The ship will move in the direction you are looking. Try it out!"),
-                        delayTicks = 130L
+                        delayTicks = 80L
                     ),
-                    emptyMessage(130L),
+                    emptyMessage(80L),
                 ),
 
                 SequencePhaseEffect.OnTickInterval(
@@ -798,6 +833,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(
                     template(
@@ -816,9 +853,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Component.keybind("key.drop", YELLOW),
                         text("turn left", LIGHT_PURPLE)
                     ),
-                    delayTicks = 160L
+                    delayTicks = 100L
                 ),
-                emptyMessage(160L),
+                emptyMessage(100L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -869,6 +906,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(
                     template(
@@ -911,7 +950,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 disallowJumpWarmup(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
-                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(7)),
+                    WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(13)),
                     triggerResult = startPhase(FLIGHT_CRUISE_START)
                 ),
                 SequenceTrigger(
@@ -926,6 +965,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             description = PhaseDescription(template(text("- Listen to {0} for further instructions"), JANE_TITLE)),
             effects = listOf(
                 NEXT_PHASE_SOUND,
+
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
                 SequencePhaseEffect.SuppliedSetSequenceData(
                     "FLIGHT_INTERMISSION_START",
@@ -942,23 +983,23 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         "The comms crackle to life and you hear the voice of the captain.",
                         GRAY,
                         ITALIC
-                    ), 160L, EffectTiming.START
+                    ), 100L, EffectTiming.START
                 ),
                 SendDelayedMessage(
                     text("\"The pirates are too busy shooting the cruiser, go now!\"", YELLOW, ITALIC),
-                    160L,
+                    100L,
                     EffectTiming.START
                 ),
-                emptyMessage(160L),
+                emptyMessage(100L),
 
                 janeMessage(
                     template(
                         text("I've marked an escape route on the starship's HUD. Engaging {0} will give you the best chance of escaping."),
                         text("cruising mode", AQUA),
                     ),
-                    delayTicks = 220L
+                    delayTicks = 200L
                 ),
-                emptyMessage(220L),
+                emptyMessage(200L),
 
                 *questMarkerEffects(Vec3i(0, 0, -1000)),
             )
@@ -987,6 +1028,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(text("You will cruise through an asteroid belt to reach a hyperspace beacon.")),
                 emptyMessage(),
@@ -998,9 +1041,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("USE", AQUA),
                         Component.keybind("key.use", YELLOW),
                     ),
-                    delayTicks = 120L
+                    delayTicks = 80L
                 ),
-                emptyMessage(120L),
+                emptyMessage(80L),
 
                 janeMessage(
                     template(
@@ -1008,9 +1051,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("in the direction you were looking", LIGHT_PURPLE),
                         text("You can also cruise diagonally.", AQUA)
                     ),
-                    delayTicks = 360L
+                    delayTicks = 240L
                 ),
-                emptyMessage(360L),
+                emptyMessage(240L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.DisplayHudText(
@@ -1043,8 +1086,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
                 SequenceTrigger(
-                    type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
+                    type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
+                    settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(StarshipMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
                     triggerResult = startPhase(FLIGHT_CRUISE_STOP)
                 )
             ),
@@ -1058,6 +1101,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
             effects = listOf(
                 NEXT_PHASE_SOUND,
+
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
                 emptyMessage(),
                 janeMessage(
@@ -1150,8 +1195,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SequenceTriggerTypes.COMBINED_AND,
                     CombinedAndTrigger.CombinedAndTriggerSettings(
                         SequenceTrigger(
-                            type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            settings = MovementTriggerSettings(PlayerMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
+                            type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
+                            settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(StarshipMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 250)),
                             triggerResult = SequenceTrigger.emptyTriggerResult()
                         ),
                         SequenceTrigger(
@@ -1178,19 +1223,45 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         ),
                     ),
                     triggerResult = startPhase(BRANCH_FLIGHT_STOP_CRUISE_INITIATED)
-                )
+                ),
+                // Go to BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE if the player has entered the beacon's range and subsequently left it
+                SequenceTrigger(
+                    SequenceTriggerTypes.COMBINED_AND,
+                    CombinedAndTrigger.CombinedAndTriggerSettings(
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE,
+                            DataPredicate.DataPredicateSettings<Boolean>("starship_inside_beacon_range") { it == true },
+                            triggerResult = SequenceTrigger.emptyTriggerResult()
+                        ),
+                        SequenceTrigger(
+                            SequenceTriggerTypes.STARSHIP_MOVEMENT,
+                            StarshipMovementTrigger.StarshipMovementTriggerSettings(StarshipMovementTrigger.outsideRadius(Vec3i(0, 0, -1000), 250)),
+                            triggerResult = SequenceTrigger.emptyTriggerResult()
+                        )
+                    ),
+                    triggerResult = startPhase(BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE)
+                ),
+                // Go to BRANCH_FLIGHT_INSIDE_BEACON_RANGE if the player has entered the beacon's range
+                SequenceTrigger(
+                    type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
+                    settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(StarshipMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 250)),
+                    triggerResult = startPhase(BRANCH_FLIGHT_INSIDE_BEACON_RANGE)
+                ),
             ),
             description = PhaseDescription(
                 description = ofChildren(
                     text("- Deactivate cruise mode by "),
                     text("LEFT CLICKING/ATTACKING ", AQUA),
-                    text("the Cruise sign, or by running the /cruise command"),
-                )
+                    text("the Cruise sign, or by running the /cruise command (get close to {0})"),
+                ),
+                position = Vec3i(0, 0, -1000)
             ),
             effects = listOf(
-                NEXT_PHASE_SOUND,
-
                 ifPreviousPhase(phase = FLIGHT_CRUISE_NAVIGATE, timing = EffectTiming.START,
+                    NEXT_PHASE_SOUND,
+
+                    SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                     emptyMessage(),
                     janeMessage(
                         template(
@@ -1212,23 +1283,50 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     emptyMessage(120L),
                 ),
 
-                SequencePhaseEffect.OnTickInterval(
-                    SequencePhaseEffect.DisplayHudText(
-                        distance = 10.0,
-                        text = template(
-                            text("Left click the {0} to disable cruise mode, and {1}"),
-                            text("cruise sign", GREEN),
-                            text("wait for the ship to stop", AQUA)
+                SequencePhaseEffect.DataConditionalEffects(
+                    "starship_inside_beacon_range",
+                    { it.getOrDefault(true) },
+                    EffectTiming.TICKED,
+
+                    SequencePhaseEffect.OnTickInterval(
+                        SequencePhaseEffect.DisplayHudText(
+                            distance = 10.0,
+                            text = template(
+                                text("Left click the {0} to disable cruise mode, and {1}"),
+                                text("cruise sign", GREEN),
+                                text("wait for the ship to stop", AQUA)
+                            ),
+                            durationTicks = 2L,
+                            scale = 2.0f,
+                            backgroundColor = Color.fromARGB(0x00000000),
+                            defaultBackground = false,
+                            seeThrough = true,
+                            highlight = false,
+                            EffectTiming.TICKED
                         ),
-                        durationTicks = 2L,
-                        scale = 2.0f,
-                        backgroundColor = Color.fromARGB(0x00000000),
-                        defaultBackground = false,
-                        seeThrough = true,
-                        highlight = false,
-                        EffectTiming.TICKED
+                        2
                     ),
-                    2
+                ),
+
+                SequencePhaseEffect.DataConditionalEffects(
+                    "starship_inside_beacon_range",
+                    { !it.getOrDefault(true) },
+                    EffectTiming.TICKED,
+
+                    SequencePhaseEffect.OnTickInterval(
+                        SequencePhaseEffect.DisplayHudText(
+                            distance = 10.0,
+                            text = text("Move the starship back to the hyperspace beacon", RED),
+                            durationTicks = 2L,
+                            scale = 2.0f,
+                            backgroundColor = Color.fromARGB(0x00000000),
+                            defaultBackground = false,
+                            seeThrough = true,
+                            highlight = false,
+                            EffectTiming.TICKED
+                        ),
+                        2
+                    ),
                 ),
 
                 *questMarkerEffects(Vec3i(0, 0, -1000)),
@@ -1259,6 +1357,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(
                     template(
@@ -1274,9 +1374,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("I've highlighted the hyperdrive. "),
                         text("It is in the back of the ship, above the door.", AQUA)
                     ),
-                    delayTicks = 190L
+                    delayTicks = 120L
                 ),
-                emptyMessage(190L),
+                emptyMessage(120L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.RunCode({ player, _ ->
@@ -1327,6 +1427,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 NEXT_PHASE_SOUND,
+
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
                 emptyMessage(),
                 janeMessage(
@@ -1385,6 +1487,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             description = PhaseDescription(text("- Wait until the escape pod completes the hyperspace transit")),
             effects = listOf(
                 NEXT_PHASE_SOUND,
+
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
                 emptyMessage(),
                 janeMessage(text("Your starship is now in hyperspace!")),
@@ -1479,6 +1583,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+
                 emptyMessage(),
                 SendMessage(text("They look like the infamous Sky Dogs Pirates to you.", GRAY, ITALIC), EffectTiming.START),
                 emptyMessage(),
@@ -1496,6 +1604,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+
                 emptyMessage(),
                 SendMessage(ofChildren(text("This server has an interactive web map. You can access it "), formatLink("here", "https://survival.horizonsend.net/")), EffectTiming.START),
                 emptyMessage(),
@@ -1512,6 +1624,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+
                 emptyMessage(),
                 SendMessage(
                     text("This is a starship computer. It is the primary point of interface for ships. They allow a pilot to start piloting, detect a ship, and manage settings.", GRAY, ITALIC),
@@ -1532,6 +1648,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
                 SendMessage(text("These are navigation machines and the ship's hyperdrives. " +
@@ -1551,6 +1671,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
                 SendMessage(text("These are power machines. They would normally be used by the " +
@@ -1571,6 +1695,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
+                RANDOM_HEAVY_TURRET_SOUND,
+                RANDOM_PHASER_SOUND,
+                SequencePhaseEffect.PlayVisualProjectilesAtPlayer(Color.RED, EffectTiming.TICKED),
+
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
                 SendMessage(text("These cargo crates won't be making it to their destination.", GRAY, ITALIC), EffectTiming.START),
@@ -1622,6 +1750,39 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 GoToPreviousPhase(EffectTiming.START),
 
                 SequencePhaseEffect.SetSequenceData("stopped_cruise", true, EffectTiming.END),
+            )
+        )
+
+        bootstrapPhase(
+            phaseKey = BRANCH_FLIGHT_INSIDE_BEACON_RANGE,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf(
+                GoToPreviousPhase(EffectTiming.START),
+                SequencePhaseEffect.SetSequenceData("starship_inside_beacon_range", true, EffectTiming.END),
+            )
+        )
+
+        // TUTORIAL.BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE
+        bootstrapPhase(
+            phaseKey = BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(),
+            effects = listOf(
+                emptyMessage(),
+                emptyMessage(),
+                janeMessage(
+                    text("You have left the hyperspace beacon's range!", RED, BOLD),
+                ),
+                janeMessage(
+                    text("You must move the starship closer to the hyperspace beacon to proceed.", AQUA)
+                ),
+                emptyMessage(),
+                emptyMessage(),
+
+                GoToPreviousPhase(EffectTiming.START),
+
+                SequencePhaseEffect.SetSequenceData("starship_inside_beacon_range", false, EffectTiming.END),
             )
         )
     }
@@ -1686,6 +1847,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(
                     template(
@@ -1745,6 +1908,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 janeMessage(
                     template(
                         text("Before leaving your starship, you must first equip your {0}. We " +
@@ -1778,6 +1943,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(
                     template(
@@ -1796,18 +1963,18 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         text("starship computer", GREEN),
                         text("holding your starship controller", LIGHT_PURPLE)
                     ),
-                    delayTicks = 40L
+                    delayTicks = 80L
                 ),
-                emptyMessage(40L),
+                emptyMessage(80L),
 
                 janeMessage(
                     ofChildren(
                         text("I've highlighted the starship computer. "),
                         text("It is in the front of the ship, on the floor.", AQUA)
                     ),
-                    delayTicks = 80L
+                    delayTicks = 140L
                 ),
-                emptyMessage(80L),
+                emptyMessage(140L),
 
                 SequencePhaseEffect.OnTickInterval(
                     SequencePhaseEffect.RunCode({ player, _ ->
@@ -1855,6 +2022,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 NEXT_PHASE_SOUND,
 
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                 emptyMessage(),
                 janeMessage(
                     template(
@@ -1865,11 +2034,11 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 emptyMessage(),
 
                 janeMessage(
-                    text("I've transferred my communication link to your auditory uplink, so I'll still be" +
+                    text("I've transferred my communication link to your auditory uplink, so I'll still be " +
                             "able to assist you while disconnected from the starship."),
-                    delayTicks = 100L
+                    delayTicks = 80L
                 ),
-                emptyMessage(delayTicks = 100L),
+                emptyMessage(delayTicks = 80L),
 
                 *questMarkerEffects(Vec3i(0, 6, 31)),
             )
@@ -1941,6 +2110,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ifPreviousPhase(
                     ENTER_TRANSIT_HUB, EffectTiming.START,
                     NEXT_PHASE_SOUND,
+
+                    SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
                     emptyMessage(),
                     janeMessage(
@@ -2089,6 +2260,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     EXPLORE_TRANSIT_HUB, EffectTiming.START,
                     NEXT_PHASE_SOUND,
 
+                    SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
+
                     emptyMessage(),
                     janeMessage(
                         text(
@@ -2163,13 +2336,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
-                    WaitTimeTrigger.WaitTimeTriggerSettings("ARRIVED_AT_STATION_DELAY_TIMER", TimeUnit.SECONDS.toMillis(35)),
+                    WaitTimeTrigger.WaitTimeTriggerSettings("ARRIVED_AT_STATION_DELAY_TIMER", TimeUnit.SECONDS.toMillis(64)),
                     triggerResult = startPhase(TUTORIAL_TRANSIT_HUB_END)
                 )
             ),
             description = PhaseDescription(template(text("- Listen to {0} for further instructions"), JANE_TITLE)),
             effects = listOf(
                 NEXT_PHASE_SOUND,
+
+                SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
                 emptyMessage(),
                 janeMessage(text("You have now arrived at this system's port terminal.")),
