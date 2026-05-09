@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.sequences.SequenceUtils.PLAY_PROJECTI
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_HEAVY_TURRET_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_PHASER_SOUND
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.SPAWN_PIRATES
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowJumpWarmup
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowOpeningDoor
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipMovement
@@ -256,7 +257,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
+				SPAWN_PIRATES,
 
                 ifPreviousPhase(
                     TUTORIAL_START, EffectTiming.START,
@@ -320,7 +321,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
 
                 ifPreviousPhase(
                     EXIT_CRYOPOD_ROOM, EffectTiming.START,
@@ -383,8 +383,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
-
                 ifPreviousPhase(
                     BROKEN_ELEVATOR,
                     EffectTiming.START,
@@ -431,7 +429,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
 
                 ifPreviousPhase(
                     LOOK_AT_TRACTOR,
@@ -497,7 +494,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
 
                 ifPreviousPhase(
                     CREW_QUARTERS, EffectTiming.START,
@@ -540,7 +536,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
 
                 NEXT_PHASE_SOUND,
                 emptyMessage(),
@@ -592,7 +587,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 RANDOM_EXPLOSION_SOUND,
                 RANDOM_HEAVY_TURRET_SOUND,
                 RANDOM_PHASER_SOUND,
-                PLAY_PROJECTILES,
 
                 *questMarkerEffects(Vec3i(0, -3, -98)),
 
@@ -1794,7 +1788,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
         registerTutorialTransitHubBranches()
     }
-    
+
     private fun registerTutorialTransitHubFlightSection() {
         // TUTORIAL_TRANSIT_HUB.TUTORIAL_TRANSIT_HUB_START
         bootstrapPhase(
