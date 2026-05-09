@@ -65,6 +65,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
@@ -216,7 +217,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
-		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
+		if (navComp == null && !starship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) sender.userError("Navigation Computer not found; jump range halved")
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -252,7 +253,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
-		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
+		if (navComp == null && !starship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) sender.userError("Navigation Computer not found; jump range halved")
 
 		if (Hyperspace.isWarmingUp(starship)) fail { "Starship is already warming up!" }
 
