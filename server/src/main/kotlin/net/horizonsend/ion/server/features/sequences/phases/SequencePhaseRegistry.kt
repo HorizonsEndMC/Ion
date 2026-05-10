@@ -22,7 +22,6 @@ import net.horizonsend.ion.server.features.sequences.SequenceKeys.TUTORIAL_TRANS
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.ACHIEVEMENT_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.JANE_TITLE
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SOUND
-import net.horizonsend.ion.server.features.sequences.SequenceUtils.PLAY_PROJECTILES
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_HEAVY_TURRET_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_PHASER_SOUND
@@ -1923,13 +1922,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 SequencePhaseEffect.ClearDelayedMessages(EffectTiming.START),
 
+                emptyMessage(),
                 janeMessage(
                     template(
                         text("Before leaving your starship, you must first equip your {0}. We " +
                                 "wouldn't want you to go through all this trouble only to get spaced!"),
                         text("space suit", AQUA)
                     ),
-                )
+                ),
+                emptyMessage(),
             ),
         )
 
