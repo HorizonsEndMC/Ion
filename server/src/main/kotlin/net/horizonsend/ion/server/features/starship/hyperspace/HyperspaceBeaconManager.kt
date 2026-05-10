@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.event.EventHandler
@@ -28,7 +28,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 	}
 
 	@EventHandler
-	fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
+	fun onStarshipUnpilot(event: StarshipReleaseEvent) {
 		val player = (event.starship.controller as? PlayerController)?.player ?: return
 		activeRequests.remove(player.uniqueId)
 	}

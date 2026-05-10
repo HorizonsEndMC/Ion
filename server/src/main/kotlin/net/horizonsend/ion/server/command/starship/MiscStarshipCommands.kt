@@ -152,7 +152,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("unpilot")
 	fun onUnpilot(sender: Player) {
 		val starship = getStarshipPiloting(sender)
-		PilotedStarships.unpilot(starship)
+		if (!PilotedStarships.unpilot(starship, true)) {
+			sender.userError("Failed to unpilot ship")
+			return
+		}
 		sender.information("Unpiloted ship, but left it activated")
 	}
 

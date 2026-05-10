@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.event.entity.PlayerDeathEvent
 
@@ -58,7 +58,7 @@ object EventLogger : IonServerComponent() {
 			DutyModeMonitor.record(client, player, "**piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
 		}
 
-		listen<StarshipUnpilotEvent> { event ->
+		listen<StarshipReleaseEvent> { event ->
 			val controller = event.controller
 
 			if (controller !is PlayerController) return@listen
