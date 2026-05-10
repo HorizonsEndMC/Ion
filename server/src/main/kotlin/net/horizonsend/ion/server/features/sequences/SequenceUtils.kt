@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_FLIGHT_OUTSIDE_BEACON_RANGE
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerInteractTrigger
@@ -25,11 +24,12 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.emptyTriggerResult
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
-import net.horizonsend.ion.server.features.sequences.trigger.SimpleContextTriggerPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipJumpWarmupTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipReleaseTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.starship.event.StarshipJumpWarmupEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
@@ -177,11 +177,20 @@ object SequenceUtils {
         triggerResult = SequenceTrigger.startPhase(phaseKey)
     )
 
+    fun disallowStarshipReleaseTrigger() = SequenceTrigger(
+        SequenceTriggerTypes.STARSHIP_RELEASE,
+        StarshipReleaseTrigger.StarshipReleaseTriggerSettings(),
+        triggerResult = handleEvent<StarshipReleaseEvent> { player, _, event ->
+            event.isCancelled = true; player.userError("You can't release your ship right now!")
+        }
+    )
+
     fun disallowStarshipUnpilotTrigger() = SequenceTrigger(
         SequenceTriggerTypes.STARSHIP_UNPILOT,
-        StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+        StarshipUnpilotTrigger.StarshipUnpilotTriggerSettings(),
         triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event ->
-            event.isCancelled = true; player.userError("You can't release your ship right now!")
+            if (!event.cancellable) return@handleEvent
+            event.isCancelled = true; player.userError("You can't unpilot your ship right now!")
         }
     )
 

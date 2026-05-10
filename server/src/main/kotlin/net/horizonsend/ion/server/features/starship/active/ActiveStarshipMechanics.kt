@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
@@ -260,7 +260,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onAIUnpilot(event: StarshipUnpilotedEvent) {
+	fun onAIUnpilot(event: StarshipUnpilotEvent) {
 		val starship = event.starship
 
 		if (event.oldController !is AIController) return

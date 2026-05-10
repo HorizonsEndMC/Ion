@@ -28,7 +28,7 @@ import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_HEAVY_
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_PHASER_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowJumpWarmup
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowOpeningDoor
-import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipMovement
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipReleaseTrigger
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.emptyMessage
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.fullBoundingBox
@@ -96,7 +96,6 @@ import net.horizonsend.ion.server.features.sequences.trigger.HasItemInInventoryT
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.HasItemEquippedTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerChangedWorldTrigger
-import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
@@ -114,7 +113,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStart
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStopTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipMovementTrigger.belowCruiseSpeed
-import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipReleaseTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -506,7 +505,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(
                         template(
                             text("The ship's gravity generators have failed in the attack! {0}!", GRAY, ITALIC),
-                            text("Fly over the flames", AQUA, ITALIC)
+                            template(
+                                text("Fly ({0}) over the flames", AQUA, ITALIC),
+                                text("Double Jump", GREEN)
+                            )
                         ), EffectTiming.START
                     ),
                     emptyMessage(),
@@ -626,9 +628,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(6)),
@@ -684,9 +687,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_START_DELAY", TimeUnit.SECONDS.toMillis(10)),
@@ -737,9 +741,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_SHIFT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 // data predicate MUST come before movement detection, as these are only checked on movement and break if the first trigger result is fulfilled
                 SequenceTrigger(
                     SequenceTriggerTypes.DATA_PREDICATE,
@@ -810,9 +815,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_ROTATION_LEFT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -883,9 +889,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_ROTATION_RIGHT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ROTATE,
                     ShipRotationTriggerSettings { player, movement ->
@@ -945,9 +952,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_INTERMISSION,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(13)),
@@ -1010,9 +1018,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_CRUISE_START,
                     StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
@@ -1082,9 +1091,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_NAVIGATE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
                     settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(StarshipMovementTrigger.withinRadius(Vec3i(0, 0, -1000), 300)),
@@ -1187,9 +1197,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_STOP,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 // Go to FLIGHT_CHETHERITE when the player is nearby the hyperspace beacon and their cruise speed is low enough
                 SequenceTrigger(
                     SequenceTriggerTypes.COMBINED_AND,
@@ -1338,9 +1349,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CHETHERITE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.HYPERDRIVE_HAS_FUEL,
                     SimpleContextTriggerPredicate(),
@@ -1406,8 +1418,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_HYPERSPACE_JUMP,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.STARSHIP_ENTER_HYPERSPACE,
                     ShipEnterHyperspaceJumpTriggerSettings(),
@@ -1469,9 +1482,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_IN_HYPERSPACE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
                     ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
@@ -1531,9 +1545,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_EXIT_HYPERSPACE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_EXIT_HYPERSPACE_START", TimeUnit.SECONDS.toMillis(5L)),
@@ -1564,8 +1579,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = TUTORIAL_END,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
+                disallowStarshipUnpilotTrigger(),
             ),
             effects = listOf(
                 SequencePhaseEffect.EndSequence(EffectTiming.START),
@@ -1801,9 +1817,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = TUTORIAL_TRANSIT_HUB_START,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("TUTORIAL_TRANSIT_HUB_START_TIME", TimeUnit.SECONDS.toMillis(1L)),
@@ -1824,9 +1841,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_PARKING,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.STARSHIP_MOVEMENT,
                     settings = StarshipMovementTrigger.StarshipMovementTriggerSettings(
@@ -1869,9 +1887,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_SPACE_SUIT,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
-                disallowStarshipUnpilotTrigger(),
+                disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.COMBINED_AND,
                     settings = CombinedAndTrigger.CombinedAndTriggerSettings(
@@ -1927,9 +1946,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
+                disallowStarshipUnpilotTrigger(),
                 SequenceTrigger(
-                    SequenceTriggerTypes.STARSHIP_UNPILOT,
-                    StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+                    SequenceTriggerTypes.STARSHIP_RELEASE,
+                    StarshipReleaseTrigger.StarshipReleaseTriggerSettings(),
                     triggerResult = startPhase(ENTER_TRANSIT_HUB)
                 )
             ),

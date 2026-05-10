@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.entity.Player
@@ -96,7 +96,7 @@ object DutyModeMonitor : IonServerComponent() {
 			record(client, player, "*piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
 		}
 
-		listen<StarshipUnpilotEvent> { event ->
+		listen<StarshipReleaseEvent> { event ->
 			val controller = event.controller
 
 			if (controller !is PlayerController) return@listen

@@ -33,7 +33,7 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -414,7 +414,7 @@ object StationSieges : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onStarshipUnpilot(event: StarshipUnpilotedEvent) {
+	fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
 		val player = (event.starship.controller as? PlayerController)?.player ?: return
 		tryEndSiege(player)
 	}

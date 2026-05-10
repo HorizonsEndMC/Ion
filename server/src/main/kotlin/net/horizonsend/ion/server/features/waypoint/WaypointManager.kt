@@ -16,7 +16,7 @@ import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -80,7 +80,7 @@ object WaypointManager : IonServerComponent() {
             updateNumJumps(event.player)
         }
 
-        listen<StarshipUnpilotedEvent> { event ->
+        listen<StarshipUnpilotEvent> { event ->
 			event.starship.playerPilot?.let {
 				updatePlayerGraph(it)
 				updatePlayerPaths(it)
