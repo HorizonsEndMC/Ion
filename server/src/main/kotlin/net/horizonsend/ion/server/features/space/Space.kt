@@ -93,14 +93,14 @@ object Space : IonServerComponent() {
 			}
 
 			for (star in getStars()) {
-				if (check(star.location, star.outerSphereRadius)) {
+				if (world == star.spaceWorld && check(star.location, star.outerSphereRadius)) {
 					event.isCancelled = true
 					return@listen
 				}
 			}
 
 			for (planet in getAllPlanets()) {
-				if (check(planet.location, planet.atmosphereRadius)) {
+				if (world == planet.spaceWorld && check(planet.location, planet.atmosphereRadius)) {
 					event.isCancelled = true
 					return@listen
 				}
