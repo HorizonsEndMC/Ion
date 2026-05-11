@@ -8,6 +8,8 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PERSONAL_TRANSPORTER
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.sequences.SequenceKeys
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
@@ -91,6 +93,9 @@ class ResourcePackListener : SLEventListener() {
 				addItem(ItemStack(CHAINMAIL_HELMET))
 				addItem(PERSONAL_TRANSPORTER.getValue().constructItemStack())
 			}
+
+			// Start tutorial sequence
+			SequenceManager.startPhase(event.player, SequenceKeys.TUTORIAL, SequenceKeys.TUTORIAL.getValue().firstPhase)
 		}
 
 		Tasks.async {
