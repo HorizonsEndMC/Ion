@@ -248,6 +248,7 @@ object CombatTimer : IonServerComponent() {
 	fun evaluatePvp(attacker: Player, defender: Player, reason: String, neutralTriggersCombat: Boolean = true, tagAttacker: Boolean = true) {
 		if (!enabled) return
 		if (attacker == defender) return
+		if (defender.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
@@ -297,6 +298,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun evaluateSvs(shooter: Damager, defendingStarship: ActiveStarship) {
 		if (!enabled) return
+		if (defendingStarship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 		if (shooter is PlayerDamager && shooter.player.hasPermission("group.dutymode")) return
 		if (defendingStarship.playerPilot?.hasPermission("group.dutymode") == true) return
 
