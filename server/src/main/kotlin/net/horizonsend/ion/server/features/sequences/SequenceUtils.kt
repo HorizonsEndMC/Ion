@@ -46,6 +46,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipJumpWarmupEven
 import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
+import net.horizonsend.ion.server.miscellaneous.utils.AbstractCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -59,6 +60,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.BoundingBox
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 object SequenceUtils {
@@ -99,42 +101,72 @@ object SequenceUtils {
     )
 
 	private val spawnPirates = { player : Player, key : IonRegistryKey<Sequence, Sequence> ->
-		val mechanic = SingleSpawn(
-			RandomShipSupplier(
-				PIRATES.asSpawnedShip(AITemplateRegistry.VENDETTA),
-				PIRATES.asSpawnedShip(AITemplateRegistry.ANAAN),
-				PIRATES.asSpawnedShip(AITemplateRegistry.CORMORANT),
-				PIRATES.asSpawnedShip(AITemplateRegistry.MANTIS),
-				PIRATES.asSpawnedShip(AITemplateRegistry.HERNSTEIN),
-				PIRATES.asSpawnedShip(AITemplateRegistry.FYR),
-				PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR),
-				PIRATES.asSpawnedShip(AITemplateRegistry.ISKAT),
-				PIRATES.asSpawnedShip(AITemplateRegistry.VOSS),
-				PIRATES.asSpawnedShip(AITemplateRegistry.HECTOR)
-			),
-			formatLocationSupplier({player.location}, 200.0,400.0),
-			null,
-			{ _ -> Supplier { 2} },
-			{ AITarget.TargetMode.PLAYER_ONLY },
-			{null},
-		) {
-			val targeting = getCoreModuleByType<EnmityModule>() ?: return@SingleSpawn
-			targeting.enmityFilter = EnmityModule.noAutoTargetFilter()
-			targeting.addTarget(GoalTarget(Vec3i(1230, 187,1948), player.world, hyperspace = false, attack = true, orbitDistance = 130.0),decay = false, aggroed = true)
-			targeting.addTarget(GoalTarget(Vec3i(1260, 194,1966), player.world, hyperspace = false, attack = true, orbitDistance = 130.0),decay = false, aggroed = true)
-			targeting.addTarget(GoalTarget(Vec3i(1250, 196,1976), player.world, hyperspace = false, attack = true, orbitDistance = 130.0),decay = false, aggroed = true)
-		}
+        spawnPiratesCooldown.tryExec(key.getValue()) {
+            val mechanic = SingleSpawn(
+                RandomShipSupplier(
+                    PIRATES.asSpawnedShip(AITemplateRegistry.VENDETTA),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.ANAAN),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.CORMORANT),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.MANTIS),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.HERNSTEIN),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.FYR),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.ISKAT),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.VOSS),
+                    PIRATES.asSpawnedShip(AITemplateRegistry.HECTOR)
+                ),
+                formatLocationSupplier({ player.location }, 200.0, 400.0),
+                null,
+                { _ -> Supplier { 2 } },
+                { AITarget.TargetMode.PLAYER_ONLY },
+                { null },
+            ) {
+                val targeting = getCoreModuleByType<EnmityModule>() ?: return@SingleSpawn
+                targeting.enmityFilter = EnmityModule.noAutoTargetFilter()
+                targeting.addTarget(
+                    GoalTarget(
+                        Vec3i(1230, 187, 1948),
+                        player.world,
+                        hyperspace = false,
+                        attack = true,
+                        orbitDistance = 130.0
+                    ), decay = false, aggroed = true
+                )
+                targeting.addTarget(
+                    GoalTarget(
+                        Vec3i(1260, 194, 1966),
+                        player.world,
+                        hyperspace = false,
+                        attack = true,
+                        orbitDistance = 130.0
+                    ), decay = false, aggroed = true
+                )
+                targeting.addTarget(
+                    GoalTarget(
+                        Vec3i(1250, 196, 1976),
+                        player.world,
+                        hyperspace = false,
+                        attack = true,
+                        orbitDistance = 130.0
+                    ), decay = false, aggroed = true
+                )
+            }
 
-		val spawner = object : AISpawner("NULL",
-			mechanic) {
-			override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
-		}
-		for (i in 0..3) {
-			Tasks.async{
-				spawner.trigger(LoggerFactory.getLogger(javaClass), AISpawningManager.context) //trigger 3 times
-			}
-		}
+            val spawner = object : AISpawner(
+                "NULL",
+                mechanic
+            ) {
+                override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
+            }
+            for (i in 0..<3) {
+                Tasks.async {
+                    spawner.trigger(LoggerFactory.getLogger(javaClass), AISpawningManager.context) //trigger 3 times
+                }
+            }
+        }
 	}
+
+    val spawnPiratesCooldown = object : AbstractCooldown<Sequence>(20L, TimeUnit.MINUTES) { }
 
 	val SPAWN_PIRATES = SequencePhaseEffect.RunCode(spawnPirates, EffectTiming.START)
 
