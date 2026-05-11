@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.ReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import java.util.function.Consumer
@@ -22,6 +24,7 @@ class ReinforcementSpawnerModule(
 
 	override fun tick() {
 		if (controller.getAverageShieldHealth() > activationAverageShieldHealth || triggered) return
+		if (controller.getWorld().hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 
 		triggered = true
 		sendMessage()

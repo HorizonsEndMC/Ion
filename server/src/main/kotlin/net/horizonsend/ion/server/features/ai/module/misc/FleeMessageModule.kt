@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
@@ -22,6 +24,7 @@ class FleeMessageModule(
 
 	override fun tick() {
 		if (!(distanceModule.isFleeing xor fleeState)) return
+		if (controller.getWorld().hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 		fleeState = distanceModule.isFleeing
 		val message = messages.filter { it.isFleeing == fleeState }.randomOrNull()
 

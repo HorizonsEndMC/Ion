@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -745,7 +746,7 @@ object HudIcons : IonServerComponent() {
             deleteSelectorTextEntity(player)
         }
 
-        if (hudStarshipsEnabled) {
+        if (hudStarshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             val starshipList = ActiveStarships.getInWorld(player.world)
                 .filter { starship -> starship.playerPilot != player && !starship.onlinePassengers.contains(player) }
 

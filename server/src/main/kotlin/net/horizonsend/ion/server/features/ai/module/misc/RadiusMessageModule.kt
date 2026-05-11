@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -47,6 +49,7 @@ class RadiusMessageModule(
 	override fun tick() {
 		ticks++
 		if ((ticks % 50) != 0) return
+		if (controller.getWorld().hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 
 		checkMessage()
 	}
