@@ -769,7 +769,7 @@ class WorldBlockDangerContext(
 				velocityWeight = (shipVelocity.dot(dir).coerceAtLeast(0.0) * velocityMag).pow(0.5)
 			}
 
-			val falloff = config.falloff * (ship.currentBlockCount * config.sizeFactor).pow(1 / 3.0)
+			val falloff = config.falloff * (ship.initialBlockCount * config.sizeFactor).pow(1 / 3.0)
 			val weight = falloff * velocityWeight / dist
 			dotContext(dir, 0.0, weight, config.dotPower)
 		}
