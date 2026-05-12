@@ -484,7 +484,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
 			cruiseSpeedMultiplier = 0.9,
-			shieldPowerMultiplier = 1.3,
+			shieldPowerMultiplier = 1.2,
 			shieldRegenMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -690,7 +690,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 1.25,
+			shieldPowerMultiplier = 1.20,
 			shieldRegenMultiplier = 0.8,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -741,8 +741,8 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.75,
-			shieldRegenMultiplier = 1.30,
+			shieldPowerMultiplier = 0.60,
+			shieldRegenMultiplier = 1.20,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -898,9 +898,9 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.25,
+			shieldPowerMultiplier = 0.20,
 			shieldRegenMultiplier = 0.8,
-			cruiseSpeedMultiplier = 1.25,
+			cruiseSpeedMultiplier = 1.40,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1167,9 +1167,9 @@ data class NewStarshipBalancing(
 			jumpStrength = 3.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 1.9,
-			cruiseSpeedMultiplier = 0.85,
-			shieldPowerMultiplier = 0.9,
-			shieldRegenMultiplier = 4.0,
+			cruiseSpeedMultiplier = 0.75,
+			shieldPowerMultiplier = 0.8,
+			shieldRegenMultiplier = 3.5,
 			commandBurstOverrides = listOf(
 				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
 					IncompatibleSubsystemInfo(
@@ -1348,7 +1348,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 6.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
-			cruiseSpeedMultiplier = 1.15,
+			cruiseSpeedMultiplier = 1.05,
 			shieldPowerMultiplier = 1.90,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 17500)),
