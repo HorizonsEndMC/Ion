@@ -43,7 +43,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			),
 			createSettingsPage(player, "Starships Settings",
 				DBCachedBooleanToggle(text("Enable Starship Info"), "", GuiItem.LIST, true, PlayerSettings::starshipsEnabled),
-				DBCachedBooleanToggle(text("Display Advanced Info"), "", GuiItem.LIST, false, PlayerSettings::advancedStarshipInfo),
+				DBCachedBooleanToggle(text("Display Advanced Info"), "", GuiItem.LIST, true, PlayerSettings::advancedStarshipInfo),
 				DBCachedBooleanToggle(text("Rotating Compass"), "", GuiItem.COMPASS_NEEDLE, false, PlayerSettings::rotateCompass)
 			),
 			createSettingsPage(player, "Contacts Settings",

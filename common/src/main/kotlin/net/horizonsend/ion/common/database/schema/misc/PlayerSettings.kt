@@ -42,7 +42,7 @@ data class PlayerSettings(
 	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,
 	var starshipsEnabled: Boolean = true,
-	var advancedStarshipInfo: Boolean = false,
+	var advancedStarshipInfo: Boolean = true,
 	var rotateCompass: Boolean = false,
 	var combatTimerEnabled: Boolean = true,
 
