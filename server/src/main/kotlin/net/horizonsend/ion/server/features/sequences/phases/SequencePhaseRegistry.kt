@@ -165,12 +165,12 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
     private fun registerTutorial() {
         // Place cruiser at: world Tutorial, starship computer (in front of ship) at absolute position:
-        // world: Tutorial, x: 1250, y: 192, z: 2000 (world border should be (2500, 2500)) (facing south)
+        // world: Tutorial, x: 1250, y: 192, z: 1500 (world border should be (1250, 1250)) (facing south)
         // Place exit gate at world Tutorial, at absolute position:
         // world: Tutorial, x: 1250, y: 192, z: 1000 (player travels around 900 blocks in ship)
         // gate should point to world Tutorial2, at absolute position:
         // world: TransitHub, x: 1000, y: 192, z: 1000 (when the player finishes the tutorial, they will
-        // be teleported to the actual hub world)
+        // be teleported to the actual hub world) (world border 2000 wide, centered at (1000, 1000))
         // (When the ship jumps, move the actual jump to the side of the station)
 
         registerTutorialPlayerSection()

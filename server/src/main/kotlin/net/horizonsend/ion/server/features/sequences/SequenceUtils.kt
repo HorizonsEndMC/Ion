@@ -158,9 +158,9 @@ object SequenceUtils {
             ) {
                 override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
             }
-            for (i in 0..<3) {
+            repeat(2) {
                 Tasks.async {
-                    spawner.trigger(LoggerFactory.getLogger(javaClass), AISpawningManager.context) //trigger 3 times
+                    spawner.trigger(LoggerFactory.getLogger(javaClass), AISpawningManager.context) //trigger 2 times
                 }
             }
         }
