@@ -208,9 +208,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             ),
             effects = listOf(
                 emptyMessage(),
-                SendMessage(text("Welcome to Horizon's End!", GOLD, BOLD), EffectTiming.START),
-                SendMessage(text("This is the start of the tutorial.", GRAY, ITALIC), EffectTiming.START),
-                SendMessage(text("Exit the cryopod room to begin.", GRAY, ITALIC), EffectTiming.START),
+                SendDelayedMessage(text("Welcome to Horizon's End!", GOLD, BOLD), delayTicks = 20L, EffectTiming.START),
+                SendDelayedMessage(text("This is the start of the tutorial.", GRAY, ITALIC), delayTicks = 20L, EffectTiming.START),
+                SendDelayedMessage(text("Exit the cryopod room to begin.", GRAY, ITALIC), delayTicks = 20L, EffectTiming.START),
                 emptyMessage(),
 
                 *questMarkerEffects(Vec3i(-9, -1, -56)),
