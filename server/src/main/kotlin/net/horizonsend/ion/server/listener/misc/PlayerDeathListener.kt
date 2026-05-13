@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.command.admin.SequenceAdminCommand.end
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.sequences.SequenceKeys
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -48,6 +49,9 @@ object PlayerDeathListener : SLEventListener() {
 
 		event.drops.clear()
 		event.keepInventory = true
+
+		event.player.inventory.removeItemAnySlot(CustomItemKeys.CHETHERITE.getValue().constructItemStack())
+		event.player.inventory.addItem(CustomItemKeys.CHETHERITE.getValue().constructItemStack(4))
 
 		// Restart tutorial on death
 		SequenceManager.endSequence(event.player, SequenceKeys.TUTORIAL.getValue())

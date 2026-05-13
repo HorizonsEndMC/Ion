@@ -39,6 +39,8 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingManagementMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
@@ -123,11 +125,16 @@ object BazaarCommand : SLCommand() {
 		return item
 	}
 
+	private fun requireNotInTutorial(sender: Player) {
+		failIf(sender.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) { "You cannot access the bazaar in the tutorial!" }
+	}
+
 	@Suppress("Unused")
 	@Subcommand("browse")
 	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
+		requireNotInTutorial(sender)
 		BazaarGUIs.openCitySelection(sender, null)
 	}
 
@@ -135,12 +142,14 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("sell")
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowseOrders(sender: Player) {
+		requireNotInTutorial(sender)
 		BazaarGUIs.openBuyOrderMainMenu(sender, null)
 	}
 
 	@Suppress("Unused")
 	@Subcommand("string")
 	fun onString(sender: Player) {
+		requireNotInTutorial(sender)
 		val item = requireItemInHand(sender)
 		sender.information("Item string of ${item.displayNameString}: ${toItemString(item)}")
 	}
@@ -149,6 +158,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new listing at this city")
 	@CommandCompletion("@anyItem")
 	fun onListingCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		Bazaars.createListing(sender, territory, itemString, pricePerItem).sendReason(sender)
 	}
@@ -156,6 +166,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("create")
 	@Description("Create a new listing at this city")
 	fun onListingCreate(sender: Player, pricePerItem: Double) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val item = requireItemInHand(sender)
 		val itemString = toItemString(item)
 		onListingCreate(sender, itemString, pricePerItem)
@@ -165,6 +176,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("deposit")
 	@Description("Deposit all matching items in your inventory")
 	fun onDeposit(sender: Player, @Optional limit: Int?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val item = requireItemInHand(sender)
 		val itemString = toItemString(item)
 		onDeposit(sender, itemString, limit)
@@ -175,6 +187,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Deposit all matching items in your inventory")
 	@CommandCompletion("@bazaarItemStrings")
 	fun onDeposit(sender: Player, itemString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
 		Bazaars.depositListingStock(sender, sender.inventory, territory, itemString, limit ?: Int.MAX_VALUE).sendReason(sender)
 	}
@@ -184,6 +197,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Withdraw the specified amount of the item")
 	@CommandCompletion("@bazaarItemStrings 1|64")
 	fun onWithdraw(sender: Player, itemString: String, amount: Int) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
 		Bazaars.withdrawListingBalance(sender, territory, itemString, amount).sendReason(sender)
 	}
@@ -193,6 +207,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Remove a listing from the bazaar at this city")
 	@CommandCompletion("@bazaarItemStrings")
 	fun onRemove(sender: Player, itemString: String) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
 		Bazaars.removeListing(sender, territory, itemString).sendReason(sender)
 	}
@@ -202,6 +217,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Update the price of the specific item")
 	@CommandCompletion("@bazaarItemStrings @nothing")
 	fun onSetPrice(sender: Player, itemString: String, newPrice: Double) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
 
 		Bazaars.setListingPrice(sender, territory, itemString, newPrice).sendReason(sender)
@@ -211,6 +227,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("list")
 	@Description("List all of the items you're selling")
 	fun onList(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
 
 		if (items.isEmpty()) return@asyncCommand sender.userError("You do not have any items listed on the bazaar.")
@@ -254,6 +271,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("export")
 	@Description("Export your sell orders in CSV format (provides link)")
 	fun onExportPlayer(sender: Player) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -272,6 +290,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Export a city's sell orders in CSV format (provides link)")
 	@CommandCompletion("@bazaarCities")
 	fun onExportCity(sender: Player, city: TradeCityData) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -290,6 +309,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("list menu")
 	@Description("List the items you're selling at this city")
 	fun onListMenu(sender: Player) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		ListListingManagementMenu(sender).openGui()
 	}
 
@@ -297,6 +317,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("list gui")
 	@Description("List the items you're selling at this city")
 	fun onListGui(sender: Player) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		ListListingManagementMenu(sender).openGui()
 	}
 
@@ -304,6 +325,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("collect")
 	@Description("Collect the money from all of your items")
 	fun onCollect(sender: Player) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		Bazaars.collectListingProfit(sender).sendReason(sender)
 	}
 
@@ -311,6 +333,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("tax")
 	@Description("View the tax of the city you're in")
 	fun onTax(sender: Player) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
 		val city = TradeCities.getIfCity(territory) ?: fail { "You're not in a trade city" }
 		sender.information("Tax of ${city.displayName}: ${(city.tax * 100).toInt()}%")
@@ -319,6 +342,7 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("merchant buy")
 	fun onMerchantBuy(sender: Player, itemString: String, amount: Int) {
+		requireNotInTutorial(sender)
 		requireEconomyEnabled()
 
 		val itemValidationResult = Bazaars.checkValidString(itemString)
@@ -367,6 +391,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant unsetprice")
 	@CommandPermission("trade.merchantadmin")
 	fun onMerchantUnsetPrice(sender: Player, itemString: String) {
+		requireNotInTutorial(sender)
 		Merchants.removeMerchantItem(itemString)
 	}
 
@@ -374,6 +399,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant prices")
 	@Description("View merchant prices")
 	fun onMerchantPrices(sender: Player) {
+		requireNotInTutorial(sender)
 		ItemMenu(
 			title = text("Merchant Prices"),
 			viewer = sender,
@@ -403,6 +429,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new buy order at this city")
 	@CommandCompletion("@anyItem 1|10|100 1.0|10.0|100.0 @nothing")
 	fun onOrderCreate(sender: Player, itemString: String, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		val realCost = quantity * pricePerItem
 
@@ -417,6 +444,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new buy order at this city")
 	@CommandCompletion("@anyItem @bazaarCities 1|10|100 1.0|10.0|100.0 @nothing")
 	fun onOrderCreate(sender: Player, itemString: String, city: TradeCityData, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val territory: RegionTerritory = Regions[city.territoryId]
 		val realCost = quantity * pricePerItem
 
@@ -431,6 +459,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new buy order at the provided city")
 	@CommandCompletion("@bazaarCities @playerOrders")
 	fun onOrderDelete(sender: Player, city: TradeCityData, orderString: String) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
 		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
 
@@ -441,6 +470,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Withdraws fulfilled items from this order. You may optionally specify a limit.")
 	@CommandCompletion("@bazaarCities @playerOrders")
 	fun onOrderWithdraw(sender: Player, city: TradeCityData, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
 		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
 
@@ -451,6 +481,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Fulfills the order at the provided city.")
 	@CommandCompletion("@bazaarCities @cityOrderers @cityOrders")
 	fun onOrderFulfill(sender: Player, city: TradeCityData, owner: SLPlayer, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		val orderCheck = Bazaars.checkHasOrder(owner._id, Regions[city.territoryId], orderString)
 		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
 
@@ -460,6 +491,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("order export")
 	@Description("Export your buy orders in CSV format (provides link)")
 	fun onOrderExportPlayer(sender: Player) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -477,6 +509,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Export a city's buy orders in CSV format (provides link)")
 	@CommandCompletion("@bazaarCities")
 	fun onOrderExportCity(sender: Player, city: TradeCityData) = asyncCommand(sender) {
+		requireNotInTutorial(sender)
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
