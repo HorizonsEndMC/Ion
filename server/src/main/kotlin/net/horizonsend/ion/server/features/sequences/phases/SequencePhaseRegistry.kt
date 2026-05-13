@@ -137,6 +137,7 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.kyori.adventure.title.Title
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
@@ -1488,6 +1489,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
                             event.exitLocation.y = 205.0
                             event.exitLocation.z += 150.0
+                            val transitHubWorld = Bukkit.getWorld("TransitHub")
+                            if (transitHubWorld != null) event.exitLocation.world = transitHubWorld
                         },
                         startPhase(FLIGHT_EXIT_HYPERSPACE)
                     )
