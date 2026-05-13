@@ -40,7 +40,7 @@ class SteeringSolverModule(
 		tickExecutor.invoke()
 	}
 
-	private val tickExecutor = IntervalExecutor(4) {
+	private val tickExecutor = IntervalExecutor(20) {
 		steeringModule.steer()
 
 		thrust = steeringModule.thrustOut
