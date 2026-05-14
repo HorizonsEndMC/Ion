@@ -190,7 +190,7 @@ object Hyperspace : IonServerComponent() {
 			return
 		}
 
-		val event = StarshipPreExitHyperspaceEvent(ship = starship, successful = false, exitLocation = Location(starship.world, movement.x, starship.centerOfMass.y.toDouble(), movement.z))
+		val event = StarshipPreExitHyperspaceEvent(ship = starship, successful = false, exitLocation = Location(world, movement.x, starship.centerOfMass.y.toDouble(), movement.z))
 		event.callEvent()
 
 		starship.playSound(starship.balancing.shipSounds.exitHyperspace.sound)
