@@ -2,17 +2,27 @@ package net.horizonsend.ion.server.command.admin
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getModel
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
+import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Display
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 @CommandAlias("ion")
 @CommandPermission("ion.utilities")
@@ -80,6 +90,29 @@ object IonCommand : SLCommand() {
 		} else {
 			debugEnabledPlayers.add(sender)
 			sender.success("Enabled debug mode")
+		}
+	}
+	@Suppress("Unused")
+	@Subcommand("display")
+	@CommandCompletion("@multiblocks")
+	fun spawnEntity(sender: Player, multiblock: Multiblock) {
+		val item = multiblock.getModel()
+		val namespacedKey = NamespacedKey(item.namespace(), item.value())
+
+		val itemStack = ItemStack(Material.PAPER).apply {
+			editMeta { meta ->
+				meta.setItemModel(namespacedKey)
+			}
+		}
+
+		val location = sender.location
+
+		val entity = location.world.spawn(location, ItemDisplay::class.java) { display ->
+			display.setItemStack(itemStack)
+			display.viewRange = 5.0f
+			display.brightness = Display.Brightness(15, 15)
+			display.interpolationDuration = 0
+			display.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
 		}
 	}
 }

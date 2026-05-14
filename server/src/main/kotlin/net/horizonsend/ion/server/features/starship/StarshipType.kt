@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
+import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -752,7 +753,7 @@ enum class StarshipType(
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 13500,
 		maxSize = 16000,
-		minLevel = 70,
+		minLevel = 95,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_INGOT.getValue().constructItemStack() },
@@ -775,7 +776,7 @@ enum class StarshipType(
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 13500,
 		maxSize = 16000,
-		minLevel = 70,
+		minLevel = 95,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_INGOT.getValue().constructItemStack() },
@@ -847,7 +848,7 @@ enum class StarshipType(
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 25000,
 		maxSize = 32000,
-		minLevel = 80,
+		minLevel = 100,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
 		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_BLOCK.getValue().constructItemStack() },
@@ -1375,10 +1376,10 @@ enum class StarshipType(
 			text("Left click to select", AQUA),
 		))
 
-	//fun canUse(player: Player): Boolean = (if (requiredPermission == null) true else player.hasPermission(requiredPermission))
-	//	&& (player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel)
+	fun canUse(player: Player): Boolean = (if (requiredPermission == null) true else player.hasPermission(requiredPermission))
+		&& (player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel)
 
-	fun canUse(player: Player) : Boolean = (player.hasPermission("starships.anyship") || getServerStage() >= stageUnlocked)
+	//fun canUse(player: Player) : Boolean = (player.hasPermission("starships.anyship") || getServerStage() >= stageUnlocked)
 
 	fun canPilotIn(world: IonWorld): Boolean {
 		val flags = world.configuration.flags

@@ -347,6 +347,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					sender.userError("The other player's starship does not have an active jump beacon! You may set a navigation waypoint to the target fleet member instead.")
 					sender.sendRichMessage(addToRouteMessage)
 					return
+				} else if (otherPlayerStarship.world.ion.getSpaceRegion() != starship.world.ion.getSpaceRegion()) {
+					// Fail if the sender's region and target's region are different
+					sender.userError("Cannot jump to a player in a different space region!")
+					sender.sendRichMessage(addToRouteMessage)
+					return
 				}
 			} else {
 				// Sender was not jumping to a player, always fail and ask to add to route

@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.IonNPCCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
+import net.horizonsend.ion.server.command.admin.KothStationCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.admin.SequenceAdminCommand
 import net.horizonsend.ion.server.command.admin.StructureCreator
@@ -117,7 +118,7 @@ val commands: List<SLCommand> = listOf(
 	NationCommand,
 	SpaceStationCommand,
 	NationRelationCommand,
-	FrontierNationCommand,
+//	FrontierNationCommand,
 
 	CityManageCommand,
 	NationAdminCommand,
@@ -164,6 +165,7 @@ val commands: List<SLCommand> = listOf(
 	GracePeriod,
 	NewPlayerProtection,
 	CapturableStationsCommand,
+	KothStationCommand,
 
 	MultiblockCommand,
 	ConfigurationCommands,

@@ -54,8 +54,9 @@ data class Nation(
     var capital: Oid<Settlement>,
     var color: Int,
     override var balance: Int = 0,
-    val invites: MutableSet<Oid<Settlement>> = mutableSetOf()
-) : DbObject, MoneyHolder {
+    val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
+	override var siegable: Boolean = false
+) : DbObject, MoneyHolder, Siegable {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(Nation::capital)
@@ -184,6 +185,14 @@ data class Nation(
 			require(none(sess, and(Nation::_id ne nationId, nameQuery(newName)))) { "A different nation with that name already exists" }
 
 			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::name, newName))
+		}
+
+		fun isSiegable(nationId: Oid<Nation>): Boolean {
+			return matches(nationId, Nation::siegable eq true)
+		}
+
+		fun setSiegable(nationId: Oid<Nation>, siegable: Boolean) {
+			updateById(nationId, org.litote.kmongo.setValue(Nation::siegable, siegable))
 		}
 
 		fun setColor(nationId: Oid<Nation>, rgb: Int) {

@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -36,6 +37,7 @@ import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
@@ -87,7 +89,9 @@ internal object NationCommand : SLCommand() {
 		registerAsyncCompletion(manager, "outposts") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val nation = PlayerCache[player].nationOid
-			Regions.getAllOf<RegionTerritory>().filter { it.nation == nation }.map { it.name }
+			val territories = Regions.getAllOf<RegionTerritory>().filter { it.nation == nation }.map { it.name }
+			val dominions = Regions.getAllOf<RegionDominionTerritory>().filter { it.nation == nation }.map { it.world }
+			territories + dominions
 		}
 	}
 
@@ -384,12 +388,31 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("claim")
-	@Description("Claim a planetary territory (one per planet)")
+	@Description("Claim a planetary territory or space region")
 	fun onClaim(sender: Player, @Optional cost: Int?) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
 		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+
+		failIf(Regions.getAllOf<RegionDominionTerritory>().count { it.nation == nationId } > 1) { "Nations can only have two territories!" }
+
+		// Check for dominion world first, then fall back to regular territory
+		val dominionTerritory = Regions.findFirstOf<RegionDominionTerritory>(sender.location)
+		if (dominionTerritory != null) {
+			requireDominionUnclaimed(dominionTerritory)
+
+			DominionTerritory.setNation(dominionTerritory.id, nationId)
+
+			val nationName = getNationName(nationId)
+			Notify.chatAndEvents(nationImportantMessageFormat(
+				"{0} claimed the dominion world {1} for their nation {2}!",
+				sender.name,
+				dominionTerritory.world,
+				nationName
+			))
+			return@asyncCommand
+		}
 
 		val territory = requireTerritoryIn(sender)
 		requireTerritoryUnclaimed(territory)
@@ -423,19 +446,37 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("unclaim")
-	@Description("Unclaim a planetary territory")
+	@Description("Unclaim a planetary territory or space region")
 	@CommandCompletion("@outposts")
 	fun onUnclaim(sender: Player, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
+		// Check dominion first
+		val dominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.world.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (dominionTerritory != null) {
+			failIf(dominionTerritory.nation != nationId) { "${dominionTerritory.world} is not claimed by your nation" }
+
+			DominionTerritory.setNation(dominionTerritory.id, null)
+
+			val nationName = getNationName(nationId)
+			Notify.chatAndEvents(nationImportantMessageFormat(
+				"{0} unclaimed the dominion world {1} from their nation {2}!",
+				sender.name,
+				dominionTerritory.world,
+				nationName
+			))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
 		val regionTerritory = Regions.getAllOf<RegionTerritory>()
 			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
 			?: fail { "Territory $territory not found" }
-		val territoryName = regionTerritory.name
-		val territoryWorld = regionTerritory.world
 
-		failIf(regionTerritory.nation != nationId) { "$territoryName is not claimed by your nation" }
+		failIf(regionTerritory.nation != nationId) { "${regionTerritory.name} is not claimed by your nation" }
 
 		Territory.setNation(regionTerritory.id, null)
 
@@ -443,8 +484,8 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationImportantMessageFormat(
 			"{0} unclaimed the territory {1} on {2} from their nation {3}!",
 			sender.name,
-			territoryName,
-			territoryWorld,
+			regionTerritory.name,
+			regionTerritory.world,
 			nationName
 		))
 	}

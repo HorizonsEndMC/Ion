@@ -31,6 +31,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -219,6 +220,10 @@ abstract class SLCommand : BaseCommand() {
 		territory.nation?.fail { "${territory.name} is an outpost of ${getNationName(it)}" }
 
 		territory.npcOwner?.fail { "${territory.name} is the NPC territory ${getNPCOwnerName(it)}" }
+	}
+
+	protected fun requireDominionUnclaimed(territory: RegionDominionTerritory) {
+		territory.nation?.let { fail { "${territory.world} is already claimed" } }
 	}
 
 	protected fun requireFrontierTerritoryIn(sender: Player): RegionFrontierTerritory = Regions.findFirstOf(sender.location)

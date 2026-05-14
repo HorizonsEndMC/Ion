@@ -132,6 +132,18 @@ class IonWorld private constructor(
 	/** Check if the world's configuration contains the flag */
 	fun hasFlag(flag: WorldFlag): Boolean = configuration.flags.contains(flag)
 
+	/** Find what region a world is in */
+	fun getSpaceRegion(): SpaceRegion {
+		return when {
+			hasFlag(WorldFlag.REGION_WORLD_WARD) -> SpaceRegion.WARD
+			hasFlag(WorldFlag.REGION_WORLD_BREACH) -> SpaceRegion.BREACH
+			hasFlag(WorldFlag.REGION_WORLD_MONOLITH) -> SpaceRegion.MONOLITH
+			hasFlag(WorldFlag.REGION_WORLD_FRACTURE) -> SpaceRegion.FRACTURE
+			hasFlag(WorldFlag.REGION_WORLD_SPINE) -> SpaceRegion.SPINE
+			else -> SpaceRegion.NONE
+		}
+	}
+
 	/** Get all environments applied to this world */
 	val environments get() = configuration.environments
 

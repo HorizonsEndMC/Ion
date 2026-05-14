@@ -10,14 +10,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArtilleryProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.block.data.FaceAttachable
-import org.bukkit.block.data.type.Grindstone
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 

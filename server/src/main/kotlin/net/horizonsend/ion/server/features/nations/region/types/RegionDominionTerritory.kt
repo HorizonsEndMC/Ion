@@ -1,0 +1,65 @@
+package net.horizonsend.ion.server.features.nations.region.types
+
+import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.binary
+import net.horizonsend.ion.common.database.boolean
+import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.nullable
+import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.string
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.NationsMap
+import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
+import org.bukkit.entity.Player
+import java.awt.Polygon
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.roundToInt
+
+class RegionDominionTerritory(territory: DominionTerritory) :
+	Region<DominionTerritory>(territory),
+	RegionTopLevel,
+	RegionParent {
+	override val priority: Int = 0
+	var name: String = territory.name; private set
+	override var world: String = territory.world; private set
+	var nation: Oid<Nation>? = territory.nation; private set
+	var alias: String? = territory.alias; private set
+	override var children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
+
+	override fun contains(x: Int, y: Int, z: Int): Boolean = true
+
+	override fun update(delta: ChangeStreamDocument<DominionTerritory>) {
+		delta[DominionTerritory::name]?.let { name = it.string() }
+		delta[DominionTerritory::world]?.let { world = it.string() }
+
+		delta[DominionTerritory::nation]?.let { nation = it.nullable()?.oid() }
+		delta[DominionTerritory::alias]?.let { alias = it.string() }
+
+		//NationsMap.updateDominionTerritory(this) Doesnt update for now, figured it's best if you're hidden on dynmap
+	}
+
+	val isUnclaimed get() = nation == null
+	val isClaimed get() = nation != null
+
+
+	override fun calculateInaccessMessage(player: Player): String? {
+		val playerData = PlayerCache[player]
+		val playerNation: Oid<Nation>? = playerData.nationOid
+		val nation = nation ?: return null
+
+		if (playerNation == nation) {
+			return null
+		}
+
+		return "$name is claimed by ${NationCache[nation].name}"
+	}
+
+	override fun toString(): String = "$name ($world)"
+}

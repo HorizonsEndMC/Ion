@@ -251,5 +251,5 @@ val components: List<IonComponent> = listOf(
     SequenceManager,
 	Environments,
 	Power,
-	SignatureManager,
+	SignatureManager
 )

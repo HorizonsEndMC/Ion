@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
+import net.horizonsend.ion.server.features.misc.DominionWorldDB
 import net.horizonsend.ion.server.features.misc.WorldReset
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.DelegatedChunkGenerator
@@ -38,6 +39,7 @@ object IonServer : JavaPlugin() {
 
 	override fun onLoad() {
 		WorldReset.onStartup()
+		DominionWorldDB.onStartup()
 	}
 
 	override fun onEnable(): Unit =
