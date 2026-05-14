@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.CommandHelp
+import co.aikar.commands.ExceptionHandler
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.HelpCommand
@@ -22,6 +23,8 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.formatException
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -72,6 +75,22 @@ abstract class SLCommand : BaseCommand() {
 		manager.commandCompletions.registerAsyncCompletion(key, value)
 	}
 
+	open fun registerExceptionHandler() {
+		exceptionHandler = ExceptionHandler { _, registeredCommand, sender, args, t ->
+			if (sender.isPlayer) {
+				(sender as Player).serverError("There was an unhandled exception while running command " +
+						"\"${registeredCommand.command}\" with arguments ${args.joinToString(", ")}! " +
+						"Please forward this to staff.")
+				sender.sendMessage(formatException(t))
+			} else {
+				sender.sendMessage("Error while running command \"${registeredCommand.command}\" with arguments " +
+						"${args.joinToString(", ")}!")
+				sender.sendMessage(formatException(t).plainText())
+			}
+			true
+		}
+	}
+
 	/**
 	 * Run this block of code async. Also, no two blocks passed to this method will run at the same time,
 	 * because it runs them all on a single thread. This prevents exploits from multiple people running
@@ -97,7 +116,8 @@ abstract class SLCommand : BaseCommand() {
 
 				val uuid = UUID.randomUUID()
 				log.error("Command Error for ${sender.name}, id: $uuid", e)
-				sender.serverError("Something went wrong with that command, please tell staff.\nError ID: $uuid")
+				sender.serverError("Something went wrong with that command, please forward this to staff.\nError ID: $uuid")
+				sender.sendMessage(formatException(e))
 			}
 		}
 	}

@@ -117,6 +117,8 @@ object IonServer : JavaPlugin() {
 			if (it is Listener) {
 				server.pluginManager.registerEvents(it, this)
 			}
+
+			it.registerExceptionHandler()
 		}
 
 		ShipData.enable()
