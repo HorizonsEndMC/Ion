@@ -47,6 +47,7 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		when (cityData.type) {
 			TradeCityType.NPC -> throw ConditionFailedException("You don't have control over NPC cities!")
+			TradeCityType.TRADE_WORLD -> throw ConditionFailedException("You don't have control over NPC cities!")
 			TradeCityType.SETTLEMENT -> requireSettlementPermission(sender, cityData.settlementId, SettlementRole.Permission.MANAGE_NPCS)
 		}
 	}

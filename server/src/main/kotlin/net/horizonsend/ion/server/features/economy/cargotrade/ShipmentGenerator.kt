@@ -149,6 +149,7 @@ object ShipmentGenerator : IonServerComponent() {
 				when (it.type) {
 					TradeCityType.SETTLEMENT -> balancing.generator.settlementCityChance
 					TradeCityType.NPC -> balancing.generator.npcCityChance
+					TradeCityType.TRADE_WORLD -> balancing.generator.npcCityChance
 				}
 			}
 		)

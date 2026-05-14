@@ -63,7 +63,14 @@ class RegionTerritory(territory: Territory) :
 	val isUnclaimed get() = settlement == null && nation == null && npcOwner == null
 	val isClaimed get() = settlement != null || nation != null || npcOwner != null
 
-	override fun contains(x: Int, y: Int, z: Int): Boolean = polygon.contains(x, z)
+	override fun contains(x: Int, y: Int, z: Int): Boolean {
+		if (npcOwner != null && polygon.npoints <= 1) {
+			val dx = x - centerX
+			val dz = z - centerZ
+			return (dx * dx + dz * dz) <= 600 * 600
+		}
+		return polygon.contains(x, z)
+	}
 
 	override fun update(delta: ChangeStreamDocument<Territory>) {
 		delta[Territory::name]?.let { name = it.string() }

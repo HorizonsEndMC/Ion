@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
@@ -27,38 +28,30 @@ class RegionDominionTerritory(territory: DominionTerritory) :
 	RegionTopLevel,
 	RegionParent {
 	override val priority: Int = 0
-	var name: String = territory.name; private set
 	override var world: String = territory.world; private set
 	var nation: Oid<Nation>? = territory.nation; private set
 	var alias: String? = territory.alias; private set
+	var name: String = territory.name; private set
+
 	override var children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean = true
 
 	override fun update(delta: ChangeStreamDocument<DominionTerritory>) {
-		delta[DominionTerritory::name]?.let { name = it.string() }
 		delta[DominionTerritory::world]?.let { world = it.string() }
-
+		delta[DominionTerritory::name]?.let { name = it.string() }
 		delta[DominionTerritory::nation]?.let { nation = it.nullable()?.oid() }
 		delta[DominionTerritory::alias]?.let { alias = it.string() }
-
-		//NationsMap.updateDominionTerritory(this) Doesnt update for now, figured it's best if you're hidden on dynmap
 	}
 
 	val isUnclaimed get() = nation == null
 	val isClaimed get() = nation != null
 
-
 	override fun calculateInaccessMessage(player: Player): String? {
-		val playerData = PlayerCache[player]
-		val playerNation: Oid<Nation>? = playerData.nationOid
+		val playerNation: Oid<Nation>? = PlayerCache[player].nationOid
 		val nation = nation ?: return null
-
-		if (playerNation == nation) {
-			return null
-		}
-
-		return "$name is claimed by ${NationCache[nation].name}"
+		if (playerNation == nation) return null
+		return "$world is claimed by ${NationCache[nation].name}"
 	}
 
 	override fun toString(): String = "$name ($world)"

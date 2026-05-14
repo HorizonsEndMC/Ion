@@ -200,6 +200,7 @@ object ShipmentManager : IonServerComponent() {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
 
+
 		return listOf(
 			"${SLTextStyle.GRAY}Destination:" +
 				" ${SLTextStyle.DARK_GREEN}${shipment.to.displayName}" +
@@ -673,7 +674,10 @@ object ShipmentManager : IonServerComponent() {
 	): ItemStack {
 		val destination: RegionTerritory = Regions[shipment.to.territoryId]
 		val originSystemName = Space.planetNameCache[Regions.get<RegionTerritory>(shipment.from.territoryId).world].orNull()?.spaceWorldName
+			?: Regions.get<RegionTerritory>(shipment.from.territoryId).world
+
 		val destinationSystemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName
+			?: destination.world
 
 		val lore = mutableListOf(
 			ofChildren(text("Shipping From: ", DARK_AQUA), text("${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)", AQUA)),

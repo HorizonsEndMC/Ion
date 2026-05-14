@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.KothStation
@@ -33,6 +34,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
@@ -89,6 +91,8 @@ object Regions : IonServerComponent() {
 		registerRegionType(StationRentalZone.Companion) { RegionRentalZone(it) }
 
 		registerRegionType(FrontierTerritory.Companion) { RegionFrontierTerritory(it) }
+
+		registerRegionType(DominionTerritory.Companion) { RegionDominionTerritory(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

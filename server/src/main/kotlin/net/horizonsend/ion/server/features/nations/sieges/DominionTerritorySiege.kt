@@ -161,7 +161,7 @@ class DominionTerritorySiege(
 		guiText.add(text(attackerPoints, attackerColor), 1, GuiText.TextAlignment.LEFT)
 		guiText.add(text(defenderPoints, defenderColor), 1, GuiText.TextAlignment.RIGHT)
 
-		val headerLine = template(text("{0}'s siege of {1}'s Territory {2} has suceeded", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
+		val headerLine = template(text("{0}'s siege of {1}'s Territory {2} has succeeded", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
 
 		val globalMessage = ofChildren(
 			headerLine, newline(),

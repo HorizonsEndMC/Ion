@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.*
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.packTerritoryPolygon
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
@@ -34,6 +35,7 @@ import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.*
+import java.awt.Polygon
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -344,6 +346,50 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	fun onSiegeLose(sender: CommandSender, siege: SolarSiege) {
 		siege.fail(true)
 		siege.removeActive()
+	}
+
+	@Subcommand("tradeworld create")
+	@CommandPermission("nations.admin")
+	fun onTradeWorldCreate(sender: CommandSender, worldName: String, displayName: String, color: Int, centerX: Int, centerZ: Int) = asyncCommand(sender) {
+		failIf(TradeWorldTerritory.findByWorld(worldName) != null) { "A trade world city already exists for $worldName!" }
+
+		val dummyPolygon = packTerritoryPolygon(Polygon(intArrayOf(centerX), intArrayOf(centerZ), 1))
+		val territoryId = Territory.create(displayName, worldName, dummyPolygon)
+		NPCTerritoryOwner.create(territoryId, displayName, color, tradeCity = true)
+		TradeWorldTerritory.create(worldName, displayName, color, territoryId, centerX, centerZ)
+
+		sender.success("Created trade world city $displayName for world $worldName centered at $centerX, $centerZ")
+	}
+
+	@Subcommand("tradeworld setcenter")
+	@CommandPermission("nations.admin")
+	fun onTradeWorldSetCenter(sender: CommandSender, worldName: String, centerX: Int, centerZ: Int) = asyncCommand(sender) {
+		val tradeWorld = TradeWorldTerritory.findByWorld(worldName) ?: fail { "No trade world city found for $worldName!" }
+
+		TradeWorldTerritory.setCenterX(tradeWorld._id, centerX)
+		TradeWorldTerritory.setCenterZ(tradeWorld._id, centerZ)
+
+		// Also update the backing territory's polygon so contains() stays in sync
+		Territory.setPolygonData(tradeWorld.backingTerritory, packTerritoryPolygon(Polygon(intArrayOf(centerX), intArrayOf(centerZ), 1)))
+
+		sender.success("Updated center of ${tradeWorld.name} to $centerX, $centerZ")
+	}
+
+	@Subcommand("tradeworld delete")
+	@CommandPermission("nations.admin")
+	fun onTradeWorldDelete(sender: CommandSender, worldName: String) = asyncCommand(sender) {
+		val tradeWorld = TradeWorldTerritory.findByWorld(worldName) ?: fail { "No trade world city found for $worldName!" }
+
+		val territory = Territory.findById(tradeWorld.backingTerritory) ?: fail { "Backing territory not found!" }
+		val npcOwner = territory.npcOwner ?: fail { "No NPC owner found on backing territory!" }
+
+		NPCTerritoryOwner.delete(npcOwner)
+		// Territory deletion cascades via NPCTerritoryOwner.delete which unsets npcOwner,
+		// but you may want to manually delete the territory too:
+		Territory.col.deleteOneById(tradeWorld.backingTerritory)
+		TradeWorldTerritory.col.deleteOneById(tradeWorld._id)
+
+		sender.success("Deleted trade world city for $worldName")
 	}
 
 	@Subcommand("ecoshutdown")

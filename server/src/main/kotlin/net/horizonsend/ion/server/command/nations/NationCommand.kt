@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -400,6 +401,7 @@ internal object NationCommand : SLCommand() {
 		// Check for dominion world first, then fall back to regular territory
 		val dominionTerritory = Regions.findFirstOf<RegionDominionTerritory>(sender.location)
 		if (dominionTerritory != null) {
+			failIf(Regions.getAllOf<RegionDominionTerritory>().count { it.nation == nationId } > 1) { "Nations can only have two territories!" }
 			requireDominionUnclaimed(dominionTerritory)
 
 			DominionTerritory.setNation(dominionTerritory.id, nationId)
