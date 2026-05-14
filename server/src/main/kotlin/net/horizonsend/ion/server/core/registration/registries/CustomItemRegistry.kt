@@ -464,11 +464,11 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			NamedTextColor.WHITE,
 			TextDecoration.BOLD
 		), customBlock = CustomBlockKeys.LARGE_REACTOR_CORE)
-		customBlockItem(CustomItemKeys.KOTH_BLOCK, model = "starship/koth_block", displayName = Component.text(
-			"Koth Block",
+		customBlockItem(CustomItemKeys.ASSEMBLY_CORE, model = "starship/assembly_core", displayName = Component.text(
+			"Assembly Core",
 			NamedTextColor.GOLD,
 			TextDecoration.BOLD
-		), customBlock = CustomBlockKeys.KOTH_BLOCK)
+		), customBlock = CustomBlockKeys.ASSEMBLY_CORE)
 	}
 
 	fun registerPipes() {

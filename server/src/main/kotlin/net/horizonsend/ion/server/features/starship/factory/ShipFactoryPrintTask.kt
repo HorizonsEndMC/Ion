@@ -207,7 +207,7 @@ class ShipFactoryPrintTask(
 				printedBlocks++
 
 				consumedCredits += price
-				consumedPower += 0
+				consumedPower += 50
 
 				continue //Prevent adding to missing blocks or printing the same block twice
 			}
@@ -218,7 +218,7 @@ class ShipFactoryPrintTask(
 					toPrint.add(printPosition)
 					printedBlocks++
 
-					consumedPower += 0
+					consumedPower += 50
 				}
 				if (isDisabled) break
 			}

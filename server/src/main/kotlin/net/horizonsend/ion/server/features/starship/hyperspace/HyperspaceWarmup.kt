@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -47,7 +48,10 @@ class HyperspaceWarmup(
 
 				warmup -= nationJumpWarmupModifier.toInt()
 			}
-
+			val isTradeShip = ship.type.typeCategory == TypeCategory.TRADE_SHIP // 20% faster if trade ship
+			if (isTradeShip) {
+				warmup = (warmup * 1.2).toInt()
+			}
 			warmup = max(warmup, 0)
 		}
 

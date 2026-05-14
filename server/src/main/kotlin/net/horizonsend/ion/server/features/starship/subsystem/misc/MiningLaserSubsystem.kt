@@ -72,7 +72,7 @@ class MiningLaserSubsystem(
 	lateinit var targetedBlock: Vector
 
 	// Power used per block broken
-	private val blockBreakPowerUsage: Double = 0.0
+	private val blockBreakPowerUsage: Double = 3.0
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		val firePos = entity.getFirePos()

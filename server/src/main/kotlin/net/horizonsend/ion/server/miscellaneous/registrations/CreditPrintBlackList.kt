@@ -19,7 +19,23 @@ object CreditPrintBlackList {
 		Material.WAXED_OXIDIZED_COPPER,
 		Material.REDSTONE_BLOCK,
 		Material.END_PORTAL_FRAME,
-		Material.REDSTONE
+		Material.REDSTONE,
+		Material.DIAMOND_ORE,
+		Material.GOLD_ORE,
+		Material.COPPER_ORE,
+		Material.IRON_ORE,
+		Material.EMERALD_ORE,
+		Material.DEEPSLATE_COAL_ORE,
+		Material.COAL_ORE,
+		Material.DEEPSLATE_COPPER_ORE,
+		Material.DEEPSLATE_DIAMOND_ORE,
+		Material.DEEPSLATE_EMERALD_ORE,
+		Material.DEEPSLATE_GOLD_ORE,
+		Material.DEEPSLATE_REDSTONE_ORE,
+		Material.REDSTONE_ORE,
+		Material.DEEPSLATE_IRON_ORE,
+		Material.LAPIS_ORE,
+		Material.NETHER_GOLD_ORE
 	)
 
 	fun checkForCreditPrintBlacklist(data: BlockData): Boolean {
@@ -35,6 +51,10 @@ object CreditPrintBlackList {
 			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return true
 			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return true
 			CustomBlockKeys.RAW_URANIUM_BLOCK -> return true
+			CustomBlockKeys.TITANIUM_ORE -> return true
+			CustomBlockKeys.URANIUM_ORE -> return true
+			CustomBlockKeys.ALUMINUM_ORE -> return true
+			CustomBlockKeys.CHETHERITE_ORE -> return true
 			CustomBlockKeys.ATAVUM_BLOCK -> return true
 			CustomBlockKeys.ATAVUM_ORE -> return true
 			CustomBlockKeys.ZIRCON_BLOCK -> return true
@@ -43,7 +63,7 @@ object CreditPrintBlackList {
 			CustomBlockKeys.SCORDITE_ORE -> return true
 			CustomBlockKeys.VANADIUM_BLOCK -> return true
 			CustomBlockKeys.VANADIUM_ORE -> return true
-			CustomBlockKeys.KOTH_BLOCK -> return true
+			CustomBlockKeys.ASSEMBLY_CORE -> return true
 			CustomBlockKeys.BATTLECRUISER_REACTOR_CORE -> return true
 			CustomBlockKeys.CRUISER_REACTOR_CORE -> return true
 			CustomBlockKeys.MINI_REACTOR_CORE -> return true

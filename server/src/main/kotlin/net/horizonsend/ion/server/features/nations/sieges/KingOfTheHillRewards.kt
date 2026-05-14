@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_PO
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_POWER_ARMOR_HELMET
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.JUMP_WARMUP_BUFF
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.KOTH_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ASSEMBLY_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MEDIUM_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MINI_REACTOR_CORE
@@ -52,8 +52,8 @@ object KingOfTheHillRewards {
 			KothType.MAJOR,
 			2,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 2..8, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 2..8, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 65, 32..96, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 16..48, RewardType.MATERIALS),
@@ -76,8 +76,8 @@ object KingOfTheHillRewards {
 			KothType.MINOR,
 			2,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 2..8, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 2..8, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 65, 16..36, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 8..24, RewardType.MATERIALS),
@@ -100,8 +100,8 @@ object KingOfTheHillRewards {
 			KothType.MOON,
 			2,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 2..8, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 2..8, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 65, 16..36, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 8..24, RewardType.MATERIALS),
@@ -132,8 +132,8 @@ object KingOfTheHillRewards {
 			KothType.MAJOR,
 			3,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 25, 64..192, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 24..64, RewardType.MATERIALS),
@@ -159,8 +159,8 @@ object KingOfTheHillRewards {
 			KothType.MINOR,
 			3,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 25, 32..96, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 8..24, RewardType.MATERIALS),
@@ -185,8 +185,8 @@ object KingOfTheHillRewards {
 			KothType.MOON,
 			3,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 35, 32..96, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 8..24, RewardType.MATERIALS),
@@ -219,8 +219,8 @@ object KingOfTheHillRewards {
 			KothType.MAJOR,
 			4,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 15, 96..256, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 15, 48..128, RewardType.MATERIALS),
@@ -246,8 +246,8 @@ object KingOfTheHillRewards {
 			KothType.MINOR,
 			4,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 15, 64..192, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 8..24, RewardType.MATERIALS),
@@ -273,8 +273,8 @@ object KingOfTheHillRewards {
 			KothType.MOON,
 			4,
 			listOf(
-				//Koth Block
-				KothRewardItem(KOTH_BLOCK.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
+				//Assembly Core
+				KothRewardItem(ASSEMBLY_CORE.getValue().constructItemStack(), 100, 6..12, RewardType.KOTHBLOCK),
 				//Ores
 				KothRewardItem(SCORDITE_BLOCK.getValue().constructItemStack(), 15, 64..192, RewardType.MATERIALS),
 				KothRewardItem(VANADIUM_BLOCK.getValue().constructItemStack(), 35, 24..64, RewardType.MATERIALS),

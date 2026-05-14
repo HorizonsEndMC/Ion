@@ -26,9 +26,9 @@ data class NationsConfiguration(
 
 	@Serializable
 	data class FrontierNationSieges(
-		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 20),
-		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 20),
-		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 3),
+		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 60),
+		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 120),
+		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 5),
 		val playerKillPoints: Int = 5_000,
 		val shipCostMultiplier: Double = 1.0,
 		val referenceDestroyerPrice: Int = 19_765,

@@ -483,7 +483,7 @@ class MultiblockShape {
 			alias = "any unwaxed copper bulb"
 		)
 
-		fun kothBlock() = customBlock(CustomBlockKeys.KOTH_BLOCK.getValue())
+		fun kothBlock() = customBlock(CustomBlockKeys.ASSEMBLY_CORE.getValue())
 
 		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)

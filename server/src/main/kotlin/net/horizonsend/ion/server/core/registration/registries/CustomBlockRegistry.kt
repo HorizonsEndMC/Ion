@@ -274,14 +274,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			)
 		)
         register(
-            CustomBlockKeys.KOTH_BLOCK, CustomBlock(
-                key = CustomBlockKeys.KOTH_BLOCK,
+            CustomBlockKeys.ASSEMBLY_CORE, CustomBlock(
+                key = CustomBlockKeys.ASSEMBLY_CORE,
                 blockData = redMushroomBlockData(setOf(BlockFace.EAST, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.KOTH_BLOCK)
+                    drops = customItemDrop(CustomItemKeys.ASSEMBLY_CORE)
                 ),
-                CustomItemKeys.KOTH_BLOCK
+                CustomItemKeys.ASSEMBLY_CORE
             )
         )
 		register(

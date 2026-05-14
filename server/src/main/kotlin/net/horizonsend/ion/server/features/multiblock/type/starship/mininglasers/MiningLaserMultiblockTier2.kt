@@ -18,12 +18,12 @@ sealed class MiningLaserMultiblockTier2 : MiningLaserMultiblock() {
 		text("")
 	)
 
-	override val maxPower: Int = 500000
+	override val maxPower: Int = 300000
 	override val beamOrigin = Triple(0, 3, 1)
-	final override val range: Double = 255.0
-	final override val mineRadius = 29
+	final override val range: Double = 110.0
+	final override val mineRadius = 7
 	override val beamCount: Int = 3
-	override val maxBroken: Int = 60
+	override val maxBroken: Int = 20
 	override val sound: String = "horizonsend:starship.weapon.mining_laser.t2_loop"
 
 	override val tier: Int = 2

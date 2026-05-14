@@ -30,7 +30,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.KOTH_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ASSEMBLY_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
@@ -425,7 +425,7 @@ object KingOfTheHills : IonServerComponent() {
 		}
 
 
-		val kothBlock = KOTH_BLOCK.getValue().constructItemStack()
+		val kothBlock = ASSEMBLY_CORE.getValue().constructItemStack()
 		val kothBlockItemString = GlobalCompletions.toItemString(kothBlock)
 		val kothBlockQuantity = kothBlocks.firstOrNull()?.amount ?: (1..1)
 

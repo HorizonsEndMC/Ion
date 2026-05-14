@@ -93,7 +93,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ATAVUM = registerKey("ATAVUM")
 	val ATAVUM_BLOCK = registerKey("ATAVUM_BLOCK")
 
-	val KOTH_BLOCK = registerKey("KOTH_BLOCK")
+	val ASSEMBLY_CORE = registerKey("ASSEMBLY_CORE")
 
 	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")
 	val ENRICHED_URANIUM = registerKey("ENRICHED_URANIUM")

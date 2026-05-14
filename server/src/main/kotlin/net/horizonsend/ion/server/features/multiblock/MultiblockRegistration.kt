@@ -337,12 +337,12 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MiningLaserMultiblockTier3BottomMirrored)
 		registerMultiblock(MiningLaserMultiblockTier3Side)
 		registerMultiblock(MiningLaserMultiblockTier3SideMirrored)
-		registerMultiblock(MiningLaserMultiblockTier4Top)
-		registerMultiblock(MiningLaserMultiblockTier4TopMirrored)
-		registerMultiblock(MiningLaserMultiblockTier4Bottom)
-		registerMultiblock(MiningLaserMultiblockTier4BottomMirrored)
-		registerMultiblock(MiningLaserMultiblockTier4Side)
-		registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
+		//registerMultiblock(MiningLaserMultiblockTier4Top)
+		//registerMultiblock(MiningLaserMultiblockTier4TopMirrored)
+		//registerMultiblock(MiningLaserMultiblockTier4Bottom) Vandiddy balancing
+		//registerMultiblock(MiningLaserMultiblockTier4BottomMirrored)
+		//registerMultiblock(MiningLaserMultiblockTier4Side)
+		//registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
 
 		// Gas
 		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")

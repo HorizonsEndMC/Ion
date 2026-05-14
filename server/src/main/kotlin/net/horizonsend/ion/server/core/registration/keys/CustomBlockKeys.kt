@@ -46,7 +46,7 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val ZIRCON_BLOCK = registerKey("ZIRCON_BLOCK")
 	val ATAVUM_ORE = registerKey("AVATUM_ORE")
 	val ATAVUM_BLOCK = registerKey("AVATUM_BLOCK")
-	val KOTH_BLOCK = registerKey("KOTH_BLOCK")
+	val ASSEMBLY_CORE = registerKey("ASSEMBLY_CORE")
 
 	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")
