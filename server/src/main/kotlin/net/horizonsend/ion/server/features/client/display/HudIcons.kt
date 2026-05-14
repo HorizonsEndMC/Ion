@@ -794,9 +794,9 @@ object HudIcons : IonServerComponent() {
 				starshipIcon.toString()
 			}
 
-			val otherNation = starship.playerPilot?.let { PlayerCache[it].frontierNationOid }
-            val color = if (otherNation != null && otherNation == PlayerCache[player].frontierNationOid) NamedTextColor.GREEN
-            else if (otherNation != null && otherNation != PlayerCache[player].frontierNationOid) NamedTextColor.RED
+			val otherNation = starship.playerPilot?.let { PlayerCache[it].nationOid }
+            val color = if (otherNation != null && otherNation == PlayerCache[player].nationOid) NamedTextColor.GREEN
+            else if (otherNation != null && otherNation != PlayerCache[player].nationOid) NamedTextColor.RED
             else NamedTextColor.GRAY
 
                 player.sendText(

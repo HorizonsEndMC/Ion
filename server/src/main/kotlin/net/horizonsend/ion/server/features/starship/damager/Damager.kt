@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.damager
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -62,7 +61,7 @@ class PlayerDamagerWrapper(override val player: Player) : PlayerDamager {
 	override val starship: ActiveStarship? get() = ActiveStarships.findByPassenger(player)
 
 	override val color: Color
-		get() = PlayerCache[player].frontierNationOid?.let { Color.fromRGB(FrontierNationCache[it].color ) } ?: Color.RED
+		get() = PlayerCache[player].nationOid?.let { Color.fromRGB(NationCache[it].color ) } ?: Color.RED
 	override fun getAITarget(): AITarget = if (starship == null) PlayerTarget(player) else StarshipTarget(starship!!)
 
 	override fun toString(): String = "PlayerDamager[${player.name}]"
