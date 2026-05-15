@@ -20,7 +20,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
             maximumPerServer = 5,
             minSpawnTimeMinutes = Duration.ofMinutes(15L),
             maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			detectionRange = 5000,
+			detectionRange = 500,
 			interactRange = 200,
 			despawnTimeMinutes = Duration.ofMinutes(30L),
         ))
@@ -31,7 +31,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
             maximumPerServer = 3,
             minSpawnTimeMinutes = Duration.ofMinutes(20L),
             maxSpawnTimeMinutes = Duration.ofMinutes(60L),
-			detectionRange = 3000,
+			detectionRange = 500,
 			interactRange = 200,
 			despawnTimeMinutes = Duration.ofMinutes(30L),
 		))
@@ -41,7 +41,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			displayName = Component.text("Asteroid Field"),
 			minSpawnTimeMinutes = Duration.ofHours(2L),
 			maxSpawnTimeMinutes = Duration.ofHours(4L),
-			minimumServerStage = 1,
+			detectionRange = 500,
 			schematicNames = WeightedRandomList(
 				"scordite_field" to 35,
 				"vanadium_field" to 35,

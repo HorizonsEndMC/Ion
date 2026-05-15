@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -390,15 +391,13 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	}
 
 	private fun isInPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
-		if (!player.world.hasFlag(WorldFlag.SPACE_WORLD)) return true
 		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
+
 		val stars = Space.getStars()
 		val moons = Space.getMoons()
-		val playerContacts = ContactsSidebar.getPlayerContacts(player)
-		val beacons = mutableListOf<ServerConfiguration.HyperspaceBeacon>()
-		for (contact in playerContacts) {
-			if (contact == ServerConfiguration.HyperspaceBeacon) beacons.plus(contact)
-		}
+		val beacons = ConfigurationFiles.serverConfiguration().beacons
+			.filter { it.spaceLocation.world == player.world.name }
+
 		if (starship != null) {
 			for (moon in moons) if (distanceSquared(moon.location, starship.centerOfMass) <= 2500) return true
 			for (star in stars) if (distanceSquared(star.location, starship.centerOfMass) <= 2500) return true

@@ -141,6 +141,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val HEAVY_MISSILE = registerKey("HEAVY_MISSILE")
 	val THERMONUCLEAR_MISSILE = registerKey("THERMONUCLEAR_MISSILE")
 	val SCANNER_PROBE = registerKey("SCANNER_PROBE")
+	val COMBAT_PROBE = registerKey("COMBAT_PROBE")
 
 
 	val PROGRESS_HOLDER = registerKey("PROGRESS_HOLDER")

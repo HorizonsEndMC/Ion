@@ -30,7 +30,6 @@ open class SignatureType(
 
     fun isReadyToSpawn(): Boolean {
         if (System.currentTimeMillis() <= nextSpawnTimeMillis) return false
-		if (minimumServerStage > ServerStage.getServerStage()) return false
 
 		calculateNewSpawnTime()
 		return true
@@ -49,23 +48,22 @@ class PersistentSignatureType(
 	displayName: Component,
 	minSpawnTimeMinutes: Duration,
 	maxSpawnTimeMinutes: Duration,
-	minimumServerStage: Int = 0,
 
 	val maximumPerServer: Int,
 	val detectionRange: Int,
 	val interactRange: Int,
 	val despawnTimeMinutes: Duration,
-) : SignatureType(key, displayName, minSpawnTimeMinutes, maxSpawnTimeMinutes, minimumServerStage)
+) : SignatureType(key, displayName, minSpawnTimeMinutes, maxSpawnTimeMinutes)
 
 class SchematicSignatureType(
 	key: IonRegistryKey<SignatureType, out SignatureType>,
 	displayName: Component,
 	minSpawnTimeMinutes: Duration,
 	maxSpawnTimeMinutes: Duration,
-	minimumServerStage: Int = 0,
 
+	val detectionRange: Int,
 	val schematicNames: WeightedRandomList<String>,
-) : SignatureType(key, displayName, minSpawnTimeMinutes, maxSpawnTimeMinutes, minimumServerStage) {
+) : SignatureType(key, displayName, minSpawnTimeMinutes, maxSpawnTimeMinutes) {
 
 	fun generateSchematic(location: Location, cache: LoadingCache<File, Optional<Clipboard>>, logger: Logger) : Boolean {
 		val schematicName = schematicNames.randomOrNull() ?: return false

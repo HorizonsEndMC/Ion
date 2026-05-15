@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
+import com.sk89q.worldedit.util.formatting.text.format.TextColor
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
@@ -36,6 +37,7 @@ import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -81,6 +83,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
@@ -776,23 +779,19 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 
 			val line = template(
-				"{0} piloted by {1} {2}",
+				"A ship is being piloted in {0}",
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
 				useQuotesAroundObjects = true,
-				//if (pilot?.hasProtection() == true) text(" ★", GOLD) else Component.empty(),
-				starship.getDisplayName(),
-				name,
-				bracketed(text(starship.initialBlockCount, WHITE)),
-			//	worldName
-			).hoverEvent(ofChildren(text("${starship.initialBlockCount} block "), starship.type.displayNameComponent))
+				starship.world.ion.getSpaceRegion().name
+			)//.hoverEvent(ofChildren(text("${starship.initialBlockCount} block "), starship.type.displayNameComponent)) hide block count and class
 
 			sender.sendMessage(line)
 		}
 
 		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
 		sender.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
-		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
+		//sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
 	}
 
 	@CommandAlias("usebeacon")

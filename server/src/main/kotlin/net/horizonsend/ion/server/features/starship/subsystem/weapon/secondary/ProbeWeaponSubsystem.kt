@@ -1,5 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.misc.AIEncounterData
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
@@ -10,6 +14,13 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.starship.ProbeBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry
+import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.space.signatures.SignatureManager
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -48,7 +59,21 @@ class ProbeWeaponSubsystem(
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
+	private var lastProbeType: ProbeType = ProbeType.COMBAT
+
+	enum class ProbeType {
+		COMBAT,
+		SCANNER
+	}
+
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+		when (lastProbeType) {
+			ProbeType.COMBAT -> fireCombatProbe(loc, dir, shooter, target)
+			ProbeType.SCANNER -> fireScannerProbe(loc, dir, shooter, target)
+		}
+	}
+
+	fun fireCombatProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
 		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 
 		Tasks.syncDelay(60L) {
@@ -62,7 +87,9 @@ class ProbeWeaponSubsystem(
 			val totalShips = ships.size
 			for (ship in ships) {
 				val name = ship.playerPilot?.name ?: "None"
-				val pilot: Component = text(name, HE_LIGHT_BLUE) //TODO: Change this to change on frontier nation color
+				val nation = SLPlayer[name]?.nation
+				val color = if (nation != null) TextColor.color(NationCache[nation].color) else HE_LIGHT_GRAY
+				val pilot: Component = text(name, color)
 				val starshipName: Component = text(ship.type.displayName, TextColor.fromHexString(ship.type.color))
 
 				val dx: Double =
@@ -91,14 +118,15 @@ class ProbeWeaponSubsystem(
 				}
 
 				val line = template(
-					"{0} piloted by {1} {2}m to the {3}.",
+					"{0} piloted by {1} {2}m to the {3}. {4}",
 					color = HE_LIGHT_GRAY,
 					paramColor = HE_LIGHT_GRAY,
 					useQuotesAroundObjects = true,
 					starshipName,
 					pilot,
 					text(distance, distanceColor),
-					text(direction, HE_MEDIUM_GRAY)
+					text(direction, HE_MEDIUM_GRAY),
+					bracketed(text(ship.centerOfMass.toLocation(ship.world).toString(), HE_DARK_GRAY))
 				)
 				shooter.sendMessage(line)
 			}
@@ -108,12 +136,84 @@ class ProbeWeaponSubsystem(
 		}
 	}
 
+	private fun fireScannerProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
+		Tasks.syncDelay(60L) {
+			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN START]", HE_LIGHT_ORANGE)))
+			val signatures = SignatureManager.activeSignatures.filter {
+				it.key.location.world == starship.world
+				it.key.location.distance(loc) < 10000.0
+			}
+			for (signature in signatures) {
+				val location = signature.key.location
+				val name = signature.key.signatureType.displayName
+				val distance = location.distance(loc)
+				val distanceColor = when {
+					distance < 500 -> RED
+					distance < 1500 -> YELLOW
+					distance < 2500 -> GREEN
+					else -> DARK_GREEN
+				}
+				val line = template(
+					"{0} detected at {1} {2}m away",
+					color = HE_LIGHT_GRAY,
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = true,
+					name,
+					bracketed(text(location.toString(), distanceColor)),
+					text(distance, distanceColor),
+				)
+				shooter.sendMessage(line)
+			}
+
+			val aiSignatures = AISpawners.tickedAISpawners
+				.filterIsInstance<LocusScheduler>()
+				.filter { it.active && it.center != null }
+				.filter { it.center!!.world == starship.world }
+				.filter { it.center!!.distance(loc) < 10000.0 }
+
+			for (locus in aiSignatures) {
+				val location = locus.center!!
+				val name = locus.getTickInfo() // display name as plain text
+				val distance = location.distance(loc)
+				val distanceColor = when {
+					distance < 500 -> RED
+					distance < 1500 -> YELLOW
+					distance < 2500 -> GREEN
+					else -> DARK_GREEN
+				}
+				val line = template(
+					"{0} detected at {1} {2}m away",
+					color = HE_LIGHT_GRAY,
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = true,
+					name,
+					bracketed(text(location.toString(), distanceColor)),
+					text(distance.toInt(), distanceColor)
+				)
+				shooter.sendMessage(line)
+			}
+			shooter.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
+			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN END]", HE_DARK_GRAY)))
+		}
+	}
+
 	override fun getName(): Component {
 		return text("Probe")
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.SCANNER_PROBE.getValue(), 1)
+		return when {
+			requireCustomItem(item, CustomItemKeys.COMBAT_PROBE.getValue(), 1) -> {
+				lastProbeType = ProbeType.COMBAT
+				true
+			}
+			requireCustomItem(item, CustomItemKeys.SCANNER_PROBE.getValue(), 1) -> {
+				lastProbeType = ProbeType.SCANNER
+				true
+			}
+			else -> false
+		}
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
