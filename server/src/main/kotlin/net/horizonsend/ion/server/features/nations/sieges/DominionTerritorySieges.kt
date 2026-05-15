@@ -21,6 +21,8 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
+import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -86,10 +88,33 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	}
 
 	/**
-	 * Returns whether the current territory belongs to a nation that has below 20 power
+	 * Helper to find how deep in power debt a nation is
 	 **/
-	private fun canBeSieged(nation: Oid<Nation>): Boolean {
-		return Nation.isSiegable(nation)
+	private fun maxSiegeableFromDeficit(deficit: Int): Int {
+		var n = 0
+		while (10 * ((n + 1) * (n + 2) / 2) <= deficit) {
+			n++
+		}
+		return maxOf(1, n + 1) // always at least 1 if siegable
+	}
+
+	/**
+	 * Returns whether the current territory belongs to a nation that has below threshold power
+	 **/
+	private fun canBeSieged(region: RegionDominionTerritory): Boolean {
+		val nation = region.nation ?: return false
+		val nationData = NationCache[nation]
+		if (!nationData.siegable) return false
+
+		val activeSiegeCount = getAllSieges().count { it.defender == nation }
+
+		val power = Nation.getTotalPower(nation, ACTIVE_AFTER_TIME)
+		val threshold = dominionTerritoryCost(nationData)
+		val deficit = threshold - power
+
+		val maxSiegeable = maxSiegeableFromDeficit(deficit)
+
+		return activeSiegeCount < maxSiegeable
 	}
 
 	// Initiation, Ending
@@ -97,23 +122,24 @@ object DominionTerritorySieges : IonServerComponent(true) {
 		val nation = PlayerCache[player].nationOid
 			?: return@asyncLocked player.userError("You need to be in a nation to siege a zone.")
 
-
 		val zone = Regions.findFirstOf<RegionDominionTerritory>(player.location)
 			?: return@asyncLocked player.userError("You must be within a zone's area to siege it.")
 
 		val stationId = zone.id
 
 		if (isUnderSiege(stationId)) {
-			return@asyncLocked player.userError("This station is already under siege!")
+			return@asyncLocked player.userError("This territory is already under siege!")
 		}
 
 		if (zone.nation == nation) {
-			return@asyncLocked player.userError("Your nation already owns this station.")
+			return@asyncLocked player.userError("Your nation already owns this territory.")
 		}
 
-		val oldNation = zone.nation ?: return@asyncLocked player.userError("This territory cannot be besieged!")
+		if (zone.nation == null) {
+			return@asyncLocked player.userError("This territory cannot be besieged!")
+		}
 
-		if (!canBeSieged(zone.nation!!)) {
+		if (!canBeSieged(zone)) {
 			player.userError("This territory is not siegable!")
 			player.information("You can only siege a nation that has too low power!")
 			return@asyncLocked

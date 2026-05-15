@@ -40,12 +40,19 @@ import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.player.Power
+import net.horizonsend.ion.server.features.player.Power.canAffordAnotherTerritory
+import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
+import net.horizonsend.ion.server.features.player.Power.getDominionTerritoryCount
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
@@ -65,10 +72,13 @@ import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
+import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import org.litote.kmongo.setValue
 import java.util.Date
+import kotlin.Boolean
 import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
@@ -396,14 +406,27 @@ internal object NationCommand : SLCommand() {
 
 		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
-		failIf(Regions.getAllOf<RegionDominionTerritory>().count { it.nation == nationId } > 1) { "Nations can only have two territories!" }
-
 		// Check for dominion world first, then fall back to regular territory
 		val dominionTerritory = Regions.findFirstOf<RegionDominionTerritory>(sender.location)
 		if (dominionTerritory != null) {
-			failIf(Regions.getAllOf<RegionDominionTerritory>().count { it.nation == nationId } > 1) { "Nations can only have two territories!" }
-			requireDominionUnclaimed(dominionTerritory)
+			val activeMembers = SLPlayer.count(
+				and(SLPlayer::nation eq nationId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
+			)
+			failIf(activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
+				"You need ${NATIONS_BALANCE.settlement.cityMinActive} active members to claim a dominion territory! You currently have $activeMembers."
+			}
 
+			failIf(sender.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "This territory is an NPC trade city and cannot be claimed!" }
+
+			val nationData = NationCache[nationId]
+			val currentPower = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
+
+			failIf(!canAffordAnotherTerritory(nationData, currentPower)) {
+				val nextCount = getDominionTerritoryCount(nationData) + 1
+				"Your nation needs ${dominionTerritoryCost(nextCount)} power to claim another dominion territory! You currently have $currentPower power."
+			}
+
+			requireDominionUnclaimed(dominionTerritory)
 			DominionTerritory.setNation(dominionTerritory.id, nationId)
 
 			val nationName = getNationName(nationId)

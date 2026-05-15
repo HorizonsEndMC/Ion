@@ -222,12 +222,26 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: EntityExplodeEvent) {
-		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE }
+		event.blockList().removeAll {
+			it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MINI_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.SMALL_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MEDIUM_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.LARGE_REACTOR_CORE
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
-		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE}
+		event.blockList().removeAll {
+			it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MINI_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.SMALL_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MEDIUM_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.LARGE_REACTOR_CORE
+		}
 	}
 
 	@EventHandler

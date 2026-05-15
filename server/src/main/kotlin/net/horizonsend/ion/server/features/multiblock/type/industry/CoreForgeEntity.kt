@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MEDIUM_R
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MINI_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -23,7 +24,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblo
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask.Companion.getAvailableItems
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.SpaceRegion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -88,11 +94,10 @@ abstract class CoreForgeEntity (
 		CoreForgeGui(player, this).openGui()
 	}
 
-	fun disable(success: Boolean) {
+	fun disable(message: Component) {
 		if (!userManager.currentlyUsed()) return
 		val player = userManager.getUserPlayer()
-		if (success) player?.sendMessage(Component.text("Success!", HE_LIGHT_BLUE))
-		else player?.sendMessage(Component.text("Insufficient resources.", HE_DARK_ORANGE))
+		player?.sendMessage(message)
 		userManager.clear()
 	}
 
@@ -115,9 +120,23 @@ abstract class CoreForgeEntity (
 			CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
 			else -> CoreRecipes.battlecruiserReactorRecipe
 		}
-		val input: Inventory = getInput() ?: return disable(false)
-		val output: Inventory = getOutput() ?: return disable(false)
+		val input: Inventory = getInput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))
+		val output: Inventory = getOutput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))
 
+		if (currentCore.customItem?.key == LARGE_REACTOR_CORE) {
+			val playerRegion = Regions.findFirstOf<RegionDominionTerritory>(player.location) ?: return disable(
+				Component.text(
+					"You must be in your dominion territory to create a large reactor core!",
+					HE_DARK_ORANGE
+				)
+			)
+			if (playerRegion.nation != PlayerCache[player].nationOid) return disable(
+				Component.text(
+					"You must be in your dominion territory to create a large reactor core!",
+					HE_DARK_ORANGE
+				)
+			)
+		}
 		val missingItems = mutableListOf<String>()
 
 		for (item in currentRecipe) {
@@ -154,7 +173,7 @@ abstract class CoreForgeEntity (
 
 		if (missingItems.isNotEmpty()) {
 			player.userError("Missing resources: ${missingItems.joinToString(", ")}")
-			disable(false)
+			disable(Component.text("Insufficient resources.", HE_DARK_ORANGE))
 			return
 		}
 
@@ -181,7 +200,7 @@ abstract class CoreForgeEntity (
 			}
 		}
 		output.addItem(currentCore)
-		disable(true)
+		disable(Component.text("Success!", HE_LIGHT_BLUE))
 		return
 	}
 }

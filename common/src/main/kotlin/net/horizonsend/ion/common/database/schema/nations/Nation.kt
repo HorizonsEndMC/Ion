@@ -22,11 +22,13 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.pull
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
+import java.util.Date
 
 /**
  * Referenced on:
@@ -49,14 +51,15 @@ import org.litote.kmongo.util.KMongoUtil.idFilterQuery
  * @property invites The settlements the nation has invited
  */
 data class Nation(
-    override val _id: Oid<Nation> = objId(),
-    var name: String,
-    var capital: Oid<Settlement>,
-    var color: Int,
-    override var balance: Int = 0,
-    val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
-	override var siegable: Boolean = false
-) : DbObject, MoneyHolder, Siegable {
+	override val _id: Oid<Nation> = objId(),
+	var name: String,
+	var capital: Oid<Settlement>,
+	var color: Int,
+	override var balance: Int = 0,
+	val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
+	override var siegable: Boolean = false,
+	override var points: Int = 0
+) : DbObject, MoneyHolder, Siegable, PointsHolder {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(Nation::capital)
@@ -165,6 +168,14 @@ data class Nation(
 		fun getPlayers(nationId: Oid<Nation>): MongoIterable<SLPlayerId> {
 			return SLPlayer.findProp(SLPlayer::nation eq nationId, SLPlayer::_id)
 		}
+
+		fun getTotalPower(nationId: Oid<Nation>, activeAfter: Date? = null): Int = SLPlayer
+			.findProp(
+				if (activeAfter != null) and(SLPlayer::nation eq nationId, SLPlayer::lastSeen gte activeAfter)
+				else SLPlayer::nation eq nationId,
+				SLPlayer::power
+			)
+			.sum()
 
 		fun isInvited(nationId: Oid<Nation>, settlementId: Oid<Settlement>): Boolean {
 			return matches(nationId, Nation::invites contains settlementId)

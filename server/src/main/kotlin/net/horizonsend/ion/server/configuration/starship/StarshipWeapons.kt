@@ -1131,7 +1131,7 @@ data class ArtilleryBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1500),
 	override var firePowerConsumption: Int = 7200,
-	override var isForwardOnly: Boolean = false,
+	override var isForwardOnly: Boolean = true,
 	override var maxPerShot: Int = 1,
 	override var applyCooldownToAll: Boolean = true,
 
