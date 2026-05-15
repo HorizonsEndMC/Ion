@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.CORE_FORGE_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.SPACE_RED_NEBULA_CHARACTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
@@ -39,7 +40,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 		val gui = Gui.normal()
 			.setStructure(
 				". . . . . . . . .",
-				". . . . . . . . .",
+				". . . . . . . 9 .",
 				". m a n . g o 4 .",
 				". . . . . . . . .",
 				". 6 7 . . . . 1 .",
@@ -81,6 +82,12 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 					this@CoreForgeGui.refreshButtons()
 				}
 			})
+			.addIngredient('9', tracked { id ->
+				AsyncItem({ BARGE_REACTOR_CORE.getValue().constructItemStack() }) {
+					entity.targetCore = BARGE_REACTOR_CORE.getValue().constructItemStack()
+					this@CoreForgeGui.refreshButtons()
+				}
+			})
 			.addIngredient('6', GuiItems.CustomControlItem(text("Selected Core:"), GuiItem.RIGHT))
 			.addIngredient('7', tracked {id ->
 				AsyncItem({targetCore} ) {} })
@@ -103,11 +110,6 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 					horizontalShift = 0
 				)
 			)
-		/*	.add(
-				text("Core Forge").itemLore,
-				verticalShift = -7 /* down 1 line */ + 2 /* Padding */,
-				horizontalShift = DEFAULT_GUI_WIDTH + 2
-			)*/
 		return text.build()
 	}
 

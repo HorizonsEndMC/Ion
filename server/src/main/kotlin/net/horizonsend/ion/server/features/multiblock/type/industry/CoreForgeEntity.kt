@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_D
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.sendMessage
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
@@ -118,6 +119,7 @@ abstract class CoreForgeEntity (
 			MEDIUM_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.mediumReactorRecipe
 			LARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.largeReactorRecipe
 			CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
+			BARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.battlecruiserReactorRecipe
 			else -> CoreRecipes.battlecruiserReactorRecipe
 		}
 		val input: Inventory = getInput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))

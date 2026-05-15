@@ -252,6 +252,32 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 			)
 		),
+		val blockadeRunner: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 10,
+			maxSneakFlyAccel = 3,
+			warmupTime = 30,
+			interdictionRange = 1200,
+			jumpStrength = 3.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 1.35,
+			shieldPowerMultiplier = 0.5,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					SmallReactorSubsystem::class.java,
+					1,
+					"Blockade Runners require a small reactor to pilot!"
+				),
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Blockade Runners require fuel to pilot!"
+				)
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
+		),
 		val heavyFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
@@ -297,6 +323,102 @@ data class NewStarshipBalancing(
 					FuelTankSubsystem::class.java,
 					1,
 					"Barges require fuel to pilot!"
+				)
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+			)
+		),
+		val jumpFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 3,
+			maxSneakFlyAccel = 3,
+			warmupTime = 120,
+			interdictionRange = 4500,
+			jumpStrength = 2.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 3.0,
+			cruiseSpeedMultiplier = 0.88,
+			shieldPowerMultiplier = 0.10,
+			weaponOverrides = listOf(
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(minBlockCount = 3400),
+					projectile = TriTurretProjectileBalancing(speed = 110.0)
+				),
+				HeavyTurretBalancing(
+					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
+					firePowerConsumption = 3333,
+					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
+				)
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				),
+			),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Jump Freighters require a large reactor to pilot!"
+				),
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Jump Freighters require fuel to pilot!"
+				)
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+			)
+		),
+		val industrialCommandShip: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 3,
+			maxSneakFlyAccel = 3,
+			warmupTime = 120,
+			interdictionRange = 4500,
+			jumpStrength = 2.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 3.0,
+			cruiseSpeedMultiplier = 0.88,
+			shieldPowerMultiplier = 1.50,
+			weaponOverrides = listOf(
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(minBlockCount = 3400),
+					projectile = TriTurretProjectileBalancing(speed = 110.0)
+				),
+				HeavyTurretBalancing(
+					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
+					firePowerConsumption = 3333,
+					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
+				)
+			),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					GravityWellSubsystem::class.java,
+					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpBeaconSubsystem::class.java,
+					"Only recon starfighters can use jump beacons!"
+				),
+			),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Jump Freighters require a large reactor to pilot!"
+				),
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Jump Freighters require fuel to pilot!"
 				)
 			),
 			shipSounds = StarshipSounds(
