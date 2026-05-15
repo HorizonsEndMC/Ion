@@ -42,13 +42,15 @@ object Power : IonServerComponent() {
 				for (nation in NationCache.all()) {
 					val dominionCount = getDominionTerritoryCount(nation)
 					if (dominionCount == 0) {
-						// ensure they're never siegable, silently
 						if (nation.siegable) Nation.setSiegable(nation.id, false)
 						continue
 					}
+
 					val power = Nation.getTotalPower(nation.id, ACTIVE_AFTER_TIME)
 					val powerCost = dominionTerritoryCost(nation)
+
 					if (nation.siegable && power >= powerCost) {
+						// Recovered and no longer siegable
 						Nation.setSiegable(nation.id, false)
 						Discord.sendEmbed(
 							ConfigurationFiles.discordSettings().eventsChannel,
@@ -61,12 +63,23 @@ object Power : IonServerComponent() {
 							text("{0}'s power has recovered and they can no longer be sieged!", YELLOW),
 							formatNationName(nation.id)
 						)
+						Notify.allOnline(ofChildren(headerLine, newline(), newline()))
 
-						val globalMessage = ofChildren(
-							headerLine, newline(),
-							newline(),
+					} else if (!nation.siegable && power < powerCost) {
+						// Dropped below threshold due to inactivity and now siegable
+						Nation.setSiegable(nation.id, true)
+						Discord.sendEmbed(
+							ConfigurationFiles.discordSettings().eventsChannel,
+							Embed(
+								title = "Nation Siegeable",
+								description = "${nation.name}'s power has dropped too low, their territory can now be sieged!",
+							)
 						)
-						Notify.allOnline(globalMessage)
+						val headerLine = template(
+							text("{0}'s power has dropped too low! Their territory can now be sieged!", YELLOW),
+							formatNationName(nation.id)
+						)
+						Notify.allOnline(ofChildren(headerLine, newline(), newline()))
 					}
 				}
 			}
