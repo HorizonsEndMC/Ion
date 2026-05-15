@@ -394,27 +394,26 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
 
 		val stars = Space.getStars()
-		val moons = Space.getMoons()
+		val planets = Space.getAllPlanets()
 		val beacons = ConfigurationFiles.serverConfiguration().beacons
 			.filter { it.spaceLocation.world == player.world.name }
 
+		if (starship?.world?.hasFlag(WorldFlag.CORE_REGION_WORLD) == false) return false
 		if (starship != null) {
-			for (moon in moons) if (distanceSquared(moon.location, starship.centerOfMass) <= 2500) return true
-			for (star in stars) if (distanceSquared(star.location, starship.centerOfMass) <= 2500) return true
-			for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVec3i(), starship.centerOfMass) <= 2500) return true
+			for (planet in planets) if (distanceSquared(planet.location, starship.centerOfMass) <= 250000) return true
+			for (star in stars) if (distanceSquared(star.location, starship.centerOfMass) <= 250000) return true
+			for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVec3i(), starship.centerOfMass) <= 250000) return true
 		} else {
-			for (moon in moons) if (distanceSquared(moon.location.toVector(), player.location.toVector()) <= 2500) return true
-			for (star in stars) if (distanceSquared(star.location.toVector(), player.location.toVector()) <= 2500) return true
-			for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVector(), player.location.toVector()) <= 2500) return true
+			for (planet in planets) if (distanceSquared(planet.location.toVector(), player.location.toVector()) <= 250000) return true
+			for (star in stars) if (distanceSquared(star.location.toVector(), player.location.toVector()) <= 250000) return true
+			for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVector(), player.location.toVector()) <= 250000) return true
 		}
 		return false
 	}
 
 	private fun isInSuperPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
 		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
-		val world = player.world
 		val playerLocation = player.location
-		if (world.hasFlag(WorldFlag.PLANET_WORLD)) return true
 		for (koth in KingOfTheHills.getKOTHS()) {
 			val thisKoth = koth.kothId
 			val kothRegion: RegionKothZone = Regions[thisKoth]

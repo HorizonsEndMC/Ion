@@ -144,6 +144,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MOD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNCHARGED_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHARGED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COMBAT_PROBE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LIGHT_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_ARSENAL_MISSILE
@@ -389,12 +390,10 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', PRISMARINE_CRYSTALS)
 			setIngredient('z', COPPER_INGOT)
 		}
-		shaped("Scanner_Probe", SCANNER_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape(" y ", " z ", " y ")
+		shapeless("Scanner_Probe", SCANNER_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC, IRON_NUGGET, GOLD_NUGGET)
 
-			setIngredient('y', IRON_INGOT)
-			setIngredient('z', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
-		}
+		shapeless("Combat_Probe", COMBAT_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC, ItemStack.of(IRON_NUGGET, 1),ALUMINUM_INGOT.getValue().constructItemStack(1))
+
 		shaped("Light_Missile", LIGHT_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" y ", " z ", " y ")
 
@@ -674,13 +673,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', GLASS_PANE)
 
 		}
-		/*shaped("detonator", DETONATOR.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+		shaped("detonator", DETONATOR.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" r ", "tut", " t ")
 
 			setIngredient('r', REDSTONE)
 			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 			setIngredient('u', URANIUM.getValue().constructItemStack())
-		}*/
+		}
 		shaped("smokeGrenade", SMOKE_GRENADE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" i ", "tct", " t ")
 

@@ -65,15 +65,20 @@ class ProbeWeaponSubsystem(
 		COMBAT,
 		SCANNER
 	}
+	fun getRange(starship: ActiveStarship): Int {
+		return if (starship.type == StarshipType.RECON_STARFIGHTER) 7000
+		else 5000
+	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+		val range = getRange(starship)
 		when (lastProbeType) {
-			ProbeType.COMBAT -> fireCombatProbe(loc, dir, shooter, target)
-			ProbeType.SCANNER -> fireScannerProbe(loc, dir, shooter, target)
+			ProbeType.COMBAT -> fireCombatProbe(loc, dir, shooter, target, range)
+			ProbeType.SCANNER -> fireScannerProbe(loc, dir, shooter, target, range)
 		}
 	}
 
-	fun fireCombatProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+	fun fireCombatProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector, range: Int) {
 		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 
 		Tasks.syncDelay(60L) {
@@ -81,7 +86,7 @@ class ProbeWeaponSubsystem(
 			val ships = ActiveStarships.all().filter {
 				it.controller is PlayerController
 				it.world == starship.world
-				it.centerOfMass.distanceSquared(starship.centerOfMass) < 56250000 //7.5km squared
+				it.centerOfMass.distanceSquared(starship.centerOfMass) < range*range
 				it.type != StarshipType.RECON_STARFIGHTER
 			}
 			val totalShips = ships.size
@@ -136,13 +141,13 @@ class ProbeWeaponSubsystem(
 		}
 	}
 
-	private fun fireScannerProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+	private fun fireScannerProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector, range: Int) {
 		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 		Tasks.syncDelay(60L) {
 			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN START]", HE_LIGHT_ORANGE)))
 			val signatures = SignatureManager.activeSignatures.filter {
 				it.key.location.world == starship.world
-				it.key.location.distance(loc) < 10000.0
+				it.key.location.distance(loc) < range
 			}
 			for (signature in signatures) {
 				val location = signature.key.location

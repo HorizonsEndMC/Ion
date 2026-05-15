@@ -384,6 +384,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onJumpBeaconToggle(sender: Player) {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
+		for (planet in Space.getAllPlanets()) {
+				failIf(planet.location.distanceSquared(starship.centerOfMass) < 1000*1000) {"You cannot activate your jump beacon in a planet's gravity well!"}
+		}
+
+		for (star in Space.getStars()) {
+			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800*1800) {"You cannot activate your jump beacon in a star's gravity well!"}
+		}
+
+		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) {"You can only use jump beacons in space!"}
 
 		jumpBeaconCooldown.tryExec(sender) {
 			starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
