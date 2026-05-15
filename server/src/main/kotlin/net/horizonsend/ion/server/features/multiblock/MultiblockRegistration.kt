@@ -104,6 +104,7 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedS
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.HornMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.IndustrialInvulnerabilityUnitMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BargeReactorMultiBlock
@@ -448,6 +449,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MediumReactorMultiblock)
 		registerMultiblock(LargeReactorMultiblock)
 		registerMultiblock(FuelTankMultiblock)
+		registerMultiblock(IndustrialInvulnerabilityUnitMultiblock)
 
 		registerMultiblock(OdometerMultiblock)
 		registerMultiblock(LandingGearMultiblock)
