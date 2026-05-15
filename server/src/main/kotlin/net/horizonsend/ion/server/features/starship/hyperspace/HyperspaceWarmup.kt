@@ -73,6 +73,14 @@ class HyperspaceWarmup(
 			cancel()
 		}
 
+		if (ship.isInvulnerable) {
+			ship.onlinePassengers.forEach { player ->
+				player.userError("You cannot jump while invulnerable!")
+				cancel()
+				return
+			}
+		}
+
 		ship.onlinePassengers.forEach { player ->
 			player.informationAction(
 				"Hyperdrive Warmup: $seconds/$warmup seconds"

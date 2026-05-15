@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShi
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.IndustrialInvulnerabilityUnitMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BargeReactorMultiBlock
@@ -53,6 +54,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityUnitSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
@@ -290,6 +292,10 @@ object SubsystemDetector {
 				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
 			}
 
+			is IndustrialInvulnerabilityUnitMultiblock -> {
+				starship.subsystems += IndustrialInvulnerabilityUnitSubsystem(starship, sign, multiblock)
+			}
+
 			is ShieldCommandBurstMultiblock -> {
 				starship.subsystems += ShieldCommandBurstSubsystem(starship, sign, multiblock)
 			}
@@ -418,6 +424,7 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.thrusters)
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
+		starship.subsystems.filterIsInstanceTo(starship.industrialInvulnerabilityUnits)
 		starship.subsystems.filterIsInstanceTo(starship.warpDisruptors)
 		starship.subsystems.filterIsInstanceTo(starship.jumpBeacons)
 		starship.subsystems.filterIsInstanceTo(starship.jumpFieldGenerators)

@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.progression.achievements.AchievementL
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityListener
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
@@ -87,6 +88,7 @@ val listeners: List<Listener> = listOf(
 	PrePackaged,
 	AIModuleListener,
 	//StuckInHyperspaceListener,
+	IndustrialInvulnerabilityListener,
 
 	// Achievement Listeners
 	AchievementListeners(),

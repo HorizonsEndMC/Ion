@@ -81,6 +81,12 @@ object Hyperspace : IonServerComponent() {
 			starship.centerOfMass.x.toDouble(),
 			starship.centerOfMass.z.toDouble()
 		)
+		if (starship.isInvulnerable) {
+			starship.onlinePassengers.forEach {
+				it.userErrorAction("You cannot jump while invulnerable!")
+			}
+			return
+		}
 		if (massShadows != null && starship.disruptorCount.isNotEmpty()) {
 			var combinedWellStrength = 0.0
 			massShadows.forEach { combinedWellStrength += it.wellStrength }

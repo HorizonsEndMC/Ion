@@ -72,6 +72,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.command_burst.Abst
 import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityUnitSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
@@ -494,6 +495,7 @@ class Starship(
 	val thrusters = LinkedList<ThrusterSubsystem>()
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
+	val industrialInvulnerabilityUnits = LinkedList<IndustrialInvulnerabilityUnitSubsystem>()
 	val warpDisruptors = LinkedList<DisruptorSubsystem>()
 	val jumpBeacons = LinkedList<JumpBeaconSubsystem>()
 	val jumpFieldGenerators = LinkedList<JumpFieldGeneratorSubsystem>()
@@ -526,6 +528,9 @@ class Starship(
 	var isTeleporting: Boolean = false
 
 	var lastTick = System.nanoTime()
+
+	var isInvulnerable: Boolean = false
+	var lastInvulnerability: Long? = null //currenttimemillis
 
 	/** Ignore weapon color, use rainbows for pride month **/
 	var rainbowToggle = false

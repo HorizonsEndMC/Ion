@@ -51,6 +51,8 @@ class ReactorSubsystem(
 			return
 		}
 
+		if (starship.isInvulnerable) return
+
 		for (shield in starship.shields) {
 			val missing = shield.maxPower - shield.power
 			shield.recentDamage = ((shield.pastPower - shield.power).toDouble() / shield.maxPower)
@@ -59,7 +61,6 @@ class ReactorSubsystem(
 			if (missing == 0) {
 				continue
 			}
-
 			val fraction = ((missing.toDouble() / totalMissing.toDouble()) * shieldPower).roundToInt()
 			val shieldBoostMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED)?.strength ?: 0.0
 			val shieldDrainMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW)?.strength ?: 0.0

@@ -164,6 +164,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			sender.userError("Failed to unpilot ship")
 			return
 		}
+		failIf(starship.isInvulnerable) {"You cannot unpilot your ship while it's invulnerable!"}
+		PilotedStarships.unpilot(starship)
 		sender.information("Unpiloted ship, but left it activated")
 	}
 
@@ -221,6 +223,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
+		failIf(starship.isInvulnerable) {"You cannot jump while invulnerable!"}
 
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
 		val maxRange: Int = if (navComp == null)
@@ -258,6 +261,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
+
+		failIf(starship.isInvulnerable) {"You cannot jump while invulnerable!"}
 
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship)
 			?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
@@ -442,6 +447,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		beaconTarget: Player? = null
 	) {
 		failIf(starship.type == StarshipType.INTERCEPTOR) { "Interceptors cannot jump to hyperspace" }
+		failIf(starship.isInvulnerable) {"You cannot jump while invulnerable!"}
 
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
