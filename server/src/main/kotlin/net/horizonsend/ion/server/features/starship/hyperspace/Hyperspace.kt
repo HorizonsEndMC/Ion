@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -35,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import kotlin.math.log10
 import kotlin.math.sqrt
@@ -71,7 +73,8 @@ object Hyperspace : IonServerComponent() {
 		z: Int,
 		destinationWorld: World,
 		useFuel: Boolean,
-		nullable: Boolean = false
+		nullable: Boolean = false,
+		beaconTarget: Player? = null
 	) {
 		val massShadows = MassShadows.find(
 			starship.world,
@@ -110,12 +113,12 @@ object Hyperspace : IonServerComponent() {
 
 		if (hyperdrive != null) {
 			check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
-			jumpWarmup(starship,hyperdrive,x,z,destinationWorld,useFuel)
+			jumpWarmup(starship, hyperdrive, x, z, destinationWorld, useFuel, beaconTarget)
 			return
 		}
 
 		check(nullable) {"Hyperdrive does not exist (invalid null state)"}
-		jumpWarmup(starship = starship, hyperdrive = null, x = x, z = z, destinationWorld = destinationWorld, useFuel = useFuel)
+		jumpWarmup(starship = starship, hyperdrive = null, x = x, z = z, destinationWorld = destinationWorld, useFuel = useFuel, beaconTarget = beaconTarget)
 	}
 
 	private fun jumpWarmup(
@@ -124,15 +127,16 @@ object Hyperspace : IonServerComponent() {
 		x: Int,
 		z: Int,
 		destinationWorld: World,
-		useFuel: Boolean
+		useFuel: Boolean,
+		beaconTarget: Player? = null
 	) {
 		val dest = Location(destinationWorld, x.toDouble(), starship.centerOfMass.y.toDouble(), z.toDouble())
-		val mass = starship.mass
-		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
-			else calculateSpeed(3, mass)
-		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 
-		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
+		var warmup = starship.balancing.warmupTime
+
+		if (beaconTarget != null) warmup = (warmup * 0.5).toInt()
+
+		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel, beaconTarget)
 
 		(starship.controller as? PlayerController)?.player?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}

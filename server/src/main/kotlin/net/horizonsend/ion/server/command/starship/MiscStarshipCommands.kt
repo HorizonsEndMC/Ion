@@ -328,10 +328,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
 					"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
 
+		val otherPlayerStarship = if (otherPlayer != null) ActiveStarships.findByPilot(otherPlayer) else null
+
 		if (destinationPos.bukkitWorld() != sender.world) {
 			// Jump beacon handling conditions
 			if (otherPlayer != null) {
-				val otherPlayerStarship = ActiveStarships.findByPilot(otherPlayer)
 				if (otherPlayerStarship == null) {
 					// Fail if target player is not piloting a starship
 					sender.userError("Player $destination is not in a starship! You may set a navigation waypoint to the target fleet member instead.")
@@ -363,7 +364,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val x = destinationPos.x
 		val z = destinationPos.z
 
-		tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
+		tryJump(
+			starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier,
+			beaconTarget = if (otherPlayer != null && otherPlayerStarship?.isJumpBeaconOn == true) otherPlayer else null
+		)
 	}
 
 	private val jumpBeaconCooldown = object : PerPlayerCooldown(60L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassjumpbeaconlimit") {
@@ -422,7 +426,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		destinationWorld: World,
 		maxRange: Int,
 		sender: Player,
-		tier: Int?
+		tier: Int?,
+		beaconTarget: Player? = null
 	) {
 		failIf(starship.type == StarshipType.INTERCEPTOR) { "Interceptors cannot jump to hyperspace" }
 
@@ -544,7 +549,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		x1 += randomInt(-offset, offset)
 		z1 += randomInt(-offset, offset)
 
-		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, destinationWorld, true)
+		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, destinationWorld, true, beaconTarget = beaconTarget)
 	}
 
 	@Suppress("unused")

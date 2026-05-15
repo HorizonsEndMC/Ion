@@ -119,6 +119,7 @@ data class NewStarshipBalancing(
 		val speeder: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
+			warmupTime = 10,
 			interdictionRange = 10,
 			jumpStrength = 0.0,
 			wellStrength = 0.0,
@@ -146,6 +147,7 @@ data class NewStarshipBalancing(
 		val shuttle: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
+			warmupTime = 15,
 			interdictionRange = 300,
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
@@ -174,6 +176,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 600,
+			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.25,
@@ -200,6 +203,7 @@ data class NewStarshipBalancing(
 		val lightFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
+			warmupTime = 30,
 			interdictionRange = 900,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -237,6 +241,7 @@ data class NewStarshipBalancing(
 		val mediumFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
+			warmupTime = 30,
 			interdictionRange = 1200,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -250,6 +255,7 @@ data class NewStarshipBalancing(
 		val heavyFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
+			warmupTime = 30,
 			interdictionRange = 1500,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -263,6 +269,7 @@ data class NewStarshipBalancing(
 		val barge: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
+			warmupTime = 60,
 			interdictionRange = 4500,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
@@ -300,6 +307,7 @@ data class NewStarshipBalancing(
 		val tank: StarshipTypeBalancing = GroundStarshipBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
+			warmupTime = 6767,
 			interdictionRange = 10,
 			jumpStrength = 0.0,
 			wellStrength = 0.0,
@@ -313,6 +321,7 @@ data class NewStarshipBalancing(
 		val starfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
+			warmupTime = 10,
 			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
@@ -340,6 +349,7 @@ data class NewStarshipBalancing(
 		val scramblerStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
+			warmupTime = 10,
 			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
@@ -382,6 +392,7 @@ data class NewStarshipBalancing(
 		val reconStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
+			warmupTime = 5,
 			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
@@ -414,6 +425,7 @@ data class NewStarshipBalancing(
 		val interceptor: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
+			warmupTime = 67,
 			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
@@ -448,6 +460,7 @@ data class NewStarshipBalancing(
 		val gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
+			warmupTime = 10,
 			interdictionRange = 500,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -480,6 +493,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
+			warmupTime = 10,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
@@ -525,6 +539,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
 			jumpStrength = 1.0,
+			warmupTime = 10,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
 			cruiseSpeedMultiplier = 1.0,
@@ -559,6 +574,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
+			warmupTime = 10,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.7,
@@ -595,6 +611,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 1000,
 			jumpStrength = 1.0,
+			warmupTime = 10,
 			wellStrength = 2.0,
 			cruiseSpeedMultiplier = 1.05,
 			hyperspaceRangeMultiplier = 1.7,
@@ -635,6 +652,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
 			jumpStrength = 1.0,
+			warmupTime = 10,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
@@ -687,6 +705,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
 			jumpStrength = 1.0,
+			warmupTime = 10,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
@@ -738,6 +757,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
 			jumpStrength = 1.0,
+			warmupTime = 10,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
@@ -817,6 +837,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
+			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -849,6 +870,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
 			jumpStrength = 1.0,
+			warmupTime = 15,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.25,
@@ -895,6 +917,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
+			warmupTime = 15,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -939,6 +962,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
+			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -1002,6 +1026,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1000,
+			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -1033,6 +1058,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1000,
+			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.85,
@@ -1080,6 +1106,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 2000,
+			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -1115,6 +1142,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
+			warmupTime = 30,
 			jumpStrength = 2.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -1164,6 +1192,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
+			warmupTime = 30,
 			jumpStrength = 3.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -1234,6 +1263,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
+			warmupTime = 30,
 			jumpStrength = 2.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
@@ -1293,6 +1323,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1500,
+			warmupTime = 30,
 			jumpStrength = 3.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
@@ -1345,6 +1376,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1500,
+			warmupTime = 30,
 			jumpStrength = 6.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
@@ -1396,6 +1428,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 5200,
+			warmupTime = 30,
 			jumpStrength = 5.0,
 			wellStrength = 5.0,
 			hyperspaceRangeMultiplier = 2.75,
@@ -1419,6 +1452,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 6000,
+			warmupTime = 30,
 			jumpStrength = 5.0,
 			wellStrength = 5.0,
 			hyperspaceRangeMultiplier = 3.0,
@@ -1442,6 +1476,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 0,
 			maxSneakFlyAccel = 0,
 			interdictionRange = 0,
+			warmupTime = 6767,
 			jumpStrength = 0.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 0.0,
@@ -1450,6 +1485,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 2000,
+			warmupTime = 5,
 			jumpStrength = 5.0,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(
@@ -1476,6 +1512,7 @@ data class NewStarshipBalancing(
 		val unidentified: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
+			warmupTime = 5,
 			interdictionRange = 2000,
 			jumpStrength = 5.0,
 			wellStrength = 5.0,
@@ -1490,8 +1527,8 @@ sealed interface StarshipTypeBalancing {
 	val canMove: Boolean
 	val accelMultiplier: Double
 	val maxSpeedMultiplier: Double
-
 	val shipSounds: StarshipSounds
+	val warmupTime: Int
 
 	val sneakFlyAccelDistance: Int
 	val maxSneakFlyAccel: Int
@@ -1515,10 +1552,12 @@ open class StanrdardStarshipTypeBalancing(
 	override var canMove: Boolean = true,
 	override var accelMultiplier: Double = 1.0,
 	override var maxSpeedMultiplier: Double = 1.0,
+	override var warmupTime: Int = 10,
 
 	override val shipSounds: StarshipSounds = StarshipSounds(),
 
 	override var sneakFlyAccelDistance: Int,
+
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
 	override var jumpStrength: Double,
@@ -1540,6 +1579,7 @@ open class GroundStarshipBalancing(
 	override var canMove: Boolean = true,
 	override var accelMultiplier: Double = 1.0,
 	override var maxSpeedMultiplier: Double = 1.0,
+	override val warmupTime: Int,
 
 	override val shipSounds: StarshipSounds = StarshipSounds(),
 

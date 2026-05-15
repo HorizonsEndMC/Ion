@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
@@ -21,6 +22,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Vibration
 import org.bukkit.Vibration.Destination.BlockDestination
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.litote.kmongo.eq
 import kotlin.math.max
@@ -32,7 +34,8 @@ class HyperspaceWarmup(
     var warmup: Int,
     val dest: Location,
     val drive: HyperdriveSubsystem?,
-    private val useFuel: Boolean
+    private val useFuel: Boolean,
+	private val beaconTarget: Player? = null
 ) : BukkitRunnable() {
 	init {
 		if (ship is ActiveControlledStarship) {
@@ -92,6 +95,18 @@ class HyperspaceWarmup(
 			if (ship.balancing.jumpStrength <= combinedWellStrength) {
 				ship.onlinePassengers.forEach { player ->
 					player.userErrorAction("Ship is within a strong Gravity Well! Jump cancelled")
+				}
+				cancel()
+				return
+			}
+		}
+
+		// Add this after the gravity well check
+		if (beaconTarget != null) {
+			val targetShip = ActiveStarships.findByPilot(beaconTarget)
+			if (targetShip == null || !targetShip.isJumpBeaconOn) {
+				ship.onlinePassengers.forEach { player ->
+					player.userErrorAction("Jump beacon went offline! Jump cancelled.")
 				}
 				cancel()
 				return
