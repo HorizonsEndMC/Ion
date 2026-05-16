@@ -263,11 +263,11 @@ object CombatTimer : IonServerComponent() {
 
 		if (attackerFleet != null && attackerFleet == defenderFleet ) return
 
-		val attackerData = PlayerCache[attacker]
+		val attackerData = PlayerCache.getIfOnline(attacker) ?: return
 		val attackerNation = attackerData.nationOid
 
-		val defenderData = PlayerCache[defender]
-		val defenderNation = defenderData.nationOid
+		val defenderData = PlayerCache.getIfOnline(defender)
+		val defenderNation = defenderData?.nationOid
 
 		if (attackerNation == defenderNation) return
 
