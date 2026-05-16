@@ -158,26 +158,25 @@ object Hyperspace : IonServerComponent() {
 		val mass = starship.mass
 		val speed = (if (warmup.drive != null) calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass)
 		else calculateSpeed(3, mass)) / 10
-		val movement = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
 
-		StarshipTeleportation.teleportStarship(starship, loc) {
-			// Happens after the teleport finishes
-			Tasks.syncDelay(2L) {
-				StarshipEnterHyperspaceEvent(starship, movement).callEvent()
-			}
-		}.thenAccept { success ->
+		StarshipTeleportation.teleportStarship(starship, loc).thenAccept { success ->
 			if (!success) {
 				return@thenAccept
 			}
 
+			val movement = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
 			movementTasks[starship] = movement
+			// Happens after the teleport finishes
+			Tasks.syncDelay(2L) {
+				StarshipEnterHyperspaceEvent(starship, movement).callEvent()
+			}
 		}
 	}
 
 	fun cancelJumpMovement(movement: HyperspaceMovement) {
 		val starship = movement.ship
 
-		check(movementTasks.remove(starship, movement)) { "Movement wasn't in the map!" }
+		check(movementTasks.remove(starship, movement)) { "Movement for starship ${starship.controller.name} wasn't in the map!" }
 
 		if (!ActiveStarships.isActive(starship)) {
 			return
@@ -205,7 +204,7 @@ object Hyperspace : IonServerComponent() {
 	fun completeJumpMovement(movement: HyperspaceMovement) {
 		val starship = movement.ship
 
-		check(movementTasks.remove(starship, movement)) { "Movement wasn't in the map!" }
+		check(movementTasks.remove(starship, movement)) { "Movement for starship ${starship.controller.name} wasn't in the map!" }
 
 		movement.cancel()
 
