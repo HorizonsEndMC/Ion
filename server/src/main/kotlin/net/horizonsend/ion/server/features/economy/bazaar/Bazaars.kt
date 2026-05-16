@@ -99,14 +99,15 @@ object Bazaars : IonServerComponent() {
 	override fun onEnable() {
 		buildStrings()
 		Tasks.asyncRepeat(20L, 20 * 60 * 60L, /* Every hour */ ::cleanExpiredBazaarEntries)
-		Tasks.asyncDelay(20L, ::migrateEntries)
+		//Tasks.asyncDelay(20L, ::migrateEntries)
 	}
 
 	fun cleanExpiredBazaarEntries() {
 
 	}
 
-	// TODO: REMOVE AFTER RUNNING ONCE
+	// REMOVE AFTER RUNNING ONCE
+	/*
 	fun migrateEntries() {
 		val replacements = mutableMapOf(
 			"CHAIN" to "IRON_CHAIN"
@@ -122,6 +123,7 @@ object Bazaars : IonServerComponent() {
 			BazaarOrder.updateById(entry._id, org.litote.kmongo.setValue(BazaarOrder::itemString, replacement))
 		}
 	}
+	 */
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
 		BazaarGUIs.openCityBrowse(player, city, null)
