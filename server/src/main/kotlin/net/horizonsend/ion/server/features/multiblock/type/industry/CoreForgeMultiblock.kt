@@ -36,14 +36,27 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 		line3 = null,
 		line4 = null
 	)
+
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.FORWARD,
+						Bisected.Half.TOP,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 				x(1).ironBlock()
 				x(0).powerInput()
 				x(-1).ironBlock()
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.FORWARD,
+						Bisected.Half.TOP,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 			}
 			y(1) {
 				x(2).anyPipedInventory()
@@ -67,11 +80,23 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 				x(-2).ironBlock()
 			}
 			y(4) {
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.FORWARD,
+						Bisected.Half.BOTTOM,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 				x(1).ironBlock()
 				x(0).titaniumBlock()
 				x(-1).ironBlock()
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.FORWARD,
+						Bisected.Half.BOTTOM,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 			}
 		}
 		z(1) {
@@ -84,23 +109,53 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 			}
 			y(1) {
 				x(2).extractor()
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
+				x(1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.UP,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(0).type(Material.MAGMA_BLOCK)
-				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.UP,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(-2).anyGlass()
 			}
 			y(2) {
 				x(2).anyGlass()
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(0).type(Material.MAGMA_BLOCK)
-				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(-2).anyGlass()
 			}
 			y(3) {
 				x(2).anyGlass()
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(0).type(Material.MAGMA_BLOCK)
-				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(-2).anyGlass()
 			}
 			y(4) {
@@ -158,23 +213,53 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 			}
 			y(1) {
 				x(2).anyGlass()
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
+				x(1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.UP,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(0).type(Material.MAGMA_BLOCK)
-				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.UP,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(-2).anyGlass()
 			}
 			y(2) {
 				x(2).anyGlass()
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(0).type(Material.MAGMA_BLOCK)
-				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(-2).anyGlass()
 			}
 			y(3) {
 				x(2).anyGlass()
-				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(0).type(Material.MAGMA_BLOCK)
-				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.DOWN,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 				x(-2).anyGlass()
 			}
 			y(4) {
@@ -187,11 +272,23 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 		}
 		z(4) {
 			y(0) {
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.TOP,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 				x(1).ironBlock()
 				x(0).titaniumBlock()
 				x(-1).ironBlock()
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.TOP,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 			}
 			y(1) {
 				x(2).ironBlock()
@@ -215,11 +312,23 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 				x(-2).ironBlock()
 			}
 			y(4) {
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.BOTTOM,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 				x(1).ironBlock()
 				x(0).titaniumBlock()
 				x(-1).ironBlock()
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-2).anyStairs(
+					PrepackagedPreset.stairs(
+						RelativeFace.BACKWARD,
+						Bisected.Half.BOTTOM,
+						shape = Stairs.Shape.STRAIGHT
+					)
+				)
 			}
 		}
 	}
@@ -255,9 +364,10 @@ object CoreForgeMultiblock : Multiblock(), EntityMultiblock<CoreForgeMultiblock.
 		).register()
 
 	}
-override fun onSignInteract( sign: Sign, player: Player, event: PlayerInteractEvent) {
-	val entity = getMultiblockEntity(sign) ?: return
-	entity.openGui(player)
-		}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		val entity = getMultiblockEntity(sign) ?: return
+		entity.openGui(player)
+	}
 }
 
