@@ -118,9 +118,7 @@ abstract class CoreForgeEntity (
 			SMALL_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.smallReactorRecipe
 			MEDIUM_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.mediumReactorRecipe
 			LARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.largeReactorRecipe
-			CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
-			BARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.battlecruiserReactorRecipe
-			else -> CoreRecipes.battlecruiserReactorRecipe
+			else -> CoreRecipes.tier1ReactorRecipe
 		}
 		val input: Inventory = getInput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))
 		val output: Inventory = getOutput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))
