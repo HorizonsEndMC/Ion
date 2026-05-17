@@ -384,6 +384,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.FUEL_ROD_CORE, model = "industry/fuel_rod_core", displayName = Component.text("Fuel Rod Core"))
 		unStackable(key = CustomItemKeys.FUEL_CELL, model = "industry/fuel_cell", displayName = Component.text("Fuel Cell"))
 		unStackable(key = CustomItemKeys.FUEL_CONTROL, model = "industry/fuel_control", displayName = Component.text("Fuel Control"))
+		stackable(key = CustomItemKeys.DATA_CHIP, Component.text("Data Chip"), "industry/data_chip")
+		stackable(key = CustomItemKeys.GUIDANCE_SYSTEM, Component.text("Guidance System"), "industry/guidance_system")
 
 		unStackable(key = CustomItemKeys.REACTIVE_COMPONENT, model = "industry/reactive_component", displayName = Component.text("Reactive Component"))
 		unStackable(key = CustomItemKeys.REACTIVE_HOUSING, model = "industry/reactive_housing", displayName = Component.text("Reactive Housing"))

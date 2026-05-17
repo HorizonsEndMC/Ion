@@ -47,6 +47,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 
 	val GUN_BARREL = registerKey("GUN_BARREL")
 	val CIRCUITRY = registerKey("CIRCUITRY")
+	val DATA_CHIP = registerKey("DATA_CHIP")
+	val GUIDANCE_SYSTEM = registerKey("GUIDANCE_SYSTEM")
 
 	val PISTOL_RECEIVER = registerKey("PISTOL_RECEIVER")
 	val RIFLE_RECEIVER = registerKey("RIFLE_RECEIVER")

@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MO
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ASSEMBLY_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BARGE_REACTOR_CORE
@@ -145,6 +146,8 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MOD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNCHARGED_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHARGED_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COMBAT_PROBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DATA_CHIP
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUIDANCE_SYSTEM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LIGHT_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_ARSENAL_MISSILE
@@ -649,6 +652,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', GOLD_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('r', REDSTONE)
+		}
+		shaped("assembly_core", ASSEMBLY_CORE.getValue().constructItemStack()) {
+			shape("xxx", "xyx", "xxx")
+
+			setIngredient('x', ExactChoice(DATA_CHIP.getValue().constructItemStack()))
+			setIngredient('y', ExactChoice(GUIDANCE_SYSTEM.getValue().constructItemStack()))
+
 		}
 		shaped("standard_magazine", STANDARD_MAGAZINE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "rlr", "ttt")
