@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.ammo
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
@@ -149,5 +150,8 @@ object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 300_000)
+	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 300_000) {
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager =
+			TickedMultiblockEntityParent.TickingManager(5) // 4 ammo/second
+	}
 }

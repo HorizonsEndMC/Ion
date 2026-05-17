@@ -23,7 +23,7 @@ class AssaultTurretWeaponSubsystem(
 		return Component.text("Assault Turret")
 	}
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.LOADED_SHELL.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.ASSAULT_TURRET_AMMO_LOADED.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

@@ -125,7 +125,7 @@ class DoomsdayDeviceWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.CHARGED_SHELL.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.DOOMSDAY_LASER_AMMO_LOADED.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
