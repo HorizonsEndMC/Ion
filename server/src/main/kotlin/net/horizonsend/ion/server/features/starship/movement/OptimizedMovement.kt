@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet
 import it.unimi.dsi.fastutil.shorts.ShortSet
 import net.horizonsend.ion.server.features.starship.BlockingBypass
 import net.horizonsend.ion.server.features.starship.Hangars
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -29,11 +28,10 @@ import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
-import net.minecraft.world.level.block.BaseEntityBlock
-import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.BushBlock
 import net.minecraft.world.level.block.DoublePlantBlock
+import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.FungusBlock
 import net.minecraft.world.level.block.GlowLichenBlock
 import net.minecraft.world.level.block.GrowingPlantBlock
@@ -307,7 +305,7 @@ object OptimizedMovement {
 					capturedStates[index] = type
 
 					val blockPos = BlockPos(x, y, z)
-					if (type.block is BaseEntityBlock) {
+					if (type.block is EntityBlock) {
 						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
