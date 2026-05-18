@@ -759,7 +759,7 @@ data class LightTurretBalancing(
 
 @Serializable
 data class HeavyTurretBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, maxBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, maxBlockCount = 12500),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(750),
 	override var firePowerConsumption: Int = 2667,
 	override var isForwardOnly: Boolean = false,
