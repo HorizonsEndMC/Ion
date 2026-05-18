@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
@@ -141,7 +142,11 @@ object StarshipComputers : IonServerComponent() {
 	}
 
 	private fun createComputer(player: Player, block: Block) {
-		if (isRegionDenied(player, player.location)) return player.userError("You can only detect computers in territories you can access.")
+		// Allow computers within an NPC space station that is not protected to be detected
+		if (Regions.find(block.location).none { it is RegionNPCSpaceStation && !it.isProtected }
+			&& isRegionDenied(player, block.location)) {
+			return player.userError("You can only detect computers in territories you can access.")
+		}
 
 		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
 			player.successActionMessage("Registered starship computer!")
