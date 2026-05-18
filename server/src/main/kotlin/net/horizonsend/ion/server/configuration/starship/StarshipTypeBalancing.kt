@@ -300,8 +300,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
-			cruiseSpeedMultiplier = 0.88,
-			shieldPowerMultiplier = 1.30,
+			cruiseSpeedMultiplier = 0.65,
+			shieldPowerMultiplier = 1.00,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 3400),
@@ -338,7 +338,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
-			cruiseSpeedMultiplier = 0.88,
+			cruiseSpeedMultiplier = 0.45,
 			shieldPowerMultiplier = 0.10,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -382,11 +382,11 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			warmupTime = 120,
-			interdictionRange = 4500,
-			jumpStrength = 2.0,
+			interdictionRange = 500,
+			jumpStrength = 3.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
-			cruiseSpeedMultiplier = 0.88,
+			cruiseSpeedMultiplier = 0.50,
 			shieldPowerMultiplier = 1.50,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -444,11 +444,11 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			warmupTime = 10,
-			interdictionRange = 10,
+			interdictionRange = 500,
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.5,
-			shieldPowerMultiplier = 1.0,
+			shieldPowerMultiplier = 0.6,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
@@ -472,9 +472,9 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			warmupTime = 10,
-			interdictionRange = 10,
+			interdictionRange = 350,
 			jumpStrength = 1.0,
-			wellStrength = 0.0,
+			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.5,
 			cruiseSpeedMultiplier = 0.95,
 			requiredMultiblocks = listOf(
@@ -504,7 +504,7 @@ data class NewStarshipBalancing(
 				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
-			shieldPowerMultiplier = 0.6,
+			shieldPowerMultiplier = 0.5,
 			shieldRegenMultiplier = 0.7,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
@@ -515,9 +515,9 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			warmupTime = 5,
-			interdictionRange = 10,
+			interdictionRange = 350,
 			jumpStrength = 1.0,
-			wellStrength = 0.0,
+			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.5,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -537,7 +537,7 @@ data class NewStarshipBalancing(
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 			),
-			shieldPowerMultiplier = 0.75,
+			shieldPowerMultiplier = 0.35,
 			shieldRegenMultiplier = 0.25,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
@@ -587,7 +587,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
-			shieldPowerMultiplier = 0.5,
+			cruiseSpeedMultiplier = 0.8,
+			shieldPowerMultiplier = 0.4,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
@@ -700,7 +701,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.6,
+			shieldPowerMultiplier = 0.5,
+			cruiseSpeedMultiplier = 0.8,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
@@ -963,7 +965,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.6,
+			cruiseSpeedMultiplier = 0.85,
+			shieldPowerMultiplier = 0.5,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
@@ -1152,7 +1155,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
-			shieldPowerMultiplier = 0.7,
+			shieldPowerMultiplier = 0.6,
+			cruiseSpeedMultiplier = 0.85,
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
@@ -1232,6 +1236,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 1.9,
+			cruiseSpeedMultiplier = 0.9,
 			shieldPowerMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -1449,7 +1454,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 3.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
-			cruiseSpeedMultiplier = 0.75,
+			cruiseSpeedMultiplier = 0.9,
 			shieldPowerMultiplier = 1.30,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 17500)),
