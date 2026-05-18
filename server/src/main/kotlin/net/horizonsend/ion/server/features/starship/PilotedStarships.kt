@@ -434,6 +434,15 @@ object PilotedStarships : IonServerComponent() {
 						return@activateAsync
 					}
 				}
+
+				// Check forbidden subsystems
+				for (forbiddenSubsystem in activePlayerStarship.balancing.forbiddenMultiblocks) {
+					if (!forbiddenSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Forbidden subsystem detected! ${forbiddenSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
 			}
 
 			for (subsystem in activePlayerStarship.weapons) {
