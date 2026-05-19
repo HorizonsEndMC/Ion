@@ -38,7 +38,7 @@ object StarshipSignControl : IonServerComponent() {
 	}
 
 	private fun clickSign(player: Player, rightClick: Boolean, sign: Sign) {
-		for (signType in StarshipSigns.values()) {
+		for (signType in StarshipSigns.entries) {
 			if (rightClick && firstLineMatchesUndetected(sign, signType)) {
 				detectSign(signType, player, sign)
 				return
@@ -60,7 +60,7 @@ object StarshipSignControl : IonServerComponent() {
 	private fun matchesDetectedSign(signType: StarshipSigns, sign: Sign): Boolean {
 		val baseLines = signType.baseLines
 		return baseLines.withIndex().none { (index, line) ->
-			line != null && sign.front().line(index).plainText() != line
+			line != null && sign.front().line(index).plainText() != line.plainText()
 		}
 	}
 
@@ -70,7 +70,7 @@ object StarshipSignControl : IonServerComponent() {
 				if (line == null) {
 					continue
 				}
-				sign.setLine(index, line)
+				sign.front().line(index, line)
 			}
 			sign.update()
 		}
