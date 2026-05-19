@@ -505,6 +505,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             GasCanister(CustomItemKeys.GAS_CANISTER_HYDROGEN, "gas/gas_canister_hydrogen", canisterName(Component.text("Hydrogen", NamedTextColor.RED)), AtmosphericGasKeys.HYDROGEN)
         )
 		register(
+		CustomItemKeys.GAS_CANISTER_XENON,
+		GasCanister(CustomItemKeys.GAS_CANISTER_XENON, "gas/gas_canister_xenon", canisterName(Component.text("Xenon", NamedTextColor.GOLD)), AtmosphericGasKeys.XENON)
+		)
+		register(
             CustomItemKeys.GAS_CANISTER_NITROGEN,
             GasCanister(CustomItemKeys.GAS_CANISTER_NITROGEN, "gas/gas_canister_nitrogen", canisterName(Component.text("Nitrogen", NamedTextColor.RED)), AtmosphericGasKeys.NITROGEN)
         )

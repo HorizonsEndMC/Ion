@@ -29,6 +29,27 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 		val inventory = getInventory() ?: return 0
 		if (inventory.isEmpty) return 0
 
+		// Check for xenon first
+		val xenonKey = CustomItemKeys.GAS_CANISTER_XENON
+		val xenonCanisters = inventory.filter { item: ItemStack? ->
+			item?.customItem?.key == xenonKey
+		}
+
+		if (xenonCanisters.isNotEmpty()) {
+			val byFuel = xenonCanisters.map { it to xenonKey.getValue().getFill(it) }.sortedBy { it.second }
+
+			for ((itemStack, fuelAmount) in byFuel) {
+				val toRemove = min(remaining, fuelAmount)
+				xenonKey.getValue().setFill(itemStack, fuelAmount - toRemove)
+				remaining -= toRemove
+				if (remaining == 0) break
+			}
+
+			if (remaining >= 0) fuelAvailable = false
+			return toConsume - remaining
+		}
+
+		// Fall back to reactor-specific fuel
 		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull()
 		val fuelKey = reactor?.fuelKey ?: GAS_CANISTER_HYDROGEN
 
@@ -42,10 +63,8 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 
 		for ((itemStack, fuelAmount) in byFuel) {
 			val toRemove = min(remaining, fuelAmount)
-
 			fuelKey.getValue().setFill(itemStack, fuelAmount - toRemove)
 			remaining -= toRemove
-
 			if (remaining == 0) break
 		}
 

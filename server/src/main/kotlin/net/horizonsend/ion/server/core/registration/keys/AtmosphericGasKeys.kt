@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 
 object AtmosphericGasKeys : KeyRegistry<Gas>(RegistryKeys.ATMOSPHERIC_GAS, Gas::class) {
 	val HYDROGEN = registerTypedKey<GasFuel>("HYDROGEN")
+	val XENON = registerTypedKey<GasFuel>("XENON")
 	val NITROGEN = registerTypedKey<GasFuel>("NITROGEN")
 	val METHANE = registerTypedKey<GasFuel>("METHANE")
 	val OXYGEN = registerTypedKey<GasOxidizer>("OXYGEN")

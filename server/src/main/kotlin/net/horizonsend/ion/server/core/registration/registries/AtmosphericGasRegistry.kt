@@ -33,6 +33,17 @@ class AtmosphericGasRegistry : Registry<Gas>(RegistryKeys.ATMOSPHERIC_GAS) {
             )
         )
 		register(
+			AtmosphericGasKeys.XENON, GasFuel(
+				identifier = "XENON",
+				displayName = Component.text("Xenon", NamedTextColor.GOLD),
+				containerItemKey = CustomItemKeys.GAS_CANISTER_XENON,
+				powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.xenon.powerPerUnit,
+				cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.xenon.cooldown,
+				configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::xenon,
+				fluidKey = FluidTypeKeys.XENON
+			)
+		)
+		register(
             AtmosphericGasKeys.NITROGEN, GasFuel(
                 identifier = "NITROGEN",
                 displayName = Component.text("Nitrogen", NamedTextColor.RED),

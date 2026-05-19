@@ -170,6 +170,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val LARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("LARGE_REACTOR_CORE")
 
 	val GAS_CANISTER_EMPTY = registerKey("GAS_CANISTER_EMPTY")
+	val GAS_CANISTER_XENON = registerTypedKey<GasCanister>("GAS_CANISTER_XENON")
 	val GAS_CANISTER_HYDROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_HYDROGEN")
 	val GAS_CANISTER_NITROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_NITROGEN")
 	val GAS_CANISTER_METHANE = registerTypedKey<GasCanister>("GAS_CANISTER_METHANE")

@@ -7,6 +7,7 @@ object FluidTypeKeys : KeyRegistry<FluidType>(RegistryKeys.FLUID_TYPE, FluidType
 	val EMPTY = registerKey("EMPTY")
 
 	val HYDROGEN = registerTypedKey<GasFluid>("HYDROGEN")
+	val XENON = registerTypedKey<GasFluid>("XENON")
 	val NITROGEN = registerTypedKey<GasFluid>("NITROGEN")
 	val METHANE = registerTypedKey<GasFluid>("METHANE")
 	val OXYGEN = registerTypedKey<GasFluid>("OXYGEN")
