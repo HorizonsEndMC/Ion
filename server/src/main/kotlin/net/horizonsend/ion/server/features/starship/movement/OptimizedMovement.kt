@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.BushBlock
+import net.minecraft.world.level.block.CropBlock
 import net.minecraft.world.level.block.DoublePlantBlock
 import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.FungusBlock
@@ -38,6 +39,7 @@ import net.minecraft.world.level.block.GrowingPlantBlock
 import net.minecraft.world.level.block.LeavesBlock
 import net.minecraft.world.level.block.LiquidBlock
 import net.minecraft.world.level.block.NetherPortalBlock
+import net.minecraft.world.level.block.SeaPickleBlock
 import net.minecraft.world.level.block.StainedGlassBlock
 import net.minecraft.world.level.block.VineBlock
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -231,7 +233,7 @@ object OptimizedMovement {
 		newBlockData.block is StainedGlassBlock
 		|| newBlockData.block is NetherPortalBlock
 		|| newBlockData.block is LiquidBlock
-		|| newBlockData.block is BushBlock // most types of crop/grass blocks
+		|| newBlockData.block is BushBlock
 		|| newBlockData.block is VineBlock // normal vines
 		|| newBlockData.block is GrowingPlantBlock // twisted vines on Luxiterna, kelp, etc.
 		|| newBlockData.block is LeavesBlock
@@ -241,6 +243,7 @@ object OptimizedMovement {
 		|| newBlockData.block is FungusBlock
 		|| newBlockData.block is DoublePlantBlock
 		|| newBlockData.block is GlowLichenBlock
+		|| newBlockData.block is CropBlock
 
 	/**
 	 * Removes hangar-style destination obstructions collected during collision checks.
