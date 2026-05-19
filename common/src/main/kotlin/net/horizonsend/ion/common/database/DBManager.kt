@@ -27,6 +27,8 @@ import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
@@ -44,6 +46,7 @@ import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.StationZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.TradeWorldTerritory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
@@ -147,6 +150,9 @@ object DBManager : IonComponent() {
 		NationSpaceStation.init()
 		SettlementSpaceStation.init()
 		PlayerSpaceStation.init()
+		DominionTerritory.init()
+		DominionTerritorySiegeData.init()
+		TradeWorldTerritory.init()
 
 		// space
 		Planet.init()
