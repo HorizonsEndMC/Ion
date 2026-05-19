@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerDropItemTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerInteractTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
@@ -57,6 +58,7 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.BoundingBox
 import org.slf4j.LoggerFactory
@@ -309,6 +311,16 @@ object SequenceUtils {
         StarshipMovementTrigger.StarshipMovementTriggerSettings(),
         triggerResult = handleEvent<StarshipMoveEvent> { player, _, event ->
             player.userError("You can't move your starship right now!")
+            event.isCancelled = true
+        }
+    )
+
+    fun disallowDroppingItem() = SequenceTrigger(
+        SequenceTriggerTypes.PLAYER_DROP_ITEM,
+        PlayerDropItemTrigger.PlayerDropItemTriggerSettings(),
+        triggerResult = handleEvent<PlayerDropItemEvent> { player, _, event ->
+            if (event.isCancelled) return@handleEvent
+            player.userError("You can't drop items right now!")
             event.isCancelled = true
         }
     )

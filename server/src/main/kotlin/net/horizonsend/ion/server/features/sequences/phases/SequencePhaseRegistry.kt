@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOS
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_HEAVY_TURRET_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_PHASER_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.SPAWN_PIRATES
+import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowDroppingItem
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowJumpWarmup
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowOpeningDoor
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowStarshipReleaseTrigger
@@ -187,6 +188,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = TUTORIAL_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(
@@ -225,6 +227,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = EXIT_CRYOPOD_ROOM,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
                     MovementTriggerSettings(
@@ -280,6 +283,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = BROKEN_ELEVATOR,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
                     MovementTriggerSettings(
@@ -348,6 +352,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = LOOK_AT_TRACTOR,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     SequenceTriggerTypes.USE_TRACTOR_BEAM,
                     TractorBeamTriggerSettings(),
@@ -406,6 +411,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = CREW_QUARTERS,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(
@@ -453,6 +459,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FIRE_OBSTACLE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(
@@ -521,6 +528,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = GET_CHETHERITE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.HAS_ITEM_IN_INVENTORY,
                     settings = HasItemInInventoryTrigger.HasItemInInventoryTriggerSetting { it?.customItem?.key == CustomItemKeys.CHETHERITE },
@@ -557,7 +565,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
         // TUTORIAL.GO_TO_ESCAPE_POD
         bootstrapPhase(
-            GO_TO_ESCAPE_POD, SequenceKeys.TUTORIAL, listOf(
+            phaseKey = GO_TO_ESCAPE_POD,
+            sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(
@@ -624,6 +635,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -683,6 +695,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -737,6 +750,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_SHIFT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -811,6 +825,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_ROTATION_LEFT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -885,6 +900,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_ROTATION_RIGHT,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -948,6 +964,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_INTERMISSION,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1014,6 +1031,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_START,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1087,6 +1105,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_NAVIGATE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1193,6 +1212,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CRUISE_STOP,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1345,6 +1365,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_CHETHERITE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1414,6 +1435,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_HYPERSPACE_JUMP,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowStarshipUnpilotTrigger(),
@@ -1478,6 +1500,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_IN_HYPERSPACE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1543,6 +1566,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_EXIT_HYPERSPACE,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1577,6 +1601,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = TUTORIAL_END,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowStarshipUnpilotTrigger(),
@@ -1815,6 +1840,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = TUTORIAL_TRANSIT_HUB_START,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1839,6 +1865,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_PARKING,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1885,6 +1912,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_SPACE_SUIT,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowStarshipReleaseTrigger(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
@@ -1944,6 +1972,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = FLIGHT_LEAVE_POD,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 disallowOpeningDoor(),
                 disallowJumpWarmup(),
                 disallowStarshipUnpilotTrigger(),
@@ -2022,6 +2051,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = ENTER_TRANSIT_HUB,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(
@@ -2069,6 +2099,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = EXPLORE_TRANSIT_HUB,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
                     settings = MovementTriggerSettings(
@@ -2188,6 +2219,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = BOARD_SHUTTLE,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_CHANGED_WORLD,
                     settings = PlayerChangedWorldTrigger.PlayerChangedWorldTriggerSettings(
@@ -2354,6 +2386,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = ARRIVE_AT_PORT,
             sequenceKey = TUTORIAL_TRANSIT_HUB,
             triggers = listOf(
+                disallowDroppingItem(),
                 SequenceTrigger(
                     SequenceTriggerTypes.WAIT_TIME,
                     WaitTimeTrigger.WaitTimeTriggerSettings("ARRIVED_AT_STATION_DELAY_TIMER", TimeUnit.SECONDS.toMillis(64)),
