@@ -68,7 +68,7 @@ object SequenceManager : IonServerComponent() {
 		phaseMap.rowMap()[player.uniqueId]?.let { map ->
 			for ((sequenceKey, phase) in map) {
 				player.persistentDataContainer.set(
-					sequenceKey.ionNapespacedKey,
+					sequenceKey.ionNamespacedKey,
 					QuestData,
 					QuestData(phase, getSequenceData(player, sequenceKey).metaDataMirror)
 				)
@@ -85,7 +85,7 @@ object SequenceManager : IonServerComponent() {
 		val activeSequences = event.player.persistentDataContainer.get(SEQUENCES, SequenceKeys.listSerializer) ?: return
 
 		for (sequenceKey in activeSequences) {
-			val namespacedKey = sequenceKey.ionNapespacedKey
+			val namespacedKey = sequenceKey.ionNamespacedKey
 
 			val questData = event.player.persistentDataContainer.get(
 				namespacedKey,

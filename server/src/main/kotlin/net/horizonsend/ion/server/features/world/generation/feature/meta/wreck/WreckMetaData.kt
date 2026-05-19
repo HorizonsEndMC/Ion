@@ -12,7 +12,10 @@ class WreckMetaData(override val seed: Long, val structureId: IonRegistryKey<Wre
 
 	object Factory : FeatureMetadataFactory<WreckMetaData>() {
 		override fun load(data: CompoundTag): WreckMetaData {
-			return WreckMetaData(data.getLong("seed"), WreckStructureKeys.getOrDefault(data.getString("structure"), WreckStructureKeys.EMPTY), runCatching { Rotation.valueOf(data.getString("rotation")) }.getOrElse { Rotation.CLOCKWISE_90 })
+			return WreckMetaData(
+				data.getLong("seed").get(),
+				WreckStructureKeys.getOrDefault(data.getString("structure").get(), WreckStructureKeys.EMPTY),
+				runCatching { Rotation.valueOf(data.getString("rotation").get()) }.getOrElse { Rotation.CLOCKWISE_90 })
 		}
 
 		override fun saveData(featureData: WreckMetaData): CompoundTag {
