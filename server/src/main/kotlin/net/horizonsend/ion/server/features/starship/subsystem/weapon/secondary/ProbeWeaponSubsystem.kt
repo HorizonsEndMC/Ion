@@ -84,10 +84,10 @@ class ProbeWeaponSubsystem(
 		Tasks.syncDelay(60L) {
 			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN START]", HE_LIGHT_ORANGE)))
 			val ships = ActiveStarships.all().filter {
-				it.controller is PlayerController
-				it.world == starship.world
-				it.centerOfMass.distanceSquared(starship.centerOfMass) < range*range
-				it.type != StarshipType.RECON_STARFIGHTER
+				it.controller is PlayerController &&
+					it.world == starship.world &&
+					it.centerOfMass.distanceSquared(starship.centerOfMass) < range * range &&
+					it.type != StarshipType.RECON_STARFIGHTER
 			}
 			val totalShips = ships.size
 			for (ship in ships) {
