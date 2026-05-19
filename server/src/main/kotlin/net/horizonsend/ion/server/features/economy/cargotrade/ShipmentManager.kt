@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -509,6 +510,13 @@ object ShipmentManager : IonServerComponent() {
 					min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
+
+				val dominionCrateBonus = DominionTerritoryBuffTypes.getCrateBonus(player)
+				val dominionBonus = totalRevenue * dominionCrateBonus
+				if (dominionBonus > 0) {
+					player.information("Received ${(dominionCrateBonus * 100).toInt()}% (C$dominionBonus) bonus from owning dominion territory.")
+					totalRevenue += dominionBonus
+				}
 
 				player.information("Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations.")
 

@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -64,7 +65,13 @@ object StarshipCruising : IonServerComponent() {
 				} else 0.0
 			} ?: 0.0
 
-			val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + nationCruiseModifier).toInt()
+			val dominionBpsModifier = starship.playerPilot?.let { player ->
+				if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.SPEED))
+					DominionTerritoryBuffTypes.SPEED.value
+				else 0.0
+			} ?: 0.0
+
+			val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + nationCruiseModifier + dominionBpsModifier).toInt()
 
 			val dir = this.targetDir ?: Vector()
 			val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)
@@ -87,7 +94,12 @@ object StarshipCruising : IonServerComponent() {
 				} else 0.0
 			} ?: 0.0
 
-			return (accel * thrusterPower + nationAccelerationModifier).roundToHundredth()
+			val dominionAccelModifier = starship.playerPilot?.let { player ->
+				if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.ACCELERATION))
+					DominionTerritoryBuffTypes.ACCELERATION.value
+				else 0.0
+			} ?: 0.0
+			return (accel * thrusterPower + nationAccelerationModifier + dominionAccelModifier).roundToHundredth()
 		}
 
 		private fun moveTowards(vector: Vector, other: Vector, maxDistance: Double): Vector {

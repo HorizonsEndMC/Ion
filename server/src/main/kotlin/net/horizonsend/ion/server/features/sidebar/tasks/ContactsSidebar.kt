@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
@@ -82,7 +83,9 @@ object ContactsSidebar {
 		val nationContactRangeModifier = if (nationContactRangeBuffActive) {
 			FrontierNationBuffTypes.CONTACT_RANGE.value
 		} else 0.0
-        return settingValue?.plus(nationContactRangeModifier)?.squared()?.toInt() ?: 0
+		val dominionContactRangeModifier = if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE))
+			DominionTerritoryBuffTypes.CONTACT_RANGE.value else 0.0
+		return settingValue?.plus(nationContactRangeModifier + dominionContactRangeModifier)?.squared()?.toInt() ?: 0
     }
 
     private fun priorityColorChange(): Boolean {

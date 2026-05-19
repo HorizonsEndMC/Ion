@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -50,11 +51,16 @@ class HyperspaceWarmup(
 				} else 0.0
 
 				warmup -= nationJumpWarmupModifier.toInt()
+
+				val dominionWarmupReduction = DominionTerritoryBuffTypes.getWarmupReduction(it)
+				val territoryCount = DominionTerritoryBuffTypes.getTerritoryCount(it)
+				if (territoryCount >= 3) {
+					warmup = (warmup * (1 - dominionWarmupReduction)).toInt() // 20% reduction
+				} else if (territoryCount >= 1) {
+					warmup -= dominionWarmupReduction.toInt() // flat 1s
+				}
 			}
-			val isTradeShip = ship.type.typeCategory == TypeCategory.TRADE_SHIP // 20% faster if trade ship
-			if (isTradeShip) {
-				warmup = (warmup * 1.2).toInt()
-			}
+
 			warmup = max(warmup, 0)
 		}
 
