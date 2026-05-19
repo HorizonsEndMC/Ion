@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.SpaceRegion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
@@ -126,6 +127,22 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			val gas = selectedGas
 			if (gas == null) {
 				sleepWithStatus(text("No gas selected.", RED), 10)
+				return
+			}
+
+			// Check if selected gas is still valid for this region
+			val region = world.ion.getSpaceRegion()
+			val validForRegion = when (gas.identifier) {
+				"HYDROGEN" -> region == SpaceRegion.FRACTURE || region == SpaceRegion.MONOLITH
+				"METHANE" -> region == SpaceRegion.SPINE
+				"CHLORINE" -> region == SpaceRegion.SPINE
+				"NITROGEN" -> region == SpaceRegion.WARD || region == SpaceRegion.MONOLITH
+				"XENON" -> false
+				else -> true
+			}
+
+			if (!validForRegion) {
+				sleepWithStatus(text("Gas not available in this region.", RED), 10)
 				return
 			}
 

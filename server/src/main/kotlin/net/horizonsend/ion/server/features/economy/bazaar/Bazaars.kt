@@ -36,6 +36,10 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.SpaceRegion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
@@ -129,7 +133,7 @@ object Bazaars : IonServerComponent() {
 		BazaarGUIs.openCityBrowse(player, city, null)
 	}
 
-	fun priceMult(remote: Boolean) = if (remote) 1 else 1
+	fun priceMult(remote: Boolean) = if (remote) 10 else 1
 
 	/**
 	 * Checks if the given string is a valid item, and not air.
@@ -491,6 +495,25 @@ object Bazaars : IonServerComponent() {
 		val economyCheck = checkEconomyEnabled()
 		if (!economyCheck.isSuccess()) return economyCheck
 
+		if (remote) {
+			val cityWorld = Regions.get<RegionTerritory>(item.cityTerritory).bukkitWorld
+
+			if (cityWorld != null) {
+				val buyerInDeepSpace = player.world.hasFlag(WorldFlag.DOMINION_WORLD)
+				val buyerInCore = player.world.hasFlag(WorldFlag.CORE_REGION_WORLD)
+				val cityIsTradeWorld = cityWorld.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)
+				val cityInCore = cityWorld.hasFlag(WorldFlag.CORE_REGION_WORLD)
+
+				if (buyerInDeepSpace && cityInCore) return InputResult.FailureReason(listOf(text("You cannot remotely purchase from core region cities while in deep space!", RED)))
+				if (buyerInCore && cityIsTradeWorld) return InputResult.FailureReason(listOf(text("You cannot remotely purchase from deep space trade cities!", RED)))
+
+				val buyerRegion = player.world.ion.getSpaceRegion()
+				val cityRegion = cityWorld.ion.getSpaceRegion()
+				if (buyerRegion != cityRegion && buyerRegion != SpaceRegion.NONE && cityRegion != SpaceRegion.NONE) {
+					return InputResult.FailureReason(listOf(text("You cannot remotely purchase from a different region!", RED)))
+				}
+			}
+		}
 		val price: Double = item.price
 		val revenue: Double = amount * price
 		val priceMult = priceMult(remote)

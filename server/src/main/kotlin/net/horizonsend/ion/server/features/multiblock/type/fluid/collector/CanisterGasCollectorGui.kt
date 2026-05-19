@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.SpaceRegion
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -13,7 +15,17 @@ import xyz.xenondevs.invui.window.Window
 
 class CanisterGasCollectorGui(viewer: Player, val entity: CanisterGasCollectorMultiblock.CanisterGasCollectorEntity) : InvUIWindowWrapper(viewer, async = true) {
 
-	private val allGasses = IonRegistries.ATMOSPHERIC_GAS.getAll().toList()
+	private val allGasses = IonRegistries.ATMOSPHERIC_GAS.getAll().filter { gas ->
+		val region = entity.world.ion.getSpaceRegion()
+		when (gas.identifier) {
+			"HYDROGEN" -> region == SpaceRegion.FRACTURE || region == SpaceRegion.MONOLITH
+			"METHANE" -> region == SpaceRegion.SPINE
+			"CHLORINE" -> region == SpaceRegion.SPINE
+			"NITROGEN" -> region == SpaceRegion.WARD || region == SpaceRegion.MONOLITH
+			"XENON" -> false
+			else -> true // everything else has no restriction
+		}
+	}
 
 	override fun buildWindow(): Window? {
 		if (!entity.isAlive) return null
