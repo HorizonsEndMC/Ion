@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.world.generation.generators.configura
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.Holder.Reference
 import net.minecraft.core.registries.Registries
+import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.Structure
 import org.bukkit.World
@@ -25,7 +25,7 @@ abstract class GeneratedFeature<T: FeatureMetaData>(override val key: IonRegistr
 
 	abstract fun generateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, chunkData: ChunkGenerator.ChunkData, start: FeatureStart, metaData: T, minY: Int, maxY: Int)
 
-	val resourceKey: ResourceKey<Structure> = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNamespacedKey.namespace, key.ionNamespacedKey.key))
+	val resourceKey: ResourceKey<Structure> = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(key.ionNamespacedKey.namespace, key.ionNamespacedKey.key))
 	lateinit var ionStructure: Reference<Structure> // by lazy { MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(resourceKey) as IonStructureTypes.IonStructure }
 
 	@Suppress("UNCHECKED_CAST")

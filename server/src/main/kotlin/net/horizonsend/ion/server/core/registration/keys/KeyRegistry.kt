@@ -9,8 +9,6 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.persistence.ListPersistentDataType
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.NamespacedKey
-import org.bukkit.persistence.ListPersistentDataType
-import org.bukkit.persistence.PersistentDataType
 import kotlin.reflect.KClass
 
 abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceKey<Registry<T>>, private val type: KClass<T>) {

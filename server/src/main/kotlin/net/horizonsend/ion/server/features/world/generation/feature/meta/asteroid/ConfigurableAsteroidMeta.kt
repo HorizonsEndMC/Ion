@@ -46,14 +46,14 @@ data class ConfigurableAsteroidMeta(
 
 	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {
 		override fun load(data: CompoundTag): ConfigurableAsteroidMeta {
-			val structureAlias = data.getString("structureAlias")
+			val structureAlias = data.getString("structureAlias").get()
 			val structure = ConfigurationFiles.globalAsteroidConfiguration().structureTemplates[structureAlias]!!
-			val paletteAlias = data.getString("paletteAlias")
+			val paletteAlias = data.getString("paletteAlias").get()
 			val palette = ConfigurationFiles.globalAsteroidConfiguration().paletteTemplates[paletteAlias]!!
 
 			return ConfigurableAsteroidMeta(
-				data.getLong("seed"),
-				data.getDouble("size"),
+				data.getLong("seed").get(),
+				data.getDouble("size").get(),
 				mutableListOf(),
 				structureAlias to structure,
 				paletteAlias to palette

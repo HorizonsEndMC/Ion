@@ -85,7 +85,7 @@ object NMSStructureIntegration : IonServerComponent() {
 	private fun registerStructures() {
 		unfreezeRegistry(MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE))
 
-		val featureKeys = WorldGenerationFeatureKeys.allkeys()
+		val featureKeys = WorldGenerationFeatureKeys.allKeys()
 
 		log.info("Registering ${featureKeys.size} features into the structure registry")
 
@@ -193,7 +193,7 @@ object NMSStructureIntegration : IonServerComponent() {
 			val CODEC: MapCodec<IonStructure> = RecordCodecBuilder.mapCodec { instance ->
 				instance.group(
 					settingsCodec(instance),
-					Codec.string(0, 100).fieldOf("ion_feature").forGetter { structure -> structure.feature.key.toString() }
+					Codec.string(0, 100).fieldOf("ion_feature").forGetter { structure -> structure.feature.key }
 				).apply(instance) { settings, ionFeatureKey -> IonStructure(settings, WorldGenerationFeatureKeys[NamespacedKey.fromString(ionFeatureKey)!!]!!) }
 			}
 		}
@@ -213,13 +213,13 @@ object NMSStructureIntegration : IonServerComponent() {
 
 		companion object Type : StructureTemplateType {
 			override fun load(context: StructureTemplateManager, tag: CompoundTag): StructurePiece {
-				val namespacedKey = NamespacedKey.fromString(tag.getString("feature")) ?: throw IllegalArgumentException("Invalid namespaced key ${tag.getString("feature")}!")
+				val namespacedKey = NamespacedKey.fromString(tag.getString("feature").get()) ?: throw IllegalArgumentException("Invalid namespaced key ${tag.getString("feature")}!")
 				val feature = WorldGenerationFeatureKeys[namespacedKey]?.getValue() ?: throw NullPointerException("World generation feature ${namespacedKey.asString()} not found!")
 
 				return PieceDataStorage(
-					Vec3i(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
+					Vec3i(tag.getInt("x").get(), tag.getInt("y").get(), tag.getInt("z").get()),
 					feature,
-					feature.metaFactory.load(tag.getCompound("meta_data"))
+					feature.metaFactory.load(tag.getCompound("meta_data").get())
 				)
 			}
 		}
