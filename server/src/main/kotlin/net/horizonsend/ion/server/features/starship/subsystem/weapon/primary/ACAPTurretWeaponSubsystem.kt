@@ -25,7 +25,7 @@ class ACAPTurretWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.ACAP_TURRET_AMMO_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.SIEGE_SHELL_LOADED.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

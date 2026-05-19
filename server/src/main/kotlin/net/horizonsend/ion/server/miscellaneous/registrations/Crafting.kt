@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_RIFLE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SHOTGUN
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SNIPER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BREACHER_SHELL_UNLOADED
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CANNON_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESEBURGER
@@ -147,14 +148,23 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNCHARGE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHARGED_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COMBAT_PROBE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DATA_CHIP
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENTROPIC_CHARGE_UNLOADED
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUIDANCE_SYSTEM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HELIX_SHELL_UNLOADED
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LIGHT_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_ARSENAL_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LOADED_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCANNER_PROBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SIEGE_SHELL_UNLOADED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STASIS_CHARGE_UNLOADED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STELLAR_PRISM_UNLOADED
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.THERMONUCLEAR_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_EMP_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_HEAVY_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_LIGHT_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_THERMONUCLEAR_MISSILE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_CORE
@@ -381,13 +391,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('n', IRON_NUGGET)
 			setIngredient('i', IRON_INGOT)
 		}
-		shaped("Loaded_Shell", LOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+		shaped("Unloaded_Shell", UNLOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" y ", " z ")
 
 			setIngredient('y', LAPIS_LAZULI)
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 		}
-		shaped("Charged_Shell", CHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+		shaped("Uncharged_Shell", UNCHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" y ", " z ")
 
 			setIngredient('y', PRISMARINE_CRYSTALS)
@@ -397,25 +407,66 @@ object Crafting : IonServerComponent() {
 
 		shapeless("Combat_Probe", COMBAT_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC, ItemStack.of(IRON_NUGGET, 1),ALUMINUM_INGOT.getValue().constructItemStack(1))
 
-		shaped("Light_Missile", LIGHT_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape(" y ", " z ", " y ")
+		shapeless("Breacher_Shell_Unloaded", BREACHER_SHELL_UNLOADED.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(IRON_INGOT, 1),
+			ItemStack.of(LAPIS_LAZULI, 1)
+		)
 
-			setIngredient('z', REDSTONE)
-			setIngredient('y', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
-		}
-		shaped("Heavy_Missile", HEAVY_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape(" y ", " z ", " y ")
+		shapeless("Stasis_Charge_Unloaded", STASIS_CHARGE_UNLOADED.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(DIAMOND, 1),
+			ItemStack.of(REDSTONE, 1)
+		)
 
-			setIngredient('y', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
-			setIngredient('z', COPPER_INGOT)
-		}
-		shaped("Thermonuclear_missile", THERMONUCLEAR_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape(" y ", " z ", "aya")
+		shapeless("Entropic_Charge_Unloaded", ENTROPIC_CHARGE_UNLOADED.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(GOLD_INGOT, 1),
+			ItemStack.of(REDSTONE, 1)
+		)
 
-			setIngredient('y', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
-			setIngredient('z', ExactChoice(URANIUM.getValue().constructItemStack()))
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+		shapeless("Helix_Shell_Unloaded", HELIX_SHELL_UNLOADED.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ALUMINUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(LAPIS_LAZULI, 1)
+		)
+
+		shapeless("Siege_Shell_Unloaded", SIEGE_SHELL_UNLOADED.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			TITANIUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(LAPIS_LAZULI, 1)
+		)
+
+		shaped("Stellar_Prism_Unloaded", STELLAR_PRISM_UNLOADED.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape("gpg", "sus", "gdg")
+
+			setIngredient('g', GLASS_PANE)
+			setIngredient('p', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(SCORDITE.getValue().constructItemStack()))
+			setIngredient('u', ItemStack.of(DIAMOND_BLOCK, 1))
+			setIngredient('d', ExactChoice(SCORDITE.getValue().constructItemStack()))
 		}
+
+		shapeless("Unloaded_EMP_Missile", UNLOADED_EMP_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(REDSTONE, 3),
+			ItemStack.of(DIAMOND, 2),
+			ItemStack.of(IRON_INGOT, 2)
+		)
+
+		shapeless("Unloaded_Light_Missile", UNLOADED_LIGHT_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ALUMINUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(REDSTONE, 1)
+		)
+
+		shapeless("Unloaded_Heavy_Missile", UNLOADED_HEAVY_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			TITANIUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(REDSTONE, 1)
+		)
+
+		shaped("Unloaded_Thermonuclear_Missile", UNLOADED_THERMONUCLEAR_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape("gpg", "sus", "gpg")
+
+			setIngredient('g', GLASS_PANE)
+			setIngredient('p', ExactChoice(SCORDITE.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('u', ItemStack.of(GOLD_BLOCK, 1))
+		}
+
 		shaped("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("aba", "mum", "hlo")
 

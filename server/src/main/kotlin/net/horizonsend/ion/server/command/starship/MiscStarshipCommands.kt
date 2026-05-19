@@ -397,6 +397,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800*1800) {"You cannot activate your jump beacon in a star's gravity well!"}
 		}
 
+		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) {"You cannot use a jump beacon in a trade world!"}
+
 		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) {"You can only use jump beacons in space!"}
 
 		jumpBeaconCooldown.tryExec(sender) {

@@ -215,6 +215,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				.updateFurnace()
 		))
 
+		// Ammo loader recipes
 		register(MultiblockRecipeKeys.LOADED_SHELL_LOADING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.LOADED_SHELL_LOADING,
 			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
@@ -245,6 +246,97 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				.updateFurnace()
 		))
 
+		register(MultiblockRecipeKeys.BREACHER_SHELL_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.BREACHER_SHELL_LOADING,
+			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.BREACHER_SHELL_UNLOADED),
+			fuelItem = null,
+			power = PowerRequirement(1),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.BREACHER_SHELL_LOADED),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.STASIS_CHARGE_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.STASIS_CHARGE_LOADING,
+			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.STASIS_CHARGE_UNLOADED),
+			fuelItem = null,
+			power = PowerRequirement(1),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.STASIS_CHARGE_LOADED),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.ENTROPIC_CHARGE_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.ENTROPIC_CHARGE_LOADING,
+			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.ENTROPIC_CHARGE_UNLOADED),
+			fuelItem = null,
+			power = PowerRequirement(1),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.ENTROPIC_CHARGE_LOADED),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.HELIX_SHELL_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.HELIX_SHELL_LOADING,
+			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.HELIX_SHELL_UNLOADED),
+			fuelItem = null,
+			power = PowerRequirement(1),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.HELIX_SHELL_LOADED),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.SIEGE_SHELL_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.SIEGE_SHELL_LOADING,
+			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.SIEGE_SHELL_UNLOADED),
+			fuelItem = null,
+			power = PowerRequirement(1),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.SIEGE_SHELL_LOADED),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.STELLAR_PRISM_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.STELLAR_PRISM_LOADING,
+			clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.STELLAR_PRISM_UNLOADED),
+			fuelItem = null,
+			power = PowerRequirement(1),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.STELLAR_PRISM_LOADED),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		// Missile loader recipes
 		register(MultiblockRecipeKeys.ARSENAL_MISSILE_LOADING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.ARSENAL_MISSILE_LOADING,
 			clazz = MissileLoaderMultiblock.MissileLoaderMultiblockEntity::class,
@@ -252,7 +344,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Duration.ofMinutes(60),
+				Duration.ofSeconds(1),
 				ItemResult.simpleResult(CustomItemKeys.ARSENAL_MISSILE),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -284,6 +376,66 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				duration = Duration.ofMinutes(1),
 				normalResult = ItemResult.simpleResult(CustomItemKeys.ASTRONAUT_ICE_CREAM),
 			))
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.LIGHT_MISSILE_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.LIGHT_MISSILE_LOADING,
+			clazz = MissileLoaderMultiblock.MissileLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_LIGHT_MISSILE),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.LIGHT_MISSILE),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.EMP_MISSILE_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.EMP_MISSILE_LOADING,
+			clazz = MissileLoaderMultiblock.MissileLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_EMP_MISSILE),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.EMP_MISSILE),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.HEAVY_MISSILE_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.HEAVY_MISSILE_LOADING,
+			clazz = MissileLoaderMultiblock.MissileLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_HEAVY_MISSILE),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.HEAVY_MISSILE),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.THERMONUCLEAR_MISSILE_LOADING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.THERMONUCLEAR_MISSILE_LOADING,
+			clazz = MissileLoaderMultiblock.MissileLoaderMultiblockEntity::class,
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_THERMONUCLEAR_MISSILE),
+			fuelItem = null,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+				Duration.ofSeconds(1),
+				ItemResult.simpleResult(CustomItemKeys.THERMONUCLEAR_MISSILE),
+			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 				.updateProgressText()
 				.updateFurnace()
 		))

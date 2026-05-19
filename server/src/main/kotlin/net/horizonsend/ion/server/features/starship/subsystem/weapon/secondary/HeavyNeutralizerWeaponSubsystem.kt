@@ -34,7 +34,7 @@ class HeavyNeutralizerWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.CHARGED_SHELL.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.ENTROPIC_CHARGE_LOADED.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

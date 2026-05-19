@@ -24,7 +24,7 @@ class GaussCannonWeaponSubsystem(
 		return Component.text("Gauss Cannon")
 	}
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.GAUSS_CANNON_AMMO_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.BREACHER_SHELL_LOADED.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {
