@@ -831,7 +831,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val destinationWorld = other.bukkitWorld()
 
 			// Gate tax check
-			if (destinationWorld.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) {
+			if (destinationWorld.hasFlag(WorldFlag.DOMINION_WORLD)) {
 				val tradeWorldTerritory = Regions.getAllOf<RegionDominionTerritory>()
 					.firstOrNull { it.world == destinationWorld.name }
 				val ownerNationId = tradeWorldTerritory?.nation
