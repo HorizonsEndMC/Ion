@@ -29,6 +29,8 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -448,47 +450,13 @@ object HudIcons : IonServerComponent() {
      */
     private fun getItemStack(name: String): ItemStack {
         if (name.contains(PLANET_PREFIX)) {
-            return when (name) {
-                PLANET_PREFIX + "Aerach" -> CustomItemKeys.AERACH
-                PLANET_PREFIX + "Aret" -> CustomItemKeys.ARET
-                PLANET_PREFIX + "Chandra" -> CustomItemKeys.CHANDRA
-                PLANET_PREFIX + "Chimgara" -> CustomItemKeys.CHIMGARA
-                PLANET_PREFIX + "Damkoth" -> CustomItemKeys.DAMKOTH
-                PLANET_PREFIX + "Disterra" -> CustomItemKeys.DISTERRA
-                PLANET_PREFIX + "Eden" -> CustomItemKeys.EDEN
-                PLANET_PREFIX + "Gahara" -> CustomItemKeys.GAHARA
-                PLANET_PREFIX + "Herdoli" -> CustomItemKeys.HERDOLI
-                PLANET_PREFIX + "Ilius" -> CustomItemKeys.ILIUS
-                PLANET_PREFIX + "Isik" -> CustomItemKeys.ISIK
-                PLANET_PREFIX + "Kovfefe" -> CustomItemKeys.KOVFEFE
-                PLANET_PREFIX + "Krio" -> CustomItemKeys.KRIO
-                PLANET_PREFIX + "Lioda" -> CustomItemKeys.LIODA
-                PLANET_PREFIX + "Luxiterna" -> CustomItemKeys.LUXITERNA
-                PLANET_PREFIX + "Qatra" -> CustomItemKeys.QATRA
-                PLANET_PREFIX + "Rubaciea" -> CustomItemKeys.RUBACIEA
-                PLANET_PREFIX + "Turms" -> CustomItemKeys.TURMS
-                PLANET_PREFIX + "Vask" -> CustomItemKeys.VASK
-
-                PLANET_PREFIX + "Asteri" -> CustomItemKeys.ASTERI
-                PLANET_PREFIX + "EdenHack" -> CustomItemKeys.HORIZON
-                PLANET_PREFIX + "Ilios" -> CustomItemKeys.ILIOS
-                PLANET_PREFIX + "Regulus" -> CustomItemKeys.REGULUS
-                PLANET_PREFIX + "Sirius" -> CustomItemKeys.SIRIUS
-
-                else -> CustomItemKeys.AERACH
-            }.getValue().constructItemStack()
+            return Space.getPlanet(name.replace(PLANET_PREFIX, ""))?.planetIconFactory?.construct()
+                ?: CachedPlanet.DEFAULT_ITEM_FACTORY.construct()
         }
 
         else if (name.contains(STAR_PREFIX)) {
-            return when (name) {
-                STAR_PREFIX + "Asteri" -> CustomItemKeys.ASTERI
-                STAR_PREFIX + "Horizon" -> CustomItemKeys.HORIZON
-                STAR_PREFIX + "Ilios" -> CustomItemKeys.ILIOS
-                STAR_PREFIX + "Regulus" -> CustomItemKeys.REGULUS
-                STAR_PREFIX + "Sirius" -> CustomItemKeys.SIRIUS
-
-                else -> CustomItemKeys.ASTERI
-            }.getValue().constructItemStack()
+            return Space.getStar(name.replace(STAR_PREFIX, ""))?.starIconFactory?.construct()
+                ?: CachedStar.DEFAULT_ITEM_FACTORY.construct()
         }
 
         else if (name.contains(BEACON_PREFIX)) {
