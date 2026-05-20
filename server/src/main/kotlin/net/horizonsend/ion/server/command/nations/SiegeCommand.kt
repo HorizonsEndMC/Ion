@@ -10,6 +10,8 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
+import net.horizonsend.ion.common.database.schema.nations.GasDepot
+import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.extensions.userError
@@ -25,11 +27,13 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
+import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySiege
 import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
 import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSiege
 import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSieges
+import net.horizonsend.ion.server.features.nations.sieges.GasDepotSieges
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.nations.sieges.SiegeRewardsGui
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
@@ -91,6 +95,22 @@ object SiegeCommand : SLCommand() {
 		}
 		manager.commandCompletions.setDefaultCompletion("dominionSieges", DominionTerritorySiege::class.java)
 
+		manager.commandCompletions.registerAsyncCompletion("gasDepots") {
+			return@registerAsyncCompletion GasDepotSieges.activeSieges.map {
+				val depot: RegionGasDepot = Regions[it.depotId]
+				depot.name.replace(' ', '_')
+			}
+		}
+		manager.commandContexts.registerContext(GasDepot::class.java) { c ->
+			val name = c.popFirstArg()
+			val activeSiege = GasDepotSieges.activeSieges.firstOrNull {
+				val depot: RegionGasDepot = Regions[it.depotId]
+				depot.name.replace(' ', '_').equals(name, ignoreCase = true)
+			} ?: throw InvalidCommandArgument("Active siege in $name not found!")
+			GasDepot.findById(activeSiege.depotId) ?: throw InvalidCommandArgument("Gas depot not found!")
+		}
+
+		manager.commandCompletions.setDefaultCompletion("gasDepots", GasDepot::class.java)
 	}
 
 	@Default
@@ -155,6 +175,7 @@ object SiegeCommand : SLCommand() {
 		if (Regions.findFirstOf<RegionSolarSiegeZone>(sender.location) != null) return SolarSieges.initSiege(sender)
 		if (Regions.findFirstOf<RegionFrontierTerritory>(sender.location) != null) return FrontierNationSieges.initSiege(sender)
 		if (Regions.findFirstOf<RegionDominionTerritory>(sender.location) != null) return DominionTerritorySieges.initSiege(sender)
+		if (Regions.findFirstOf<RegionGasDepot>(sender.location) != null) return GasDepotSieges.beginSiege(sender)
 	}
 
 	val SIEGE_INFO_WIDTH get() = 48
@@ -308,10 +329,22 @@ object SiegeCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.MONEY_WITHDRAW)
 
-		val sieges = SolarSiegeData.findProp(and(or(not(SolarSiegeData::availableRewards size(0)), SolarSiegeData::availableRewards eq null), or(SolarSiegeData::attacker eq nationId, SolarSiegeData::defender eq nationId)), SolarSiegeData::_id)
-		failIf(!sieges.any()) { "You don't have any rewards to collect!" }
+		val solarSiegeIds = SolarSiegeData.findProp(
+			and(
+				or(not(SolarSiegeData::availableRewards size(0)), SolarSiegeData::availableRewards eq null),
+				or(SolarSiegeData::attacker eq nationId, SolarSiegeData::defender eq nationId)
+			),
+			SolarSiegeData::_id
+		).toList()
 
-		SiegeRewardsGui(sender, sieges.toList()).openGui()
+		val gasDepotSiegeIds = GasDepotSiegeData.findByNation(nationId)
+			.filter { it.availableRewards.isNotEmpty() }
+			.map { it._id }
+			.toList()
+
+		failIf(solarSiegeIds.isEmpty() && gasDepotSiegeIds.isEmpty()) { "You don't have any rewards to collect!" }
+
+		SiegeRewardsGui(sender, solarSiegeIds, gasDepotSiegeIds).openGui()
 	}
 
 	fun getSiegeRegionName(id: Oid<SolarSiegeData>): String = SolarSiegeData.findPropById(id, SolarSiegeData::zone)!!.let { Regions.get<RegionSolarSiegeZone>(it).name.replace(' ', '_') }

@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
@@ -24,11 +25,14 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
@@ -203,6 +207,24 @@ object NationsMasterTasks : IonServerComponent() {
 							"for activity credits from <yellow>$activeCount<dark_green> active members"
 					)
 				)
+			}
+		}
+
+		// Gas Depot rewards
+		val xenon = CustomItemKeys.GAS_CANISTER_XENON.getValue()
+		val canister = xenon.createWithFill(xenon.maximumFill)
+		val itemString = GlobalCompletions.toItemString(canister)
+
+		for (nationId in Nation.allIds()) {
+			val ownedDepots = Regions.getAllOf<RegionGasDepot>().filter { it.nation == nationId }
+			if (ownedDepots.isEmpty()) continue
+
+			for (depot in ownedDepots) {
+				val rewardMap = mutableMapOf(itemString to 9)
+				GasDepotSiegeData.create(depot.id, nationId, rewardMap)
+				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
+					"<gold>Your nation received 9 Xenon Canisters from Gas Depot ${depot.name}!"
+				))
 			}
 		}
 

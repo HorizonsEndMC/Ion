@@ -46,7 +46,9 @@ import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
 import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSieges
+import net.horizonsend.ion.server.features.nations.sieges.GasDepotSieges
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
@@ -155,6 +157,8 @@ val components: List<IonComponent> = listOf(
 	StationSieges,
 	SolarSieges,
 	FrontierNationSieges,
+	DominionTerritorySieges,
+	GasDepotSieges,
 
 	MultiblockRegistration,
 	MultiblockAccess,

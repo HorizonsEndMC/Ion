@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
+import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
@@ -93,13 +94,14 @@ object NationsMap : IonServerComponent(true) {
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
-			//Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
+			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
 			Regions.getAllOf<RegionKothZone>().forEach (::addKingOfTheHill)
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
 			Regions.getAllOf<RegionFrontierTerritory>().forEach(NationsMap::updateFrontierTerritory)
+			Regions.getAllOf<RegionGasDepot>().forEach(::addGasDepot)
 		}
 	}
 
@@ -108,11 +110,12 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		//Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
+		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 		Regions.getAllOf<RegionKothZone>().forEach(NationsMap::updateKingOfTheHill)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 		Regions.getAllOf<RegionFrontierTerritory>().forEach(NationsMap::updateFrontierTerritory)
+		Regions.getAllOf<RegionGasDepot>().forEach(NationsMap::updateGasDepot)
 	}
 
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -602,6 +605,48 @@ object NationsMap : IonServerComponent(true) {
 
 		removeSpaceStation(station)
 		addSpaceStation(station)
+	}
+
+	fun addGasDepot(depot: RegionGasDepot): Unit = syncOnly {
+		removeGasDepot(depot)
+
+		val name = "${depot.name} Gas Depot"
+		val world = depot.world
+		val x = depot.x.toDouble()
+		val y = 128.0
+		val z = depot.z.toDouble()
+		val radius = RegionGasDepot.RADIUS.toDouble()
+
+		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
+
+		updateGasDepot(depot)
+	}
+
+	fun removeGasDepot(depot: RegionGasDepot) = syncOnly {
+		if (!dynmapLoaded) return@syncOnly
+		markerSet.findCircleMarker("${depot.name} Gas Depot")?.deleteMarker()
+	}
+
+	fun updateGasDepot(depot: RegionGasDepot): Unit = syncOnly {
+		if (!dynmapLoaded) return@syncOnly
+
+		val marker: CircleMarker = markerSet.findCircleMarker("${depot.name} Gas Depot")
+			?: return@syncOnly addGasDepot(depot)
+
+		val nation = depot.nation?.let(NationCache::get)
+
+		val rgb = nation?.color ?: Color.WHITE.asRGB()
+		marker.setFillStyle(0.2, rgb)
+		marker.setLineStyle(5, 0.8, rgb)
+
+		marker.description = """
+        <p><h2>${depot.name} Gas Depot</h2></p>
+        ${if (nation == null) {
+			"<p>This depot is unclaimed.</p>"
+		} else {
+			"<h3>Owned by ${nation.name}</h3>"
+		}}
+    """.trimIndent()
 	}
 
 	fun addNpcSpaceStation(station: RegionNPCSpaceStation): Unit = syncOnly {

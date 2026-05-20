@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.kyori.adventure.text.Component.newline
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.GasDepot
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.KothType
 import net.horizonsend.ion.common.database.schema.nations.Nation
@@ -74,6 +75,71 @@ object CapturableStationsCommand : SLCommand() {
 		)
 
 		sender.success("Successfully created Solar Siege Zone ({0}), At {1}, {2}", stationName, x, z)
+	}
+}
+
+@CommandAlias("gasdepot")
+@CommandPermission("ion.core.gasdepot.create")
+object GasDepotCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerAsyncCompletion("gasDepotNames") {
+			return@registerAsyncCompletion GasDepot.col.find().toList().map { it.name }
+		}
+	}
+
+	@Subcommand("create")
+	fun createGasDepot(sender: Player, name: String, x: Int, z: Int) {
+		val id = GasDepot.create(name, sender.world.name, x, z)
+		val depot = GasDepot.findById(id) ?: return sender.userError("Failed to create gas depot")
+		sender.success("Successfully created Gas Depot ($name) at $x, $z in ${sender.world.name}")
+	}
+
+	@Subcommand("delete")
+	@CommandCompletion("@gasDepotNames")
+	fun deleteGasDepot(sender: Player, name: String) {
+		val depot = GasDepot.findOne(GasDepot::name eq name)
+			?: return sender.userError("Cannot find gas depot $name")
+		GasDepot.delete(depot._id)
+		sender.success("Successfully deleted gas depot $name")
+	}
+
+	@Subcommand("list")
+	fun listGasDepots(sender: Player) {
+		val depots = GasDepot.col.find().toList()
+		if (depots.isEmpty()) return sender.success("No gas depots found")
+		sender.success("Gas Depots: ${depots.joinToString { "${it.name} (${it.world}: ${it.x}, ${it.z})" }}")
+	}
+
+	@Subcommand("setnation")
+	@CommandCompletion("@gasDepotNames @nations")
+	fun setNation(sender: Player, depotName: String, nationName: String?) {
+		val depot = GasDepot.findOne(GasDepot::name eq depotName)
+			?: return sender.userError("Cannot find gas depot $depotName")
+
+		if (nationName == null) {
+			GasDepot.setNation(depot._id, null)
+			return sender.success("Cleared nation for gas depot $depotName")
+		}
+
+		val nation = Nation.findOne(Nation::name eq nationName)
+			?: return sender.userError("Cannot find nation $nationName")
+
+		GasDepot.setNation(depot._id, nation._id)
+		sender.success("Set nation of gas depot $depotName to $nationName")
+	}
+
+	@Subcommand("info")
+	@CommandCompletion("@gasDepotNames")
+	fun infoGasDepot(sender: Player, name: String) {
+		val depot = GasDepot.findOne(GasDepot::name eq name)
+			?: return sender.userError("Cannot find gas depot $name")
+
+		val nationName = depot.nation?.let { Nation.findById(it)?.name } ?: "None"
+
+		sender.success(
+			"Gas Depot: ${depot.name} | World: ${depot.world} | Pos: ${depot.x}, ${depot.z} | " +
+				"Nation: $nationName | Last Sieged: ${depot.lastSieged ?: "Never"}"
+		)
 	}
 }
 

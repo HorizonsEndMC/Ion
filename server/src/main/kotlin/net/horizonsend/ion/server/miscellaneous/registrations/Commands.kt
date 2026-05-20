@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.command.admin.CapturableStationsCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.DisplayDebug
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
+import net.horizonsend.ion.server.command.admin.GasDepotCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
@@ -165,7 +166,7 @@ val commands: List<SLCommand> = listOf(
 	GracePeriod,
 	NewPlayerProtection,
 	CapturableStationsCommand,
-	KothStationCommand,
+	GasDepotCommand,
 
 	MultiblockCommand,
 	ConfigurationCommands,

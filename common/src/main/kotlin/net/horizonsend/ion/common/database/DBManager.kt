@@ -33,6 +33,8 @@ import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
 import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
+import net.horizonsend.ion.common.database.schema.nations.GasDepot
+import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
 import net.horizonsend.ion.common.database.schema.nations.KothSiege
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
@@ -132,6 +134,8 @@ object DBManager : IonComponent() {
 		// nations
 		CapturableStation.init()
 		KothStation.init()
+		GasDepotSiegeData.init()
+		GasDepot.init()
 
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
