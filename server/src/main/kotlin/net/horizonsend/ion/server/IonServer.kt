@@ -39,7 +39,6 @@ object IonServer : JavaPlugin() {
 
 	override fun onLoad() {
 		WorldReset.onStartup()
-		DominionWorldDB.onStartup()
 	}
 
 	override fun onEnable(): Unit =
@@ -94,6 +93,8 @@ object IonServer : JavaPlugin() {
 
 				server.pluginManager.registerEvents(component, IonServer)
 			} else startAndMeasureTime(component)
+
+			if (component == DBManager) DominionWorldDB.onStartup()
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
