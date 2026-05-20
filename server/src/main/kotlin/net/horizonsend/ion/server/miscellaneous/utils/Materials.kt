@@ -19,6 +19,7 @@ val Material.isGlass: Boolean get() = this == Material.GLASS || this.isStainedGl
 val Material.isStainedGlass: Boolean get() = STAINED_GLASS_TYPES.contains(this)
 val Material.isTintedGlass: Boolean get() = equals(Material.TINTED_GLASS)
 
+val ALL_GLASS_PANE_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS_PANE") } + Material.GLASS_PANE
 val STAINED_GLASS_PANE_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS_PANE") }
 val Material.isGlassPane: Boolean get() = this == Material.GLASS_PANE || this.isStainedGlassPane
 val Material.isStainedGlassPane: Boolean get() = STAINED_GLASS_PANE_TYPES.contains(this)
