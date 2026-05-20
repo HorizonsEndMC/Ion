@@ -6,4 +6,5 @@ object SignatureTypeKeys : KeyRegistry<SignatureType>(RegistryKeys.SIGNATURE_TYP
     val COMET_SMALL = registerKey("COMET_SMALL")
     val COMET_MEDIUM = registerKey("COMET_MEDIUM")
 	val ASTEROID_FIELD = registerKey("ASTEROID_FIELD")
+	val WRECK_SITE = registerKey("WRECK_SITE")
 }

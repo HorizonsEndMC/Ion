@@ -724,7 +724,7 @@ data class TriTurretBalancing(
 @Serializable
 data class LightTurretBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(
-		canFire = true,
+		canFire = false,
 		minBlockCount = 0,
 		maxBlockCount = 12000
 	),

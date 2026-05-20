@@ -49,5 +49,18 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 				"atavum_field" to 5,
 			),
 		))
+
+		register(SignatureTypeKeys.WRECK_SITE, SchematicSignatureType(
+			key = SignatureTypeKeys.WRECK_SITE,
+			displayName = Component.text("Wreck Site"),
+			minSpawnTimeMinutes = Duration.ofHours(1L),
+			maxSpawnTimeMinutes = Duration.ofHours(3L),
+			detectionRange = 500,
+			schematicNames = WeightedRandomList(
+				"wreck_site_1" to 33,
+				"wreck_site_2" to 33,
+				"wreck_site_3" to 34,
+			),
+		))
     }
 }

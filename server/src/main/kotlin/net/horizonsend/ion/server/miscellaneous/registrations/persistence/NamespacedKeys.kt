@@ -29,6 +29,10 @@ object NamespacedKeys {
 	// Encounters PDC
 	val ENCOUNTER = key("encounter")
 
+	// Signatures PDC
+	val WRECK_CHEST = key("wreck_chest")
+	val WRECK_CHEST_LOCKED = key("wreck_chest_locked")
+
 	// Encounter Chests PDC
 	val SECONDARY_CHEST = key("secondary_chest")
 	val SECONDARY_CHEST_MONEY = key("secondary_chest_money")

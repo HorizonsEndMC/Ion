@@ -4,6 +4,8 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
@@ -23,6 +25,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.io.File
@@ -57,23 +60,22 @@ object SignatureManager : IonServerComponent(true) {
         }
     }
 
-    private fun tickSpawners() {
-        for (signatureType in IonRegistries.SIGNATURE_TYPE.getAll()) {
+	private fun tickSpawners() {
+		for (signatureType in IonRegistries.SIGNATURE_TYPE.getAll()) {
 			if (signatureType is PersistentSignatureType && activeSignatures.count { signature -> signature.key.signatureType == signatureType } < signatureType.maximumPerServer) continue
 
-            if (signatureType.isReadyToSpawn()) {
-                val signature = generateNewSignature(signatureType) ?: continue
-                log.info("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}")
+			if (signatureType.isReadyToSpawn()) {
+				val signature = generateNewSignature(signatureType) ?: continue
+				log.info("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world.name}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}")
+
 				IonServer.server.sendMessage(
-					template(
-						Component.text("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}"),
-						signature
-					)
+					text("A ${signature.signatureType.displayName.plainText()} has spawned somewhere in ${signature.location.world.name}!", HE_LIGHT_BLUE)
 				)
+
 				if (signatureType is PersistentSignatureType) activeSignatures[signature] = System.currentTimeMillis()
-            }
-        }
-    }
+			}
+		}
+	}
 
 	private fun tickCurrentSignatures() {
 		val currentTimeMillis = System.currentTimeMillis()

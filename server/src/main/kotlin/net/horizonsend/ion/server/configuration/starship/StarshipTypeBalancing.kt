@@ -209,16 +209,6 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.3,
 			shieldPowerMultiplier = 1.0,
-			weaponOverrides = listOf(
-				LightTurretBalancing(
-					fireRestrictions = FireRestrictions(
-						canFire = true,
-						minBlockCount = 1750,
-						maxBlockCount = 12000
-					),
-					firePowerConsumption = 5300,
-				)
-			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
@@ -604,7 +594,6 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
 			),
 			shipSounds = StarshipSounds(
@@ -630,7 +619,6 @@ data class NewStarshipBalancing(
 					"Tech 2 gunships require a mini reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyLaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -675,7 +663,6 @@ data class NewStarshipBalancing(
 					"Tech 2 gunships require a mini reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
 			),
 			forbiddenMultiblocks = listOf(
@@ -718,7 +705,6 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.MILLISECONDS.toNanos(4500)
@@ -753,7 +739,6 @@ data class NewStarshipBalancing(
 					"tech 2 ships require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
@@ -794,7 +779,6 @@ data class NewStarshipBalancing(
 					"tech 2 ships require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
@@ -847,7 +831,6 @@ data class NewStarshipBalancing(
 					"tech 2 ships require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
@@ -913,7 +896,6 @@ data class NewStarshipBalancing(
 				)))
 			),
 			weaponOverrides = listOf(
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
@@ -1110,7 +1092,6 @@ data class NewStarshipBalancing(
 				LightMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 4,),
 				RapidHeavyMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = false), maxPerShot = 2),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),

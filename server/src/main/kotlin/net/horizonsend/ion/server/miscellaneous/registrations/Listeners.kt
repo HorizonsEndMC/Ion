@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
+import net.horizonsend.ion.server.features.space.signatures.WreckChestListener
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityListener
@@ -87,6 +88,7 @@ val listeners: List<Listener> = listOf(
 	MultiblockEntities,
 	PrePackaged,
 	AIModuleListener,
+	WreckChestListener,
 	//StuckInHyperspaceListener,
 	IndustrialInvulnerabilityListener,
 
