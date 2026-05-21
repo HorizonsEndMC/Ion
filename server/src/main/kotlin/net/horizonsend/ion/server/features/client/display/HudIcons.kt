@@ -778,6 +778,16 @@ object HudIcons : IonServerComponent() {
                     seeThrough = true,
                     highlight = true,
                 )
+                player.sendText(
+                    location = finalPosition,
+                    text = ofChildren(leftShift(5), text(starshipIcon, color).font(SPECIAL_FONT_KEY)),
+                    durationTicks = UPDATE_RATE + 1,
+                    scale = (5f * hudIconSize).toFloat(),
+                    backgroundColor = Color.fromARGB(0x00000000),
+                    defaultBackground = false,
+                    seeThrough = false,
+                    highlight = true,
+                )
 
                 val distanceText =
                     if (starshipWithLowestAngle == starship && angle != null && angle < SELECTOR_ANGLE_THRESHOLD * 2) {
@@ -787,6 +797,8 @@ object HudIcons : IonServerComponent() {
                         )
                     } else text("${distance.toInt()}m", ContactsSidebar.distanceColor(distance.toInt()))
 
+                // Text displays with see through enabled don't render properly
+                // https://mojira.dev/MC-259812
                 player.sendText(
                     location = finalPosition.clone().subtract(0.0, 2.0, 0.0),
                     text = distanceText,
@@ -795,6 +807,16 @@ object HudIcons : IonServerComponent() {
                     backgroundColor = Color.fromARGB(0x00000000),
                     defaultBackground = false,
                     seeThrough = true,
+                    highlight = true,
+                )
+                player.sendText(
+                    location = finalPosition.clone().subtract(0.0, 2.0, 0.0),
+                    text = distanceText,
+                    durationTicks = UPDATE_RATE + 1,
+                    scale = (3f * hudIconSize).toFloat(),
+                    backgroundColor = Color.fromARGB(0x00000000),
+                    defaultBackground = false,
+                    seeThrough = false,
                     highlight = true,
                 )
             }

@@ -1420,6 +1420,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                                     scale = 1.0f,
                                     seeThrough = true,
                                 )
+                                player.sendText(
+                                    location = it.location.toCenterLocation(),
+                                    text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                                    durationTicks = 2L + 1L,
+                                    scale = 1.0f,
+                                    seeThrough = false,
+                                )
                             }
                         }
                     }, EffectTiming.TICKED),
@@ -2036,6 +2043,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                                 durationTicks = 2L + 1L,
                                 scale = 1.0f,
                                 seeThrough = true,
+                            )
+                            player.sendText(
+                                location = shipComputerLocation,
+                                text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                                durationTicks = 2L + 1L,
+                                scale = 1.0f,
+                                seeThrough = false,
                             )
                         }
                     }, EffectTiming.TICKED),

@@ -206,7 +206,7 @@ object SequenceUtils {
             scale = 2.0f,
             backgroundColor = Color.fromARGB(0x00000000),
             defaultBackground = false,
-            seeThrough = true,
+            seeThrough = false,
             highlight = false,
             positionOffset = Vec3i(0, 0, 0).toVector(),
             EffectTiming.TICKED
@@ -238,6 +238,34 @@ object SequenceUtils {
                 backgroundColor = Color.fromARGB(0x00000000),
                 defaultBackground = false,
                 seeThrough = true,
+                highlight = false,
+                EffectTiming.TICKED
+            ),
+            2
+        ),
+        SequencePhaseEffect.OnTickInterval(
+            SequencePhaseEffect.DisplayText(
+                position = position,
+                text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
+                durationTicks = 2L,
+                scale = 2.0f,
+                backgroundColor = Color.fromARGB(0x00000000),
+                defaultBackground = false,
+                seeThrough = false,
+                highlight = false,
+                positionOffset = Vec3i(0, 0, 0).toVector(),
+                EffectTiming.TICKED
+            ),
+            2
+        ),
+        SequencePhaseEffect.OnTickInterval(
+            SequencePhaseEffect.DisplayDistanceText(
+                position = position,
+                durationTicks = 2L,
+                scale = 2.0f,
+                backgroundColor = Color.fromARGB(0x00000000),
+                defaultBackground = false,
+                seeThrough = false,
                 highlight = false,
                 EffectTiming.TICKED
             ),
