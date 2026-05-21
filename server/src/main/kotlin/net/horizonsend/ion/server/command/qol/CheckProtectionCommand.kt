@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.command.qol
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -39,6 +40,7 @@ object CheckProtectionCommand : SLCommand() {
 	}
 
 	@Subcommand("other")
+	@CommandCompletion("@onlinePlayers")
 	fun onCheckOtherProtection(sender: Player, target: String) = asyncCommand(sender) {
 		failIf(!ConfigurationFiles.legacySettings().master) { "Check another player's protection on the survival server!" }
 
