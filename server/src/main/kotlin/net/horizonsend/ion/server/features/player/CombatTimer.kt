@@ -18,7 +18,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -82,20 +82,18 @@ object CombatTimer : IonServerComponent() {
 		Tasks.syncRepeat(0L, 20L) {
 
 			// Remove combat tags if enough time has elapsed
-			for (entry in npcTimer) {
-				if (entry.value <= System.currentTimeMillis()) {
-					npcTimer.remove(entry.key)
-					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (NPC)")
-					if (!pvpTimer.contains(entry.key) && killLog.contains(entry.key)) announceLog.add(entry.key)
-				}
+			val npcKeysToRemove = npcTimer.filter { it.value <= System.currentTimeMillis() }.keys
+			for (uuid in npcKeysToRemove) {
+				npcTimer.remove(uuid)
+				Bukkit.getPlayer(uuid)?.success("You are no longer in combat (NPC)")
+				if (!pvpTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
-			for (entry in pvpTimer) {
-				if (entry.value <= System.currentTimeMillis()) {
-					pvpTimer.remove(entry.key)
-					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (PvP)")
-					if (!npcTimer.contains(entry.key) && killLog.contains(entry.key)) announceLog.add(entry.key)
-				}
+			val pvpKeysToRemove = pvpTimer.filter { it.value <= System.currentTimeMillis() }.keys
+			for (uuid in pvpKeysToRemove) {
+				pvpTimer.remove(uuid)
+				Bukkit.getPlayer(uuid)?.success("You are no longer in combat (PvP)")
+				if (!npcTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
 			Bukkit.getOnlinePlayers().forEach { player ->
@@ -217,7 +215,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshNpcTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isNpcCombatTagged(player) && player.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)) {
+		if (!isNpcCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
 			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
@@ -231,7 +229,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshPvpTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isPvpCombatTagged(player) && player.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)) {
+		if (!isPvpCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
 			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}
