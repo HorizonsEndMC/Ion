@@ -78,10 +78,10 @@ abstract class SLCommand : BaseCommand() {
 	open fun registerExceptionHandler() {
 		exceptionHandler = ExceptionHandler { _, registeredCommand, sender, args, t ->
 			if (sender.isPlayer) {
-				(sender as Player).serverError("There was an unhandled exception while running command " +
+				(sender.getIssuer<CommandSender>() as? Player)?.serverError("There was an unhandled exception while running command " +
 						"\"${registeredCommand.command}\" with arguments ${args.joinToString(", ")}! " +
 						"Please forward this to staff.")
-				sender.sendMessage(formatException(t))
+				(sender.getIssuer<CommandSender>() as? Player)?.sendMessage(formatException(t))
 			} else {
 				sender.sendMessage("Error while running command \"${registeredCommand.command}\" with arguments " +
 						"${args.joinToString(", ")}!")
