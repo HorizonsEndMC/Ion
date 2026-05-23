@@ -37,7 +37,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
@@ -312,7 +312,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 					capturedStates[index] = type
 					val blockPos = BlockPos(x, y, z)
 
-					if (type.block is BaseEntityBlock) {
+					if (type.block is EntityBlock) {
 						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
