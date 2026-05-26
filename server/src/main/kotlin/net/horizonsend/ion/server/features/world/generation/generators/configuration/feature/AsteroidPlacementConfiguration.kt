@@ -57,15 +57,16 @@ data class AsteroidPlacementConfiguration(
 			noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(featureSize = 2500f),
 			fractalSettings = FractalSettings.None,
 			weightedBuilders = listOf(
+				AsteroidSelectorCondition.BuilderReference("TEST") to 1.0
 //				AsteroidSelectorCondition.BuilderReference("TEST") to 1.0,
 //				AsteroidSelectorCondition.BuilderReference("TEST2") to 1.0,
 //				AsteroidSelectorCondition.BuilderReference("TEST3") to 1.0,
-				AsteroidSelectorCondition.BuilderReference("TEST4") to 1.0,
-				AsteroidSelectorCondition.BuilderReference("TEST9") to 1.0,
-				AsteroidSelectorCondition.BuilderReference("TEST7") to 1.0,
-				AsteroidSelectorCondition.BuilderReference("TEST5") to 1.0,
-				AsteroidSelectorCondition.BuilderReference("TEST6") to 1.0,
-				AsteroidSelectorCondition.BuilderReference("TEST8") to 1.0,
+				//AsteroidSelectorCondition.BuilderReference("TEST4") to 1.0,
+				//AsteroidSelectorCondition.BuilderReference("TEST9") to 1.0,
+				//AsteroidSelectorCondition.BuilderReference("TEST7") to 1.0,
+				//AsteroidSelectorCondition.BuilderReference("TEST5") to 1.0,
+				//AsteroidSelectorCondition.BuilderReference("TEST6") to 1.0,
+				//AsteroidSelectorCondition.BuilderReference("TEST8") to 1.0,
 			)
 		)
 	),

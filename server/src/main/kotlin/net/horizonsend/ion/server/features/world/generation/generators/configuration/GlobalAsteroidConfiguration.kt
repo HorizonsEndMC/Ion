@@ -301,7 +301,7 @@ class GlobalAsteroidConfiguration(
 	),
 
 	val builders: Map<String, AsteroidBuilder> = mapOf(
-		"TEST" to AsteroidBuilder.StaticCombination("PLATES", "POLKA"),
+		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA"),
 		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA"),
 		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA"),
 		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED"),
