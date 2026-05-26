@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.wreck.W
 
 object WreckStructureKeys : KeyRegistry<WreckStructure>(WRECK_STRUCTURE, WreckStructure::class) {
 	val EMPTY = registerKey("EMPTY")
-	val CORVETTE_HIGH = registerKey("CORVETTE_HIGH")
+	/*
 	val CORVETTE_LOW_01 = registerKey("CORVETTE_LOW_01")
 	val CORVETTE_LOW_02 = registerKey("CORVETTE_LOW_02")
 	val CORVETTE_MID_01 = registerKey("CORVETTE_MID_01")
@@ -29,4 +29,5 @@ object WreckStructureKeys : KeyRegistry<WreckStructure>(WRECK_STRUCTURE, WreckSt
 	val STARFIGHTER_LOW_02 = registerKey("STARFIGHTER_LOW_02")
 	val STARFIGHTER_MID_01 = registerKey("STARFIGHTER_MID_01")
 	val STARFIGHTER_MID_02 = registerKey("STARFIGHTER_MID_02")
+	 */
 }

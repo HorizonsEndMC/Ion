@@ -12,6 +12,7 @@ class WreckStructureRegistry : Registry<WreckStructure>(WRECK_STRUCTURE) {
 
 	override fun boostrap() {
 		register(WreckStructureKeys.EMPTY, EmptyWreckStructure)
+		/*
 		register(WreckStructureKeys.CORVETTE_HIGH, SchematicWreckStructure(WreckStructureKeys.CORVETTE_HIGH, "CorvetteHighN"))
 		register(WreckStructureKeys.CORVETTE_LOW_01, SchematicWreckStructure(WreckStructureKeys.CORVETTE_LOW_01, "CorvetteLow01N"))
 		register(WreckStructureKeys.CORVETTE_LOW_02, SchematicWreckStructure(WreckStructureKeys.CORVETTE_LOW_02, "CorvetteLow02N"))
@@ -36,5 +37,6 @@ class WreckStructureRegistry : Registry<WreckStructure>(WRECK_STRUCTURE) {
 		register(WreckStructureKeys.STARFIGHTER_LOW_02, SchematicWreckStructure(WreckStructureKeys.STARFIGHTER_LOW_02, "StarfighterLow02N"))
 		register(WreckStructureKeys.STARFIGHTER_MID_01, SchematicWreckStructure(WreckStructureKeys.STARFIGHTER_MID_01, "StarfighterMid01N"))
 		register(WreckStructureKeys.STARFIGHTER_MID_02, SchematicWreckStructure(WreckStructureKeys.STARFIGHTER_MID_02, "StarfighterMid02N"))
+		 */
 	}
 }
