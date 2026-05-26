@@ -110,6 +110,8 @@ object DefaultWorldConfiguration {
 				WreckPlacementConfiguration(
 					0.08,
 					listOf(
+						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.EMPTY, 1.0)
+						/*
 						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_HIGH, 1.0),
 						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_LOW_01, 10.0),
 						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.STARFIGHTER_LOW_02, 10.0),
@@ -134,6 +136,7 @@ object DefaultWorldConfiguration {
 						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_LOW_02, 20.0),
 						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_MID_01, 20.0),
 						WreckPlacementConfiguration.WeightedStructure(WreckStructureKeys.GUNSHIP_MID_02, 20.0)
+						 */
 					)
 				)
 			))
