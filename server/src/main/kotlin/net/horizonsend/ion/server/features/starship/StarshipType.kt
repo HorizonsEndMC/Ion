@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
+//import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component

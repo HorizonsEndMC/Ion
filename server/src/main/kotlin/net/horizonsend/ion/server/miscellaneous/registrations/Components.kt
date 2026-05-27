@@ -111,7 +111,6 @@ import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.listener.packets.PacketListeners
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
-import net.horizonsend.ion.server.miscellaneous.utils.ServerStage
 import net.horizonsend.ion.server.miscellaneous.utils.VariableRenderDistance
 
 val components: List<IonComponent> = listOf(
@@ -131,7 +130,6 @@ val components: List<IonComponent> = listOf(
 	IonWorld,
 	PacketListeners,
 	VariableRenderDistance,
-	ServerStage,
 	ActivityRewards,
 	GameObjectsTicker,
 

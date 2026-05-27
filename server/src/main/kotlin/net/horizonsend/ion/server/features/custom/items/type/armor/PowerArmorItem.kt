@@ -4,7 +4,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.datacomponent.item.ItemEnchantments
-import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -87,7 +86,7 @@ class PowerArmorItem(
 			.assetId(NamespacedKeys.packKey(wornModel))
 			.build()
 		)
-		.addData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(PROTECTION to 4), false))
+		.addData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(PROTECTION to 4)))
 		.addData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()

@@ -140,10 +140,7 @@ class DoomsdayDeviceWeaponSubsystem(
 				initPosition = getFireVec(),
 				initHeading = face.direction,
 				initScale = 1.0f,
-				item = EXPLOSION_RING.construct { t -> t.setData(
-					DataComponentTypes.DYED_COLOR,
-					DyedItemColor.dyedItemColor(Color.WHITE, false)
-				) },
+				item = EXPLOSION_RING.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.WHITE)) },
 			),
 			direction = Vector(),
 			initialScale = 1.0,

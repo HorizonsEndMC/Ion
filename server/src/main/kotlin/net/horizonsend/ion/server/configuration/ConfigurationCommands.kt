@@ -11,11 +11,11 @@ import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
-import java.util.concurrent.TimeUnit
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createType
@@ -73,20 +73,6 @@ object ConfigurationCommands : SLCommand() {
 		manager.commandCompletions.registerCompletion("blasterTypes") {
 			blasterTypes.map { it.name }
 		}
-	}
-
-	@Subcommand("server start")
-	fun startServer(sender: CommandSender) = asyncCommand(sender) {
-		val serverConfiguration = ConfigurationFiles.serverConfiguration.get()
-		failIf(serverConfiguration.serverStartDate != null) {"The server has already been started!"}
-		val time = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
-		sender.success("Input this timestamp into the configuration: $time")
-	}
-
-	@Subcommand("server startdate change")
-	fun changeServerStartDate(sender: CommandSender) = asyncCommand(sender) {
-		val time = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
-		sender.success("Input this timestamp into the configuration: $time")
 	}
 
 	@Subcommand("config get meleeWeapons")

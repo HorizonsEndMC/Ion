@@ -52,7 +52,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
-import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
+//import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.kyori.adventure.text.Component
@@ -262,8 +262,8 @@ object KingOfTheHills : IonServerComponent() {
 			return
 		}
 		lastQuarter = newQuarter
-		val stage = getServerStage()
-		if (stage < 2) return
+		//val stage = getServerStage()
+		//if (stage < 2) return
 		val koths = Regions.getAllOf<RegionKothZone>()
 			.filter { station -> station.siegeHour == lastQuarter }
 
@@ -370,22 +370,18 @@ object KingOfTheHills : IonServerComponent() {
 
 	private fun giveRewards(topThree: List<String?>, koth: Koths) = asyncLocked {
 		val kothType = koth.type
-		val stage = getServerStage()
+		//val stage = getServerStage()
 
-		if (stage !in 2..4) return@asyncLocked log.error("Server age is wrong somehow!")
+		//if (stage !in 2..4) return@asyncLocked log.error("Server age is wrong somehow!")
 
 		val pointsToGive = when (kothType) {
 			KothType.MAJOR -> listOf(75.0, 50.0, 25.0)
 			KothType.MINOR -> listOf(35.0, 20.0, 10.0)
 			KothType.MOON -> listOf(35.0, 20.0, 10.0)
 		}
-		val pointsMultiplier = when (stage) {
-			3 -> 1.5
-			4 -> 2.0
-			else -> 1.0
-		}
+		val pointsMultiplier = 1.0
 
-		val rewards = KothRewards.first { it.kothType == kothType && it.stage == stage }
+		val rewards = KothRewards.first { it.kothType == kothType && it.stage == 4 }
 		val ores = rewards.rewards.filter { it.rewardType == RewardType.MATERIALS }
 		val cores = rewards.rewards.filter { it.rewardType == RewardType.CORES }
 		val kothBlocks = rewards.rewards.filter { it.rewardType == RewardType.KOTHBLOCK }

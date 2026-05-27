@@ -157,7 +157,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEALTH_STIM, HealthStim(
 				key = CustomItemKeys.HEALTH_STIM,
-				displayName = text("Health Stim", AQUA, BOLD).decoration(ITALIC, false),
+				displayName = text("Health Stim", AQUA, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(POTION).setCustomModel("consumable/syringe").addModifier{it.editMeta {meta->
 					val potionMeta = meta as PotionMeta
 					potionMeta.color = Color.RED
@@ -167,7 +167,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.STRENGTH_STIM, StrengthStim(
 				key = CustomItemKeys.STRENGTH_STIM,
-				displayName = text("Strength Stim", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Strength Stim", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(POTION).setCustomModel("consumable/syringe")
 					.addModifier {
 						it.editMeta { meta ->
@@ -181,7 +181,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.EMPTY_SYRINGE, EmptySyringe(
 				key = CustomItemKeys.EMPTY_SYRINGE,
-				displayName = text("Empty Syringe", GRAY, BOLD).decoration(ITALIC, false),
+				displayName = text("Empty Syringe", GRAY, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(POTION).setCustomModel("consumable/syringe").addModifier{it.editMeta {meta->
 					val potionMeta = meta as PotionMeta
 					potionMeta.color = Color.GRAY
@@ -1251,7 +1251,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 64,
 				hunger = 2,
 				saturation = 1.2f,
-				lore = Component.text("A fried egg. The round, creamy yolk glistens and shines like a blazing star.", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("A fried egg. The round, creamy yolk glistens and shines like a blazing star.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1262,7 +1262,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 64,
 				hunger = 2,
 				saturation = 2.4f,
-				lore = Component.text("A red fruit commonly mistaken as a vegetable.", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("A red fruit commonly mistaken as a vegetable.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1273,7 +1273,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 64,
 				hunger = 1,
 				saturation = 1.2f,
-				lore = Component.text("A leafy vegetable that is high in fiber.", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("A leafy vegetable that is high in fiber.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1284,7 +1284,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 64,
 				hunger = 4,
 				saturation = 2.4f,
-				lore = Component.text("A processed dairy product formed from the coagulation of milk proteins.", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("A processed dairy product formed from the coagulation of milk proteins.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1295,7 +1295,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 64,
 				hunger = 3,
 				saturation = 1.8f,
-				lore = Component.text("Finely chopped beef. Just don't think about what this mixture used to be...", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("Finely chopped beef. Just don't think about what this mixture used to be...", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1306,7 +1306,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 64,
 				hunger = 8,
 				saturation = 12.8f,
-				lore = Component.text("Finely chopped beef, fried to a golden-brown crisp. Juicy, tender, and melts in your mouth.", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("Finely chopped beef, fried to a golden-brown crisp. Juicy, tender, and melts in your mouth.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1319,7 +1319,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 14.4f,
 				lore = Component.text("A sandwich-class food item composed of stacks of meat patties, lettuce, tomatoes, " +
 							"and cheese, with sliced bread completing the outer layers. The juicy beef patty is complemented " +
-							"by the crunch of the vegetables. And thanks to the bun, your fingers remain clean!", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"by the crunch of the vegetables. And thanks to the bun, your fingers remain clean!", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1331,7 +1331,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 1.8f,
 				lore = Component.text("Pork sausage, cured via fermentation. The first person to make salami must have been " +
-							"extremely desperate if they were willing to eat spoiled meat.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"extremely desperate if they were willing to eat spoiled meat.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1343,7 +1343,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 4,
 				saturation = 2.8f,
 				lore = Component.text("A flavored flatbread covered with cheese, tomato paste and meat. This one needs to be " +
-							"cooked before becoming palatable.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"cooked before becoming palatable.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1356,7 +1356,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 12f,
 				lore = Component.text("A flavored flatbread covered with cheese, tomato paste and meat. Stringy, gooey cheese mingles " +
 							"with flavorful pepperoni sausage to create a flavorful concoction, and the crust offers " +
-							"the perfect balance between fluffiness and crunch.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"the perfect balance between fluffiness and crunch.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		unStackable(key = CustomItemKeys.ICE_CREAM_MIXTURE, model = "food/ice_cream_mixture", displayName = Component.text("Ice Cream Mixture"))
@@ -1370,7 +1370,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 6f,
 				lore = Component.text("A frozen dessert made from a mixture of milk, sugar, and other flavors. Eating such a " +
 							"sweet treat on Isik would probably improve the overall experience of visiting such a hellish planet, " +
-							"if you could even keep it frozen for long enough.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"if you could even keep it frozen for long enough.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1383,7 +1383,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 3f,
 				lore = Component.text("A frozen dessert that was compressed and dried. The dried chunks expand and release " +
 							"the familiar, sweet flavor of its hydrated cousin upon consumption. The lack of water in its " +
-							"composition makes this a convenient treat to pack.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"composition makes this a convenient treat to pack.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1396,7 +1396,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				saturation = 4.8f,
 				lore = Component.text("A compressed mixture of starch fibers and flesh. Stale yet somewhat pungent, but " +
 							"you won't be complaining about its flavor when this is the only consumable available on a " +
-							"months-long starship voyage.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"months-long starship voyage.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1408,7 +1408,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 3.6f,
 				lore = Component.text("A compressed mixture of starch fibers and plant material. It goes down rough from " +
-							"all the leaves scratching your esophagus.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"all the leaves scratching your esophagus.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1419,7 +1419,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				stackSize = 1,
 				hunger = 6,
 				saturation = 3.2f,
-				lore = Component.text("Chopped and shredded lettuce leaves. Crunchy, refreshing and satisfying.", NamedTextColor.GRAY, ITALIC).wrap(200),
+				lore = Component.text("Chopped and shredded lettuce leaves. Crunchy, refreshing and satisfying.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
 			}
@@ -1433,7 +1433,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 2.4f,
 				lore = Component.text("A skewer of chopped mushroom and other fungi. An earthy, chewy texture accompanies every " +
-							"piece yanked off of the stick.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"piece yanked off of the stick.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.STICK)
 			}
@@ -1447,7 +1447,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 4,
 				saturation = 6.4f,
 				lore = Component.text("A liquid dish formed primarily from pureed tomato. Warm, creamy and savory, this " +
-							"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
             }
@@ -1458,7 +1458,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.SHIELD_RESISTANCE_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.SHIELD_RESISTANCE_BUFF,
-				displayName = text("Shield Resistance Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Shield Resistance Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.SHIELD_RESISTANCE,
 			)
@@ -1466,7 +1466,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.TURRET_DAMAGE_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.TURRET_DAMAGE_BUFF,
-				displayName = text("Turret Damage Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Turret Damage Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.TURRET_DAMAGE,
 			)
@@ -1474,7 +1474,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.SHIELD_REGENERATION_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.SHIELD_REGENERATION_BUFF,
-				displayName = text("Shield Regeneration Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Shield Regeneration Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.SHIELD_REGENERATION,
 			)
@@ -1482,7 +1482,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.CRUISE_SPEED_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.CRUISE_SPEED_BUFF,
-				displayName = text("Cruise Speed Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Cruise Speed Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.CRUISE_SPEED,
 			)
@@ -1490,7 +1490,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF,
-				displayName = text("Direct Control Speed Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Direct Control Speed Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.DIRECT_CONTROL_SPEED,
 			)
@@ -1498,7 +1498,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.ACCELERATION_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.ACCELERATION_BUFF,
-				displayName = text("Acceleration Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Acceleration Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.ACCELERATION,
 			)
@@ -1506,7 +1506,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.JUMP_WARMUP_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.JUMP_WARMUP_BUFF,
-				displayName = text("Jump Warmup Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Jump Warmup Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.JUMP_WARMUP,
 			)
@@ -1514,7 +1514,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.CONTACT_RANGE_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.CONTACT_RANGE_BUFF,
-				displayName = text("Contact Range Buff", RED, BOLD).decoration(ITALIC, false),
+				displayName = text("Contact Range Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
 				nationBuff = FrontierNationBuffTypes.CONTACT_RANGE,
 			)

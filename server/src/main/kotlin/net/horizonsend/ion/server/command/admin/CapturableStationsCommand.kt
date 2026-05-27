@@ -25,7 +25,6 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
-import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
@@ -170,7 +169,7 @@ object KothStationCommand : SLCommand() {
 
 	@Subcommand("inititate")
 	fun kothInitiation(sender: Player, kothName: String) {
-		failIf(getServerStage() < 2) {"It's too early to start a KOTH!"}
+		//failIf(getServerStage() < 2) {"It's too early to start a KOTH!"}
 		KingOfTheHills.forceActivateKoth(kothName)
 		sender.success("Successfully initiated $kothName")
 	}
