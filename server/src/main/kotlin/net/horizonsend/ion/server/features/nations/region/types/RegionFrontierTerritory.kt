@@ -47,7 +47,7 @@ class RegionFrontierTerritory(territory: FrontierTerritory) :
 		delta[FrontierTerritory::alias]?.let { alias = it.string() }
 		delta[FrontierTerritory::isCapital]?.let { isCapital = it.boolean() }
 
-		NationsMap.updateFrontierTerritory(this)
+		//NationsMap.updateFrontierTerritory(this)
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? {

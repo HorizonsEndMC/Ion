@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.nations
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.KothType
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
@@ -12,7 +11,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
-import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
@@ -47,7 +45,6 @@ object NationsMap : IonServerComponent(true) {
 			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, Koths & Stations", null, false)
 
 	private lateinit var nationUpdates: Closeable
-	private lateinit var frontierNationUpdates: Closeable
 
 	override fun onEnable() {
 		if (!dynmapLoaded) {
@@ -64,22 +61,11 @@ object NationsMap : IonServerComponent(true) {
 			}
 		}
 
-		frontierNationUpdates = FrontierNation.watchUpdates { change ->
-			change[FrontierNation::name]?.let {
-				updateOwners()
-			}
-
-			change[FrontierNation::color]?.let {
-				updateOwners()
-			}
-		}
-
 		reloadDynmap()
 	}
 
 	override fun onDisable() {
 		nationUpdates.close()
-		frontierNationUpdates.close()
 	}
 
 	fun reloadDynmap() = syncOnly {
@@ -100,7 +86,6 @@ object NationsMap : IonServerComponent(true) {
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
-			Regions.getAllOf<RegionFrontierTerritory>().forEach(NationsMap::updateFrontierTerritory)
 			Regions.getAllOf<RegionGasDepot>().forEach(::addGasDepot)
 		}
 	}
@@ -114,7 +99,6 @@ object NationsMap : IonServerComponent(true) {
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 		Regions.getAllOf<RegionKothZone>().forEach(NationsMap::updateKingOfTheHill)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
-		Regions.getAllOf<RegionFrontierTerritory>().forEach(NationsMap::updateFrontierTerritory)
 		Regions.getAllOf<RegionGasDepot>().forEach(NationsMap::updateGasDepot)
 	}
 
@@ -142,7 +126,7 @@ object NationsMap : IonServerComponent(true) {
 				false // Persistent
 			)
 
-			//updateTerritory(territory)
+			updateTerritory(territory)
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
@@ -269,127 +253,6 @@ object NationsMap : IonServerComponent(true) {
 			marker.setLabel(
 				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
 				"\n<p style=\"padding-top: 0;\">This territory is unclaimed. It can be claimed for: ${territory.cost}C</p>",
-				true
-			)
-		}
-
-		marker.setFillStyle(fillOpacity, fillRGB)
-		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
-	}
-
-	fun addFrontierTerritory(territory: RegionFrontierTerritory): Unit = syncOnly {
-		if (!dynmapLoaded) {
-			return@syncOnly
-		}
-
-		try {
-			removeFrontierTerritory(territory)
-
-			val world = territory.bukkitWorld ?: return@syncOnly
-			val polygon = territory.polygon
-
-			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
-			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
-
-			markerSet.createAreaMarker(
-				territory.id.toString(), // Id
-				territory.name, // Label
-				true, // Markup label
-				world.name, // World
-				xPoints.map { it.toDouble() }.toDoubleArray(),
-				yPoints.map { it.toDouble() }.toDoubleArray(),
-				false // Persistent
-			)
-
-			updateFrontierTerritory(territory)
-		} catch (e: Exception) {
-			e.printStackTrace()
-		}
-	}
-
-	private fun removeFrontierTerritory(territory: RegionFrontierTerritory): Unit = syncOnly {
-		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
-	}
-
-	fun updateFrontierTerritory(territory: RegionFrontierTerritory): Unit = syncOnly {
-		if (!dynmapLoaded) {
-			return@syncOnly
-		}
-
-		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
-
-		if (marker == null) {
-			log.warn("No area marker for territory with ID ${territory.id}")
-			addFrontierTerritory(territory)
-			return@syncOnly
-		}
-
-		var fillOpacity = 0.2
-		var fillRGB = Integer.parseInt("333333", 16)
-		var lineThickness = 3
-		var lineOpacity = 0.75
-		var lineRGB = Integer.parseInt("ffffff", 16)
-
-		val frontierNation: FrontierNation? = territory.frontierNation?.let { FrontierNation.findById(it) }
-
-		if (frontierNation != null && territory.isCapital) {
-			val rgb = /*frontierNation.color*/ Integer.parseInt("ff0000", 16)
-
-			val hex = "#${Integer.toHexString(rgb)}"
-
-			val members = SLPlayer.findProps(SLPlayer::frontierNation eq frontierNation._id, SLPlayer::lastKnownName).map { it[SLPlayer::lastKnownName] }
-
-			/*
-			marker.setLabel(
-				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
-					"\n<h3 style=\"text-align: center; color: $hex;\">Nation: ${frontierNation.name}</h3>" +
-					"\n<p style=\"padding-top: 0;\">Leader: ${SLPlayer.getName(frontierNation.leader)}</p>" +
-					"\n<p style=\"padding-top: 0;\">Members: ${members.joinToString()}</p>",
-				true
-			)
-			 */
-
-			marker.setLabel(
-				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
-						"\n<p style=\"padding-top: 0;\">This territory is claimed.</p>",
-				true
-			)
-
-			fillRGB = rgb
-			lineOpacity = 0.5
-			lineRGB = rgb
-		} else if (frontierNation != null) {
-			val alias = territory.alias
-			var name = territory.name
-			if (alias != null) {
-				name = alias + " (${territory.name})"
-			}
-
-			val rgb = /*frontierNation.color*/ Integer.parseInt("ff0000", 16)
-			fillOpacity = 0.2
-			fillRGB = rgb
-			lineOpacity = 0.5
-			lineRGB = rgb
-
-			// for nation outposts only
-			/*
-			marker.setLabel(
-				"<h3 style=\"text-align: center;\">${name}</h3>" +
-					"\n<h3 style=\"text-align: center;\">Owner: ${frontierNation.name}</h3>" +
-					"\n<p style=\"padding-top: 0;\">${territory.name} is an outpost of the nation ${frontierNation.name}</p>",
-				true
-			)
-			 */
-
-			marker.setLabel(
-				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
-						"\n<p style=\"padding-top: 0;\">This territory is claimed.</p>",
-				true
-			)
-		} else {
-			marker.setLabel(
-				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
-					"\n<p style=\"padding-top: 0;\">This territory is unclaimed.</p>",
 				true
 			)
 		}

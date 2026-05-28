@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.oid
@@ -13,8 +12,6 @@ import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
-import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.GasDepot
 import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -32,11 +29,9 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
-import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
@@ -92,7 +87,6 @@ object Regions : IonServerComponent() {
 
 		registerRegionType(StationRentalZone.Companion) { RegionRentalZone(it) }
 
-		registerRegionType(FrontierTerritory.Companion) { RegionFrontierTerritory(it) }
 
 		registerRegionType(DominionTerritory.Companion) { RegionDominionTerritory(it) }
 
@@ -179,16 +173,6 @@ object Regions : IonServerComponent() {
 				updateRegionsAsync(change.oid)
 			}
 		}
-
-		FrontierNation.watchUpdates { change ->
-			if (change.containsUpdated(FrontierNation::name) ||
-				change.containsUpdated(FrontierNation::leader) ||
-				change.containsUpdated(FrontierNation::color) ||
-				change.containsUpdated(FrontierNation::territory)) {
-
-				updateFrontierTerritoriesAsync(change.oid)
-			}
-		}
 	}
 
 	private fun updateRegionsAsync(id: Oid<Settlement>) {
@@ -198,15 +182,6 @@ object Regions : IonServerComponent() {
 			refreshSettlementTerritoryLocally(id)
 			refreshSettlementMembersLocally(id)
 			//NationsMap.updateTerritory(Regions[data.territory])
-		}
-	}
-
-	private fun updateFrontierTerritoriesAsync(id: Oid<FrontierNation>) {
-		Tasks.async {
-			val data = FrontierNationCache[id]
-			refreshFrontierNationTerritoryLocally(id)
-			refreshFrontierNationMembersLocally(id)
-			NationsMap.updateFrontierTerritory(Regions[data.territory])
 		}
 	}
 
@@ -224,24 +199,6 @@ object Regions : IonServerComponent() {
 		locked {
 			for (player in IonServer.server.onlinePlayers) {
 				if (PlayerCache[player].settlementOid == settlementId) {
-					cache.forEach(player.world.name) { region ->
-						region.cacheAccess(player)
-					}
-				}
-			}
-		}
-	}
-
-	fun refreshFrontierNationTerritoryLocally(frontierNationId: Oid<FrontierNation>) {
-		locked {
-			cache.get<Region<FrontierTerritory>>(FrontierNationCache[frontierNationId].territory)?.refreshAccessCache()
-		}
-	}
-
-	fun refreshFrontierNationMembersLocally(frontierNationId: Oid<FrontierNation>) {
-		locked {
-			for (player in IonServer.server.onlinePlayers) {
-				if (PlayerCache[player].frontierNationOid == frontierNationId) {
 					cache.forEach(player.world.name) { region ->
 						region.cacheAccess(player)
 					}
