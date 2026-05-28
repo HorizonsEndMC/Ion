@@ -309,6 +309,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SIRIUS = registerKey("SIRIUS")
 	val PLANET_SELECTOR = registerKey("PLANET_SELECTOR")
 
+	/*
 	val SHIELD_RESISTANCE_BUFF = registerKey("SHIELD_RESISTANCE_BUFF")
 	val TURRET_DAMAGE_BUFF = registerKey("TURRET_DAMAGE_BUFF")
 	val SHIELD_REGENERATION_BUFF = registerKey("SHIELD_REGENERATION_BUFF")
@@ -317,6 +318,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ACCELERATION_BUFF = registerKey("ACCELERATION_BUFF")
 	val JUMP_WARMUP_BUFF = registerKey("JUMP_WARMUP_BUFF")
 	val CONTACT_RANGE_BUFF = registerKey("CONTACT_RANGE_BUFF")
+	 */
 
 	val DEBUG_LINE_RED = registerKey("DEBUG_LINE_RED")
 	val DEBUG_LINE_GREEN = registerKey("DEBUG_LINE_GREEN")

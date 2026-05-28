@@ -71,6 +71,7 @@ object PlayerXPLevelCache : IonServerComponent() {
 	}
 
 	private fun onJoin(playerID: UUID) {
+		setPowerIfNull(playerID)
 		cachePlayerData(playerID)
 		Levels.markForCheck(playerID)
 	}
@@ -152,4 +153,9 @@ object PlayerXPLevelCache : IonServerComponent() {
 		block.invoke(this@PlayerXPLevelCache)
 	}
 
+	private fun setPowerIfNull(uniqueId: UUID) {
+		if (SLPlayer.getPower(uniqueId.slPlayerId) == null) {
+			SLPlayer.setPower(uniqueId.slPlayerId, 20)
+		}
+	}
 }
