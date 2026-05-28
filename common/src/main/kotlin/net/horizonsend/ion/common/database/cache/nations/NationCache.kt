@@ -19,7 +19,7 @@ object NationCache : ManualCache() {
 		var name: String,
 		var capital: Oid<Settlement>,
 		var color: Int,
-		var siegable: Boolean,
+		var siegeable: Boolean,
 		var invites: Set<Oid<Settlement>>
 	) {
 		val leader get() = SettlementCache[capital].leader
@@ -39,7 +39,7 @@ object NationCache : ManualCache() {
 				nation.name,
 				nation.capital,
 				nation.color,
-				nation.siegable,
+				nation.siegeable,
 				nation.invites)
 			NATION_DATA[id] = data
 			nameCache[data.name] = id
@@ -72,11 +72,9 @@ object NationCache : ManualCache() {
 				data.color = it.int()
 			}
 
-
-			change[Nation::siegable]?.let {
-				data.siegable = it.boolean()
+			change[Nation::siegeable]?.let {
+				data.siegeable = it.boolean()
 			}
-
 
 			change[Nation::invites]?.let {
 				data.invites = it.mappedSet { id -> id.oid() }

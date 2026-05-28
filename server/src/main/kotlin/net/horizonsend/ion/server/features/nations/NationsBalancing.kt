@@ -13,7 +13,6 @@ object NationsBalancing : IonServerComponent() {
 		val settlement: Settlements = Settlements(),
 		val nation: Nations = Nations(),
 		val capturableStation: Stations = Stations(),
-		val koths: KOTHS = KOTHS()
 	) {
 		@Serializable
 		data class Settlements(
@@ -46,15 +45,6 @@ object NationsBalancing : IonServerComponent() {
 			val daysPerSiege: Double = 0.5,
 			val siegerXP: Int = 2000,
 			val siegerAllyXP: Int = 1000
-		)
-
-		@Serializable
-		data class KOTHS(
-			val majorKothradius: Int = 2500,
-			val minorKothradius: Int = 1500,
-			val minorKOTHMaxDuration: Long = 30,
-			val majorKOTHMaxDuration: Long = 45,
-			val siegeTerritoryRadius: Int = 250
 		)
 	}
 

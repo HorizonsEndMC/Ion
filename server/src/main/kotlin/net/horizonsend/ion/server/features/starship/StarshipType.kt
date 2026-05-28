@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
-//import net.horizonsend.ion.server.miscellaneous.utils.ServerStage.getServerStage
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -38,7 +37,6 @@ enum class StarshipType(
 	val minLevel: Int,
 	val overridePermission: String,
 	val requiredPermission: String? = null,
-	val stageUnlocked: Int,
 
 	val containerPercent: Double,
 	val concretePercent: Double = 0.3,
@@ -80,7 +78,6 @@ enum class StarshipType(
 		powerOverrider = 0.0,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::speeder,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_SPEEDER(
@@ -102,7 +99,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.speeder",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::speeder,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	STARFIGHTER(
@@ -123,7 +119,6 @@ enum class StarshipType(
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::starfighter,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_STARFIGHTER(
@@ -146,7 +141,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.starfighter",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::starfighter,
-		stageUnlocked = 1,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	SCRAMBLER_STARFIGHTER(
@@ -167,7 +161,6 @@ enum class StarshipType(
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::scramblerStarfighter,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	RECON_STARFIGHTER(
@@ -189,7 +182,6 @@ enum class StarshipType(
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::reconStarfighter,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	INTERCEPTOR(
@@ -211,7 +203,6 @@ enum class StarshipType(
 		dynmapIcon = "interceptor",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interceptor,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_INTERCEPTOR(
@@ -234,7 +225,6 @@ enum class StarshipType(
 		dynmapIcon = "interceptor",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interceptor,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	GUNSHIP(
@@ -255,7 +245,6 @@ enum class StarshipType(
 		dynmapIcon = "gunship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::gunship,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	ASSAULT_GUNSHIP(
@@ -276,7 +265,6 @@ enum class StarshipType(
 		dynmapIcon = "gunship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultGunship,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	INTERDICTOR_GUNSHIP(
@@ -297,7 +285,6 @@ enum class StarshipType(
 		dynmapIcon = "gunship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictorGunship,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_GUNSHIP(
@@ -320,7 +307,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.gunship",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::gunship,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	CORVETTE(
@@ -343,7 +329,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_CORVETTE(
@@ -368,7 +353,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.corvette",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_CORVETTE_LOGISTIC(
@@ -393,7 +377,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.corvette",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	INTERDICTOR_CORVETTE(
@@ -416,7 +399,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictorCorvette,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	STASIS_CORVETTE(
@@ -439,7 +421,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::stasisCorvette,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	ASSAULT_CORVETTE(
@@ -462,7 +443,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultCorvette,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	LOGISTICS_CORVETTE(
@@ -485,7 +465,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logisticsCorvette,
-		stageUnlocked = 0,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	FRIGATE(
@@ -508,7 +487,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::frigate,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_FRIGATE(
@@ -533,7 +511,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.frigate",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::frigate,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	ASSAULT_FRIGATE(
@@ -556,7 +533,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultFrigate,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	BLACK_OPS_FRIGATE(
@@ -579,7 +555,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::blackOpsFrigate,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	MISSILE_FRIGATE(
@@ -602,7 +577,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missileFrigate,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	DESTROYER(
@@ -625,7 +599,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::destroyer,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_DESTROYER(
@@ -650,7 +623,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.destroyer",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::destroyer,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	ASSAULT_DESTROYER(
@@ -673,7 +645,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::assaultDestroyer,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	INTERDICTOR_DESTROYER(
@@ -696,7 +667,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interdictorDestroyer,
-		stageUnlocked = 3,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	CRUISER(
@@ -719,7 +689,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::cruiser,
-		stageUnlocked = 4,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_CRUISER(
@@ -744,7 +713,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.cruiser",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::cruiser,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	LOGISTICS_CRUISER(
@@ -767,7 +735,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::logisticsCruiser,
-		stageUnlocked = 4,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	MISSILE_CRUISER(
@@ -790,7 +757,6 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::missileCruiser,
-		stageUnlocked = 4,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	BATTLECRUISER(
@@ -814,7 +780,6 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battlecruiser,
-		stageUnlocked = 4,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_BATTLECRUISER(
@@ -839,7 +804,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.battlecruiser",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battlecruiser,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	LANCER_BATTLECRUISER(
@@ -863,7 +827,6 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lancerBattlecruiser,
-		stageUnlocked = 4,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	BATTLESHIP(
@@ -883,7 +846,6 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.battleship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battleship,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_BATTLESHIP(
@@ -905,7 +867,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.battleship",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battleship,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	DREADNOUGHT(
@@ -925,7 +886,6 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.dreadnought",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::dreadnought,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_DREADNOUGHT(
@@ -947,7 +907,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.dreadnought",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::dreadnought,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	TANK(
@@ -968,7 +927,6 @@ enum class StarshipType(
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::tank,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	SHUTTLE(
@@ -993,7 +951,6 @@ enum class StarshipType(
 		dynmapIcon = "shuttle",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::shuttle,
-		stageUnlocked = 1
 	),
 	AI_SHUTTLE(
 		displayName = "Shuttle",
@@ -1018,7 +975,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.shuttle",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::shuttle,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	TRANSPORT(
@@ -1043,7 +999,6 @@ enum class StarshipType(
 		dynmapIcon = "transport",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::transport,
-		stageUnlocked = 1,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_TRANSPORT(
@@ -1069,7 +1024,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.transport",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::transport,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	LIGHT_FREIGHTER(
@@ -1094,7 +1048,6 @@ enum class StarshipType(
 		dynmapIcon = "light_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lightFreighter,
-		stageUnlocked = 1,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	BLOCKADE_RUNNER(
@@ -1119,7 +1072,6 @@ enum class StarshipType(
 		dynmapIcon = "light_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::blockadeRunner,
-		stageUnlocked = 1,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_LIGHT_FREIGHTER(
@@ -1145,7 +1097,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.light_freighter",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lightFreighter,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	MEDIUM_FREIGHTER(
@@ -1170,7 +1121,6 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.barge",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::mediumFreighter,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_MEDIUM_FREIGHTER(
@@ -1196,7 +1146,6 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.medium_freighter",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::mediumFreighter,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	HEAVY_FREIGHTER(
@@ -1222,7 +1171,6 @@ enum class StarshipType(
 		dynmapIcon = "heavy_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::heavyFreighter,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_HEAVY_FREIGHTER(
@@ -1248,7 +1196,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.heavy_freighter",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::heavyFreighter,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	BARGE(
@@ -1274,7 +1221,6 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::barge,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	JUMP_FREIGHTER(
@@ -1300,7 +1246,6 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::jumpFreighter,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	INDUSTRIAL_COMMAND_SHIP(
@@ -1326,7 +1271,6 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::industrialCommandShip,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_BARGE(
@@ -1351,7 +1295,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.barge",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::barge,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	PLATFORM(
@@ -1371,7 +1314,6 @@ enum class StarshipType(
 		powerOverrider = 0.0,
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::platform,
-		stageUnlocked = 1,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	UNIDENTIFIEDSHIP(
@@ -1392,7 +1334,6 @@ enum class StarshipType(
 		powerOverrider = 2.0,
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::unidentified,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	TESTINGSHIP(
@@ -1413,7 +1354,6 @@ enum class StarshipType(
 	powerOverrider = 2.0,
 	sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 	balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::testing,
-	stageUnlocked = 69,
 	disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	AI_SHIP(
@@ -1433,7 +1373,6 @@ enum class StarshipType(
         overridePermission = "ion.ships.aiship",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::unidentified,
-		stageUnlocked = 69,
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	);
 
@@ -1456,8 +1395,6 @@ enum class StarshipType(
 
 	fun canUse(player: Player): Boolean = (if (requiredPermission == null) true else player.hasPermission(requiredPermission))
 		&& (player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel)
-
-	//fun canUse(player: Player) : Boolean = (player.hasPermission("starships.anyship") || getServerStage() >= stageUnlocked)
 
 	fun canPilotIn(world: IonWorld): Boolean {
 		val flags = world.configuration.flags

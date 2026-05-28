@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingO
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
@@ -79,13 +78,15 @@ import kotlin.math.abs
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
 		val settingValue = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsDistance)
-		val nationContactRangeBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.CONTACT_RANGE)
+		/*
+		val nationContactRangeBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CONTACT_RANGE)
 		val nationContactRangeModifier = if (nationContactRangeBuffActive) {
-			FrontierNationBuffTypes.CONTACT_RANGE.value
+			NationBuffTypes.CONTACT_RANGE.value
 		} else 0.0
+		 */
 		val dominionContactRangeModifier = if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE))
 			DominionTerritoryBuffTypes.CONTACT_RANGE.value else 0.0
-		return settingValue?.plus(nationContactRangeModifier + dominionContactRangeModifier)?.squared()?.toInt() ?: 0
+		return settingValue?.plus(/*nationContactRangeModifier + */dominionContactRangeModifier)?.squared()?.toInt() ?: 0
     }
 
     private fun priorityColorChange(): Boolean {

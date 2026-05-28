@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.IonNPCCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
-import net.horizonsend.ion.server.command.admin.KothStationCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.admin.SequenceAdminCommand
 import net.horizonsend.ion.server.command.admin.StructureCreator
@@ -46,7 +45,6 @@ import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.SuicideCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
-import net.horizonsend.ion.server.command.nations.FrontierNationCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
 import net.horizonsend.ion.server.command.nations.SettlementCommand
@@ -57,7 +55,6 @@ import net.horizonsend.ion.server.command.nations.admin.NPCOwnerCommand
 import net.horizonsend.ion.server.command.nations.admin.NationAdminCommand
 import net.horizonsend.ion.server.command.nations.money.NationMoneyCommand
 import net.horizonsend.ion.server.command.nations.money.SettlementMoneyCommand
-import net.horizonsend.ion.server.command.nations.roles.FrontierNationRoleCommand
 import net.horizonsend.ion.server.command.nations.roles.NationRoleCommand
 import net.horizonsend.ion.server.command.nations.roles.SettlementRoleCommand
 import net.horizonsend.ion.server.command.nations.settlementZones.SettlementPlotCommand
@@ -130,7 +127,6 @@ val commands: List<SLCommand> = listOf(
 
 	NationRoleCommand,
 	SettlementRoleCommand,
-	FrontierNationRoleCommand,
 
 	SettlementPlotCommand,
 	SettlementZoneCommand,

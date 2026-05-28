@@ -4,13 +4,11 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.Message
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.text.HORIZONS_END_BRACKETED
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
-import net.horizonsend.ion.common.utils.text.formatFrontierNationName
 import net.horizonsend.ion.common.utils.text.formatNationName
 import net.horizonsend.ion.common.utils.text.formatSettlementName
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -48,18 +46,6 @@ abstract class Inboxes : IonComponent() {
 			val inboxCommand = text("/mail", WHITE).clickEvent(ClickEvent.runCommand("/mail")).hoverEvent(text("/mail"))
 			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
 			notify(recipient, sentMessage)
-		}
-	}
-
-	fun sendToFrontierNationMembers(nation: Oid<FrontierNation>, content: Component) {
-		runAsync {
-			val members = FrontierNation.getMembers(nation)
-			sendMessages(
-				recipients  = members,
-				senderName = formatFrontierNationName(nation),
-				subject = bracketed(text("Frontier Nation Broadcast", NamedTextColor.RED), leftBracket = '<', rightBracket = '>'),
-				content = content
-			)
 		}
 	}
 

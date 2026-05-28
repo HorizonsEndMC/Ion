@@ -9,10 +9,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -45,12 +44,14 @@ class HyperspaceWarmup(
 
 				warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
 
-				val nationJumpWarmupBuffActive = FrontierNationBuffTypes.isEffectActive(it, FrontierNationBuffTypes.JUMP_WARMUP)
+				/*
+				val nationJumpWarmupBuffActive = NationBuffTypes.isEffectActive(it, NationBuffTypes.JUMP_WARMUP)
 				val nationJumpWarmupModifier = if (nationJumpWarmupBuffActive) {
-					FrontierNationBuffTypes.JUMP_WARMUP.value
+					NationBuffTypes.JUMP_WARMUP.value
 				} else 0.0
+				 */
 
-				warmup -= nationJumpWarmupModifier.toInt()
+				//warmup -= nationJumpWarmupModifier.toInt()
 
 				val dominionWarmupReduction = DominionTerritoryBuffTypes.getWarmupReduction(it)
 				val territoryCount = DominionTerritoryBuffTypes.getTerritoryCount(it)

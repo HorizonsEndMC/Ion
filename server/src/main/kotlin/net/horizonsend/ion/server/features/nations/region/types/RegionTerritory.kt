@@ -88,7 +88,7 @@ class RegionTerritory(territory: Territory) :
 			centerZ = polygon.ypoints.average().roundToInt()
 		}
 
-		//NationsMap.updateTerritory(this)
+		NationsMap.updateTerritory(this)
 	}
 
 	override fun onDelete() = TODO("The world isn't ready for territories to be deleted, yet $id ($name) was deleted!")

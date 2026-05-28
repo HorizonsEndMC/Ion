@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.type
 
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+/* It's a surprise tool that will help us later
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -11,7 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffType
+import net.horizonsend.ion.server.features.nations.NationBuffType
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.LivingEntity
@@ -23,7 +24,7 @@ class NationBuffCustomItem(
     key: IonRegistryKey<CustomItem, out CustomItem>,
     itemFactory: ItemFactory,
     displayName: Component,
-    val nationBuff: FrontierNationBuffType
+    val nationBuff: NationBuffType
 ) : CustomItem(key, displayName, itemFactory) {
     override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
         addComponent(
@@ -36,24 +37,24 @@ class NationBuffCustomItem(
     fun activate(itemStack: ItemStack, livingEntity: LivingEntity) {
         if (livingEntity !is Player) return
 
-        val frontierNationId = PlayerCache[livingEntity].frontierNationOid
-        if (frontierNationId == null) {
+        val nationId = PlayerCache[livingEntity].nationOid
+        if (nationId == null) {
             livingEntity.userError("You must be in a nation to use this!")
             return
         }
 
-        val frontierNation = FrontierNationCache[frontierNationId]
-        if (frontierNation.activatedBuffs.contains(nationBuff.key.key)) {
+        val nation = NationCache[nationId]
+        if (nation.activatedBuffs.contains(nationBuff.key.key)) {
             livingEntity.userError("Your nation already has this buff active!")
             return
         }
 
         Tasks.async {
-            FrontierNation.removeAllAvailableBuffs(frontierNationId)
-            FrontierNation.removeAllActivatedBuffs(frontierNationId)
+            Nation.removeAllAvailableBuffs(nationId)
+            Nation.removeAllActivatedBuffs(nationId)
 
-            FrontierNation.addAvailableBuff(frontierNationId, nationBuff.key.key)
-            FrontierNation.addActivatedBuff(frontierNationId, nationBuff.key.key)
+            Nation.addAvailableBuff(nationId, nationBuff.key.key)
+            Nation.addActivatedBuff(nationId, nationBuff.key.key)
 
             Tasks.sync {
                 val inventory = (livingEntity as? InventoryHolder)?.inventory ?: return@sync
@@ -64,3 +65,4 @@ class NationBuffCustomItem(
         }
     }
 }
+ */

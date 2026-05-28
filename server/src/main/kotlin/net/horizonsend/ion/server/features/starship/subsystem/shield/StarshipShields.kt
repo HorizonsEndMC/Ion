@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -309,12 +309,14 @@ object StarshipShields : IonServerComponent() {
 
 		val resistanceFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_RESISTANCE)?.strength ?: 0.0
 		val weaknessFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_WEAKNESS)?.strength ?: 0.0
+		/*
 		val nationResistanceFactor = starship.playerPilot?.let { player ->
-			val shieldResistanceBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.SHIELD_RESISTANCE)
-			if (shieldResistanceBuffActive) FrontierNationBuffTypes.SHIELD_RESISTANCE.value else 0.0
+			val shieldResistanceBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.SHIELD_RESISTANCE)
+			if (shieldResistanceBuffActive) NationBuffTypes.SHIELD_RESISTANCE.value else 0.0
 		} ?: 0.0
+		 */
 
-		usage = (usage * (1 - resistanceFactor) * (1 + weaknessFactor) * (1 - nationResistanceFactor)).toInt()
+		usage = (usage * (1 - resistanceFactor) * (1 + weaknessFactor)/* * (1 - nationResistanceFactor)*/).toInt()
 
 		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power -= usage

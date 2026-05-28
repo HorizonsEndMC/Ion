@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.RemovalState.IfPlayerSink
 import org.bukkit.Material
 import org.bukkit.scheduler.BukkitRunnable
-import java.time.Duration
 
 /**
  * When executed at the time the starship sinks, it will handle the mechanics there of

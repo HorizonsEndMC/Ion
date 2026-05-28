@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import io.papermc.paper.entity.LookAnchor
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
@@ -33,7 +31,6 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.setModel
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.kyori.adventure.audience.Audience
@@ -52,15 +49,12 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
-import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType.SLOWNESS
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
@@ -322,27 +316,12 @@ open class Blaster<T : Balancing>(
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return Color.RED // Not Player
-		SLPlayer[entity.uniqueId]?.frontierNation?.let { return fromRGB(FrontierNationCache[it].color) } // Nation
+		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
 		return Color.RED // Not Player
 	}
 
 	fun sendActionBarAmmo(audience: Audience, count: Int) {
 		audience.sendActionBar(template(text("Ammo: {0} / {1}", RED), count.coerceIn(0, balancing.capacity), balancing.capacity))
-	}
-
-	fun recoil(livingEntity: LivingEntity){
-
-		for (iteration in 1..balancing.packetsPerShot) {
-			if (livingEntity is Flying) return
-
-			Tasks.asyncDelay(iteration.toLong()) {
-				val location100InFront = livingEntity.eyeLocation.alongVector(livingEntity.eyeLocation.direction.multiply(100), 1).last()
-				val x = location100InFront.x
-				val y = location100InFront.y + balancing.recoil
-				val z = location100InFront.z
-				livingEntity.lookAt(x, y, z, LookAnchor.EYES)
-			}
-		}
 	}
 
 	fun zoomIn(item: ItemStack, playerHoldingIt: Player) : Boolean{

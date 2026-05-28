@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
-import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
 import net.horizonsend.ion.common.database.schema.nations.GasDepot
 import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NationRole
@@ -26,15 +25,11 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
-import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySiege
 import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
-import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSiege
-import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSieges
 import net.horizonsend.ion.server.features.nations.sieges.GasDepotSieges
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.nations.sieges.SiegeRewardsGui
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
@@ -70,18 +65,6 @@ object SiegeCommand : SLCommand() {
 			SolarSieges.getAllSieges().firstOrNull { it.region.name.replace(' ', '_').equals(name, ignoreCase = true) } ?: throw InvalidCommandArgument("Active siege in $name not found!")
 		}
 		manager.commandCompletions.setDefaultCompletion("solarSieges", SolarSiege::class.java)
-
-		manager.commandCompletions.registerAsyncCompletion("frontierSieges") {
-			return@registerAsyncCompletion FrontierNationSieges.getAllSieges().map { it.region.name.replace(' ', '_') }
-		}
-		manager.commandCompletions.registerAsyncCompletion("pastFrontierSieges") {
-			return@registerAsyncCompletion FrontierNationSiegeData.findProp(EMPTY_BSON, FrontierNationSiegeData::zone).mapTo(mutableListOf()) { Regions.get<RegionFrontierTerritory>(it).name.replace(' ', '_') }
-		}
-		manager.commandContexts.registerContext(FrontierNationSiege::class.java) { c ->
-			val name = c.popFirstArg()
-			FrontierNationSieges.getAllSieges().firstOrNull { it.region.name.replace(' ', '_').equals(name, ignoreCase = true) } ?: throw InvalidCommandArgument("Active siege in $name not found!")
-		}
-		manager.commandCompletions.setDefaultCompletion("frontierSieges", FrontierNationSiege::class.java)
 
 		manager.commandCompletions.registerAsyncCompletion("dominionSieges") {
 			return@registerAsyncCompletion DominionTerritorySieges.getAllSieges().map { it.region.name.replace(' ', '_') }
@@ -124,24 +107,7 @@ object SiegeCommand : SLCommand() {
 		tellPlayerCurrentlySiegableStations(sender)
 	}
 
-	@Subcommand("scoreboard")
-	fun tellPlayerKothScoreboard(sender: Player) {
-		val activeKoths = KingOfTheHills.getKOTHS()
-		for (koth in activeKoths) {
-			val scores = koth.kothPoints
-			val name = koth.kothId
-			sender.sendRichMessage("<gray>Current scores for $name:\n<gold> $scores")
-		}
-	}
-
 	private fun tellPlayerCurrentlySiegableStations(sender: Player) {
-		val currentKothNames = KingOfTheHills.getCurrentKoth().joinToString {
-			val stationName = it.name
-			val world = it.world
-			val x = it.x
-			val z = it.z
-			"<dark_gray>[<aqua>$stationName <gray>in <yellow>$world <gray>(<yellow>$x<gray>, <yellow>$z<gray>)<dark_gray>]"
-		}
 		val currentStationNames = StationSieges.getStationsNow().joinToString {
 			val nationName = it.nation?.let(NationCache::get)?.name
 			val stationName = it.name
@@ -152,7 +118,6 @@ object SiegeCommand : SLCommand() {
 		}
 
 		sender.sendRichMessage("<gray>Current Stations: $currentStationNames")
-		sender.sendRichMessage("<gray>Current KOTHs: $currentKothNames")
 	}
 
 	private fun ensurePilotingStarship(sender: Player) {
@@ -166,14 +131,8 @@ object SiegeCommand : SLCommand() {
 			return
 		}
 
-		if(getStarshipPiloting(sender).initialBlockCount < 4000) {
-			sender.userError("You must be piloting a ship larger than 4000 blocks to initiate a siege!")
-			return
-		}
-
 		if (Regions.findFirstOf<RegionCapturableStation>(sender.location) != null) return StationSieges.beginSiege(sender)
 		if (Regions.findFirstOf<RegionSolarSiegeZone>(sender.location) != null) return SolarSieges.initSiege(sender)
-		if (Regions.findFirstOf<RegionFrontierTerritory>(sender.location) != null) return FrontierNationSieges.initSiege(sender)
 		if (Regions.findFirstOf<RegionDominionTerritory>(sender.location) != null) return DominionTerritorySieges.initSiege(sender)
 		if (Regions.findFirstOf<RegionGasDepot>(sender.location) != null) return GasDepotSieges.beginSiege(sender)
 	}

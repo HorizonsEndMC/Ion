@@ -34,7 +34,6 @@ import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
-import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.misc.Shuttles
@@ -47,9 +46,7 @@ import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
-import net.horizonsend.ion.server.features.nations.sieges.FrontierNationSieges
 import net.horizonsend.ion.server.features.nations.sieges.GasDepotSieges
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.NPCDisplay
@@ -151,10 +148,8 @@ val components: List<IonComponent> = listOf(
 	NationsBalancing,
 	Regions,
 
-	KingOfTheHills,
 	StationSieges,
 	SolarSieges,
-	FrontierNationSieges,
 	DominionTerritorySieges,
 	GasDepotSieges,
 
@@ -235,7 +230,6 @@ val components: List<IonComponent> = listOf(
 	AntiAirCannons,
 	OreGeneration,
 	CapturableStationCache,
-	KothStationCache,
 	UnusedSoldShipPurge,
 	ClientDisplayEntities,
 	HudIcons,

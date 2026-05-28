@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object DominionTerritorySieges : IonServerComponent(true) {
-	val fconfig get() = ConfigurationFiles.nationConfiguration().frontierNationSiegeConfiguration
+	val config get() = ConfigurationFiles.nationConfiguration().dominionTerritorySiegeConfiguration
 
 	@Synchronized
 	private fun locked(block: () -> Unit) = block()
@@ -60,6 +60,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 	private val preparationSieges = mutableMapOf<Oid<DominionTerritorySiegeData>, DominionTerritorySiege>()
 	private val activeSieges = mutableMapOf<Oid<DominionTerritorySiegeData>, DominionTerritorySiege>()
+	private const val MIN_SHIP_SIZE = 4000
 
 	private fun getAllPreparingSieges(): Collection<DominionTerritorySiege> = preparationSieges.values
 	private fun getAllActiveSieges(): Collection<DominionTerritorySiege> = activeSieges.values
@@ -104,7 +105,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	private fun canBeSieged(region: RegionDominionTerritory): Boolean {
 		val nation = region.nation ?: return false
 		val nationData = NationCache[nation]
-		if (!nationData.siegable) return false
+		if (!nationData.siegeable) return false
 
 		val activeSiegeCount = getAllSieges().count { it.defender == nation }
 
@@ -129,6 +130,10 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 		if (isUnderSiege(stationId)) {
 			return@asyncLocked player.userError("This territory is already under siege!")
+		}
+
+		if (!isInBigShip(player)) {
+			return@asyncLocked player.userError("You cannot siege in a ship smaller than $MIN_SHIP_SIZE blocks.")
 		}
 
 		if (zone.nation == nation) {
@@ -226,7 +231,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			.filter { it.key is PlayerDamager }
 			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
 
-		val initPrintCost = (event.starship.initPrintCost * fconfig.shipCostMultiplier).roundToInt()
+		val initPrintCost = (event.starship.initPrintCost * config.shipCostMultiplier).roundToInt()
 
 		processKill(controller.player, damager.player, initPrintCost)
 	}
@@ -234,7 +239,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	@EventHandler
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		val killer = event.player.killer ?: return
-		processKill(event.player, killer, fconfig.playerKillPoints)
+		processKill(event.player, killer, config.playerKillPoints)
 	}
 
 	private fun processKill(player: Player, killer: Player, points: Int) {
@@ -275,7 +280,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 		val world = siege.region.bukkitWorld ?: return
 		val starships = ActiveStarships.getInWorld(world)
 		val contained = starships
-			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= fconfig.minimumPassivePointsShipSize }
+			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= config.minimumPassivePointsShipSize }
 			.mapNotNull { it.controller as? PlayerController }
 
 		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
@@ -315,8 +320,8 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	private val pointTickValue = calculateTickValue()
 
 	private fun calculateTickValue(): Int {
-		val referenceDestroyerValue = (fconfig.referenceDestroyerPrice * fconfig.shipCostMultiplier).roundToInt()
-		val durationMinutes = fconfig.activeWindowDuration.toDuration().toMinutes().toInt()
+		val referenceDestroyerValue = (config.referenceDestroyerPrice * config.shipCostMultiplier).roundToInt()
+		val durationMinutes = config.activeWindowDuration.toDuration().toMinutes().toInt()
 
 		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of
 		// 3 players contesting should be equal to the reference value of a sunk destroyer
@@ -336,7 +341,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 		val participationData = participationData[player.uniqueId]
 		if (participationData != null) {
 			val now = System.currentTimeMillis()
-			val participationLength = fconfig.participationLength.toDuration()
+			val participationLength = config.participationLength.toDuration()
 			if (participationData.tagTime - now <= participationLength.toMillis()) {
 				if (activeSieges.containsKey(participationData.siege)) return participationData.siege.let(activeSieges::get)
 			}
@@ -382,6 +387,11 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	private fun handleNationDisband(id: Oid<Nation>) {
 		getAllSieges().filter { it.defender == id }.forEach { it.fail(); it.removeActive() }
 		getAllSieges().filter { it.attacker == id }.forEach { it.succeed(); it.removeActive() }
+	}
+
+	private fun isInBigShip(player: Player): Boolean {
+		val starship = ActiveStarships.findByPilot(player) ?: return false
+		return starship.initialBlockCount >= MIN_SHIP_SIZE
 	}
 
 

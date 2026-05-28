@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -96,13 +96,16 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
 		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
 		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		/*
 		val nationDirectControlModifier = starship.playerPilot?.let { player ->
-			val cruiseBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.DIRECT_CONTROL_SPEED)
+			val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.DIRECT_CONTROL_SPEED)
 			if (cruiseBuffActive) {
-				FrontierNationBuffTypes.DIRECT_CONTROL_SPEED.value
+				NationBuffTypes.DIRECT_CONTROL_SPEED.value
 			} else 0.0
 		} ?: 0.0
-		val speed = ((10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * (1000.0f / cooldown)).roundToInt() / 10.0f) * oversizeModifier + nationDirectControlModifier.toFloat()
+
+		 */
+		val speed = ((10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * (1000.0f / cooldown)).roundToInt() / 10.0f) * oversizeModifier /*+ nationDirectControlModifier*/.toFloat()
 
 		player.sendActionBar(text("Speed: ${speed}", NamedTextColor.AQUA))
 	}

@@ -57,9 +57,8 @@ data class Nation(
 	var color: Int,
 	override var balance: Int = 0,
 	val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
-	override var siegable: Boolean = false,
-	override var points: Int = 0
-) : DbObject, MoneyHolder, Siegable, PointsHolder {
+	override var siegeable: Boolean = false,
+) : DbObject, MoneyHolder, Siegeable {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(Nation::capital)
@@ -198,12 +197,12 @@ data class Nation(
 			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::name, newName))
 		}
 
-		fun isSiegable(nationId: Oid<Nation>): Boolean {
-			return matches(nationId, Nation::siegable eq true)
+		fun isSiegeable(nationId: Oid<Nation>): Boolean {
+			return matches(nationId, Nation::siegeable eq true)
 		}
 
-		fun setSiegable(nationId: Oid<Nation>, siegable: Boolean) {
-			updateById(nationId, org.litote.kmongo.setValue(Nation::siegable, siegable))
+		fun setSiegeable(nationId: Oid<Nation>, siegable: Boolean) {
+			updateById(nationId, org.litote.kmongo.setValue(Nation::siegeable, siegable))
 		}
 
 		fun setColor(nationId: Oid<Nation>, rgb: Int) {

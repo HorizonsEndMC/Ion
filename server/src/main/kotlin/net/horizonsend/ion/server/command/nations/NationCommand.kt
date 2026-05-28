@@ -45,7 +45,6 @@ import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.player.Power
 import net.horizonsend.ion.server.features.player.Power.canAffordAnotherTerritory
 import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
 import net.horizonsend.ion.server.features.player.Power.getDominionTerritoryCount

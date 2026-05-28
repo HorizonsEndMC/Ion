@@ -2,26 +2,16 @@ package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.binary
-import net.horizonsend.ion.common.database.boolean
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
-import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.economy.city.TradeCities
-import net.horizonsend.ion.server.features.nations.NationsMap
-import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
-import java.awt.Polygon
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.roundToInt
 
 class RegionDominionTerritory(territory: DominionTerritory) :
 	Region<DominionTerritory>(territory),

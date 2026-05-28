@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegist
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
 import net.horizonsend.ion.server.core.registration.registries.FluidPropertyTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
-import net.horizonsend.ion.server.core.registration.registries.FrontierNationBuffTypeRegistry
+//import net.horizonsend.ion.server.core.registration.registries.NationBuffTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.core.registration.registries.StarshipStatusEffectTypeRegistry
@@ -53,7 +53,7 @@ object IonRegistries : IonComponent() {
 	val WORLD_GENERATION_FEATURES = register(WorldGenerationFeatureRegistry())
 	val WRECK_STRUCTURES = register(WreckStructureRegistry())
 	val STARSHIP_STATUS_EFFECT = register(StarshipStatusEffectTypeRegistry())
-	val FRONTIER_NATION_BUFF_TYPE = register(FrontierNationBuffTypeRegistry())
+	//val NATION_BUFF_TYPE = register(NationBuffTypeRegistry())
     val SIGNATURE_TYPE = register(SignatureTypeRegistry())
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())

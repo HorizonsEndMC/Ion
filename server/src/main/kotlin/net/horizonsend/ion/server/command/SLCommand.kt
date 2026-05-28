@@ -8,14 +8,11 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.HelpCommand
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
-import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -32,7 +29,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
-import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.Levels
@@ -52,8 +48,6 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Duration
-import java.util.Date
 import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -157,10 +151,6 @@ abstract class SLCommand : BaseCommand() {
 		return NationCache[id].name
 	}
 
-	protected fun getFrontierNationName(id: Oid<FrontierNation>): String {
-		return FrontierNationCache[id].name
-	}
-
 	protected fun getNPCOwnerName(id: Oid<NPCTerritoryOwner>): String? {
 		return NPCTerritoryOwner.getName(id)
 	}
@@ -172,11 +162,6 @@ abstract class SLCommand : BaseCommand() {
 
 	protected fun getNationTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
 		val tag = PlayerCache.getColoredTag(NationRole.getTag(id))?.plus(" ") ?: ""
-		return "$tag$color$name"
-	}
-
-	protected fun getFrontierNationTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
-		val tag = PlayerCache.getColoredTag(FrontierNationRole.getTag(id))?.plus(" ") ?: ""
 		return "$tag$color$name"
 	}
 
@@ -205,9 +190,6 @@ abstract class SLCommand : BaseCommand() {
 	protected fun resolveNation(name: String): Oid<Nation> = NationCache.getByName(name)
 		?: fail { "Nation $name not found" }
 
-	protected fun resolveFrontierNation(name: String): Oid<FrontierNation> = FrontierNationCache.getByName(name)
-		?: fail { "Frontier nation $name not found" }
-
 	protected fun requireMinLevel(sender: Player, level: Int) =
 		failIf(Levels[sender] < level) { "You need to be at least level $level to do that" }
 
@@ -226,21 +208,11 @@ abstract class SLCommand : BaseCommand() {
 		territory.nation?.let { fail { "${territory.world} is already claimed" } }
 	}
 
-	protected fun requireFrontierTerritoryIn(sender: Player): RegionFrontierTerritory = Regions.findFirstOf(sender.location)
-		?: fail { "You're not in a territory in space or on a moon" }
-
-	protected fun requireFrontierTerritoryUnclaimed(territory: RegionFrontierTerritory) {
-		territory.frontierNation?.fail { "${territory.name} is claimed by ${getFrontierNationName(it)}" }
-	}
-
 	protected fun requireSettlementIn(sender: Player): Oid<Settlement> = PlayerCache[sender].settlementOid
 		?: fail { "You need to be in a settlement to do that" }
 
 	protected fun requireNationIn(sender: Player): Oid<Nation> = PlayerCache[sender].nationOid
 		?: fail { "You need to be in a nation to do that" }
-
-	protected fun requireFrontierNationIn(sender: Player): Oid<FrontierNation> = PlayerCache[sender].frontierNationOid
-		?: fail { "You need to be in a frontier nation to do that" }
 
 	protected fun isSettlementLeader(player: Player, settlementId: Oid<Settlement>): Boolean =
 		SettlementCache[settlementId].leader == player.slPlayerId
@@ -248,17 +220,11 @@ abstract class SLCommand : BaseCommand() {
 	protected fun isNationLeader(player: Player, nationId: Oid<Nation>): Boolean =
 		SettlementCache[NationCache[nationId].capital].leader == player.slPlayerId
 
-	protected fun isFrontierNationLeader(player: Player, nationId: Oid<FrontierNation>): Boolean =
-		FrontierNationCache[nationId].leader == player.slPlayerId
-
 	protected fun requireSettlementLeader(sender: Player, settlementId: Oid<Settlement>) =
 		failIf(!isSettlementLeader(sender, settlementId)) { "Only the settlement leader can do that" }
 
 	protected fun requireNationLeader(sender: Player, nationId: Oid<Nation>) =
 		failIf(!isNationLeader(sender, nationId)) { "Only the nation leader can do that" }
-
-	protected fun requireFrontierNationLeader(sender: Player, frontierNationId: Oid<FrontierNation>) =
-		failIf(!isFrontierNationLeader(sender, frontierNationId)) { "Only the nation leader can do that" }
 
 	protected fun requireIsMemberOf(slPlayerId: SLPlayerId, settlementId: Oid<Settlement>, name: String? = null) {
 		failIf(
@@ -267,15 +233,6 @@ abstract class SLCommand : BaseCommand() {
 				settlementId
 			)
 		) { "${name ?: "That player"} is not a member of the settlement" }
-	}
-
-	protected fun requireIsMemberOfFrontierNation(slPlayerId: SLPlayerId, frontierNationId: Oid<FrontierNation>, name: String? = null) {
-		failIf(
-			!SLPlayer.isMemberOfFrontierNation(
-				slPlayerId,
-				frontierNationId
-			)
-		) { "${name ?: "That player"} is not a member of the frontier nation" }
 	}
 
 	protected fun requireNotSettlementLeader(sender: Player, settlementId: Oid<Settlement>) {
@@ -291,9 +248,6 @@ abstract class SLCommand : BaseCommand() {
 
 	protected fun requireNotInNation(sender: Player) =
 		failIf(PlayerCache[sender].nationOid != null) { "You can't do that while in a nation. Hint: To leave the nation, use /n leave" }
-
-	protected fun requireNotInFrontierNation(sender: Player) =
-		failIf(PlayerCache[sender].frontierNationOid != null) { "You can't do that while in a nation. Hint: To leave the nation, use /fn leave" }
 
 	protected fun requireNotCapital(settlementId: Oid<Settlement>, action: String = "do that") =
 		failIf(SettlementCache[settlementId].nation?.let(NationCache::get)?.capital == settlementId) { "The capital settlement can't $action!" }
@@ -345,20 +299,6 @@ abstract class SLCommand : BaseCommand() {
 		failIf(NationRole.none(query)) { "You need the nation permission $permission to do that" }
 	}
 
-	protected fun requireFrontierNationPermission(
-		sender: Player,
-		nationId: Oid<FrontierNation>,
-		permission: FrontierNationRole.Permission
-	) {
-		if (isFrontierNationLeader(sender, nationId)) return
-
-		val query = and(
-			FrontierNationRole::parent eq nationId,
-			FrontierNationRole::members contains sender.slPlayerId,
-			FrontierNationRole::permissions contains permission
-		)
-	}
-
 	protected fun getSettlementTerritory(settlementId: Oid<Settlement>): RegionTerritory {
 		val territoryId = Settlement.findPropById(settlementId, Settlement::territory)
 			?: error("Failed to get territory for settlement $settlementId")
@@ -374,13 +314,6 @@ abstract class SLCommand : BaseCommand() {
 	protected fun requireSelection(sender: Player) = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must have a worldedit selection!" }
 
 	protected fun requireNotInCombat(sender: Player) = failIf(CombatTimer.isPvpCombatTagged(sender) || CombatTimer.isNpcCombatTagged(sender)) { "You can't do that while in combat!" }
-
-	protected fun requiredNotOnNationJoinCooldown(sender: Player) {
-		val lastJoinedNation = SLPlayer.findPropById(sender.slPlayerId, SLPlayer::lastJoinedFrontierNation)
-		if (lastJoinedNation != null && lastJoinedNation.before(Date(System.currentTimeMillis() + Duration.ofHours(1L).toMillis()))) {
-			fail { "You have already joined a nation in the past hour!" }
-		}
-	}
 
 	open fun supportsVanilla(): Boolean = false
 }

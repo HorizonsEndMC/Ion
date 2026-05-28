@@ -8,10 +8,6 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
-import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -25,11 +21,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -79,7 +73,7 @@ object GasDepotSieges : IonServerComponent() {
 			for (player in playersInZone) {
 				val nationId = PlayerCache[player].nationOid ?: continue
 				siege.points.merge(nationId, 2, Int::plus)
-				CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_KOTH)
+				CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_IN_GAS_DEPOT)
 
 				val remaining = TimeUnit.MILLISECONDS.toSeconds(siegeDurationMillis - elapsed) / 60.0
 				player.informationAction("${String.format("%.2f", remaining)} minutes remaining in Gas Depot siege")

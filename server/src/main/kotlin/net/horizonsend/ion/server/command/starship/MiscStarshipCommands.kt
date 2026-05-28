@@ -219,7 +219,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val selectedPlanetData = HudIcons.selectorDataMap[sender.uniqueId]
 		if (selectedPlanetData != null) {
 			// player is looking at a planet in their HUD
-			onJump(sender, HudIcons.sanitizePrefixes(selectedPlanetData.name).replace(' ', '_'),  null)
+			onJump(sender, HudIcons.sanitizePrefixes(selectedPlanetData.name).replace(' ', '_'), null)
 		} else if (getStarshipPiloting(sender).beacon != null) {
 			onUseBeacon(sender)
 		} else {

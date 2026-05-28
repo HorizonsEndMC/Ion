@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.core.registration.registries
 
-import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
@@ -23,7 +22,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.custom.items.type.NationBuffCustomItem
+//import net.horizonsend.ion.server.features.custom.items.type.NationBuffCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -47,7 +46,7 @@ import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Maga
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergyGreatSword
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -57,21 +56,16 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Color
-import org.bukkit.Color.MAROON
-import org.bukkit.Color.TEAL
 import org.bukkit.Material
 import org.bukkit.Material.POTION
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
@@ -96,7 +90,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerEnergySwords()
 		registerPlanetIcons()
 		registerFood()
-		registerNationBuffs()
+		//registerNationBuffs()
 
 		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
 		unStackable(CustomItemKeys.DEBUG_LINE_GREEN, displayName = Component.text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
@@ -1454,13 +1448,14 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		)
 	}
 
+	/*
 	private fun registerNationBuffs() {
 		register(
 			CustomItemKeys.SHIELD_RESISTANCE_BUFF, NationBuffCustomItem(
 				key = CustomItemKeys.SHIELD_RESISTANCE_BUFF,
 				displayName = text("Shield Resistance Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.SHIELD_RESISTANCE,
+				nationBuff = NationBuffTypes.SHIELD_RESISTANCE,
 			)
 		)
 		register(
@@ -1468,7 +1463,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.TURRET_DAMAGE_BUFF,
 				displayName = text("Turret Damage Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.TURRET_DAMAGE,
+				nationBuff = NationBuffTypes.TURRET_DAMAGE,
 			)
 		)
 		register(
@@ -1476,7 +1471,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.SHIELD_REGENERATION_BUFF,
 				displayName = text("Shield Regeneration Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.SHIELD_REGENERATION,
+				nationBuff = NationBuffTypes.SHIELD_REGENERATION,
 			)
 		)
 		register(
@@ -1484,7 +1479,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.CRUISE_SPEED_BUFF,
 				displayName = text("Cruise Speed Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.CRUISE_SPEED,
+				nationBuff = NationBuffTypes.CRUISE_SPEED,
 			)
 		)
 		register(
@@ -1492,7 +1487,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF,
 				displayName = text("Direct Control Speed Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.DIRECT_CONTROL_SPEED,
+				nationBuff = NationBuffTypes.DIRECT_CONTROL_SPEED,
 			)
 		)
 		register(
@@ -1500,7 +1495,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.ACCELERATION_BUFF,
 				displayName = text("Acceleration Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.ACCELERATION,
+				nationBuff = NationBuffTypes.ACCELERATION,
 			)
 		)
 		register(
@@ -1508,7 +1503,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.JUMP_WARMUP_BUFF,
 				displayName = text("Jump Warmup Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.JUMP_WARMUP,
+				nationBuff = NationBuffTypes.JUMP_WARMUP,
 			)
 		)
 		register(
@@ -1516,10 +1511,11 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				key = CustomItemKeys.CONTACT_RANGE_BUFF,
 				displayName = text("Contact Range Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
 				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
-				nationBuff = FrontierNationBuffTypes.CONTACT_RANGE,
+				nationBuff = NationBuffTypes.CONTACT_RANGE,
 			)
 		)
 	}
+	 */
 
 	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
 		register(key, CustomItem(key, displayName, factory))

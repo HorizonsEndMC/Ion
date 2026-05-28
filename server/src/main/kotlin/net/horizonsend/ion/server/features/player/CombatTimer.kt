@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.player
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
@@ -18,6 +20,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -58,7 +61,7 @@ object CombatTimer : IonServerComponent() {
 	private const val REASON_PVP_SVS_COMBAT = "Engaging in combat with another player's starship"
 	private const val REASON_PVP_WITHIN_GRAVITY_WELL = "Getting caught in non-friendly starship's gravity well"
 	const val REASON_PVP_GROUND_COMBAT = "Engaging in combat with another player on the ground"
-	const val REASON_IN_KOTH = "Engaging in a King of The Hill"
+	const val REASON_IN_GAS_DEPOT = "Engaging in a Gas Depot siege"
 	private const val REASON_ENEMY_PROXIMITY = "Being in close proximity to a hostile starship"
 	const val REASON_SIEGE_STATION = "Initiating a station siege"
 	const val MINIMUM_WELL_PROXIMITY_BLOCK_COUNT = 1000
@@ -261,14 +264,12 @@ object CombatTimer : IonServerComponent() {
 		if (attackerFleet != null && attackerFleet == defenderFleet ) return
 
 		val attackerData = PlayerCache.getIfOnline(attacker) ?: return
-		val attackerNation = attackerData.frontierNationOid
+		val attackerNation = attackerData.nationOid
 
 		val defenderData = PlayerCache.getIfOnline(defender)
-		val defenderNation = defenderData?.frontierNationOid
+		val defenderNation = defenderData?.nationOid
 
 		if (attackerNation == defenderNation) return
-
-		/*
 
 		if (neutralTriggersCombat) {
 			if (attackerNation != null && defenderNation != null &&
@@ -285,7 +286,7 @@ object CombatTimer : IonServerComponent() {
 				// Primarily for proximity trigger
 				return
 			}
-		}*/
+		}
 
 		// Fell through relation checks; refresh PvP timer
 		if (tagAttacker) refreshPvpTimer(attacker, reason)

@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInf
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -173,12 +173,14 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		val armorBlastResist = CraftMagicNumbers.getBlock(Material.STONE).explosionResistance
 		val impactedBlastResist = CraftMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
+		/*
 		val turretDamageModifier = shooter.starship?.playerPilot?.let { player ->
-			val turretDamageBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.TURRET_DAMAGE)
+			val turretDamageBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.TURRET_DAMAGE)
 			if (turretDamageBuffActive && (this is TurretLaserProjectile || this is ACAPTurretProjectile || this is QuadTurretProjectile || this is IonTurretProjectile || this is CycleTurretProjectile || this is AssaultTurretProjectile || this is LogisticTurretProjectile)) {
-				FrontierNationBuffTypes.TURRET_DAMAGE.value
+				NationBuffTypes.TURRET_DAMAGE.value
 			} else 0.0
 		} ?: 0.0
+		 */
 
 		source.debug(
 			"ship dmg: \n\n" +
@@ -186,14 +188,14 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 			"impactedBlastResist = $impactedBlastResist, \n" +
 			"fraction = $fraction, \n" +
 			"shieldDamageMultiplier = $starshipShieldDamageMultiplier, \n" +
-			"turretDamageModifier = $turretDamageModifier, \n" +
-			"result = ${fraction * explosionPower * starshipShieldDamageMultiplier * (1 + turretDamageModifier)}"
+			//"turretDamageModifier = $turretDamageModifier, \n" +
+			"result = ${fraction * explosionPower * starshipShieldDamageMultiplier/* * (1 + turretDamageModifier)*/}"
 		)
 
 		var explosionOccurred = false
 
-		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier * (1 + turretDamageModifier)) {
-			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier * (1 + turretDamageModifier)) {
+		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier/* * (1 + turretDamageModifier)*/) {
+			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier/* * (1 + turretDamageModifier)*/) {
 				if (!hasHit) {
 					// shields/area shields cancel explosion damage
 					explosionOccurred = if (explosionPower > 0.0) world.createExplosion(newLoc, explosionPower) else false

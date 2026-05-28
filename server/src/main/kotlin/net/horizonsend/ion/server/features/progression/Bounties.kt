@@ -62,9 +62,6 @@ object Bounties : IonServerComponent() {
 		)
 
 		increaseBounty(killer, amount, reason)
-		if (ConfigurationFiles.featureFlags().economy) {
-			VAULT_ECO.depositPlayer(killer, 1000.0)
-		}
 	}
 
 	@Suppress("unused")

@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 @Serializable
 data class NationsConfiguration(
 	val solarSiegeConfiguration: SolarSieges = SolarSieges(),
-	val frontierNationSiegeConfiguration: FrontierNationSieges = FrontierNationSieges()
+	val dominionTerritorySiegeConfiguration: DominionTerritorySieges = DominionTerritorySieges()
 ) {
 	@Serializable
 	data class SolarSieges(
@@ -25,7 +25,7 @@ data class NationsConfiguration(
 	)
 
 	@Serializable
-	data class FrontierNationSieges(
+	data class DominionTerritorySieges(
 		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 60),
 		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 120),
 		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 5),

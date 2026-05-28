@@ -6,46 +6,24 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.Oid
-import net.kyori.adventure.text.Component.newline
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.GasDepot
-import net.horizonsend.ion.common.database.schema.nations.KothStation
-import net.horizonsend.ion.common.database.schema.nations.KothType
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.nations.NationsMap
-import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
-import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 import java.time.DayOfWeek
-import java.time.ZonedDateTime
 
 @CommandAlias("capturablestation")
 @CommandPermission("ion.core.capturablestation.create")
 object CapturableStationsCommand : SLCommand() {
-	override fun onEnable(manager: PaperCommandManager) {
-		manager.commandCompletions.registerAsyncCompletion("koths") {
-			return@registerAsyncCompletion KothStationCache.stations.map { it.name }
-		}
-
-		manager.commandCompletions.registerAsyncCompletion("kothtype") {
-			return@registerAsyncCompletion KothType.entries.map { it.name }
-		}
-	}
-
 	@Subcommand("create normal")
 	fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
 		CapturableStation.findById(
@@ -139,77 +117,6 @@ object GasDepotCommand : SLCommand() {
 			"Gas Depot: ${depot.name} | World: ${depot.world} | Pos: ${depot.x}, ${depot.z} | " +
 				"Nation: $nationName | Last Sieged: ${depot.lastSieged ?: "Never"}"
 		)
-	}
-}
-
-@CommandAlias("kotharena")
-@CommandPermission("ion.core.capturablestation.create")
-object KothStationCommand : SLCommand() {
-	@Subcommand("create")
-	@CommandCompletion("@kothtype")
-	fun kothStationCreation(sender: Player, type: KothType, stationName: String, x: Int, z: Int, siegehour: Int) = asyncCommand(sender) {
-
-		KothStation.findById(
-			KothStation.create(
-				type,
-				stationName,
-				sender.world.name,
-				x,
-				z,
-				siegehour,
-				DayOfWeek.values().toSet(),
-				mutableMapOf()
-			)
-		)?.let { RegionKothZone(it) }?.let { NationsMap.addKingOfTheHill(it) }
-
-		sender.success(
-			"Successfully created $type King of the Hill $stationName, At $x, $z, SiegeHour is $siegehour"
-		)
-	}
-
-	@Subcommand("inititate")
-	fun kothInitiation(sender: Player, kothName: String) {
-		//failIf(getServerStage() < 2) {"It's too early to start a KOTH!"}
-		KingOfTheHills.forceActivateKoth(kothName)
-		sender.success("Successfully initiated $kothName")
-	}
-
-	@Subcommand("listactive")
-	fun listActiveKoths(sender: Player) {
-		val koths = KingOfTheHills.getKOTHS()
-		val kothLocations = mutableSetOf<RegionKothZone>()
-		val message = text("Active Koths:")
-		message.append(newline())
-		for (koth in koths) {
-			val region: RegionKothZone = Regions[koth.kothId]
-			kothLocations.add(region)
-		}
-		for (koth in kothLocations) {
-			message.append(text("Active Koth ${koth.name} at: ${koth.x}, ${koth.z}"))
-			message.append(newline())
-		}
-		sender.sendMessage(message)
-	}
-
-	@Subcommand("listall")
-	fun listAllKoths(sender: Player) {
-		val allKoths = Regions.getAllOf<RegionKothZone>()
-		val allKothNames = mutableSetOf<String>()
-		for (koth in allKoths) {allKothNames.add(koth.name)}
-		if (allKothNames.isEmpty()) sender.success("No KOTHs")
-		else sender.success("All Koths: $allKothNames")
-	}
-
-	@Subcommand("delete")
-	@CommandCompletion("@koths")
-	fun deleteKothStation(sender: Player, stationName: String) {
-		val station = KothStation.findOne(KothStation::name eq stationName)
-		if (station == null) {
-			sender.userError("Cannot find station $stationName")
-			return
-		}
-		KothStation.delete(station._id)
-		sender.success("Successfully deleted $stationName")
 	}
 }
 

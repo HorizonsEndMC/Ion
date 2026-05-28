@@ -1,11 +1,8 @@
 package net.horizonsend.ion.server.listener.nations
 
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
-import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -16,7 +13,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.nations.stationZones.StationZoneCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.Region
-import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
@@ -45,7 +41,6 @@ object MovementListener : SLEventListener() {
 
 	private val lastMoved = Collections.synchronizedMap(mutableMapOf<UUID, Long>())
 	private val lastPlayerTerritories = Collections.synchronizedMap(mutableMapOf<UUID, Oid<Territory>?>())
-	private val lastPlayerFrontierTerritories = Collections.synchronizedMap(mutableMapOf<UUID, Oid<FrontierTerritory>?>())
 	private val lastPlayerZones = Collections.synchronizedMap(mutableMapOf<UUID, Oid<SettlementZone>?>())
 	private val lastPlayerStationZones = Collections.synchronizedMap(mutableMapOf<UUID, Oid<StationZone>?>())
 
@@ -128,26 +123,6 @@ object MovementListener : SLEventListener() {
 					oldStationZone?.let { Regions.get<RegionStationZone>(it) }?.let {
 						player.information("Exited station zone ${it.name}")
 					}
-				}
-			}
-		}
-
-		val frontierTerritory: RegionFrontierTerritory? = Regions.findFirstOf(event.to)
-
-		val oldFrontierTerritory: Oid<FrontierTerritory>? = lastPlayerFrontierTerritories[uuid]
-
-		if (oldFrontierTerritory != frontierTerritory?.id) {
-			lastPlayerFrontierTerritories[uuid] = frontierTerritory?.id
-
-			if (frontierTerritory != null) {
-				Tasks.async {
-					var subtitle = frontierTerritory.name
-
-					frontierTerritory.frontierNation?.let { id: Oid<FrontierNation> ->
-						subtitle += " (${FrontierNationCache[id].name})"
-					}
-
-					player.showTitle(Title.title(text("Entered Territory", GOLD), text(subtitle, BLUE), times(ofMillis(1000), ofMillis(2000), ofMillis(1000))))
 				}
 			}
 		}

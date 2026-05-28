@@ -5,18 +5,13 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
-import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
-import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionFrontierTerritory
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -24,7 +19,6 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -140,22 +134,6 @@ object SignatureManager : IonServerComponent(true) {
                         potentialZ) <= (NATIONS_BALANCE.capturableStation.radius + MIN_DISTANCE_FROM_STATIONS).toDouble().pow(2)
                 ) continue
             }
-
-            val kothStationsInWorld = KothStationCache.stations.filter { station -> station.loc.world.name == randomSpaceWorld.name }
-            for (kothStation in kothStationsInWorld) {
-                if (distanceSquared(
-                        kothStation.loc.x,
-                        (randomSpaceWorld.maxHeight - randomSpaceWorld.minHeight).toDouble() / 2,
-                        kothStation.loc.z,
-                        potentialX,
-                        potentialY,
-                        potentialZ) <= (NATIONS_BALANCE.koths.majorKothradius + MIN_DISTANCE_FROM_STATIONS).toDouble().pow(2)
-                ) continue
-            }
-
-            if (Regions.getAllOfInWorld<RegionFrontierTerritory>(randomSpaceWorld).any {
-                territory -> territory.contains(potentialX.toInt(), potentialY.toInt(), potentialZ.toInt())
-            }) continue
 
             return Location(randomSpaceWorld, potentialX, potentialY, potentialZ)
         }

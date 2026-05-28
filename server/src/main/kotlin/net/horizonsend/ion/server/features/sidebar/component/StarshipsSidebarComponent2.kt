@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.sidebar.component
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.input.DirectControlInput
@@ -21,13 +22,20 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
     private val currentVelocity = starship.cruiseData.velocity.length().roundToHundredth()
 	private val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
 	private val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+	/*
 	private val nationCruiseModifier = starship.playerPilot?.let { player ->
-		val cruiseBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.CRUISE_SPEED)
+		val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CRUISE_SPEED)
 		if (cruiseBuffActive) {
-			FrontierNationBuffTypes.CRUISE_SPEED.value
+			NationBuffTypes.CRUISE_SPEED.value
 		} else 0.0
 	} ?: 0.0
-    private val maxVelocity = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier) + nationCruiseModifier).toInt()
+	 */
+	val dominionBpsModifier = starship.playerPilot?.let { player ->
+		if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.SPEED))
+			DominionTerritoryBuffTypes.SPEED.value
+		else 0.0
+	} ?: 0.0
+    private val maxVelocity = (starship.cruiseData.targetSpeed * (1 + speedModifier) * (1 - slowModifier) + /*nationCruiseModifier + */dominionBpsModifier).toInt()
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion
     private val acceleration = starship.cruiseData.getRealAccel(pmThruster).roundToHundredth()
     private val isDirectControlEnabled = starship.isDirectControlEnabled

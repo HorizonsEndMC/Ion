@@ -53,5 +53,4 @@ enum class Achievement(
 	LEVEL_80("Overwhelming power", "Reach level 80", 10000, 1000, 0, NamespacedKeys.packKey("achievement_icon/level_80")), // Astral
 	SIEGE_STATION("Poking the bear", "Participate in a siege", 500, 125, 0, NamespacedKeys.packKey("achievement_icon/station_siege")), // Gutin
 	USE_HYPERSPACE("Ludicrous Speed!", "Use hyperspace", 250, 75, 8, NamespacedKeys.packKey("achievement_icon/hyperspace")), // Liluzivirt
-	KOTH_PARTICIPATION("Prove your worth", "Participate in a KOTH", 500, 125, 0, NamespacedKeys.packKey("achievement_icon/station_siege")); // Fell
 }

@@ -14,8 +14,6 @@ import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
-import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Role
@@ -37,10 +35,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var power: Int?,
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
-		var frontierNationOid: Oid<FrontierNation>?,
 		var settlementTag: String?,
 		var nationTag: String?,
-		var frontierNationTag: String?,
 		var bounty: Double,
 		var lastDeathTimestamp: Long?,
 
@@ -101,17 +97,6 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					data.nationOid = newNation
 					data.nationTag = null // when leaving/joining a nation, you have no role either way
-				}
-			}
-
-			change[SLPlayer::frontierNation]?.let {
-				synced {
-					val data = PLAYER_DATA[id.uuid] ?: return@synced
-
-					val newNation = it.nullable()?.oid<FrontierNation>()
-
-					data.frontierNationOid = newNation
-					data.frontierNationTag = null
 				}
 			}
 
@@ -198,7 +183,6 @@ abstract class AbstractPlayerCache : ManualCache() {
 	fun cache(id: SLPlayerId, data: SLPlayer) {
 		val settlement: Oid<Settlement>? = data.settlement
 		val nation: Oid<Nation>? = data.nation
-		val frontierNation: Oid<FrontierNation>? = data.frontierNation
 
 		val settlementTag: String? = if (settlement == null) {
 			null
@@ -212,12 +196,6 @@ abstract class AbstractPlayerCache : ManualCache() {
 			getColoredTag(NationRole.getTag(id))
 		}
 
-		val frontierNationTag: String? = if (frontierNation == null) {
-			null
-		} else {
-			getColoredTag(FrontierNationRole.getTag(id))
-		}
-
 		PLAYER_DATA[id.uuid] = PlayerData(
 			id = id,
 			xp = data.xp,
@@ -225,10 +203,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			power = data.power,
 			settlementOid = settlement,
 			nationOid = nation,
-			frontierNationOid = frontierNation,
 			settlementTag = settlementTag,
 			nationTag = nationTag,
-			frontierNationTag = frontierNationTag,
 			bounty = data.bounty,
 			blockedPlayerIDs = data.blockedPlayerIDs,
 			lastDeathTimestamp = data.lastDeathTimestamp

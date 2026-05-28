@@ -55,8 +55,6 @@ class NavigationModule(
 
 	override fun tick() {
 		validateNavigation()
-		// Here lies the worst feature to ever exist, goodbye ai jumping:
-
 		//only try to use hyperdrive when navigation calls for it and after navigation has been evaluated
 		//if (navigate && hyperdriveNavigate && !triggerUpdate && ticks % 20 == 0) attemptHyperdrive() //tick every second
 		//interrupt hyperdrive if not necessary to prevent oscillations

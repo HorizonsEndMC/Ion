@@ -29,14 +29,8 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
-import net.horizonsend.ion.common.database.schema.nations.FrontierNationRole
-import net.horizonsend.ion.common.database.schema.nations.FrontierNationSiegeData
-import net.horizonsend.ion.common.database.schema.nations.FrontierTerritory
 import net.horizonsend.ion.common.database.schema.nations.GasDepot
 import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
-import net.horizonsend.ion.common.database.schema.nations.KothSiege
-import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -133,13 +127,11 @@ object DBManager : IonComponent() {
 
 		// nations
 		CapturableStation.init()
-		KothStation.init()
 		GasDepotSiegeData.init()
 		GasDepot.init()
 
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
-		KothSiege.init()
 		SolarSiegeData.init()
 		Nation.init()
 		NationRelation.init()
@@ -186,10 +178,6 @@ object DBManager : IonComponent() {
 		Cryopod.init()
 		Bookmark.init()
 
-		FrontierNation.init()
-		FrontierNationSiegeData.init()
-		FrontierNationRole.init()
-		FrontierTerritory.init()
 		BankedItem.init()
 	}
 

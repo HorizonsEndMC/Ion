@@ -592,9 +592,9 @@ enum class ChatChannel(
 
 private fun playerInfo(player: Player): String =
 	"""
-	Level: ${PlayerCache[player].level}
+	Level: ${Levels[player]}
 	XP: ${SLXP[player]}
 	Nation: ${PlayerCache[player].nationOid?.let(NationCache::get)?.name}
-	Settlement: ${PlayerCache[player].settlementOid?.let (SettlementCache::get)?.name}
+	Settlement: ${PlayerCache[player].settlementOid?.let(SettlementCache::get)?.name}
 	Player: ${player.name}
 	""".trimIndent()

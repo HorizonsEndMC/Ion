@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.features.nations.FrontierNationBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -86,16 +86,18 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
         val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
 		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
 		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		/*
 		val nationDirectControlModifier = starship.playerPilot?.let { player ->
-			val cruiseBuffActive = FrontierNationBuffTypes.isEffectActive(player, FrontierNationBuffTypes.DIRECT_CONTROL_SPEED)
+			val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.DIRECT_CONTROL_SPEED)
 			if (cruiseBuffActive) {
-				FrontierNationBuffTypes.DIRECT_CONTROL_SPEED.value
+				NationBuffTypes.DIRECT_CONTROL_SPEED.value
 			} else 0.0
 		} ?: 0.0
+		 */
 		val targetSpeed = if (starship.type.tech2) {
-			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier) * 1.25) * oversizeModifier + nationDirectControlModifier
+			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier) * 1.25) * oversizeModifier /*+ nationDirectControlModifier*/
 		} else {
-			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier + nationDirectControlModifier
+			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier /*+ nationDirectControlModifier*/
 		}
 
 		if (data.isBoosting) {

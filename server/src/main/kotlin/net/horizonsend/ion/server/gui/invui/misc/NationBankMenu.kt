@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.gui.invui.misc
 
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.economy.BankedItem
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
@@ -26,7 +26,7 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
-class FrontierNationBankMenu(viewer: Player, val frontierNation: Oid<FrontierNation>) : ListInvUIWindow<BankedItem>(viewer, async = true) {
+class NationBankMenu(viewer: Player, val nation: Oid<Nation>) : ListInvUIWindow<BankedItem>(viewer, async = true) {
 	override val listingsPerPage: Int = 27
 
 	private fun getMenuGUI(): Gui = PagedGui.items()
@@ -47,7 +47,7 @@ class FrontierNationBankMenu(viewer: Player, val frontierNation: Oid<FrontierNat
 		}
 		.build()
 
-	override fun generateEntries(): List<BankedItem> = BankedItem.find(BankedItem::frontierNation eq frontierNation).toList()
+	override fun generateEntries(): List<BankedItem> = BankedItem.find(BankedItem::nation eq nation).toList()
 
 	override fun createItem(entry: BankedItem): Item = AsyncItem(
 		resultProvider = { GlobalCompletions.fromItemString(entry.itemString).stripAttributes().updateLore(listOf(
@@ -78,5 +78,5 @@ class FrontierNationBankMenu(viewer: Player, val frontierNation: Oid<FrontierNat
 
 	override fun buildWindow(): Window = normalWindow(getMenuGUI())
 
-	override fun buildTitle(): Component = Component.text("${FrontierNationCache[frontierNation].name}'s Banked Items")
+	override fun buildTitle(): Component = Component.text("${NationCache[nation].name}'s Banked Items")
 }

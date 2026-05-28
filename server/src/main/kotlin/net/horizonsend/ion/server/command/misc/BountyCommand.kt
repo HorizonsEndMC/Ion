@@ -57,7 +57,7 @@ object BountyCommand : SLCommand() {
 		requireMoney(sender, amount)
 
 		val hasProtection = Bukkit.getPlayer(target._id.uuid)?.hasProtection()
-		if (hasProtection == true) fail { "You cannot place a bounty yet!" }
+		if (hasProtection == true) fail { "You cannot place a bounty on a player with new player protection!" }
 
 		// If they're offline do the more slow check
 //		if (hasProtection == null) {

@@ -20,8 +20,6 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.misc.KothStationCache
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -44,7 +42,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSub
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
@@ -71,7 +68,6 @@ import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.time.ZonedDateTime
 import java.util.Locale
 import java.util.UUID
 
@@ -314,12 +310,6 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			player.userErrorActionMessage("You're already piloting a starship!")
-			return false
-		}
-
-		val moonKothSiege = KothStationCache.stations.find { station -> station.loc.world == player.world }
-		if (moonKothSiege != null && player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD) && KingOfTheHills.moonSiegeActiveOrStaging(moonKothSiege)) {
-			player.userErrorActionMessage("Starships cannot be piloted an hour before/during a moon KOTH!")
 			return false
 		}
 

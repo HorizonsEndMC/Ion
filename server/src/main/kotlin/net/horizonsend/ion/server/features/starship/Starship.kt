@@ -457,12 +457,6 @@ class Starship(
 	// Stored on starship so it can't be reset by switching to dc and back
 	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700)/*.coerceAtLeast(1)*/) * 30
 	var directControlCooldown = initialDirectControlCooldown
-	var directControlSpeedModifierFromIonTurrets = 1.0
-		set(value) {
-			field = value.coerceIn(0.85, 1.0)
-		}
-	var directControlSlowExpiryFromIonTurrets = 0L
-	var lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
 		when(controller) {

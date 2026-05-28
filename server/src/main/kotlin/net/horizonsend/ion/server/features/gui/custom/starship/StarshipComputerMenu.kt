@@ -69,7 +69,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 	private fun formatGui(): Gui {
 		val gui = Gui.normal()
-			.setStructure("1 2 3 4 . . . 5 6")
+			.setStructure("1 2 7 3 4 . . 5 6")
 			.addIngredient('1', reDetectButton)
 			.addIngredient('2', changePilotsButton)
 			.addIngredient('3', changeTypeButton)

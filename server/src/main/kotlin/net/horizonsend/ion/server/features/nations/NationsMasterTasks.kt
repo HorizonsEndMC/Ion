@@ -3,15 +3,12 @@ package net.horizonsend.ion.server.features.nations
 import com.mongodb.client.MongoIterable
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
-import net.horizonsend.ion.common.database.cache.nations.FrontierNationCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.FrontierNation
 import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
-import net.horizonsend.ion.common.database.schema.nations.KothStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -33,12 +30,9 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
-import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.Koths
-import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills.getKOTHS
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
@@ -89,21 +83,6 @@ object NationsMasterTasks : IonServerComponent() {
 
 			if (SLPlayer.none(query)) {
 				purgeSettlement(id, true)
-			}
-		}
-	}
-
-	fun getPower() {
-		for (frontierNationId: Oid<FrontierNation> in FrontierNation.allIds()) {
-			val nation: FrontierNationCache.FrontierNationData = FrontierNationCache[frontierNationId]
-			val members: List<SLPlayerId> = SLPlayer
-				.find(SLPlayer::frontierNation eq frontierNationId)
-				.map { player -> player._id }.toList()
-
-			var nationPower = 0
-			for (playerId in members) {
-				val power = SLPlayer.getPower(playerId) ?: 0
-				nationPower += power
 			}
 		}
 	}

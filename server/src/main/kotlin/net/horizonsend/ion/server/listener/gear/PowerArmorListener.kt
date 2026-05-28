@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
-import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -30,7 +29,6 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
