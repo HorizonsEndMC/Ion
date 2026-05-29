@@ -10,6 +10,7 @@ import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.setValue
+import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 
 data class DominionTerritory(
 	override val _id: Oid<DominionTerritory> = objId(),
@@ -59,6 +60,10 @@ data class DominionTerritory(
 			}
 
 			updateById(sess, id, setValue(DominionTerritory::nation, nation))
+		}
+
+		fun delete(id: Oid<DominionTerritory>): Unit = trx { sess ->
+			col.deleteOne(sess, idFilterQuery(id))
 		}
 	}
 }
