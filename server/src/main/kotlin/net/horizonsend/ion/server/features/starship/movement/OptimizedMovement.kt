@@ -41,6 +41,7 @@ import net.minecraft.world.level.block.LiquidBlock
 import net.minecraft.world.level.block.NetherPortalBlock
 import net.minecraft.world.level.block.SeaPickleBlock
 import net.minecraft.world.level.block.StainedGlassBlock
+import net.minecraft.world.level.block.SugarCaneBlock
 import net.minecraft.world.level.block.VineBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
@@ -244,6 +245,7 @@ object OptimizedMovement {
 		|| newBlockData.block is DoublePlantBlock
 		|| newBlockData.block is GlowLichenBlock
 		|| newBlockData.block is CropBlock
+		|| newBlockData.block is SugarCaneBlock
 
 	/**
 	 * Removes hangar-style destination obstructions collected during collision checks.
