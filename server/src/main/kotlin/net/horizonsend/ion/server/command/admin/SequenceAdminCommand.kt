@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.command.admin
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
@@ -14,6 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.entity.Player
 
 @CommandAlias("sequenceadmin")
+@CommandPermission("ion.sequenceadmin")
 object SequenceAdminCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("sequencePhases") { SequencePhaseKeys.allStrings() }
