@@ -705,11 +705,11 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', REDSTONE)
 		}
 		shaped("assembly_core", ASSEMBLY_CORE.getValue().constructItemStack()) {
-			shape("xxx", "xyx", "xxx")
+			shape("xxx", "sys", "xsx")
 
 			setIngredient('x', ExactChoice(DATA_CHIP.getValue().constructItemStack()))
 			setIngredient('y', ExactChoice(GUIDANCE_SYSTEM.getValue().constructItemStack()))
-
+			setIngredient('s', ExactChoice(SUPERCONDUCTOR.getValue().constructItemStack()))
 		}
 		shaped("standard_magazine", STANDARD_MAGAZINE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "rlr", "ttt")
