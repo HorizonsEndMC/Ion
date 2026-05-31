@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
-import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
+import net.horizonsend.ion.server.features.world.generation.feature.meta.OreDefinition
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
@@ -17,7 +17,7 @@ import kotlin.random.Random
 data class ConfigurableAsteroidMeta(
 	override val seed: Long,
 	val size: Double,
-	val oreBlobs: MutableList<OreBlob> = mutableListOf(),
+	val oreDefinitions: MutableList<OreDefinition> = mutableListOf(),
 
 	private val aliasedStructureNoiseLayers: Pair<String, EvaluationConfiguration>,
 	private val aliasedPaletteConfiguration: Pair<String, MaterialConfiguration>

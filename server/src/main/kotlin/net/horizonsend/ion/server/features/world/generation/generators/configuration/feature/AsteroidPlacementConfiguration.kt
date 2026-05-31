@@ -148,7 +148,7 @@ data class AsteroidPlacementConfiguration(
 				return ConfigurableAsteroidMeta(
 					seed,
 					size,
-					oreBlobs = mutableListOf(),
+					oreDefinitions = mutableListOf(),
 					aliasedStructureNoiseLayers = aliasedNoiseLayersKey to aliasedNoiseLayers,
 					aliasedPaletteConfiguration = aliasedBlockPlacerConfigurationKey to aliasedBlockPlacerConfiguration
 				)
@@ -161,7 +161,7 @@ data class AsteroidPlacementConfiguration(
 				return ConfigurableAsteroidMeta(
 					seed,
 					size,
-					oreBlobs = mutableListOf(),
+					oreDefinitions = mutableListOf(),
 					aliasedStructureNoiseLayers = structure to structureMap[structure]!!,
 					aliasedPaletteConfiguration = palette to paletteMap[palette]!!
 				)
