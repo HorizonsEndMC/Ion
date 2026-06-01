@@ -1259,7 +1259,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 17500),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 17500),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			forbiddenMultiblocks = listOf(
@@ -1443,7 +1443,7 @@ data class NewStarshipBalancing(
 					fireRestrictions = FireRestrictions(canFire = true),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
-				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			forbiddenMultiblocks = listOf(
