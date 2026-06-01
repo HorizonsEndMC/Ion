@@ -11,9 +11,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
-import net.minecraft.util.RandomSource
 import net.minecraft.world.level.block.state.BlockState
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 /** A type of ore blob that can be placed in an asteroid */
 @Serializable
@@ -27,7 +27,7 @@ class OreDefinition(
 		return (volume * chance).roundToInt()
 	}
 
-	fun random(randomSource: RandomSource, start: FeatureStart, metaData: ConfigurableAsteroidMeta, chunkX: Int, chunkZ: Int): OrePlacement {
+	fun random(randomSource: Random, start: FeatureStart, metaData: ConfigurableAsteroidMeta, chunkX: Int, chunkZ: Int): OrePlacement {
 		val shape = if (shapes.lastIndex <= 0) 0 else randomSource.nextInt(0, shapes.lastIndex)
 
 		val originX = chunkX.shl(4)
@@ -58,6 +58,22 @@ class OreDefinition(
 		fun getShape(index: Int): Array<Vec3i> = shapes[index]
 
 		fun getShapeCount(): Int = shapes.size
+
+		fun fromCompound(tag: CompoundTag): OreDefinition {
+			return OreDefinition(
+				NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompound("material").get()),
+				tag.getInt("shape").get(),
+				tag.getDouble("chance").get()
+			)
+		}
+
+		fun toCompound(blob: OreDefinition): CompoundTag {
+			val tag = CompoundTag()
+			tag.put("material", NbtUtils.writeBlockState(blob.material))
+			tag.putInt("shape", blob.shape)
+			tag.putDouble("chance", blob.chance)
+			return tag
+		}
 	}
 
 	/** Represents an ore to be placed in the asteroid */
@@ -65,22 +81,6 @@ class OreDefinition(
 		fun getOffsetCoordinates(): Array<Vec3i> {
 			val base = getShape(shape)
 			return Array(base.size) { index -> toVec3i(pos).plus(base[index]) }
-		}
-
-		fun fromCompound(tag: CompoundTag): OrePlacement {
-			return OrePlacement(
-				NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompound("material").get()),
-				tag.getInt("shape").get(),
-				tag.getLong("pos").get()
-			)
-		}
-
-		fun toCompound(blob: OrePlacement): CompoundTag {
-			val tag = CompoundTag()
-			tag.put("material", NbtUtils.writeBlockState(blob.material))
-			tag.putInt("shape", shape)
-			tag.putLong("pos", pos)
-			return tag
 		}
 	}
 }

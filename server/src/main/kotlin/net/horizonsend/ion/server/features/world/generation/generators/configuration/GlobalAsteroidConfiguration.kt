@@ -303,14 +303,14 @@ class GlobalAsteroidConfiguration(
 	),
 
 	val builders: Map<String, AsteroidBuilder> = mapOf(
-		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf()),
-		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA", mutableListOf()),
-		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf()),
-		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED", mutableListOf()),
-		"TEST5" to AsteroidBuilder.StaticCombination("CLASSIC", "GREEN", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.05))),
-		"TEST6" to AsteroidBuilder.StaticCombination("CLASSIC", "BLUE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.05))),
-		"TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW", mutableListOf()),
-		"TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.05))),
-		"TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf()),
+		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST5" to AsteroidBuilder.StaticCombination("CLASSIC", "GREEN", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST6" to AsteroidBuilder.StaticCombination("CLASSIC", "BLUE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
 	)
 )
