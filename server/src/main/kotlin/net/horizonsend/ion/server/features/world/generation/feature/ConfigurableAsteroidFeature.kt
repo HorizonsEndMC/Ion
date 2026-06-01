@@ -31,8 +31,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 	) {
 		val center = Vec3i(start.x, start.y, start.z).toCenterVector()
 
-		val random = Random(chunkPos.longKey)
-		val (oreMask, orePlacements) = generateOreMask(metaData, random, start, chunkPos.x, chunkPos.z)
+		val (oreMask, orePlacements) = generateOreMask(metaData, start, chunkPos.x, chunkPos.z)
 
 		for (x in 0..15) {
 			val realX = (chunkPos.x.shl(4) + x).toDouble()
@@ -104,19 +103,22 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 			)
 	}
 
-	private fun generateOreMask(meta: ConfigurableAsteroidMeta, random: Random, start: FeatureStart, chunkX: Int, chunkZ: Int): Pair<LongOpenHashSet, Long2ObjectOpenHashMap<BlockState>> {
+	private fun generateOreMask(meta: ConfigurableAsteroidMeta, start: FeatureStart, chunkX: Int, chunkZ: Int): Pair<LongOpenHashSet, Long2ObjectOpenHashMap<BlockState>> {
 		val placementMask = LongOpenHashSet()
 		val blocks = Long2ObjectOpenHashMap<BlockState>()
 
-		for (def in meta.oreDefinitions) {
-			println("count: ${def.getChunkOreCount(meta)}")
-			repeat(def.getChunkOreCount(meta)) {
-				val placement = def.random(random, start, meta, chunkX, chunkZ)
+		for (chunkX in (chunkX - 1)..(chunkX + 1)) for (chunkZ in (chunkZ - 1)..(chunkZ + 1)) {
+			val random = Random(ChunkPos(chunkX, chunkZ).longKey)
 
-				for (pos in placement.getOffsetCoordinates()) {
-					val key = toBlockKey(pos)
-					placementMask.add(key)
-					blocks[key] = def.material
+			for (def in meta.oreDefinitions) {
+				repeat(def.getChunkOreCount(meta)) {
+					val placement = def.random(random, start, meta, chunkX, chunkZ)
+
+					for (pos in placement.getOffsetCoordinates()) {
+						val key = toBlockKey(pos)
+						placementMask.add(key)
+						blocks[key] = def.material
+					}
 				}
 			}
 		}
