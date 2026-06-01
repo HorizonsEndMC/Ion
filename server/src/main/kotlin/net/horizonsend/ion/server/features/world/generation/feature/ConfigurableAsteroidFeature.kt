@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.world.generation.feature
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
@@ -7,10 +9,12 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.generator.ChunkGenerator
 import kotlin.math.abs
+import kotlin.random.Random
 
 object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID) {
 	override val placementPriority: Int = 0
@@ -27,6 +31,9 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 	) {
 		val center = Vec3i(start.x, start.y, start.z).toCenterVector()
 
+		val random = Random(chunkPos.longKey)
+		val (oreMask, orePlacements) = generateOreMask(metaData, random, start, chunkPos.x, chunkPos.z)
+
 		for (x in 0..15) {
 			val realX = (chunkPos.x.shl(4) + x).toDouble()
 			val xOffset = center.x - realX
@@ -41,6 +48,12 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 					val centerDistanceSquared = xOffset.squared() + yOffset.squared() + zOffset.squared()
 
 					val blockState = checkBlockPlacement(metaData, start, realX, realY.toDouble(), realZ, centerDistanceSquared) ?: continue
+
+					val key = toBlockKey(realX.toInt(), realY, realZ.toInt())
+					if (oreMask.contains(key)) {
+						chunkData.setBlock(x, realY, z, orePlacements[key].createCraftBlockData())
+						continue
+					}
 
 					chunkData.setBlock(x, realY, z, blockState.createCraftBlockData())
 				}
@@ -89,5 +102,25 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 				metaData.size.toInt(),
 				metaData.size.toInt()
 			)
+	}
+
+	private fun generateOreMask(meta: ConfigurableAsteroidMeta, random: Random, start: FeatureStart, chunkX: Int, chunkZ: Int): Pair<LongOpenHashSet, Long2ObjectOpenHashMap<BlockState>> {
+		val placementMask = LongOpenHashSet()
+		val blocks = Long2ObjectOpenHashMap<BlockState>()
+
+		for (def in meta.oreDefinitions) {
+			println("count: ${def.getChunkOreCount(meta)}")
+			repeat(def.getChunkOreCount(meta)) {
+				val placement = def.random(random, start, meta, chunkX, chunkZ)
+
+				for (pos in placement.getOffsetCoordinates()) {
+					val key = toBlockKey(pos)
+					placementMask.add(key)
+					blocks[key] = def.material
+				}
+			}
+		}
+
+		return placementMask to blocks
 	}
 }

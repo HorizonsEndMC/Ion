@@ -10,14 +10,16 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 import org.bukkit.util.noise.PerlinOctaveGenerator
+import kotlin.jvm.optionals.getOrDefault
 import kotlin.math.sqrt
 import kotlin.random.Random
 
 data class ConfigurableAsteroidMeta(
 	override val seed: Long,
 	val size: Double,
-	val oreDefinitions: MutableList<OreDefinition> = mutableListOf(),
+	val oreDefinitions: List<OreDefinition>,
 
 	private val aliasedStructureNoiseLayers: Pair<String, EvaluationConfiguration>,
 	private val aliasedPaletteConfiguration: Pair<String, MaterialConfiguration>
@@ -51,10 +53,12 @@ data class ConfigurableAsteroidMeta(
 			val paletteAlias = data.getString("paletteAlias").get()
 			val palette = ConfigurationFiles.globalAsteroidConfiguration().paletteTemplates[paletteAlias]!!
 
+			val ores = data.getList("ores").getOrDefault(ListTag()).map { OreDefinition.fromCompound(it.asCompound().get()) }
+
 			return ConfigurableAsteroidMeta(
 				data.getLong("seed").get(),
 				data.getDouble("size").get(),
-				mutableListOf(),
+				ores,
 				structureAlias to structure,
 				paletteAlias to palette
 			)
@@ -66,6 +70,7 @@ data class ConfigurableAsteroidMeta(
 			tag.putDouble("size", featureData.size)
 			tag.putString("structureAlias", featureData.aliasedStructureNoiseLayers.first)
 			tag.putString("paletteAlias", featureData.aliasedPaletteConfiguration.first)
+			tag.put("ores", ListTag(featureData.oreDefinitions.map { OreDefinition.toCompound(it) }))
 			return tag
 		}
 	}
