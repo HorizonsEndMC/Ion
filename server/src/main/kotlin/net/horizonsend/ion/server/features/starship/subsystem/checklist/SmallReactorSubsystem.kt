@@ -10,5 +10,5 @@ import org.bukkit.block.Sign
 
 class SmallReactorSubsystem(starship: ActiveStarship, sign: Sign, multiblock: SmallReactorMultiblock) :
 	SupercapitalReactorSubsystem<SmallReactorMultiblock>(starship, sign, multiblock) {
-	override val fuelKey: IonRegistryKey<CustomItem, GasCanister> = CustomItemKeys.GAS_CANISTER_NITROGEN
+	override val fuelKey: IonRegistryKey<CustomItem, GasCanister> = CustomItemKeys.GAS_CANISTER_CHLORINE
 }
