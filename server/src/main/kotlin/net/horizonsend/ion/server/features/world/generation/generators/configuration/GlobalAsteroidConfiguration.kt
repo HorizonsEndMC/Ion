@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.generators.configur
 
 import com.github.auburn.FastNoiseLite
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.features.world.generation.feature.meta.OreDefinition
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.NoiseMaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.SimpleMaterialConfiguration
@@ -22,6 +23,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SubtractConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SumConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration.AsteroidBuilder
+import net.minecraft.world.level.block.Blocks
 import org.bukkit.Material
 
 @Serializable
@@ -301,14 +303,14 @@ class GlobalAsteroidConfiguration(
 	),
 
 	val builders: Map<String, AsteroidBuilder> = mapOf(
-		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA"),
-		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA"),
-		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA"),
-		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED"),
-		"TEST5" to AsteroidBuilder.StaticCombination("CLASSIC", "GREEN"),
-		"TEST6" to AsteroidBuilder.StaticCombination("CLASSIC", "BLUE"),
-		"TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW"),
-		"TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE"),
-		"TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE"),
+		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf()),
+		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA", mutableListOf()),
+		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf()),
+		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED", mutableListOf()),
+		"TEST5" to AsteroidBuilder.StaticCombination("CLASSIC", "GREEN", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.05))),
+		"TEST6" to AsteroidBuilder.StaticCombination("CLASSIC", "BLUE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.05))),
+		"TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW", mutableListOf()),
+		"TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.05))),
+		"TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf()),
 	)
 )

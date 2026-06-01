@@ -55,7 +55,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 
 			if (referencedStarts.isEmpty()) return
 
-			for (start in referencedStarts) {
+			for (start: FeatureStart in referencedStarts) {
 				start.feature.castAndGenerateChunk(this, pos, chunkData, start)
 			}
 		} catch (e: Throwable) {

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
+import net.horizonsend.ion.server.features.world.generation.feature.meta.OreDefinition
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.DomainWarpConfiguration
@@ -138,7 +139,7 @@ data class AsteroidPlacementConfiguration(
 		fun build(structureMap: Map<String, EvaluationConfiguration>, paletteMap: Map<String, MaterialConfiguration>, seed: Long, size: Double): ConfigurableAsteroidMeta
 
 		@Serializable
-		data class RandomCombination(val structures: Map<String, Double>, val palettes: Map<String, Double>) : AsteroidBuilder {
+		data class RandomCombination(val structures: Map<String, Double>, val palettes: Map<String, Double>, val ores: MutableList<OreDefinition>) : AsteroidBuilder {
 			override fun build(structureMap: Map<String, EvaluationConfiguration>, paletteMap: Map<String, MaterialConfiguration>, seed: Long, size: Double): ConfigurableAsteroidMeta {
 				val aliasedNoiseLayersKey = structures.entries.weightedRandom { it.value }.key
 				val aliasedNoiseLayers = structureMap[aliasedNoiseLayersKey]!!
@@ -148,7 +149,7 @@ data class AsteroidPlacementConfiguration(
 				return ConfigurableAsteroidMeta(
 					seed,
 					size,
-					oreDefinitions = mutableListOf(),
+					oreDefinitions = ores,
 					aliasedStructureNoiseLayers = aliasedNoiseLayersKey to aliasedNoiseLayers,
 					aliasedPaletteConfiguration = aliasedBlockPlacerConfigurationKey to aliasedBlockPlacerConfiguration
 				)
@@ -156,12 +157,12 @@ data class AsteroidPlacementConfiguration(
 		}
 
 		@Serializable
-		data class StaticCombination(val structure: String, val palette: String) : AsteroidBuilder {
+		data class StaticCombination(val structure: String, val palette: String, val ores: MutableList<OreDefinition>) : AsteroidBuilder {
 			override fun build(structureMap: Map<String, EvaluationConfiguration>, paletteMap: Map<String, MaterialConfiguration>, seed: Long, size: Double): ConfigurableAsteroidMeta {
 				return ConfigurableAsteroidMeta(
 					seed,
 					size,
-					oreDefinitions = mutableListOf(),
+					oreDefinitions = ores,
 					aliasedStructureNoiseLayers = structure to structureMap[structure]!!,
 					aliasedPaletteConfiguration = palette to paletteMap[palette]!!
 				)
