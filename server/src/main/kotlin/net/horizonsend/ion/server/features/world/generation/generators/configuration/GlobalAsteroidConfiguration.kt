@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.generators.configur
 
 import com.github.auburn.FastNoiseLite
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreDefinition
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.NoiseMaterialConfiguration
@@ -23,7 +24,6 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SubtractConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SumConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration.AsteroidBuilder
-import net.minecraft.world.level.block.Blocks
 import org.bukkit.Material
 
 @Serializable
@@ -303,14 +303,14 @@ class GlobalAsteroidConfiguration(
 	),
 
 	val builders: Map<String, AsteroidBuilder> = mapOf(
-		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST5" to AsteroidBuilder.StaticCombination("CLASSIC", "GREEN", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST6" to AsteroidBuilder.StaticCombination("CLASSIC", "BLUE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
-		"TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf(OreDefinition(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(), 0, 0.005))),
+		"TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST2" to AsteroidBuilder.StaticCombination("CORONAVIRUS", "POLKA", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST3" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST4" to AsteroidBuilder.StaticCombination("CLASSIC", "RED", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST5" to AsteroidBuilder.StaticCombination("CLASSIC", "GREEN", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST6" to AsteroidBuilder.StaticCombination("CLASSIC", "BLUE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+		"TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
 	)
 )

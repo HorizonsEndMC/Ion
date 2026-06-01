@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.block.data.BlockData
 import org.bukkit.generator.ChunkGenerator
 import kotlin.math.abs
 import kotlin.random.Random
@@ -50,7 +51,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 					val key = toBlockKey(realX.toInt(), realY, realZ.toInt())
 					if (oreMask.contains(key)) {
-						chunkData.setBlock(x, realY, z, orePlacements[key].createCraftBlockData())
+						chunkData.setBlock(x, realY, z, orePlacements[key])
 						continue
 					}
 
@@ -103,9 +104,9 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 			)
 	}
 
-	private fun generateOreMask(meta: ConfigurableAsteroidMeta, start: FeatureStart, chunkX: Int, chunkZ: Int): Pair<LongOpenHashSet, Long2ObjectOpenHashMap<BlockState>> {
+	private fun generateOreMask(meta: ConfigurableAsteroidMeta, start: FeatureStart, chunkX: Int, chunkZ: Int): Pair<LongOpenHashSet, Long2ObjectOpenHashMap<BlockData>> {
 		val placementMask = LongOpenHashSet()
-		val blocks = Long2ObjectOpenHashMap<BlockState>()
+		val blocks = Long2ObjectOpenHashMap<BlockData>()
 
 		for (chunkX in (chunkX - 1)..(chunkX + 1)) for (chunkZ in (chunkZ - 1)..(chunkZ + 1)) {
 			val random = Random(ChunkPos(chunkX, chunkZ).longKey)
@@ -117,7 +118,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 					for (pos in placement.getOffsetCoordinates()) {
 						val key = toBlockKey(pos)
 						placementMask.add(key)
-						blocks[key] = def.material
+						blocks[key] = def.material.toBukkitBlockData()
 					}
 				}
 			}

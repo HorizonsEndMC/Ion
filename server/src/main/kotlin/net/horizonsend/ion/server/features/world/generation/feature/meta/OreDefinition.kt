@@ -1,27 +1,59 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.serializer.BlockStateSerializer
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /** A type of ore blob that can be placed in an asteroid */
 @Serializable
 class OreDefinition(
-	val material: @Serializable(with = BlockStateSerializer::class) BlockState,
+	val material: BlockType,
 	val shape: Int, // Index in ore blob shape array
 	val chance: Double
 ) {
+	@Serializable
+	sealed interface BlockType {
+		fun toBukkitBlockData(): BlockData
+
+		@Serializable
+		class CustomBlockType(val key: @Serializable(with = IonRegistryKey.Companion::class) IonRegistryKey<@Contextual CustomBlock, out @Contextual CustomBlock>) : BlockType {
+			override fun toBukkitBlockData(): BlockData {
+				return key.getValue().blockData
+			}
+		}
+
+		@Serializable
+		class MaterialType(val material: Material) : BlockType {
+			override fun toBukkitBlockData(): BlockData {
+				return material.createBlockData()
+			}
+		}
+
+		@Serializable
+		class BlockStateType(val state: @Serializable(with = BlockStateSerializer::class) BlockState) : BlockType {
+			override fun toBukkitBlockData(): BlockData {
+				return state.createCraftBlockData()
+			}
+		}
+	}
+
 	fun getChunkOreCount(metaData: ConfigurableAsteroidMeta): Int {
 		val volume = 16 * 16 * 2 * metaData.size
 		return (volume * chance).roundToInt()
@@ -36,7 +68,7 @@ class OreDefinition(
 		val heightRange = (metaData.size * 2).roundToInt()
 
 		return OrePlacement(
-			material,
+			material.toBukkitBlockData(),
 			shape,
 			toBlockKey(
 				originX + randomSource.nextInt(0, 16),
@@ -61,7 +93,7 @@ class OreDefinition(
 
 		fun fromCompound(tag: CompoundTag): OreDefinition {
 			return OreDefinition(
-				NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompound("material").get()),
+				BlockType.BlockStateType(NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompound("material").get())),
 				tag.getInt("shape").get(),
 				tag.getDouble("chance").get()
 			)
@@ -69,7 +101,7 @@ class OreDefinition(
 
 		fun toCompound(blob: OreDefinition): CompoundTag {
 			val tag = CompoundTag()
-			tag.put("material", NbtUtils.writeBlockState(blob.material))
+			tag.put("material", NbtUtils.writeBlockState(blob.material.toBukkitBlockData().nms))
 			tag.putInt("shape", blob.shape)
 			tag.putDouble("chance", blob.chance)
 			return tag
@@ -77,7 +109,7 @@ class OreDefinition(
 	}
 
 	/** Represents an ore to be placed in the asteroid */
-	class OrePlacement(val material: BlockState, val shape: Int, val pos: BlockKey) {
+	class OrePlacement(val material: BlockData, val shape: Int, val pos: BlockKey) {
 		fun getOffsetCoordinates(): Array<Vec3i> {
 			val base = getShape(shape)
 			return Array(base.size) { index -> toVec3i(pos).plus(base[index]) }
