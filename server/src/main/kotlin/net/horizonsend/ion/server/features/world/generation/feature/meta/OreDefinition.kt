@@ -39,9 +39,9 @@ class OreDefinition(
 			material,
 			shape,
 			toBlockKey(
-				originX + randomSource.nextInt(0, 15),
-				originY + randomSource.nextInt(0, heightRange),
-				originZ + randomSource.nextInt(0, 15)
+				originX + randomSource.nextInt(0, 16),
+				originY + randomSource.nextInt(0, heightRange + 1),
+				originZ + randomSource.nextInt(0, 16)
 			),
 		)
 	}
