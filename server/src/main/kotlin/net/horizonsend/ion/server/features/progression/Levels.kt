@@ -35,6 +35,8 @@ data class LevelsConfig(val creditsPerXP: Double = 2.5, val cost: CostSection = 
 
 /** Maximum attainable level */
 internal const val MAX_LEVEL = 100
+const val MAX_POWER = 20
+const val MIN_POWER = -20
 
 object Levels : IonServerComponent() {
 	private val queue = ConcurrentLinkedQueue<UUID>()

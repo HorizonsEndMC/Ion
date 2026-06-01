@@ -19,6 +19,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
@@ -48,6 +49,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.Power.canAffordAnotherTerritory
 import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
 import net.horizonsend.ion.server.features.player.Power.getDominionTerritoryCount
+import net.horizonsend.ion.server.features.progression.MAX_POWER
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -860,6 +862,19 @@ internal object NationCommand : SLCommand() {
 		}
 
 		message.append(namesList)
+
+		val currentPower = Nation.getTotalPower(nationId)
+		val totalPossiblePower = active * MAX_POWER
+
+		val powerBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
+			.append(text("Power: "))
+			.append(text(currentPower).color(WHITE))
+			.append(text("/").color(WHITE))
+			.append(text(totalPossiblePower).color(WHITE))
+			.append(text(")"))
+
+		message.append(newline())
+		message.append(powerBuilder)
 		message.append(newline())
 		message.append(lineBreak)
 
@@ -874,5 +889,32 @@ internal object NationCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.BRODCAST)
 		ServerInboxes.sendToNationMembers(nationId, message.miniMessage())
+	}
+
+	@Subcommand("power")
+	fun onGetPower(sender: CommandSender, @Optional nation: String?) = asyncCommand(sender) {
+		val nationId: Oid<Nation> = when (sender) {
+			is Player -> {
+				when (nation) {
+					null -> PlayerCache[sender].nationOid ?: fail { "You need to specify a nation. /n info <nation>" }
+					else -> resolveNation(nation)
+				}
+			}
+
+			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
+		}
+
+		val currentPower = Nation.getTotalPower(nationId)
+
+		val members: List<Triple<SLPlayerId, String, Date>> = SLPlayer
+			.findProps(SLPlayer::nation eq nationId, SLPlayer::lastKnownName, SLPlayer::lastSeen)
+			.map { Triple(it[SLPlayer::_id], it[SLPlayer::lastKnownName], it[SLPlayer::lastSeen]) }
+			.sortedByDescending { it.third }
+
+		val activeMembers = members.count { isActive(it.third) }
+
+		val totalPossiblePower = activeMembers * MAX_POWER
+
+		sender.information("Power for $nation: $currentPower/$totalPossiblePower")
 	}
 }
