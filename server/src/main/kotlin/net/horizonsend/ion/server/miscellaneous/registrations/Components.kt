@@ -127,7 +127,7 @@ val components: List<IonComponent> = listOf(
 	IonWorld,
 	PacketListeners,
 	VariableRenderDistance,
-	ActivityRewards,
+	//ActivityRewards,
 	GameObjectsTicker,
 
 	PlayerXPLevelCache,

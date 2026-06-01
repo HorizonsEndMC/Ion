@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.player
 
-import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
