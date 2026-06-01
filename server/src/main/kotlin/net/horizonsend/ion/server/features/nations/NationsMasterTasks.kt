@@ -8,16 +8,15 @@ import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
@@ -26,10 +25,9 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -39,29 +37,20 @@ import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpace
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
-import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
-import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.World
-import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.EntityDeathEvent
 import org.litote.kmongo.and
 import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import java.lang.Integer.min
-import java.util.Date
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {
@@ -189,18 +178,18 @@ object NationsMasterTasks : IonServerComponent() {
 			}
 		}
 
-		// Gas Depot rewards
+		// Regional objective passive generation
 		val xenon = CustomItemKeys.GAS_CANISTER_XENON.getValue()
 		val canister = xenon.createWithFill(xenon.maximumFill)
 		val itemString = GlobalCompletions.toItemString(canister)
 
 		for (nationId in Nation.allIds()) {
-			val ownedDepots = Regions.getAllOf<RegionGasDepot>().filter { it.nation == nationId }
-			if (ownedDepots.isEmpty()) continue
-
+			// Gas depot passive xenon
+			val ownedDepots = Regions.getAllOf<RegionRegionalObjective>()
+				.filter { it.nation == nationId && it.type == RegionalObjectiveType.GAS_DEPOT }
 			for (depot in ownedDepots) {
 				val rewardMap = mutableMapOf(itemString to 9)
-				GasDepotSiegeData.create(depot.id, nationId, rewardMap)
+				RegionalObjectiveSiegeData.create(depot.id, nationId, rewardMap, passive = true)
 				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
 					"<gold>Your nation received 9 Xenon Canisters from Gas Depot ${depot.name}!"
 				))

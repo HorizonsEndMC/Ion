@@ -5,6 +5,8 @@ import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
@@ -27,6 +29,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -516,6 +519,18 @@ object ShipmentManager : IonServerComponent() {
 				if (dominionBonus > 0) {
 					player.information("Received ${(dominionCrateBonus * 100).toInt()}% (C$dominionBonus) bonus from owning dominion territory.")
 					totalRevenue += dominionBonus
+				}
+
+				// Tax beacon passive tax collection
+				val taxBeaconRegion = Regions.findFirstOf<RegionRegionalObjective>(player.location)
+				if (taxBeaconRegion != null && taxBeaconRegion.type == RegionalObjectiveType.TAX_BEACON) {
+					val beaconNationId = taxBeaconRegion.nation
+					if (beaconNationId != null && beaconNationId != playernationid) {
+						val beaconTax = (totalRevenue * 0.10).roundToInt()
+						totalRevenue -= beaconTax
+						Nation.deposit(beaconNationId, beaconTax)
+						player.information("Paid ${beaconTax.toCreditsString()} tax to the controlling nation of ${taxBeaconRegion.name}.")
+					}
 				}
 
 				player.information("Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations.")

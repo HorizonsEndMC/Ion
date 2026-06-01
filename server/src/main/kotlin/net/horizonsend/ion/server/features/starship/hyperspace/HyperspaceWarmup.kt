@@ -35,7 +35,7 @@ class HyperspaceWarmup(
     val dest: Location,
     val drive: HyperdriveSubsystem?,
     private val useFuel: Boolean,
-	private val beaconTarget: Player? = null
+	val beaconTarget: Player? = null
 ) : BukkitRunnable() {
 	init {
 		if (ship is ActiveControlledStarship) {

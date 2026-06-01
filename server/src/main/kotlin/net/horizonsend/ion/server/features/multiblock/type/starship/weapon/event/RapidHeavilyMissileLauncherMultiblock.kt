@@ -49,132 +49,134 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		z(-1) {
-			y(getSign() *3) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).terracottaOrDoubleSlab()
-				x(-1).terracottaOrDoubleSlab()
-				x(0).anyConcrete()
-				x(1).terracottaOrDoubleSlab()
-				x(2).terracottaOrDoubleSlab()
+		z(1) {
+			y(3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyTerracotta()
+				x(1).anyTerracotta()
+				x(0).anyTerracotta()
+				x(-1).anyTerracotta()
+				x(-2).anyTerracotta()
+				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(getSign() * 5) {
-				x(-2).type(Material.POLISHED_BASALT)
-				x(-1).type(Material.POLISHED_BASALT)
-				x(0).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			y(4) {
+				x(2).type(Material.IRON_BARS)
 				x(1).type(Material.POLISHED_BASALT)
-				x(2).type(Material.POLISHED_BASALT)
-			}
-			y(getSign() * 4) {
-				x(-1).anyWall()
 				x(0).ironBlock()
-				x(1).anyWall()
+				x(-1).type(Material.POLISHED_BASALT)
+				x(-2).type(Material.IRON_BARS)
 			}
-			y(getSign() * 2) {
+			y(5) {
+				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+			}
+			y(2) {
 				x(0).sponge()
 			}
 		}
 		z(0) {
-			y(getSign() * 3) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).terracottaOrDoubleSlab()
-				x(-1).anyConcrete()
-				x(0).anyConcrete()
-				x(1).anyConcrete()
-				x(2).terracottaOrDoubleSlab()
+			y(3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyTerracotta()
+				x(1).anyTerracotta()
+				x(0).anyTerracotta()
+				x(-1).anyTerracotta()
+				x(-2).anyTerracotta()
+				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(getSign() * 5) {
-				x(-2).type(Material.POLISHED_BASALT)
-				x(-1).type(Material.POLISHED_BASALT)
-				x(0).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			y(4) {
+				x(2).anyWall()
 				x(1).type(Material.POLISHED_BASALT)
-				x(2).type(Material.POLISHED_BASALT)
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-1).type(Material.POLISHED_BASALT)
+				x(-2).anyWall()
 			}
-			y(getSign() * 2) {
-				x(-1).sponge()
+			y(2) {
 				x(1).sponge()
+				x(-1).sponge()
 			}
-			y(getSign() * 4) {
-				x(-1).ironBlock()
+			y(5) {
+				x(1).type(Material.POLISHED_BASALT)
 				x(0).ironBlock()
-				x(1).ironBlock()
+				x(-1).type(Material.POLISHED_BASALT)
 			}
 		}
-		z(1) {
-			y(getSign() * 3) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).terracottaOrDoubleSlab()
-				x(-1).terracottaOrDoubleSlab()
-				x(0).anyConcrete()
-				x(1).terracottaOrDoubleSlab()
-				x(2).terracottaOrDoubleSlab()
+		z(-1) {
+			y(3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).anyTerracotta()
+				x(1).anyTerracotta()
+				x(0).anyTerracotta()
+				x(-1).anyTerracotta()
+				x(-2).anyTerracotta()
+				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(getSign() * 5) {
-				x(-2).type(Material.POLISHED_BASALT)
-				x(-1).type(Material.POLISHED_BASALT)
-				x(0).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(1).type(Material.POLISHED_BASALT)
-				x(2).type(Material.POLISHED_BASALT)
-			}
-			y(getSign() * 4) {
-				x(-1).anyWall()
-				x(0).ironBlock()
+			y(4) {
+				x(2).type(Material.IRON_BARS)
 				x(1).anyWall()
+				x(0).ironBlock()
+				x(-1).anyWall()
+				x(-2).type(Material.IRON_BARS)
 			}
-			y(getSign() * 2) {
+			y(5) {
+				x(1).type(Material.POLISHED_BASALT)
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).type(Material.POLISHED_BASALT)
+			}
+			y(0) {
+				x(0).anyConcrete()
+			}
+			y(2) {
 				x(0).sponge()
 			}
 		}
-		z(-2) {
-			y(getSign() * 3) {
-				x(-2).ironBlock()
-				x(-1).terracottaOrDoubleSlab()
-				x(0).terracottaOrDoubleSlab()
-				x(1).terracottaOrDoubleSlab()
+		z(2) {
+			y(3) {
 				x(2).ironBlock()
+				x(1).anyTerracotta()
+				x(0).anyTerracotta()
+				x(-1).anyTerracotta()
+				x(-2).ironBlock()
 			}
-			y(getSign() * 5) {
-				x(-2).type(Material.POLISHED_BASALT)
-				x(-1).type(Material.POLISHED_BASALT)
-				x(0).endRod()
-				x(1).type(Material.POLISHED_BASALT)
-				x(2).type(Material.POLISHED_BASALT)
+			y(4) {
+				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 		}
-		z(2) {
-			y(getSign() * 3) {
-				x(-2).ironBlock()
-				x(-1).terracottaOrDoubleSlab()
-				x(0).terracottaOrDoubleSlab()
-				x(1).terracottaOrDoubleSlab()
+		z(-2) {
+			y(3) {
 				x(2).ironBlock()
+				x(1).anyTerracotta()
+				x(0).anyTerracotta()
+				x(-1).anyTerracotta()
+				x(-2).ironBlock()
 			}
-			y(getSign() * 5) {
-				x(-2).dispenser()
-				x(-1).dispenser()
-				x(0).endRod()
-				x(1).dispenser()
-				x(2).dispenser()
+			y(4) {
+				x(1).type(Material.IRON_BARS)
+				x(0).type(Material.IRON_BARS)
+				x(-1).type(Material.IRON_BARS)
 			}
 		}
 		z(-3) {
-			y(getSign() * 3) {
-				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+			y(3) {
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 		z(3) {
-			y(getSign() * 3) {
-				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+			y(3) {
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 	}
+
+
+
 	override fun shoot(
 		world: World,
 		pos: Vec3i,

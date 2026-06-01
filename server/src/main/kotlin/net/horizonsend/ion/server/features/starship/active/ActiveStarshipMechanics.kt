@@ -384,7 +384,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		val shouldBeVisible = isInSuperPOI(player, starship)
 
-		val isInvisible = !poiCheck && !shouldBeVisible
+		val isInvisible = !poiCheck && !shouldBeVisible && !(starship?.isJumpBeaconOn ?: false)
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
 

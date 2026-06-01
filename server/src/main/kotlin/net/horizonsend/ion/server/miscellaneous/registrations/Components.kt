@@ -46,14 +46,13 @@ import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
-import net.horizonsend.ion.server.features.nations.sieges.GasDepotSieges
+import net.horizonsend.ion.server.features.nations.sieges.RegionalObjectiveSieges
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.NPCDisplay
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
-import net.horizonsend.ion.server.features.player.ActivityRewards
 import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
@@ -151,7 +150,7 @@ val components: List<IonComponent> = listOf(
 	StationSieges,
 	SolarSieges,
 	DominionTerritorySieges,
-	GasDepotSieges,
+	RegionalObjectiveSieges,
 
 	MultiblockRegistration,
 	MultiblockAccess,

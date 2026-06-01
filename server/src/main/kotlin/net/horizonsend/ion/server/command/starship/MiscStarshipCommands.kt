@@ -360,7 +360,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					sender.userError("Your starship does not have a jump field generator! You may set a navigation waypoint to the target fleet member instead.")
 					sender.sendRichMessage(addToRouteMessage)
 					return
-				} else if (!otherPlayerStarship.isJumpBeaconOn) {
+				} else if (!starship.canUseJumpFieldGenerator) {
+					//Fail if the sender's starship jump field generator is still on cooldown
+					sender.userError("Your starship's jump field generator is still on cooldown!")
+					return
+				}
+				else if (!otherPlayerStarship.isJumpBeaconOn) {
 					// Fail if the other player's starship does not have an active jump beacon
 					sender.userError("The other player's starship does not have an active jump beacon! You may set a navigation waypoint to the target fleet member instead.")
 					sender.sendRichMessage(addToRouteMessage)
@@ -387,7 +392,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		)
 	}
 
-	private val jumpBeaconCooldown = object : PerPlayerCooldown(60L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassjumpbeaconlimit") {
+	private val jumpBeaconCooldown = object : PerPlayerCooldown(30L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassjumpbeaconlimit") {
 		override fun cooldownRejected(player: UUID) {
 			Bukkit.getPlayer(player)?.userError("Your jump beacon cannot switch on/off that frequently!")
 		}
@@ -402,9 +407,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				failIf(planet.location.distanceSquared(starship.centerOfMass) < 1000*1000) {"You cannot activate your jump beacon in a planet's gravity well!"}
 		}
 
+		failIf(!starship.canUseJumpBeacon) { "Your jump beacon is still on cooldown!" }
+
+		failIf(starship.world.hasFlag(WorldFlag.CORE_REGION_WORLD)) {"You cannot light a jump beacon in a core world!"}
+
 		for (star in Space.getStars()) {
 			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800*1800) {"You cannot activate your jump beacon in a star's gravity well!"}
 		}
+
+		failIf(starship.isDirectControlEnabled || starship.isMoving || StarshipCruising.isCruising(starship)) { "You cannot use a jump beacon while moving!" }
 
 		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) {"You cannot use a jump beacon in a trade world!"}
 
@@ -459,6 +470,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	) {
 		failIf(starship.type == StarshipType.INTERCEPTOR) { "Interceptors cannot jump to hyperspace" }
 		failIf(starship.isInvulnerable) {"You cannot jump while invulnerable!"}
+		failIf(starship.initialBlockCount > 12500 && destinationWorld.hasFlag(WorldFlag.SAFE_WORLD)) { "Ships above 12500 blocks cannot jump to safe worlds!" }
 
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {

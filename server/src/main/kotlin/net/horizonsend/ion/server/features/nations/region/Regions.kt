@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
-import net.horizonsend.ion.common.database.schema.nations.GasDepot
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
@@ -32,7 +32,7 @@ import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
-import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionParent
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
@@ -86,7 +86,7 @@ object Regions : IonServerComponent() {
 
 		registerRegionType(DominionTerritory.Companion) { RegionDominionTerritory(it) }
 
-		registerRegionType(GasDepot.Companion) { RegionGasDepot(it) }
+		registerRegionType(RegionalObjective.Companion) { RegionRegionalObjective(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

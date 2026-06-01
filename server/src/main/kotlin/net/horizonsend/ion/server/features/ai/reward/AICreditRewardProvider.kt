@@ -33,7 +33,7 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, val con
 		debugAudience.debug("killStreakBonus: $killStreakBonus")
 		val percent = points.get().toDouble() / pointsSum.toDouble()
 		debugAudience.debug("percent: $percent")
-		val money = configuration.creditReward * percent / topPercent * difficultyMultiplier * killStreakBonus * penalty
+		val money = configuration.creditReward * percent / topPercent * difficultyMultiplier * killStreakBonus * penalty * 0.65
 
 		if (money <= 0.0) return
 

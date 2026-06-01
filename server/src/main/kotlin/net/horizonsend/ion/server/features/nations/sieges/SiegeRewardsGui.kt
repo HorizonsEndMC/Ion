@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -33,7 +33,7 @@ import xyz.xenondevs.invui.window.Window
 class SiegeRewardsGui(
 	viewer: Player,
 	val solarSiegeIds: List<Oid<SolarSiegeData>>,
-	val gasDepotSiegeIds: List<Oid<GasDepotSiegeData>>
+	val regionalObjectiveSiegeIds: List<Oid<RegionalObjectiveSiegeData>>
 ) : ListInvUIWindow<SiegeRewardsGui.RewardEntry>(viewer, async = true) {
 
 	override val listingsPerPage: Int = 7
@@ -48,8 +48,8 @@ class SiegeRewardsGui(
 			override val rewards: MutableMap<String, Int>
 		) : RewardEntry()
 
-		data class GasDepotRewardEntry(
-			val id: Oid<GasDepotSiegeData>,
+		data class RegionalObjectiveRewardEntry(
+			val id: Oid<RegionalObjectiveSiegeData>,
 			override val name: String,
 			override val rewards: MutableMap<String, Int>
 		) : RewardEntry()
@@ -103,14 +103,17 @@ class SiegeRewardsGui(
 			entries.add(RewardEntry.SolarRewardEntry(id, name, rewards))
 		}
 
-		// Gas depot rewards
-		for (id in gasDepotSiegeIds) {
-			if (GasDepotSiegeData.findOnePropById(id, GasDepotSiegeData::winner) != viewerNation) continue
-			val depotId = GasDepotSiegeData.findOnePropById(id, GasDepotSiegeData::depot) ?: continue
-			val depotName = runCatching { Regions.get<RegionGasDepot>(depotId).name }.getOrNull() ?: "Unknown Depot"
-			val rewards = GasDepotSiegeData.findOnePropById(id, GasDepotSiegeData::availableRewards) ?: mutableMapOf()
+		for (id in regionalObjectiveSiegeIds) {
+			if (RegionalObjectiveSiegeData.findOnePropById(id, RegionalObjectiveSiegeData::winner) != viewerNation) continue
+			val objectiveId = RegionalObjectiveSiegeData.findOnePropById(id, RegionalObjectiveSiegeData::objective) ?: continue
+			val objectiveName = runCatching {
+				Regions.getAllOf<RegionRegionalObjective>().firstOrNull { it.id == objectiveId }?.name
+			}.getOrNull() ?: "Unknown Objective"
+			val rewards = RegionalObjectiveSiegeData.findOnePropById(id, RegionalObjectiveSiegeData::availableRewards) ?: mutableMapOf()
 			if (rewards.isEmpty()) continue
-			entries.add(RewardEntry.GasDepotRewardEntry(id, "Capture of $depotName", rewards))
+			val isPassive = RegionalObjectiveSiegeData.findOnePropById(id, RegionalObjectiveSiegeData::passive) ?: false
+			val label = if (isPassive) "Passive Income - $objectiveName" else "Capture of $objectiveName"
+			entries.add(RewardEntry.RegionalObjectiveRewardEntry(id, label, rewards))
 		}
 
 		return entries
@@ -144,7 +147,7 @@ class SiegeRewardsGui(
 				.addIngredient('r', GuiItems.PageRightItem())
 				.addIngredient('l', GuiItems.PageLeftItem())
 				.addIngredient('b', GuiItem.CANCEL.makeItem(text("Go Back"))
-					.makeGuiButton { _, _ -> SiegeRewardsGui(viewer, solarSiegeIds, gasDepotSiegeIds).openGui() })
+					.makeGuiButton { _, _ -> SiegeRewardsGui(viewer, solarSiegeIds, regionalObjectiveSiegeIds).openGui() })
 				.setContent(items)
 				.build()
 
@@ -179,8 +182,8 @@ class SiegeRewardsGui(
 				when (entry) {
 					is RewardEntry.SolarRewardEntry ->
 						SolarSiegeData.updateById(entry.id, setValue(SolarSiegeData::availableRewards, entry.rewards))
-					is RewardEntry.GasDepotRewardEntry ->
-						GasDepotSiegeData.updateById(entry.id, setValue(GasDepotSiegeData::availableRewards, entry.rewards))
+					is RewardEntry.RegionalObjectiveRewardEntry ->
+						RegionalObjectiveSiegeData.updateById(entry.id, setValue(RegionalObjectiveSiegeData::availableRewards, entry.rewards))
 				}
 
 				Tasks.sync {

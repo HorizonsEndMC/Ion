@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -110,6 +111,9 @@ object SignatureManager : IonServerComponent(true) {
             // Do not spawn signature within gravity wells
             val massShadows = MassShadows.find(randomSpaceWorld, potentialX, potentialZ)
             if (!massShadows.isNullOrEmpty()) continue
+
+			// Do not spawn in hyperspace worlds
+			if (randomSpaceWorld.hasFlag(WorldFlag.HYPERSPACE_WORLD)) continue
 
             val stationsInWorld = SpaceStationCache.all().filter { station -> station.world == randomSpaceWorld.name }
             for (station in stationsInWorld) {

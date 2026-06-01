@@ -39,7 +39,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	override val statusManager: StatusManager = StatusManager()
 
 	@Suppress("LeakingThis")
-	final override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+	override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 		this,
 		{ PowerEntityDisplayModule(it, this) },
 		{ StatusDisplayModule(it, statusManager) }

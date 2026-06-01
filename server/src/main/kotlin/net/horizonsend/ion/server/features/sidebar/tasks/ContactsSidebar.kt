@@ -455,6 +455,9 @@ object ContactsSidebar {
                         if (starship.isInterdicting) {
                             interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
                         } else empty(),
+						if (starship.disruptorTarget == player) {
+							interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
+						} else empty(),
                         if (inFleet) {
                             ofChildren(
                                 if (fleet != null && fleet.leader == otherPlayer.uniqueId) {

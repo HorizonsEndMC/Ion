@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.starship.Interdiction
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.front
@@ -30,6 +31,9 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 		if (!starship.contains(sign.x, sign.y, sign.z)) return
 
 		if (StarshipCruising.isCruising(starship)) return player.userError("Cannot activate while cruising")
+		if (starship.type != StarshipType.INTERDICTOR_GUNSHIP && starship.type != StarshipType.INTERDICTOR_CORVETTE && starship.type != StarshipType.INTERDICTOR_DESTROYER) {
+			return player.userError("YOU CAN ONLY USE GRAVITY WELLS ON INTERDICTORS!!!")
+		}
 
 		when (event.action) {
 			Action.RIGHT_CLICK_BLOCK -> {

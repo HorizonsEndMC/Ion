@@ -1,8 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
@@ -13,6 +18,7 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.FurnaceInventory
 
 object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity>, DisplayNameMultilblock {
 	override fun MultiblockShape.buildStructure() {
@@ -150,8 +156,24 @@ object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 300_000) {
-		override val tickingManager: TickedMultiblockEntityParent.TickingManager =
-			TickedMultiblockEntityParent.TickingManager(5) // 4 ammo/second
+	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 0) {
+
+		// No power
+
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			{ StatusDisplayModule(it, statusManager) }
+		)
+
+		override fun buildRecipeEnviornment(): FurnaceEnviornment? {
+			val fakePowerStorage = PowerStorage(this, Int.MAX_VALUE, Int.MAX_VALUE)
+			return FurnaceEnviornment(
+				this,
+				getInventory(0, 0, 0) as? FurnaceInventory ?: return null,
+				fakePowerStorage,
+				tickingManager,
+				progressManager
+			)
+		}
 	}
 }

@@ -373,7 +373,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			displayName = Component.text("Enriched Uranium Block"),
 			customBlock = CustomBlockKeys.ENRICHED_URANIUM_BLOCK
 		)
-		unStackable(key = CustomItemKeys.URANIUM_CORE, model = "industry/uranium_core", displayName = Component.text("Uranium Core"))
+		stackable(key = CustomItemKeys.URANIUM_CORE, model = "industry/uranium_core", displayName = Component.text("Uranium Core"))
 		unStackable(key = CustomItemKeys.URANIUM_ROD, model = "industry/uranium_rod", displayName = Component.text("Uranium Rod"))
 		unStackable(key = CustomItemKeys.FUEL_ROD_CORE, model = "industry/fuel_rod_core", displayName = Component.text("Fuel Rod Core"))
 		unStackable(key = CustomItemKeys.FUEL_CELL, model = "industry/fuel_cell", displayName = Component.text("Fuel Cell"))
@@ -381,10 +381,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		stackable(key = CustomItemKeys.DATA_CHIP, Component.text("Data Chip"), "industry/data_chip")
 		stackable(key = CustomItemKeys.GUIDANCE_SYSTEM, Component.text("Guidance System"), "industry/guidance_system")
 
-		unStackable(key = CustomItemKeys.REACTIVE_COMPONENT, model = "industry/reactive_component", displayName = Component.text("Reactive Component"))
+		stackable(key = CustomItemKeys.REACTIVE_COMPONENT, model = "industry/reactive_component", displayName = Component.text("Reactive Component"))
 		unStackable(key = CustomItemKeys.REACTIVE_HOUSING, model = "industry/reactive_housing", displayName = Component.text("Reactive Housing"))
-		unStackable(key = CustomItemKeys.REACTIVE_PLATING, model = "industry/reactive_plating", displayName = Component.text("Reactive Plating"))
-		unStackable(key = CustomItemKeys.REACTIVE_CHASSIS, model = "industry/reactive_chassis", displayName = Component.text("Reactive Chassis"))
+		stackable(key = CustomItemKeys.REACTIVE_PLATING, model = "industry/reactive_plating", displayName = Component.text("Reactive Plating"))
+		stackable(key = CustomItemKeys.REACTIVE_CHASSIS, model = "industry/reactive_chassis", displayName = Component.text("Reactive Chassis"))
 		unStackable(key = CustomItemKeys.REACTIVE_MEMBRANE, model = "industry/reactive_membrane", displayName = Component.text("Reactive Membrane"))
 		unStackable(key = CustomItemKeys.REACTIVE_ASSEMBLY, model = "industry/reactive_assembly", displayName = Component.text("Reactive Assembly"))
 		unStackable(key = CustomItemKeys.FABRICATED_ASSEMBLY, model = "industry/fabricated_assembly", displayName = Component.text("Fabricated Assembly"))
@@ -406,8 +406,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(key = CustomItemKeys.STEEL_BLOCK, model = "industry/steel_block", displayName = Component.text("Steel Block"), customBlock = CustomBlockKeys.STEEL_BLOCK)
 		unStackable(key = CustomItemKeys.STEEL_PLATE, model = "industry/steel_plate", displayName = Component.text("Steel Plate"))
 		unStackable(key = CustomItemKeys.STEEL_CHASSIS, model = "industry/steel_chassis", displayName = Component.text("Steel Chassis"))
-		unStackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
-		unStackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
+		stackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
+		stackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
 		unStackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
 		unStackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
 

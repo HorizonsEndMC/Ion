@@ -148,9 +148,9 @@ data class Nation(
 
 			DominionTerritorySiegeData.col.deleteMany(sess, or(DominionTerritorySiegeData::attacker eq id, DominionTerritorySiegeData::defender eq id))
 
-			GasDepot.col.deleteMany(sess, GasDepot::nation eq id)
+			RegionalObjective.col.deleteMany(sess, RegionalObjective::nation eq id)
 
-			GasDepotSiegeData.col.deleteMany(sess, GasDepotSiegeData::winner eq id)
+			RegionalObjectiveSiegeData.col.deleteMany(sess, RegionalObjectiveSiegeData::winner eq id)
 
 			// Remove the nation itself
 			col.deleteOne(sess, idFilterQuery(id))

@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
@@ -131,11 +132,11 @@ class ProbeWeaponSubsystem(
 					pilot,
 					text(distance, distanceColor),
 					text(direction, HE_MEDIUM_GRAY),
-					bracketed(text(ship.centerOfMass.toLocation(ship.world).toString(), HE_DARK_GRAY))
+					bracketed(text("${ship.centerOfMass.x}, ${ship.centerOfMass.z}", HE_DARK_GRAY))
 				)
 				shooter.sendMessage(line)
 			}
-			shooter.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
+			shooter.sendMessage(lineBreak(47))
 			shooter.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
 			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN END]", HE_DARK_GRAY)))
 		}
@@ -165,7 +166,7 @@ class ProbeWeaponSubsystem(
 					paramColor = HE_LIGHT_GRAY,
 					useQuotesAroundObjects = true,
 					name,
-					bracketed(text(location.toString(), distanceColor)),
+					bracketed(text("${location.x}, ${location.z}", distanceColor)),
 					text(distance, distanceColor),
 				)
 				shooter.sendMessage(line)
@@ -198,7 +199,7 @@ class ProbeWeaponSubsystem(
 				)
 				shooter.sendMessage(line)
 			}
-			shooter.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
+			shooter.sendMessage(lineBreak(47))
 			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN END]", HE_DARK_GRAY)))
 		}
 	}

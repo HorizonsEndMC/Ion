@@ -5,12 +5,13 @@ import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
-import net.horizonsend.ion.server.features.nations.region.types.RegionGasDepot
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
@@ -83,7 +84,7 @@ object NationsMap : IonServerComponent(true) {
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
-			Regions.getAllOf<RegionGasDepot>().forEach(::addGasDepot)
+			Regions.getAllOf<RegionRegionalObjective>().forEach(::addRegionalObjective)
 		}
 	}
 
@@ -95,7 +96,7 @@ object NationsMap : IonServerComponent(true) {
 		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
-		Regions.getAllOf<RegionGasDepot>().forEach(NationsMap::updateGasDepot)
+		Regions.getAllOf<RegionRegionalObjective>().forEach(NationsMap::updateRegionalObjective)
 	}
 
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -413,42 +414,57 @@ object NationsMap : IonServerComponent(true) {
 		addSpaceStation(station)
 	}
 
-	fun addGasDepot(depot: RegionGasDepot): Unit = syncOnly {
-		removeGasDepot(depot)
+	fun addRegionalObjective(objective: RegionRegionalObjective): Unit = syncOnly {
+		removeRegionalObjective(objective)
 
-		val name = "${depot.name} Gas Depot"
-		val world = depot.world
-		val x = depot.x.toDouble()
+		val type = when (objective.type) {
+			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			else -> "Tax Beacon"
+		}
+
+		val name = "${objective.name} $type"
+		val world = objective.world
+		val x = objective.x.toDouble()
 		val y = 128.0
-		val z = depot.z.toDouble()
-		val radius = RegionGasDepot.RADIUS.toDouble()
+		val z = objective.z.toDouble()
+		val radius = RegionRegionalObjective.RADIUS.toDouble()
 
 		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
 
-		updateGasDepot(depot)
+		updateRegionalObjective(objective)
 	}
 
-	fun removeGasDepot(depot: RegionGasDepot) = syncOnly {
+	fun removeRegionalObjective(objective: RegionRegionalObjective) = syncOnly {
 		if (!dynmapLoaded) return@syncOnly
-		markerSet.findCircleMarker("${depot.name} Gas Depot")?.deleteMarker()
+		val type = when (objective.type) {
+			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			else -> "Tax Beacon"
+		}
+
+		markerSet.findCircleMarker("${objective.name} $type")?.deleteMarker()
 	}
 
-	fun updateGasDepot(depot: RegionGasDepot): Unit = syncOnly {
+	fun updateRegionalObjective(objective: RegionRegionalObjective): Unit = syncOnly {
 		if (!dynmapLoaded) return@syncOnly
 
-		val marker: CircleMarker = markerSet.findCircleMarker("${depot.name} Gas Depot")
-			?: return@syncOnly addGasDepot(depot)
+		val type = when (objective.type) {
+			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			else -> "Tax Beacon"
+		}
 
-		val nation = depot.nation?.let(NationCache::get)
+		val marker: CircleMarker = markerSet.findCircleMarker("${objective.name} $type")
+			?: return@syncOnly addRegionalObjective(objective)
+
+		val nation = objective.nation?.let(NationCache::get)
 
 		val rgb = nation?.color ?: Color.WHITE.asRGB()
 		marker.setFillStyle(0.2, rgb)
 		marker.setLineStyle(5, 0.8, rgb)
 
 		marker.description = """
-        <p><h2>${depot.name} Gas Depot</h2></p>
+        <p><h2>${objective.name} $type</h2></p>
         ${if (nation == null) {
-			"<p>This depot is unclaimed.</p>"
+			"<p>This $type is unclaimed.</p>"
 		} else {
 			"<h3>Owned by ${nation.name}</h3>"
 		}}

@@ -136,7 +136,6 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 				"HYDROGEN" -> region == SpaceRegion.FRACTURE || region == SpaceRegion.MONOLITH
 				"METHANE" -> region == SpaceRegion.SPINE
 				"CHLORINE" -> region == SpaceRegion.SPINE
-				"NITROGEN" -> region == SpaceRegion.WARD || region == SpaceRegion.MONOLITH
 				"XENON" -> false
 				else -> true
 			}

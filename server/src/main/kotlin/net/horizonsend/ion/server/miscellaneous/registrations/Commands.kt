@@ -6,12 +6,12 @@ import net.horizonsend.ion.server.command.admin.CapturableStationsCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.DisplayDebug
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
-import net.horizonsend.ion.server.command.admin.GasDepotCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.IonNPCCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
+import net.horizonsend.ion.server.command.admin.RegionalObjectiveCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.admin.SequenceAdminCommand
 import net.horizonsend.ion.server.command.admin.StructureCreator
@@ -162,7 +162,7 @@ val commands: List<SLCommand> = listOf(
 	GracePeriod,
 	NewPlayerProtection,
 	CapturableStationsCommand,
-	GasDepotCommand,
+	RegionalObjectiveCommand,
 
 	MultiblockCommand,
 	ConfigurationCommands,

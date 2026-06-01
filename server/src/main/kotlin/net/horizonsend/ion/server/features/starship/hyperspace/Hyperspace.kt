@@ -87,9 +87,9 @@ object Hyperspace : IonServerComponent() {
 			}
 			return
 		}
-		if (massShadows != null && starship.disruptorCount.isNotEmpty()) {
+		if (massShadows != null || starship.disruptorCount.isNotEmpty()) {
 			var combinedWellStrength = 0.0
-			massShadows.forEach { combinedWellStrength += it.wellStrength }
+			massShadows?.forEach { combinedWellStrength += it.wellStrength }
 			for (player in starship.disruptorCount) {
 				val enemyStarship = ActiveStarships.findByPilot(player) ?: continue
 				if (enemyStarship.centerOfMass.distanceSquared(starship.centerOfMass) < enemyStarship.balancing.interdictionRange) {
@@ -188,6 +188,12 @@ object Hyperspace : IonServerComponent() {
 			// Happens after the teleport finishes
 			Tasks.syncDelay(2L) {
 				StarshipEnterHyperspaceEvent(starship, movement).callEvent()
+			}
+			if (warmup.beaconTarget != null) starship.canUseJumpFieldGenerator = false
+			Tasks.syncDelay(delay = 20L * 180L) {
+				if (ActiveStarships.isActive(starship)) {
+					starship.canUseJumpFieldGenerator = true
+				}
 			}
 		}
 	}

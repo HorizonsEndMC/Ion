@@ -29,8 +29,8 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
-import net.horizonsend.ion.common.database.schema.nations.GasDepot
-import net.horizonsend.ion.common.database.schema.nations.GasDepotSiegeData
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -127,8 +127,8 @@ object DBManager : IonComponent() {
 
 		// nations
 		CapturableStation.init()
-		GasDepotSiegeData.init()
-		GasDepot.init()
+		RegionalObjectiveSiegeData.init()
+		RegionalObjective.init()
 
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
