@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -201,5 +202,6 @@ object ConfigurationCommands : SLCommand() {
 
 	private fun reloadOthers() {
 		schematicCache.invalidateAll()
+		AsteroidConfigurations.reload()
 	}
 }
