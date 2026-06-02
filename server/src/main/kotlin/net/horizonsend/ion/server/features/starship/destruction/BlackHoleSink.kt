@@ -1,28 +1,21 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.destruction.AdvancedSinkProvider.Companion.getChunkMap
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.AIR
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.updateHeightMaps
-import net.horizonsend.ion.server.features.starship.subsystem.checklist.SupercapitalReactorSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -30,38 +23,22 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
-import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
-import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Particle
-import org.bukkit.World
 import org.bukkit.util.Vector
 import java.util.LinkedList
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
-	private var velocity: Vec3i = Vec3i(0, -1, 0)
-		set(value) {
-			field = value
-			inverseVelocity = Vec3i(-value.x, -value.y, -value.z)
-		}
-
-	private var inverseVelocity = Vec3i(-velocity.x, -velocity.y, -velocity.z)
-
+open class BlackHoleSinkProvider(starship: ActiveStarship, val singularityLocation: Vector) : SinkProvider(starship) {
 	private var iteration = 0
 	private val maxIteration = sqrt(starship.blocks.size.toDouble())
 
@@ -72,16 +49,6 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	private var sinkPositions = longArrayOf()
 
 	override fun setup() {
-		// Handle random velocity in space
-		if (starship.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			velocity = Vec3i(
-				Random.nextInt(-1, 1),
-				Random.nextInt(-1, 1),
-				Random.nextInt(-1, 1)
-			)
-			if (velocity.x == 0 && velocity.x == 0 && velocity.y == 0) velocity = Vec3i(1, 1, 1)
-		}
-
 		// Populate the initial sinking list
 		val newArray = starship.blocks.toLongArray()
 		for (index in newArray.indices) {
@@ -91,39 +58,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		sinkPositions = newArray
 
-		SinkAnimation(starship, starship.initialBlockCount, starship.world, starship.centerOfMass).schedule()
-		tryReactorParticles()
 		playSinkSound()
-	}
-
-	private fun tryReactorParticles() {
-		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull() ?: return
-		val center = (reactor.pos).toCenterVector()
-
-		val tickRate = 2L
-		val growRate = 35.5 * (tickRate.toDouble() / 20.0)
-
-		var particleRadius = 0.0
-
-		runnable {
-			particleRadius += growRate
-			val number = (2.0 * PI * particleRadius).toInt()
-
-			for (count in 0..number) {
-				// Get the fraction around the circle
-				val degrees = 360.0 - (360.0 * (count.toDouble() / number.toDouble()))
-				val radians = degrees * (PI / 180.0)
-
-				val xOffset = cos(radians) * particleRadius
-				val zOffset = sin(radians) * particleRadius
-
-				val newLoc = center.clone().add(Vector(xOffset, 0.0, zOffset))
-
-				starship.world.spawnParticle(Particle.SONIC_BOOM, newLoc.x, newLoc.y, newLoc.z, 1, 0.0, 0.0, 0.0, 0.0, null,true)
-
-				if (particleRadius >= 150.0) cancel()
-			}
-		}.runTaskTimer(IonServer, tickRate, tickRate)
 	}
 
 	fun playSinkSound() {
@@ -153,7 +88,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			return
 		}
 
-		val (newPositions, minPoint, maxPoint) = calculateNewPositions() ?: run {
+		val newPositions = calculateNewPositions() ?: run {
 			cancel()
 			return
 		}
@@ -168,10 +103,13 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		Tasks.syncBlocking {
 			try {
 				// Check for obstructions in the new positions
-				populateObstructionList(newPositions, minPoint, maxPoint)
 
 				// Remove the old blocks
 				processOldBlocks(oldChunkMap, capturedStates, capturedTiles)
+
+				// Replace 2% of tiles with lava
+				removeCrossedPositions(capturedStates)
+				randomizeLava(capturedStates)
 
 				// A trimmed list of positions that were actually moved. Used to build the next set of blocks that will move.
 				val trimmedPositions = processNewBlocks(newChunkMap, capturedStates)
@@ -198,91 +136,50 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		}
 	}
 
+	private var crossedSingularityPositions = mutableListOf<Int>()
+
 	/**
 	 * Moves the blocks, returns the list of new positions, the min, and max points.
 	 **/
-	private fun calculateNewPositions(): Triple<LongArray, Vec3i, Vec3i>? {
-		val baseline = toVec3i(sinkPositions.first())
-
-		var newMinX = baseline.x
-		var newMaxX = baseline.x
-		var newMinY = baseline.y
-		var newMaxY = baseline.y
-		var newMinZ = baseline.z
-		var newMaxZ = baseline.z
-
+	private fun calculateNewPositions(): LongArray? {
 		// Calculate the new positions from the velocity, and note the new min and max coordinates
 		val newPositions = LongArray(sinkPositions.size) { index ->
 			val it = sinkPositions[index]
+			val currentVec3i = toVec3i(it)
 
-			val newKey = toBlockKey(toVec3i(it).plus(velocity))
+			val oldRelativeX = currentVec3i.x - singularityLocation.x.toInt()
+			val oldRelativeY = currentVec3i.y - singularityLocation.y.toInt()
+			val oldRelativeZ = currentVec3i.z - singularityLocation.z.toInt()
 
-			val x = getX(newKey)
-			val y = getY(newKey)
-			val z = getZ(newKey)
+//			val velocity = velocity
+			val vector = singularityLocation.clone().subtract(currentVec3i.toVector())
+
+			val velocity = (9.81) / (vector.length() / 100.0)
+
+			val motion = Vec3i(vector.normalize().multiply(velocity))
+			val newPos = toVec3i(it).plus(motion)
+
+			val newRelativeX = newPos.x - singularityLocation.x.toInt()
+			val newRelativeY = newPos.y - singularityLocation.y.toInt()
+			val newRelativeZ = newPos.z - singularityLocation.z.toInt()
+
+			// Check if it crosses the singularity
+			if ((newRelativeX > 1 && oldRelativeX < 1) || (newRelativeX < 1 && oldRelativeX > 1)) crossedSingularityPositions.add(index)
+			if ((newRelativeY > 1 && oldRelativeY < 1) || (newRelativeY < 1 && oldRelativeY > 1)) crossedSingularityPositions.add(index)
+			if ((newRelativeZ > 1 && oldRelativeZ < 1) || (newRelativeZ < 1 && oldRelativeZ > 1)) crossedSingularityPositions.add(index)
+
+			val newKey = toBlockKey(toVec3i(it).plus(motion))
+
+			val x = newPos.x
+			val y = newPos.y
+			val z = newPos.z
 
 			if (!starship.world.minecraft.isInWorldBounds(BlockPos(x, y, z))) return null
-
-			if (x > newMaxX) newMaxX = x
-			if (x < newMinX) newMinX = x
-			if (y > newMaxY) newMaxY = y
-			if (y < newMinY) newMinY = y
-			if (z > newMaxZ) newMaxZ = z
-			if (z < newMinZ) newMinZ = z
 
 			newKey
 		}
 
-		return Triple(newPositions, Vec3i(newMinX, newMinY, newMinZ), Vec3i(newMaxX, newMaxY, newMaxZ))
-	}
-
-	private fun populateObstructionList(newPositions: LongArray, minPoint: Vec3i, maxPoint: Vec3i) {
-		for (position in newPositions) {
-			if (obstructedPositions.contains(position)) continue
-			if (sinkPositions.contains(position)) continue
-
-			if (!starship.world.minecraft.isInWorldBounds(BlockPos.of(position))) {
-				addObstructedPosition(position, minPoint, maxPoint)
-				continue
-			}
-
-			val areaShields = getNearbyAreaShields(Location(starship.world, getX(position).toDouble(), getY(position).toDouble(), getZ(position).toDouble()), 1.0)
-			if (areaShields.any { it.powerStorage.getPower() > 0 }) {
-				addObstructedPosition(position, minPoint, maxPoint)
-				continue
-			}
-
-			if (!starship.world.minecraft.isInWorldBounds(BlockPos.of(position))) {
-				addObstructedPosition(position, minPoint, maxPoint)
-				continue
-			}
-
-			val type = getBlockTypeSafe(starship.world, getX(position), getY(position), getZ(position))
-			if (type == null || !type.isAir) addObstructedPosition(position, minPoint, maxPoint)
-		}
-	}
-
-	/**
-	 * Adds the provided position to the obstructed list, and searches out in the opposite direction of the velocity.
-	 **/
-	private fun addObstructedPosition(position: BlockKey, minPoint: Vec3i, maxPoint: Vec3i) {
-		var nextPosition = toVec3i(position)
-		obstructedPositions.add(position)
-
-		// Force upper bound to avoid chance of an infinite loop
-		var iterations = 0
-		while (iterations < 100) {
-			iterations++
-			val newPosition = nextPosition.plus(inverseVelocity)
-			if (obstructedPositions.contains(toBlockKey(newPosition))) break
-
-			if (newPosition.x > maxPoint.x || newPosition.x < minPoint.x) break
-			if (newPosition.y > maxPoint.y || newPosition.y < minPoint.y) break
-			if (newPosition.z > maxPoint.z || newPosition.z < minPoint.z) break
-
-			nextPosition = newPosition
-			obstructedPositions.add(toBlockKey(newPosition))
-		}
+		return newPositions
 	}
 
 	private fun processOldBlocks(oldChunkMap: SinkChunkMap, capturedStates: Array<BlockState>, capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>) {
@@ -409,6 +306,24 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		}
 	}
 
+	fun randomizeLava(capturedStates: Array<BlockState>) {
+		val num = capturedStates.size / 50
+
+		repeat(num) {
+			val index = Random.nextInt(capturedStates.size)
+			if (capturedStates[index].isAir) return@repeat
+			capturedStates[index] = MAGMA_BLOCK_STATE
+		}
+	}
+
+	fun removeCrossedPositions(capturedStates: Array<BlockState>) {
+		for (index in crossedSingularityPositions) {
+			capturedStates[index] = AIR
+		}
+
+		crossedSingularityPositions = mutableListOf()
+	}
+
 	private fun intermittentExplosions() {
 		val random = sinkPositions.randomOrNull() ?: return
 		val (x, y, z) = toVec3i(random)
@@ -477,38 +392,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	}
 
 	companion object {
-
-
-		/**
-		 * Formnats the provided position array into the chunk map
-		 **/
-		fun getChunkMap(positionArray: LongArray, world: World): SinkChunkMap {
-			val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
-
-			for (index in positionArray.indices) {
-				val blockKey = positionArray[index]
-
-				val x = getX(blockKey)
-				val y = getY(blockKey)
-				val z = getZ(blockKey)
-
-				val chunkKey = chunkKey(x shr 4, z shr 4)
-
-				val sectionKey = world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
-
-				val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
-				val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
-
-				positionMap[blockKey] = index
-			}
-
-			return chunkMap
-		}
+		private val MAGMA_BLOCK_STATE = Material.MAGMA_BLOCK.createBlockData().nms
 	}
 }
-
-/**
- * Map of a chunk key to a map of a section key to a map of a block key to its index in the block list
- **/
-typealias SinkChunkMap = Map<Long, Map<Int, Map<BlockKey, Int>>>
 
