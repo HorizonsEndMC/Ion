@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreDefinition
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
@@ -49,9 +49,13 @@ data class ConfigurableAsteroidMeta(
 	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {
 		override fun load(data: CompoundTag): ConfigurableAsteroidMeta {
 			val structureAlias = data.getString("structureAlias").get()
-			val structure = ConfigurationFiles.globalAsteroidConfiguration().structureTemplates[structureAlias]!!
+			val structure = AsteroidConfigurations.getStructure(structureAlias)
+				?: throw NullPointerException("Asteroid structure $structureAlias not loaded. This will spam an annoying error every time a chunk was loaded containing it, but shouldn't break anything.")
+
 			val paletteAlias = data.getString("paletteAlias").get()
-			val palette = ConfigurationFiles.globalAsteroidConfiguration().paletteTemplates[paletteAlias]!!
+			val palette = AsteroidConfigurations.getPalette(paletteAlias)
+				?: throw NullPointerException("Asteroid palette $paletteAlias not loaded. This will spam an annoying error every time a chunk was loaded containing it, but shouldn't break anything.")
+
 
 			val ores = data.getList("ores").getOrDefault(ListTag()).map { OreDefinition.fromCompound(it.asCompound().get()) }
 

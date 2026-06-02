@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.world.generation.generators.configur
 import com.github.auburn.FastNoiseLite
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
@@ -21,6 +20,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseTypeConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.StaticConfigurationGlobal
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SumConfigurationGlobal
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.weightedEntry
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
@@ -124,11 +124,11 @@ data class AsteroidPlacementConfiguration(
 	}
 
 	private fun generateMetaData(chunkRandom: Random, world: World, x: Int, z: Int): ConfigurableAsteroidMeta? {
-		val builder = ConfigurationFiles.globalAsteroidConfiguration().builders[selector.getBuilder(chunkRandom, world, x, z)]
+		val builder = AsteroidConfigurations.getBuilder(selector.getBuilder(chunkRandom, world, x, z))
 
 		return builder?.build(
-			structureMap = ConfigurationFiles.globalAsteroidConfiguration().structureTemplates,
-			paletteMap = ConfigurationFiles.globalAsteroidConfiguration().paletteTemplates,
+			structureMap = AsteroidConfigurations.getStructures(),
+			paletteMap = AsteroidConfigurations.getPalettes(),
 			seed = chunkRandom.nextLong(),
 			size = chunkRandom.nextDouble(minSize, maxSize),
 		)
@@ -163,8 +163,8 @@ data class AsteroidPlacementConfiguration(
 					seed,
 					size,
 					oreDefinitions = ores,
-					aliasedStructureNoiseLayers = structure to structureMap[structure]!!,
-					aliasedPaletteConfiguration = palette to paletteMap[palette]!!
+					aliasedStructureNoiseLayers = structure to (structureMap[structure] ?: throw NullPointerException("structure $structure not found!")),
+					aliasedPaletteConfiguration = palette to (paletteMap[palette] ?: throw NullPointerException("palette $palette not found!"))
 				)
 			}
 		}

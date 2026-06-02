@@ -38,7 +38,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 			val starts = nmsChunk.allStarts
 			for ((structure, nmsStart) in starts) {
 				if (structure !is NMSStructureIntegration.IonStructure) continue
-				referencedStarts.add(FeatureStart.fromNMS(nmsStart))
+				referencedStarts.add(runCatching { FeatureStart.fromNMS(nmsStart) }.getOrNull() ?: continue)
 			}
 
 			val references = nmsChunk.allReferences
@@ -49,7 +49,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 					val referencePos = ChunkPos(key)
 					val referencedChunk = level.getChunk(referencePos.x, referencePos.z, ChunkStatus.STRUCTURE_STARTS)
 					val nmsStart = referencedChunk.getStartForStructure(structure) ?: continue
-					referencedStarts.add(FeatureStart.fromNMS(nmsStart))
+					referencedStarts.add(runCatching { FeatureStart.fromNMS(nmsStart) }.getOrNull() ?: continue)
 				}
 			}
 

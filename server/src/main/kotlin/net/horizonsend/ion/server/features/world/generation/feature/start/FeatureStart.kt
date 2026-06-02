@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.world.generation.feature.start
 
+import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.nms.NMSStructureIntegration
@@ -25,15 +26,18 @@ data class FeatureStart(
 	}
 
 	companion object {
-		fun fromNMS(start: StructureStart): FeatureStart {
+		fun fromNMS(start: StructureStart): FeatureStart = try {
 			val piece = start.pieces.first() as NMSStructureIntegration.PieceDataStorage
-			return FeatureStart(
+
+			FeatureStart(
 				piece.feature,
 				piece.pos.x,
 				piece.pos.y,
 				piece.pos.z,
 				piece.metaData
 			)
+		} catch (e: Throwable) {
+			throw SerializationException("Could not deserialize structure piece for world generation!", e)
 		}
 	}
 }
