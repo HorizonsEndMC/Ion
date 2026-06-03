@@ -816,7 +816,28 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         EffectTiming.TICKED
                     ),
                     2
-                )
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = template(
+                            text("Press your {0} key ({1}) {2} to {3}"),
+                            text("SNEAK", AQUA),
+                            Component.keybind("key.sneak", YELLOW),
+                            text("while holding your controller", GREEN),
+                            text("move in the direction you are looking", LIGHT_PURPLE)
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = false,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
             )
         )
 
@@ -891,6 +912,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         EffectTiming.TICKED
                     ),
                     2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = template(
+                            text("Press your {0} key to {1}"),
+                            Component.keybind("key.drop", YELLOW),
+                            text("turn left", LIGHT_PURPLE)
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = false,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
                 )
             )
         )
@@ -951,6 +991,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         backgroundColor = Color.fromARGB(0x00000000),
                         defaultBackground = false,
                         seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = template(
+                            text("Press your {0} key to {1}"),
+                            Component.keybind("key.swapOffhand", YELLOW),
+                            text("turn right", LIGHT_PURPLE),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = false,
                         highlight = false,
                         EffectTiming.TICKED
                     ),
@@ -1096,6 +1155,24 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     2
                 ),
 
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = template(
+                            text("Right click the {0} to enable cruise mode"),
+                            text("\"cruise sign\" ", AQUA),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = false,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
                 *questMarkerEffects(Vec3i(0, 0, -1000)),
             )
         )
@@ -1197,6 +1274,30 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         backgroundColor = Color.fromARGB(0x00000000),
                         defaultBackground = false,
                         seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = template(
+                            text("Navigate through the asteroid belt by {0}, {1} ({2}, {3}), and {4} ({5}, {6})"),
+                            text("cruising", AQUA),
+                            text("manually flying", AQUA),
+                            Component.keybind("key.sneak", YELLOW),
+                            text("while holding a controller", YELLOW),
+                            text("turning", AQUA),
+                            Component.keybind("key.drop", YELLOW),
+                            Component.keybind("key.swapOffhand", YELLOW),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = false,
                         highlight = false,
                         EffectTiming.TICKED
                     ),
@@ -1333,6 +1434,25 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         ),
                         2
                     ),
+
+                    SequencePhaseEffect.OnTickInterval(
+                        SequencePhaseEffect.DisplayHudText(
+                            distance = 10.0,
+                            text = template(
+                                text("Left click the {0} to disable cruise mode, and {1}"),
+                                text("cruise sign", GREEN),
+                                text("wait for the ship to stop", AQUA)
+                            ),
+                            durationTicks = 2L,
+                            scale = 2.0f,
+                            backgroundColor = Color.fromARGB(0x00000000),
+                            defaultBackground = false,
+                            seeThrough = false,
+                            highlight = false,
+                            EffectTiming.TICKED
+                        ),
+                        2
+                    ),
                 ),
 
                 SequencePhaseEffect.DataConditionalEffects(
@@ -1349,6 +1469,21 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                             backgroundColor = Color.fromARGB(0x00000000),
                             defaultBackground = false,
                             seeThrough = true,
+                            highlight = false,
+                            EffectTiming.TICKED
+                        ),
+                        2
+                    ),
+
+                    SequencePhaseEffect.OnTickInterval(
+                        SequencePhaseEffect.DisplayHudText(
+                            distance = 10.0,
+                            text = text("Move the starship back to the hyperspace beacon", RED),
+                            durationTicks = 2L,
+                            scale = 2.0f,
+                            backgroundColor = Color.fromARGB(0x00000000),
+                            defaultBackground = false,
+                            seeThrough = false,
                             highlight = false,
                             EffectTiming.TICKED
                         ),
@@ -1494,6 +1629,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         backgroundColor = Color.fromARGB(0x00000000),
                         defaultBackground = false,
                         seeThrough = true,
+                        highlight = false,
+                        EffectTiming.TICKED
+                    ),
+                    2
+                ),
+
+                SequencePhaseEffect.OnTickInterval(
+                    SequencePhaseEffect.DisplayHudText(
+                        distance = 10.0,
+                        text = ofChildren(
+                            text("Run the command: "),
+                            newline(),
+                            text("/jump Horizons_End_Transit_Hub", AQUA),
+                            newline(),
+                            text("to jump to hyperspace", LIGHT_PURPLE),
+                        ),
+                        durationTicks = 2L,
+                        scale = 2.0f,
+                        backgroundColor = Color.fromARGB(0x00000000),
+                        defaultBackground = false,
+                        seeThrough = false,
                         highlight = false,
                         EffectTiming.TICKED
                     ),
