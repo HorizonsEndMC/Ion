@@ -60,6 +60,7 @@ class WreckHackingGui(
 	private var coreRow = 0
 	private var coreCol = 0
 	private var livesRemaining = LIVES_PER_ATTEMPT
+	private var success = false
 
 	init {
 		generateGrid()
@@ -181,6 +182,7 @@ class WreckHackingGui(
 		when (nodeType) {
 			NODE_CORE -> {
 				// found winning thing
+				success = true
 				currentWindow?.close()
 				unlockChest()
 				return
@@ -242,6 +244,7 @@ class WreckHackingGui(
 	}
 
 	private fun destroyChest() {
+		if (success) return
 		Tasks.sync {
 			chest.persistentDataContainer.remove(NamespacedKeys.WRECK_CHEST)
 			chest.update()
