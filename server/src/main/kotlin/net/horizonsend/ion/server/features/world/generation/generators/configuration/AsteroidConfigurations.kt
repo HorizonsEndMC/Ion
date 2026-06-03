@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration.AsteroidBuilder
 
 object AsteroidConfigurations : IonServerComponent() {
-	private var structureTemplates: Map<String, EvaluationConfiguration> = mapOf()
-	private var paletteTemplates: Map<String, MaterialConfiguration> = mapOf()
-	private var builders: Map<String, AsteroidBuilder> = mapOf()
+	private var structureTemplates: Map<String, EvaluationConfiguration> = AsteroidStructures.defaultStructureTemplates
+	private var paletteTemplates: Map<String, MaterialConfiguration> = AsteroidStructures.defaultPaletteTemplates
+	private var builders: Map<String, AsteroidBuilder> = AsteroidStructures.defaultBuilders
 
 	private val STRUCTURE_FOLDER = ConfigurationFiles.configurationFolder.resolve("asteroid_noise").apply { mkdirs() }
 	private val PALETTE_FOLDER = ConfigurationFiles.configurationFolder.resolve("asteroid_palette").apply { mkdirs() }
