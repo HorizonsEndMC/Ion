@@ -98,7 +98,6 @@ class SchematicSignatureType(
 						val block = location.world.getBlockAt(x, y, z)
 						val chest = block.state as? Chest ?: continue
 						chest.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST, PersistentDataType.BOOLEAN, true)
-						chest.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST_LOCKED, PersistentDataType.BOOLEAN, true)
 						chest.update()
 					}
 				}

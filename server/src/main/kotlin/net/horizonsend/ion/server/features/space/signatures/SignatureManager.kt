@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -83,7 +82,12 @@ object SignatureManager : IonServerComponent(true) {
 	}
 
     private fun generateNewSignature(signatureType: SignatureType): Signature? {
-        val location = getValidSignatureLocation() ?: return null
+        val location = getValidSignatureLocation()
+
+		if (location == null) {
+			log.warn("Failed to find a valid spawn location for signature type $signatureType after $MAX_SPAWN_ATTEMPTS attempts")
+			return null
+		}
 
 		if (signatureType is SchematicSignatureType) signatureType.generateSchematic(location, schematicCache, log)
 
@@ -96,7 +100,7 @@ object SignatureManager : IonServerComponent(true) {
         while (attempts < MAX_SPAWN_ATTEMPTS) {
             attempts += 1
 
-            val spaceWorlds = Bukkit.getWorlds().filter { it.ion.hasFlag(WorldFlag.SPACE_WORLD) }
+            val spaceWorlds = Bukkit.getWorlds().filter { it.ion.hasFlag(WorldFlag.SPACE_WORLD) && it.ion.hasFlag(WorldFlag.ALLOW_SIGNATURE_SPAWNS) }
             val randomSpaceWorld = spaceWorlds.random()
 
             val worldBorderMinX = randomSpaceWorld.worldBorder.center.x - (randomSpaceWorld.worldBorder.size / 2)
@@ -111,9 +115,6 @@ object SignatureManager : IonServerComponent(true) {
             // Do not spawn signature within gravity wells
             val massShadows = MassShadows.find(randomSpaceWorld, potentialX, potentialZ)
             if (!massShadows.isNullOrEmpty()) continue
-
-			// Do not spawn in hyperspace worlds
-			if (randomSpaceWorld.hasFlag(WorldFlag.HYPERSPACE_WORLD)) continue
 
             val stationsInWorld = SpaceStationCache.all().filter { station -> station.world == randomSpaceWorld.name }
             for (station in stationsInWorld) {

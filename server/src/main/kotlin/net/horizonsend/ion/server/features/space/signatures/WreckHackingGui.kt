@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.space.signatures
 
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -13,7 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
@@ -29,18 +32,29 @@ class WreckHackingGui(
 ) : InvUIWindowWrapper(viewer) {
 
 	companion object {
-		const val GRID_SIZE = 7
+		const val WINDOW_WIDTH = 9
+		const val WINDOW_HEIGHT = 6
 		const val LIVES_PER_ATTEMPT = 3
 
 		const val NODE_EMPTY = 1
 		const val NODE_TRAP = 2
 		const val NODE_CORE = 3
 
-		const val TRAP_CHANCE = 0.25
+		enum class Difficulty(val horizontalGridSize: Int, val verticalGridSize: Int, val trapCount: Int) {
+			EASY(5, 4, 3),
+			MEDIUM(7, 5, 5),
+			HARD(9, 6, 10)
+		}
 	}
 
-	private var grid = Array(GRID_SIZE) { IntArray(GRID_SIZE) }
-	private var revealed = Array(GRID_SIZE) { BooleanArray(GRID_SIZE) }
+	private val difficulty: Difficulty = Difficulty.entries.random()
+	private val horizontalGridSize: Int = difficulty.horizontalGridSize
+	private val verticalGridSize: Int = difficulty.verticalGridSize
+	private val horizontalOffset: Int = (WINDOW_WIDTH - horizontalGridSize) / 2
+	private val verticalOffset: Int = (WINDOW_HEIGHT - verticalGridSize) / 2
+
+	private var grid = MutableList(verticalGridSize) { MutableList(horizontalGridSize) { NODE_EMPTY } }
+	private var revealed = MutableList(verticalGridSize) { MutableList(horizontalGridSize) { false } }
 	private var playerRow = 0
 	private var playerCol = 0
 	private var coreRow = 0
@@ -52,33 +66,43 @@ class WreckHackingGui(
 	}
 
 	private fun generateGrid() {
-		grid = Array(GRID_SIZE) { IntArray(GRID_SIZE) }
-		revealed = Array(GRID_SIZE) { BooleanArray(GRID_SIZE) }
+		grid = MutableList(verticalGridSize) { MutableList(horizontalGridSize) { NODE_EMPTY } }
+		revealed = MutableList(verticalGridSize) { MutableList(horizontalGridSize) { false } }
 		livesRemaining = LIVES_PER_ATTEMPT
 
 		// place player on a random edge node
 		when (Random.nextInt(4)) {
-			0 -> { playerRow = 0; playerCol = Random.nextInt(GRID_SIZE) }
-			1 -> { playerRow = GRID_SIZE - 1; playerCol = Random.nextInt(GRID_SIZE) }
-			2 -> { playerRow = Random.nextInt(GRID_SIZE); playerCol = 0 }
-			else -> { playerRow = Random.nextInt(GRID_SIZE); playerCol = GRID_SIZE - 1 }
+			0 -> { playerRow = 0; playerCol = Random.nextInt(horizontalGridSize) }
+			1 -> { playerRow = verticalGridSize - 1; playerCol = Random.nextInt(horizontalGridSize) }
+			2 -> { playerRow = Random.nextInt(verticalGridSize); playerCol = 0 }
+			else -> { playerRow = Random.nextInt(verticalGridSize); playerCol = horizontalGridSize - 1 }
 		}
 
 		// place core anywhere at least 4 distance from player
 		do {
-			coreRow = Random.nextInt(GRID_SIZE)
-			coreCol = Random.nextInt(GRID_SIZE)
+			coreRow = Random.nextInt(verticalGridSize)
+			coreCol = Random.nextInt(horizontalGridSize)
 		} while (abs(coreRow - playerRow) + abs(coreCol - playerCol) < 4)
 
-		// Fill grid
-		for (r in 0 until GRID_SIZE) {
-			for (c in 0 until GRID_SIZE) {
-				grid[r][c] = when {
-					r == coreRow && c == coreCol -> NODE_CORE
-					r == playerRow && c == playerCol -> NODE_EMPTY
-					else -> if (Random.nextDouble() < TRAP_CHANCE) NODE_TRAP else NODE_EMPTY
-				}
+		// Fill grid with empty cells plus the core
+		for (r in 0 until verticalGridSize) {
+			for (c in 0 until horizontalGridSize) {
+				grid[r][c] = if (r == coreRow && c == coreCol) NODE_CORE else NODE_EMPTY
 			}
+		}
+
+		// Place exactly difficulty.trapCount traps in random cells that aren't the player, the core, or adjacent to the player
+		val trapCandidates = mutableListOf<Pair<Int, Int>>()
+		for (r in 0 until verticalGridSize) {
+			for (c in 0 until horizontalGridSize) {
+				if ((r == playerRow && c == playerCol) || (r == coreRow && c == coreCol) || isAdjacentToPlayer(r, c)) continue
+				trapCandidates += r to c
+			}
+		}
+		trapCandidates.shuffle()
+		for (i in 0 until minOf(difficulty.trapCount, trapCandidates.size)) {
+			val (r, c) = trapCandidates[i]
+			grid[r][c] = NODE_TRAP
 		}
 
 		// starting position
@@ -95,33 +119,57 @@ class WreckHackingGui(
 			(abs(col - playerCol) == 1 && row == playerRow)
 	}
 
-	private fun getNodeItem(row: Int, col: Int): AbstractItem {
-		val isPlayer = row == playerRow && col == playerCol
-		val isRevealed = revealed[row][col]
-		val isAdjacent = isAdjacentToPlayer(row, col)
+	private fun isFirewall(row: Int, col: Int): Boolean =
+		grid[row][col] == NODE_TRAP
 
-		val item = when {
-			isPlayer -> ItemBuilder(ItemStack(Material.GREEN_WOOL))
-				.setDisplayName("§aYou are here")
-
-			isRevealed && isAdjacentToCore(row, col) -> ItemBuilder(ItemStack(Material.ORANGE_STAINED_GLASS_PANE))
-				.setDisplayName("§6Something is nearby...")
-
-			isRevealed -> ItemBuilder(ItemStack(Material.WHITE_STAINED_GLASS_PANE))
-				.setDisplayName("§fClear")
-
-			isAdjacent -> ItemBuilder(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
-				.setDisplayName("§7Unknown - Click to move here")
-
-			else -> ItemBuilder(ItemStack(Material.BLACK_STAINED_GLASS_PANE))
-				.setDisplayName("§8Inaccessible")
+	private fun isAdjacentToUnrevealedFirewall(row: Int, col: Int): Boolean {
+		val neighbors = listOf(
+			row - 1 to col,
+			row + 1 to col,
+			row to col - 1,
+			row to col + 1
+		)
+		return neighbors.any { (r, c) ->
+			r in 0 until verticalGridSize &&
+				c in 0 until horizontalGridSize &&
+				isFirewall(r, c) && !revealed[r][c]
 		}
+	}
 
+	private fun getNodeItem(row: Int, col: Int): AbstractItem {
 		return object : AbstractItem() {
-			override fun getItemProvider(): ItemProvider = item
+			override fun getItemProvider(): ItemProvider {
+				val isPlayer = row == playerRow && col == playerCol
+				val isRevealed = revealed[row][col]
+				val isAdjacent = isAdjacentToPlayer(row, col)
+
+				return when {
+					isPlayer && (isAdjacentToCore(row, col) || isAdjacentToUnrevealedFirewall(row, col)) ->ItemBuilder(ItemStack(Material.YELLOW_WOOL))
+						.setDisplayName(AdventureComponentWrapper(text("You are here (something is nearby...)", GOLD)))
+
+					isPlayer -> ItemBuilder(ItemStack(Material.GREEN_WOOL))
+						.setDisplayName(AdventureComponentWrapper(text("You are here", GREEN)))
+
+					isRevealed && isFirewall(row, col) -> ItemBuilder(ItemStack(Material.RED_STAINED_GLASS_PANE))
+						.setDisplayName(AdventureComponentWrapper(text("Firewall", RED)))
+
+					isRevealed && (isAdjacentToCore(row, col) || isAdjacentToUnrevealedFirewall(row, col)) -> ItemBuilder(ItemStack(Material.ORANGE_STAINED_GLASS_PANE))
+						.setDisplayName(AdventureComponentWrapper(text("Something is nearby...", GOLD)))
+
+					isRevealed -> ItemBuilder(ItemStack(Material.WHITE_STAINED_GLASS_PANE))
+						.setDisplayName(AdventureComponentWrapper(text("Clear", WHITE)))
+
+					isAdjacent -> ItemBuilder(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
+						.setDisplayName(AdventureComponentWrapper(text("Unknown - Click to move here", GRAY)))
+
+					else -> ItemBuilder(ItemStack(Material.BLACK_STAINED_GLASS_PANE))
+						.setDisplayName(AdventureComponentWrapper(text("Inaccessible", DARK_GRAY)))
+				}
+			}
 
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-				if (!isAdjacent || isPlayer) return
+				val isPlayer = row == playerRow && col == playerCol
+				if (isPlayer || !isAdjacentToPlayer(row, col)) return
 				handleMove(row, col)
 			}
 		}
@@ -134,13 +182,16 @@ class WreckHackingGui(
 			NODE_CORE -> {
 				// found winning thing
 				currentWindow?.close()
-				WreckChestListener.unlockChest(chest, viewer)
+				unlockChest()
 				return
 			}
 			NODE_TRAP -> {
 				// found trap
+				if (revealed[row][col]) return
+
 				livesRemaining--
-				viewer.sendMessage(text("⚡ Firewall hit! ${livesRemaining} lives remaining.", RED))
+				viewer.sendMessage(text("⚡ Firewall hit! $livesRemaining lives remaining.", RED))
+				revealed[row][col] = true
 
 				if (livesRemaining <= 0) {
 					attemptsRemaining--
@@ -148,14 +199,7 @@ class WreckHackingGui(
 
 					if (attemptsRemaining <= 0) {
 						// Lock chest forever
-						currentWindow?.close()
-						Tasks.sync {
-							chest.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST_LOCKED, PersistentDataType.BOOLEAN, false)
-							chest.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST, PersistentDataType.BOOLEAN, false)
-							chest.inventory.clear()
-							chest.update()
-						}
-						viewer.sendMessage(text("The system has locked you out permanently!", RED))
+						destroyChest()
 						return
 					}
 
@@ -179,16 +223,44 @@ class WreckHackingGui(
 		}
 	}
 
+	private fun unlockChest() {
+		Tasks.sync {
+			// Make this no longer a wreck chest
+			chest.persistentDataContainer.remove(NamespacedKeys.WRECK_CHEST)
+			chest.update()
+
+			// fill with rewards
+			val inventory = chest.inventory
+			inventory.clear()
+
+			inventory.addItem(CustomItemKeys.DATA_CHIP.getValue().constructItemStack(Random.nextInt(1, 21)))
+			inventory.addItem(CustomItemKeys.GUIDANCE_SYSTEM.getValue().constructItemStack(Random.nextInt(1, 21)))
+			inventory.addItem(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(Random.nextInt(1, 21)))
+
+			viewer.success("Hacking successful! The chest has been unlocked.")
+		}
+	}
+
+	private fun destroyChest() {
+		Tasks.sync {
+			chest.persistentDataContainer.remove(NamespacedKeys.WRECK_CHEST)
+			chest.update()
+			chest.inventory.clear()
+		}
+		currentWindow?.close()
+		viewer.userError("Too many hacking attempts! The security system has self-destructed the contents within.")
+	}
+
 	override fun buildTitle(): Component = GuiText("Hacking Terminal").build()
 
-	override fun buildWindow(): Window = normalWindow(buildGui())
+	override fun buildWindow(): Window = normalWindow(buildGui(), closeHandlers = listOf(Runnable { destroyChest() }))
 
 	private fun buildGui(): Gui {
-		val gui = Gui.empty(GRID_SIZE, GRID_SIZE)
+		val gui = Gui.empty(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-		for (row in 0 until GRID_SIZE) {
-			for (col in 0 until GRID_SIZE) {
-				val slot = row * GRID_SIZE + col
+		for (row in 0 until verticalGridSize) {
+			for (col in 0 until horizontalGridSize) {
+				val slot = (row + verticalOffset) * WINDOW_WIDTH + (col + horizontalOffset)
 				gui.setItem(slot, tracked { _ -> getNodeItem(row, col) })
 			}
 		}

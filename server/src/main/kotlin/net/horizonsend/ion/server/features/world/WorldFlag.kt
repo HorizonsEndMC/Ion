@@ -27,6 +27,7 @@ enum class WorldFlag {
 	AREA_SHIELDS_DISABLED,
 	TUTORIAL_WORLD,
 	PLANET_SIEGE_WORLD,
+	ALLOW_SIGNATURE_SPAWNS,
 }
 
 enum class SpaceRegion {
