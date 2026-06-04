@@ -6,4 +6,6 @@ class Signature(
     val signatureType: SignatureType,
     val location: Location
 ) {
+	var scanned = false
+	var destroyNextTick = false
 }

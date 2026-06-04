@@ -33,6 +33,8 @@ object SignatureCommand : SLCommand() {
     }
 
     @Default
+	@Subcommand("list")
+	@CommandPermission("ion.signature.list")
     fun onList(sender: CommandSender) {
         val signatures = SignatureManager.activeSignatures.keys.toList()
 

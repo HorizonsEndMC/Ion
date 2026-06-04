@@ -47,7 +47,7 @@ object SignatureManager : IonServerComponent(true) {
                 signature.calculateNewSpawnTime()
             }
 
-            Tasks.syncRepeat(60 * 20L, 60 * 20L) {
+            Tasks.syncRepeat(10 * 20L, 10 * 20L) {
 				tickSpawners()
 				tickCurrentSignatures()
 			}
@@ -56,7 +56,8 @@ object SignatureManager : IonServerComponent(true) {
 
 	private fun tickSpawners() {
 		for (signatureType in IonRegistries.SIGNATURE_TYPE.getAll()) {
-			if (signatureType is PersistentSignatureType && activeSignatures.count { signature -> signature.key.signatureType == signatureType } < signatureType.maximumPerServer) continue
+			val persistent = signatureType.persistentBehavior
+			if (persistent != null && activeSignatures.count { it.key.signatureType == signatureType } >= persistent.maximumPerServer) continue
 
 			if (signatureType.isReadyToSpawn()) {
 				val signature = generateNewSignature(signatureType) ?: continue
@@ -66,7 +67,7 @@ object SignatureManager : IonServerComponent(true) {
 					text("A ${signature.signatureType.displayName.plainText()} has spawned somewhere in ${signature.location.world.name}!", HE_LIGHT_BLUE)
 				)
 
-				if (signatureType is PersistentSignatureType) activeSignatures[signature] = System.currentTimeMillis()
+				if (persistent != null) activeSignatures[signature] = System.currentTimeMillis()
 			}
 		}
 	}
@@ -74,25 +75,22 @@ object SignatureManager : IonServerComponent(true) {
 	private fun tickCurrentSignatures() {
 		val currentTimeMillis = System.currentTimeMillis()
 
-		activeSignatures.entries.removeIf { signature ->
-			val maximumTime = (signature.key.signatureType as PersistentSignatureType).despawnTimeMinutes
-
-            currentTimeMillis > maximumTime.plusMillis(signature.value).toMillis()
-        }
+		activeSignatures.entries.removeIf { (signature, spawnTime) ->
+			val despawnTime = signature.signatureType.persistentBehavior?.despawnTime ?: return@removeIf true
+			currentTimeMillis > despawnTime.plusMillis(spawnTime).toMillis() || signature.destroyNextTick
+		}
 	}
 
-    private fun generateNewSignature(signatureType: SignatureType): Signature? {
-        val location = getValidSignatureLocation()
+	private fun generateNewSignature(signatureType: SignatureType): Signature? {
+		val location = getValidSignatureLocation()
 
 		if (location == null) {
 			log.warn("Failed to find a valid spawn location for signature type $signatureType after $MAX_SPAWN_ATTEMPTS attempts")
 			return null
 		}
 
-		if (signatureType is SchematicSignatureType) signatureType.generateSchematic(location, schematicCache, log)
-
-        return Signature(signatureType, location)
-    }
+		return Signature(signatureType, location)
+	}
 
     private fun getValidSignatureLocation(): Location? {
         var attempts = 0

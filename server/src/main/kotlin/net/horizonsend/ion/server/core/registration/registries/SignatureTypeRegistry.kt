@@ -1,66 +1,123 @@
 package net.horizonsend.ion.server.core.registration.registries
 
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.keys.SignatureTypeKeys
-import net.horizonsend.ion.server.features.space.signatures.PersistentSignatureType
-import net.horizonsend.ion.server.features.space.signatures.SchematicSignatureType
+import net.horizonsend.ion.server.features.space.signatures.PersistentBehavior
+import net.horizonsend.ion.server.features.space.signatures.ScannableBehavior
+import net.horizonsend.ion.server.features.space.signatures.SchematicBehavior
+import net.horizonsend.ion.server.features.space.signatures.SignatureManager
 import net.horizonsend.ion.server.features.space.signatures.SignatureType
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.block.Chest
+import org.bukkit.persistence.PersistentDataType
 import java.time.Duration
 
 class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYPE) {
-    override fun getKeySet(): KeyRegistry<SignatureType> = SignatureTypeKeys
+	override fun getKeySet(): KeyRegistry<SignatureType> = SignatureTypeKeys
 
-    override fun boostrap() {
-        register(SignatureTypeKeys.COMET_SMALL, PersistentSignatureType(
-            key = SignatureTypeKeys.COMET_SMALL,
-            displayName = Component.text("Small Comet"),
-            maximumPerServer = 5,
-            minSpawnTimeMinutes = Duration.ofMinutes(15L),
-            maxSpawnTimeMinutes = Duration.ofMinutes(30L),
-			detectionRange = 500,
-			interactRange = 200,
-			despawnTimeMinutes = Duration.ofMinutes(30L),
-        ))
-
-        register(SignatureTypeKeys.COMET_MEDIUM, PersistentSignatureType(
-            key = SignatureTypeKeys.COMET_MEDIUM,
-            displayName = Component.text("Medium Comet"),
-            maximumPerServer = 3,
-            minSpawnTimeMinutes = Duration.ofMinutes(20L),
-            maxSpawnTimeMinutes = Duration.ofMinutes(60L),
-			detectionRange = 500,
-			interactRange = 200,
-			despawnTimeMinutes = Duration.ofMinutes(30L),
+	override fun boostrap() {
+		/*
+		register(SignatureTypeKeys.COMET_SMALL, SignatureType(
+			key = SignatureTypeKeys.COMET_SMALL,
+			displayName = Component.text("Small Comet"),
+			minSpawnTimeMinutes = Duration.ofMinutes(15L),
+			maxSpawnTimeMinutes = Duration.ofMinutes(30L),
+			persistent = PersistentBehaviour(
+				maximumPerServer = 5,
+				despawnTimeMinutes = Duration.ofMinutes(30L),
+			),
 		))
 
-		register(SignatureTypeKeys.ASTEROID_FIELD, SchematicSignatureType(
+		register(SignatureTypeKeys.COMET_MEDIUM, SignatureType(
+			key = SignatureTypeKeys.COMET_MEDIUM,
+			displayName = Component.text("Medium Comet"),
+			minSpawnTimeMinutes = Duration.ofMinutes(20L),
+			maxSpawnTimeMinutes = Duration.ofMinutes(60L),
+			persistent = PersistentBehaviour(
+				maximumPerServer = 3,
+				despawnTimeMinutes = Duration.ofMinutes(30L),
+			),
+		))
+		*/
+
+		register(SignatureTypeKeys.ASTEROID_FIELD, SignatureType(
 			key = SignatureTypeKeys.ASTEROID_FIELD,
 			displayName = Component.text("Asteroid Field"),
-			minSpawnTimeMinutes = Duration.ofHours(2L),
-			maxSpawnTimeMinutes = Duration.ofHours(4L),
-			detectionRange = 500,
-			schematicNames = WeightedRandomList(
-				"scordite_field" to 35,
-				"vanadium_field" to 35,
-				"zircon_field" to 25,
-				"atavum_field" to 5,
+			minSpawnTime = Duration.ofHours(2L),
+			maxSpawnTime = Duration.ofHours(4L),
+			persistentBehavior = PersistentBehavior(
+				maximumPerServer = 5,
+				despawnTime = Duration.ofMinutes(480L),
 			),
+			schematicBehavior = SchematicBehavior(
+				schematicNames = WeightedRandomList(
+					"scordite_field" to 35,
+					"vanadium_field" to 35,
+					"zircon_field" to 25,
+					"atavum_field" to 5,
+				),
+			),
+			scannableBehavior = ScannableBehavior(
+				onScan = { signature, starship ->
+					signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
+					starship.success("Discovered an asteroid field at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
+					IonServer.logger.info("Generated asteroid field for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
+					signature.destroyNextTick = true
+				}
+			)
 		))
 
-		register(SignatureTypeKeys.WRECK_SITE, SchematicSignatureType(
+		register(SignatureTypeKeys.WRECK_SITE, SignatureType(
 			key = SignatureTypeKeys.WRECK_SITE,
 			displayName = Component.text("Wreck Site"),
-			minSpawnTimeMinutes = Duration.ofHours(1L),
-			maxSpawnTimeMinutes = Duration.ofHours(3L),
-			detectionRange = 500,
-			schematicNames = WeightedRandomList(
-				"wreck_site_1" to 33,
-				"wreck_site_2" to 33,
-				"wreck_site_3" to 34,
+			minSpawnTime = Duration.ofHours(1L),
+			maxSpawnTime = Duration.ofHours(3L),
+			persistentBehavior = PersistentBehavior(
+				maximumPerServer = 5,
+				despawnTime = Duration.ofMinutes(480L),
 			),
+			schematicBehavior = SchematicBehavior(
+				schematicNames = WeightedRandomList(
+					"wreck_site_1" to 33,
+					"wreck_site_2" to 33,
+					"wreck_site_3" to 34,
+				),
+				callback = { placedBlocks, world ->
+					val chestKeys = placedBlocks.filter { blockKey ->
+						val x = blockKeyX(blockKey)
+						val y = blockKeyY(blockKey)
+						val z = blockKeyZ(blockKey)
+						world.getBlockAt(x, y, z).type == Material.CHEST
+					}
+
+					for (blockKey in chestKeys) {
+						val x = blockKeyX(blockKey)
+						val y = blockKeyY(blockKey)
+						val z = blockKeyZ(blockKey)
+						val block = world.getBlockAt(x, y, z)
+						val chest = block.state as? Chest ?: continue
+						chest.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST, PersistentDataType.BOOLEAN, true)
+						chest.update()
+					}
+				}
+			),
+			scannableBehavior = ScannableBehavior(
+				onScan = { signature, starship ->
+					signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
+					starship.success("Discovered a wreck site at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
+					IonServer.logger.info("Generated wreck site for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
+					signature.destroyNextTick = true
+				}
+			)
 		))
-    }
+	}
 }

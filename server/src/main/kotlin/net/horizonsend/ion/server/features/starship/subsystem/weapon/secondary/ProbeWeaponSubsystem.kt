@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.space.signatures.Signature
 import net.horizonsend.ion.server.features.space.signatures.SignatureManager
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -136,6 +137,7 @@ class ProbeWeaponSubsystem(
 				)
 				shooter.sendMessage(line)
 			}
+
 			shooter.sendMessage(lineBreak(47))
 			shooter.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
 			shooter.sendMessage(lineBreakWithCenterText(text("[COMBAT PROBE SCAN END]", HE_DARK_GRAY)))
@@ -146,13 +148,13 @@ class ProbeWeaponSubsystem(
 		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 		Tasks.syncDelay(60L) {
 			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN START]", HE_LIGHT_ORANGE)))
-			val signatures = SignatureManager.activeSignatures.filter {
-				it.key.location.world == starship.world
-				it.key.location.distance(loc) < range
+			val signatures = SignatureManager.activeSignatures.keys.filter {
+				it.location.world == starship.world && it.location.distance(loc) < range
 			}
+
 			for (signature in signatures) {
-				val location = signature.key.location
-				val name = signature.key.signatureType.displayName
+				val location = signature.location
+				val name = signature.signatureType.displayName
 				val distance = location.distance(loc)
 				val distanceColor = when {
 					distance < 500 -> RED
@@ -160,13 +162,16 @@ class ProbeWeaponSubsystem(
 					distance < 2500 -> GREEN
 					else -> DARK_GREEN
 				}
+
+				signature.signatureType.scannableBehavior?.onScan(signature, starship)
+
 				val line = template(
 					"{0} detected at {1} {2}m away",
 					color = HE_LIGHT_GRAY,
 					paramColor = HE_LIGHT_GRAY,
 					useQuotesAroundObjects = true,
 					name,
-					bracketed(text("${location.x}, ${location.z}", distanceColor)),
+					bracketed(text("${location.x.toInt()}, ${location.z.toInt()}", distanceColor)),
 					text(distance, distanceColor),
 				)
 				shooter.sendMessage(line)
