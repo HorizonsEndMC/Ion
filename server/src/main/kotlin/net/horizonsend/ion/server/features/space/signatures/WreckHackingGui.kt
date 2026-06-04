@@ -28,13 +28,13 @@ import kotlin.random.Random
 class WreckHackingGui(
 	viewer: Player,
 	val chest: Chest,
-	private var attemptsRemaining: Int = 3
+	private var attemptsRemaining: Int = 5
 ) : InvUIWindowWrapper(viewer) {
 
 	companion object {
 		const val WINDOW_WIDTH = 9
 		const val WINDOW_HEIGHT = 6
-		const val LIVES_PER_ATTEMPT = 3
+		const val LIVES_PER_ATTEMPT = 4
 
 		const val NODE_EMPTY = 1
 		const val NODE_TRAP = 2
@@ -201,6 +201,7 @@ class WreckHackingGui(
 
 					if (attemptsRemaining <= 0) {
 						// Lock chest forever
+						viewer.userError("Too many failed hacking attempts!")
 						destroyChest()
 						return
 					}
@@ -251,12 +252,15 @@ class WreckHackingGui(
 			chest.inventory.clear()
 		}
 		currentWindow?.close()
-		viewer.userError("Too many hacking attempts! The security system has self-destructed the contents within.")
+		viewer.userError("The security system has self-destructed the contents within.")
 	}
 
 	override fun buildTitle(): Component = GuiText("Hacking Terminal").build()
 
-	override fun buildWindow(): Window = normalWindow(buildGui(), closeHandlers = listOf(Runnable { destroyChest() }))
+	override fun buildWindow(): Window = normalWindow(buildGui(), closeHandlers = listOf(Runnable {
+		viewer.userError("The hacking sequence was interrupted!")
+		destroyChest()
+	}))
 
 	private fun buildGui(): Gui {
 		val gui = Gui.empty(WINDOW_WIDTH, WINDOW_HEIGHT)
