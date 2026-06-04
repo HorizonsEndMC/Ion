@@ -1,21 +1,13 @@
 package net.horizonsend.ion.server.features.world.generation.generators.configuration
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.decodeFromStream
-import kotlinx.serialization.serializer
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.common.utils.configuration.Configuration.save
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration.AsteroidBuilder
 import java.io.File
-import java.io.IOException
-import kotlin.reflect.KClass
-import kotlin.reflect.full.starProjectedType
 
 object AsteroidConfigurations : IonServerComponent() {
 	private var structureTemplates: Map<String, EvaluationConfiguration> = AsteroidStructures.defaultStructureTemplates
@@ -54,7 +46,6 @@ object AsteroidConfigurations : IonServerComponent() {
 	fun getBuilder(name: String): AsteroidBuilder? = builders[name]
 	fun getBuilders(): Map<String, AsteroidBuilder> = builders
 
-	@OptIn(ExperimentalSerializationApi::class)
     inline fun <reified T : Any> createDefaultFiles(configuration: Map<String, T>, directory: File) {
 		for ((key, config) in configuration) {
 			Configuration.loadOrDefault(directory, "$key.json", config)
