@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionStationZon
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
+import net.horizonsend.ion.server.features.player.Power
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
@@ -64,6 +65,8 @@ object NationsMasterTasks : IonServerComponent() {
 		checkPurges()
 
 		executeMoneyTasks()
+
+		recalculateNationPower()
 	}
 
 	fun checkPurges() {
@@ -385,6 +388,12 @@ object NationsMasterTasks : IonServerComponent() {
 			}
 
 			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize("Paid ${rent.toCreditsString()} rent for zone ${zone.id}"))
+		}
+	}
+
+	fun recalculateNationPower() {
+		for (id: Oid<Nation> in Nation.allIds()) {
+			Power.recalculateNationPower(id)
 		}
 	}
 }

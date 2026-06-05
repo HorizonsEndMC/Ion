@@ -103,10 +103,20 @@ object Power : IonServerComponent() {
 
 	@EventHandler
 	fun modifyPowerOnPlayerDeath(event: PlayerDeathEvent) {
-		if (!event.player.isConnected) return
+		if (!event.player.isConnected) {
+			Notify.allOnline(text("Player ${event.player.name} has died, but is not connected."))
+			return
+		}
 		val victim = event.player
-		val killer = event.entity.killer ?: return // only player vs. player kills should modify power
-		if (!event.entity.killer!!.isConnected) return
+		val killer = event.entity.killer
+		if (killer == null) {
+			Notify.allOnline(text("Player ${victim.name} has been killed by an unknown entity, no power gained."))
+			return // only player vs. player kills should modify power
+		}
+		if (!killer.isConnected) {
+			Notify.allOnline(text("Player ${killer.name} killed ${victim.name}, but is not connected."))
+			return
+		}
 		val timeStamp = System.currentTimeMillis()
 
 		PlayerCache[victim].lastDeathTimestamp?.let { if ((timeStamp - it) < TimeUnit.MINUTES.toMillis(5L)){
@@ -117,37 +127,60 @@ object Power : IonServerComponent() {
 		SLXP.addPowerAsync(victim.uniqueId, -5)
 		SLXP.addPowerAsync(killer.uniqueId, 2)
 
-		val victimNationId: Oid<Nation> = PlayerCache[victim].nationOid ?: return
+		val victimNationId = PlayerCache[victim].nationOid
+
+		if (victimNationId == null) {
+			Notify.allOnline(text("Player ${victim.name} has died, but is not part of a nation."))
+			return
+		}
+
 		Tasks.async {
 			val data = SLPlayer[victim]
 			SLPlayer.updateById(data._id, setValue(SLPlayer::lastDeathTimestamp, timeStamp))
-			val power = Nation.getTotalPower(victimNationId, ACTIVE_AFTER_TIME)
-			val powerCost = dominionTerritoryCost(NationCache[victimNationId])
-			val dominionCount = getDominionTerritoryCount(NationCache[victimNationId])
-			if (dominionCount == 0) return@async // Early return if no territories
-			if (power < powerCost && !NationCache[victimNationId].siegeable) {
-				Nation.setSiegeable(victimNationId, true)
-				val victimNationName = NationCache[victimNationId].name
-				val victimNationNameFormatted = formatNationName(victimNationId)
-				Discord.sendEmbed(
-					ConfigurationFiles.discordSettings().eventsChannel,
-					Embed(
-						title = "Nation Siegeable",
-						description = "$victimNationName's power has dropped too low, their territory can now be sieged!",
-					)
-				)
-				val headerLine = template(
-					text("{0}'s power has dropped too low! Their territory can now be sieged!", YELLOW),
-					victimNationNameFormatted
-				)
 
-				val globalMessage = ofChildren(
-					headerLine, newline(),
-					newline(),
-				)
+			recalculateNationPower(victimNationId)
+		}
+	}
 
-				Notify.allOnline(globalMessage)
-			}
+	/**
+	 * Recalculates the power of a nation and updates its siegeable status based on its power level
+	 * in relation to its dominion territory cost. Sends notifications if the nation's territory
+	 * becomes siegeable.
+	 *
+	 * Run this asynchronously to avoid blocking the main thread.
+	 *
+	 * @param nationId The unique identifier of the nation whose power is to be recalculated.
+	 */
+	fun recalculateNationPower(nationId: Oid<Nation>) {
+		val power = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
+
+		val powerCost = dominionTerritoryCost(NationCache[nationId])
+		val dominionCount = getDominionTerritoryCount(NationCache[nationId])
+		if (dominionCount == 0) return // Early return if no territories
+
+		if (power < powerCost && !NationCache[nationId].siegeable) {
+			Nation.setSiegeable(nationId, true)
+			val victimNationName = NationCache[nationId].name
+			val victimNationNameFormatted = formatNationName(nationId)
+
+			Discord.sendEmbed(
+				ConfigurationFiles.discordSettings().eventsChannel,
+				Embed(
+					title = "Nation Siegeable",
+					description = "$victimNationName's power has dropped too low, their territory can now be sieged!",
+				)
+			)
+			val headerLine = template(
+				text("{0}'s power has dropped too low! Their territory can now be sieged!", YELLOW),
+				victimNationNameFormatted
+			)
+
+			val globalMessage = ofChildren(
+				headerLine, newline(),
+				newline(),
+			)
+
+			Notify.allOnline(globalMessage)
 		}
 	}
 }

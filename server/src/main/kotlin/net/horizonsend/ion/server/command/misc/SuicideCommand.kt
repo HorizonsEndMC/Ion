@@ -36,7 +36,6 @@ object SuicideCommand : SLCommand() {
 
         // Notify everyone of this player's untimely demise
         sender.information("Goodbye cruel world...")
-		SLXP.addPowerAsync(sender.uniqueId, -4)
 		for (otherPlayer in Bukkit.getOnlinePlayers()) {
             otherPlayer.information("Player ${sender.name} took their own life")
         }

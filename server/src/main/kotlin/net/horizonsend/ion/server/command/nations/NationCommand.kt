@@ -904,6 +904,8 @@ internal object NationCommand : SLCommand() {
 			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
 		}
 
+		val nationName = getNationName(nationId)
+
 		val currentPower = Nation.getTotalPower(nationId)
 
 		val members: List<Triple<SLPlayerId, String, Date>> = SLPlayer
@@ -915,6 +917,6 @@ internal object NationCommand : SLCommand() {
 
 		val totalPossiblePower = activeMembers * MAX_POWER
 
-		sender.information("Power for $nation: $currentPower/$totalPossiblePower")
+		sender.information("Power for $nationName: $currentPower/$totalPossiblePower")
 	}
 }
