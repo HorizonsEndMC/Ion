@@ -537,8 +537,8 @@ class Starship(
 
 	var isInterdicting = false; private set
 	var isJumpBeaconOn = false; private set
-	var canUseJumpBeacon: Boolean = false
-	var canUseJumpFieldGenerator: Boolean = false
+	var canUseJumpBeacon: Boolean = true
+	var canUseJumpFieldGenerator: Boolean = true
 	var disruptorCount = mutableListOf<Player>()
 	var isDisrupting : Boolean = false; private set
 	var disruptorTarget: Player? = null
