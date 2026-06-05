@@ -7,7 +7,10 @@ import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SEQUENCES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.minecraft.server.MinecraftServer
@@ -28,6 +31,10 @@ object SequenceManager : IonServerComponent() {
 
 		Tasks.asyncRepeat(1L, 1L) {
 			tickPhases()
+		}
+
+		Tasks.syncRepeat(20L * 60L, 20L * 60L) {
+			cancelTutorialPhases()
 		}
 	}
 
@@ -146,4 +153,18 @@ object SequenceManager : IonServerComponent() {
 	}
 
 	fun allPlayers() = phaseMap.rowKeySet().mapNotNull(Bukkit::getPlayer)
+
+	private fun cancelTutorialPhases() {
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (!player.world.ion.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
+				endSequence(player, SequenceKeys.TUTORIAL.getValue())
+
+				val transitHubPhase = getCurrentPhase(player, SequenceKeys.TUTORIAL_TRANSIT_HUB)
+				// TUTORIAL_TRANSIT_HUB.ARRIVE_AT_PORT should not be interrupted
+				if (transitHubPhase != null && transitHubPhase != SequencePhaseKeys.ARRIVE_AT_PORT) {
+					endSequence(player, SequenceKeys.TUTORIAL_TRANSIT_HUB.getValue())
+				}
+			}
+		}
+	}
 }
