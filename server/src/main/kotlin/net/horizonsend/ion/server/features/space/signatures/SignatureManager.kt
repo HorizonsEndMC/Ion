@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
@@ -18,12 +19,14 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.io.File
 import java.util.Optional
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.pow
 
@@ -32,7 +35,7 @@ object SignatureManager : IonServerComponent(true) {
     private const val MIN_DISTANCE_FROM_STATIONS = 500
 
     // Map of signatures, and their epoch spawn time in millis
-    val activeSignatures = mutableMapOf<Signature, Long>()
+    val activeSignatures = ConcurrentHashMap<Signature, Long>()
 
 	val schematicCache: LoadingCache<File, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
 		CacheLoader.from { schematicFile ->
@@ -78,6 +81,23 @@ object SignatureManager : IonServerComponent(true) {
 		activeSignatures.entries.removeIf { (signature, spawnTime) ->
 			val despawnTime = signature.signatureType.persistentBehavior?.despawnTime ?: return@removeIf true
 			currentTimeMillis > despawnTime.plusMillis(spawnTime).toMillis() || signature.destroyNextTick
+		}
+	}
+
+	/**
+	 * Returns true if [location] is within the radius of any active signature whose type matches [typeKey]
+	 * and which has a RadiusBehavior. Same-world only.
+	 */
+	fun isWithinSignatureRadius(
+		location: Location,
+		typeKey: IonRegistryKey<SignatureType, out SignatureType>,
+	): Boolean {
+		return activeSignatures.keys.any { signature ->
+			if (signature.signatureType.key != typeKey) return@any false
+			if (signature.location.world != location.world) return@any false
+
+			val radiusBehavior = signature.signatureType.radiusBehavior ?: return@any false
+			location.isInRange(signature.location, radiusBehavior.radius)
 		}
 	}
 

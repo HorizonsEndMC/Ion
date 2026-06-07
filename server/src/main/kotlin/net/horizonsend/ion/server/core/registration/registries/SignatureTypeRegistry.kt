@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.keys.SignatureTypeKeys
 import net.horizonsend.ion.server.features.space.signatures.PersistentBehavior
+import net.horizonsend.ion.server.features.space.signatures.RadiusBehavior
 import net.horizonsend.ion.server.features.space.signatures.ScannableBehavior
 import net.horizonsend.ion.server.features.space.signatures.SchematicBehavior
 import net.horizonsend.ion.server.features.space.signatures.SignatureManager
@@ -118,6 +119,25 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 					signature.destroyNextTick = true
 				}
 			)
+		))
+
+		register(SignatureTypeKeys.GAS_CLOUD, SignatureType(
+			key = SignatureTypeKeys.GAS_CLOUD,
+			displayName = Component.text("Gas Cloud"),
+			minSpawnTime = Duration.ofHours(2L),
+			maxSpawnTime = Duration.ofHours(4L),
+			persistentBehavior = PersistentBehavior(
+				maximumPerServer = 5,
+				despawnTime = Duration.ofMinutes(480L),
+			),
+			schematicBehavior = null,
+			scannableBehavior = ScannableBehavior(
+				onScan = { signature, starship ->
+					starship.success("Discovered a gas cloud at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
+					IonServer.logger.info("Discovered gas cloud for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
+				}
+			),
+			radiusBehavior = RadiusBehavior(radius = 250.0),
 		))
 	}
 }

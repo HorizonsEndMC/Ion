@@ -52,6 +52,11 @@ data class ScannableBehavior(
 	val onScan: (Signature, ActiveStarship) -> Unit
 )
 
+/** Causes the signature to have a spherical area of effect around its location. */
+data class RadiusBehavior(
+	val radius: Double,
+)
+
 class SignatureType(
 	override val key: IonRegistryKey<SignatureType, out SignatureType>,
 	val displayName: Component,
@@ -60,6 +65,7 @@ class SignatureType(
 	val persistentBehavior: PersistentBehavior? = null,
 	val schematicBehavior: SchematicBehavior? = null,
 	val scannableBehavior: ScannableBehavior? = null,
+	val radiusBehavior: RadiusBehavior? = null,
 ) : Keyed<SignatureType> {
 	var nextSpawnTimeMillis: Long = 0L
 
