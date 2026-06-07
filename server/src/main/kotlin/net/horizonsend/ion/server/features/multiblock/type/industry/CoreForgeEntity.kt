@@ -6,8 +6,6 @@ import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
-import net.horizonsend.ion.common.utils.text.sendMessage
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
@@ -24,17 +22,10 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultibl
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
-import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask.Companion.getAvailableItems
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.SpaceRegion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickEvent
-import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
@@ -123,7 +114,10 @@ abstract class CoreForgeEntity (
 		val input: Inventory = getInput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))
 		val output: Inventory = getOutput() ?: return disable(Component.text("Incorrectly built core forge.", HE_DARK_ORANGE))
 
-		if (currentCore.customItem?.key == LARGE_REACTOR_CORE) {
+		if (currentCore.customItem?.key == LARGE_REACTOR_CORE ||
+			currentCore.customItem?.key == BARGE_REACTOR_CORE ||
+			currentCore.customItem?.key == BATTLECRUISER_REACTOR_CORE ||
+			currentCore.customItem?.key == CRUISER_REACTOR_CORE){
 			val playerRegion = Regions.findFirstOf<RegionDominionTerritory>(player.location) ?: return disable(
 				Component.text(
 					"You must be in your dominion territory to create a large reactor core!",
