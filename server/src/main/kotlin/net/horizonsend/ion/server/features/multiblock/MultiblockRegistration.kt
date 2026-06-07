@@ -515,11 +515,14 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 		registerMultiblock(AntiAirCannonTurretMultiblock)
 
+		/*
 		if (ConfigurationFiles.featureFlags().graphTransfer) {
 			registerMultiblock(ChemicalProcessorMultiblock)
 			registerMultiblock(PumpMultiblock)
 		}
+		 */
 
+		// Fluids
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 	}
