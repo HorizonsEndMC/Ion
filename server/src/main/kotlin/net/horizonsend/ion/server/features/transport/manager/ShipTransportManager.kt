@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHo
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 
@@ -97,10 +98,15 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		solarPanelManager.cache.tickSolarPanels()
 	}
 
-	override fun tickGraphs() {}
+	override fun tickGraphs() {
+		try {
+		    getGraphTransportManager().tick()
+		} catch (e: Throwable) {
+			e.printStackTrace()
+		}
+	}
 
 	override fun getGraphTransportManager(): FluidNetworkManager {
-		TODO()
-//		return getWorld().ion.transportManager.fluidGraphManager
+		return getWorld().ion.transportManager.fluidGraphManager
 	}
 }
