@@ -76,7 +76,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.URANIUM_ROD),
 			))
 				.updateProgressText()
@@ -104,7 +104,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.REACTIVE_CHASSIS),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -119,7 +119,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.STEEL_CHASSIS),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -134,7 +134,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L * 2L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.FUEL_CELL),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -149,7 +149,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L * 2L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.FABRICATED_ASSEMBLY),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -164,7 +164,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L * 2L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.REINFORCED_FRAME),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
@@ -207,7 +207,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
-				Tick.of(60L * 60L * 20L),
+				duration = Duration.ofSeconds(10),
 				ItemResult.simpleResult(CustomItemKeys.CIRCUIT_BOARD),
 			))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)

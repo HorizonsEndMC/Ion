@@ -797,31 +797,6 @@ object Crafting : IonServerComponent() {
 		shapeless("reactorControl", REACTOR_CONTROL.getValue().constructItemStack(), CraftingBookCategory.MISC, FABRICATED_ASSEMBLY.getValue().constructItemStack(6), MOTHERBOARD.getValue().constructItemStack(3))
 		materialBlockRecipes(SUPERCONDUCTOR_BLOCK, SUPERCONDUCTOR)
 		shapeless("superconductorCore", SUPERCONDUCTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, SUPERCONDUCTOR_BLOCK.getValue().constructItemStack(), MOTHERBOARD.getValue().constructItemStack(4))
-		shaped("bcreactorCore", BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape("wxw", "yzy", "wxw")
-
-			setIngredient('w', REACTOR_FRAME.getValue().constructItemStack())
-			setIngredient('x', REACTOR_CONTROL.getValue().constructItemStack())
-			setIngredient('y', FUEL_CONTROL.getValue().constructItemStack())
-			setIngredient('z', SUPERCONDUCTOR_CORE.getValue().constructItemStack())
-		}
-		shaped("bargereactorCore", BARGE_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape("wxw", "zzz", "vyv")
-
-			setIngredient('w', REACTOR_FRAME.getValue().constructItemStack())
-			setIngredient('x', REACTOR_CONTROL.getValue().constructItemStack())
-			setIngredient('y', FUEL_CONTROL.getValue().constructItemStack())
-			setIngredient('z', SUPERCONDUCTOR.getValue().constructItemStack())
-			setIngredient('v', REINFORCED_FRAME.getValue().constructItemStack())
-		}
-		shaped("cruiserreactorCore", CRUISER_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape("wxw", "wyw", "wzw")
-
-			setIngredient('w', REINFORCED_FRAME.getValue().constructItemStack())
-			setIngredient('x', REACTOR_CONTROL.getValue().constructItemStack())
-			setIngredient('y', SUPERCONDUCTOR_CORE.getValue().constructItemStack())
-			setIngredient('z', FUEL_CONTROL.getValue().constructItemStack())
-		}
 		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("i", "c")
 

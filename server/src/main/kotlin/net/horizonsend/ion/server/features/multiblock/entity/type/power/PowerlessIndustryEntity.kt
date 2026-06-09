@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.power
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
@@ -17,17 +18,28 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusT
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multiblock, manager: MultiblockManager, x: Int, y: Int, z: Int, world: World, structureDirection: BlockFace, maxPower: Int) :
-	SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, maxPower),
+abstract class PowerlessIndustryEntity(
+	data: PersistentMultiblockData,
+	multiblock: Multiblock,
+	manager: MultiblockManager,
+	x: Int,
+	y: Int,
+	z: Int,
+	world: World,
+	structureDirection: BlockFace
+) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection),
 	LegacyMultiblockEntity,
 	SyncTickingMultiblockEntity,
 	RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
 	ProgressMultiblock,
+	DisplayMultiblockEntity,
 	StatusTickedMultiblockEntity,
 	FurnaceBasedMultiblockEntity {
 
@@ -38,10 +50,11 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	override val tickingManager: TickingManager = TickingManager(20)
 	override val statusManager: StatusManager = StatusManager()
 
+	override val ioData: IOData = IOData.Builder(this).build()
+
 	@Suppress("LeakingThis")
-	final override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+	override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 		this,
-		{ PowerEntityDisplayModule(it, this) },
 		{ StatusDisplayModule(it, statusManager) }
 	)
 
@@ -50,7 +63,18 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	}
 
 	override fun buildRecipeEnviornment(): FurnaceEnviornment? {
-		return FurnaceEnviornment(this)
+		val fakeHolder = object : PoweredMultiblockEntity {
+			override val powerStorage: PowerStorage get() = throw UnsupportedOperationException()
+			override val maxPower: Int = Int.MAX_VALUE
+		}
+		val fakePowerStorage = PowerStorage(fakeHolder, Int.MAX_VALUE, Int.MAX_VALUE)
+		return FurnaceEnviornment(
+			this,
+			getInventory(0, 0, 0) as? FurnaceInventory ?: return null,
+			fakePowerStorage,
+			tickingManager,
+			progressManager
+		)
 	}
 
 	private var furnaceActive = false
@@ -62,7 +86,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 			return
 		}
 		furnaceActive = true
-		stopCooking() // prevents actual furnace recipes from cooking
+		stopCooking()
 	}
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {

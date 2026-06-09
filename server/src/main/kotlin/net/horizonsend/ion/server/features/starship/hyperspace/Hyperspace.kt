@@ -321,6 +321,7 @@ object Hyperspace : IonServerComponent() {
 			return
 		}
 
+
 		if (event.movement.newWorld != null) {
 			return
 		}

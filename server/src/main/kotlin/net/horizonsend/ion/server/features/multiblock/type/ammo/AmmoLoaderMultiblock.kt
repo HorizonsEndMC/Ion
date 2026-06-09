@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnvi
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerlessIndustryEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
@@ -151,29 +152,8 @@ object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultibloc
 	class AmmoLoaderMultiblockEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
-		x: Int,
-		y: Int,
-		z: Int,
+		x: Int, y: Int, z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 0) {
-
-		// No power
-
-		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			{ StatusDisplayModule(it, statusManager) }
-		)
-
-		override fun buildRecipeEnviornment(): FurnaceEnviornment? {
-			val fakePowerStorage = PowerStorage(this, Int.MAX_VALUE, Int.MAX_VALUE)
-			return FurnaceEnviornment(
-				this,
-				getInventory(0, 0, 0) as? FurnaceInventory ?: return null,
-				fakePowerStorage,
-				tickingManager,
-				progressManager
-			)
-		}
-	}
+	) : PowerlessIndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace)
 }
