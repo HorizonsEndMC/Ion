@@ -40,8 +40,8 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 		val gui = Gui.normal()
 			.setStructure(
 				". . . . . . . . .",
-				". . . . . . . 9 .",
-				". m a n . g o 4 .",
+				". . . . . . . . .",
+				". m a n 9 g o 4 .",
 				". . . . . . . . .",
 				". 6 7 . . . . 1 .",
 				". . . . . . . . ."
