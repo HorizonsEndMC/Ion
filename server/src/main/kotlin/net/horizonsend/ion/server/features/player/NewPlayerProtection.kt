@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -38,7 +39,7 @@ import java.util.concurrent.CompletableFuture
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
-object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
+object NewPlayerProtection : SLCommand(), Listener {
 	private val lpUserManager = luckPerms.userManager
 
 	private val oldProtectionIndicator = SuffixNode.builder("&6★&r", 0).build()

@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer.evaluatePvp
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -315,10 +316,12 @@ object ProtectionListener : SLEventListener() {
 		}
 	}
 
-	fun isProtectedCity(location: Location): Boolean = Regions
-		.find(location)
-		.any { (it is RegionTerritory && it.isProtected)
-				|| (it is RegionNPCSpaceStation && it.isProtected) }
+	fun isProtectedCity(location: Location): Boolean {
+		if (location.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) return false
+		return Regions
+			.find(location)
+			.any { (it is RegionTerritory && it.isProtected) || (it is RegionNPCSpaceStation && it.isProtected) }
+	}
 
 	@EventHandler
 	fun onExplosionDamage(event: EntityDamageEvent) {

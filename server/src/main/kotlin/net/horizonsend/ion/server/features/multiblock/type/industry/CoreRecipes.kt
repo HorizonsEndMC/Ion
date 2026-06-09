@@ -26,7 +26,7 @@ object CoreRecipes {
 		VANADIUM_BLOCK.getValue().constructItemStack() to 16
 	)
 	val mediumReactorRecipe: Map<ItemStack, Int> = mapOf(
-		STEEL_MODULE.getValue().constructItemStack() to 256,
+		STEEL_MODULE.getValue().constructItemStack() to 32,
 		REACTIVE_PLATING.getValue().constructItemStack() to 64,
 		URANIUM_CORE.getValue().constructItemStack() to 24,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 96,
@@ -34,7 +34,7 @@ object CoreRecipes {
 		ZIRCON_BLOCK.getValue().constructItemStack() to 8
 	)
 	val largeReactorRecipe: Map<ItemStack, Int> = mapOf(
-		STEEL_ASSEMBLY.getValue().constructItemStack() to 64,
+		STEEL_ASSEMBLY.getValue().constructItemStack() to 48,
 		REACTIVE_CHASSIS.getValue().constructItemStack() to 128,
 		URANIUM_CORE.getValue().constructItemStack() to 128,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 256,
@@ -43,7 +43,7 @@ object CoreRecipes {
 		ATAVUM_BLOCK.getValue().constructItemStack() to 16
 	)
 	val tier1ReactorRecipe: Map<ItemStack, Int> = mapOf(
-		STEEL_MODULE.getValue().constructItemStack() to 256,
+		STEEL_MODULE.getValue().constructItemStack() to 48,
 		REACTIVE_PLATING.getValue().constructItemStack() to 64,
 		URANIUM_CORE.getValue().constructItemStack() to 24,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 96,

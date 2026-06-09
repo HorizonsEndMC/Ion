@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
@@ -52,6 +54,8 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import java.lang.Integer.min
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {
@@ -61,12 +65,24 @@ object NationsMasterTasks : IonServerComponent() {
 		}
 	}
 
+	data class TerritoryEntry(
+		val name: String,
+		val isDominion: Boolean,
+		val dominionId: Oid<DominionTerritory>? = null,
+		val normalId: Oid<Territory>? = null
+	)
+
+	const val UPKEEP_COST = 2500
+
 	private fun executeAll() {
 		checkPurges()
-
 		executeMoneyTasks()
-
 		recalculateNationPower()
+
+		val hour = ZonedDateTime.now().hour
+		if (hour == 7) {
+			doTerritoryUpkeep()
+		}
 	}
 
 	fun checkPurges() {
@@ -390,6 +406,52 @@ object NationsMasterTasks : IonServerComponent() {
 			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize("Paid ${rent.toCreditsString()} rent for zone ${zone.id}"))
 		}
 	}
+
+	private fun doTerritoryUpkeep() {
+		for (nationId in Nation.allIds()) {
+			val dominionTerritories = Regions.getAllOf<RegionDominionTerritory>()
+				.filter { it.nation == nationId }
+
+			val normalTerritories = Territory.find(
+				and(Territory::nation eq nationId, Territory::settlement eq null)
+			).toList()
+
+			val pool = dominionTerritories.map { TerritoryEntry(it.name, true, it.id) } +
+				normalTerritories.map { TerritoryEntry(it.name, false, normalId = it._id) }
+
+			val totalCount = pool.size
+			if (totalCount == 0) continue
+
+			val totalCost = totalCount * UPKEEP_COST
+			val balance = Nation.findPropById(nationId, Nation::balance) ?: continue
+			val nationName = NationCache[nationId].name
+
+			if (balance >= totalCost) {
+				Nation.withdraw(nationId, totalCost)
+				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
+					"<gold>Your nation paid <yellow>${totalCost.toCreditsString()}<gold> in territory upkeep for <dark_aqua>$totalCount<gold> territories."
+				))
+			} else {
+				Nation.withdraw(nationId, balance)
+
+				val chosen = pool.random()
+
+				if (chosen.isDominion) {
+					DominionTerritory.setNation(chosen.dominionId!!, null)
+				} else {
+					Territory.setNation(chosen.normalId!!, null)
+				}
+
+				Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
+					"<red>$nationName's territory ${chosen.name} has been unclaimed due to inability to pay upkeep!"
+				))
+				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
+					"<red>Your nation could not afford territory upkeep of <yellow>${totalCost.toCreditsString()}<red>! ${chosen.name} has been unclaimed!"
+				))
+			}
+		}
+	}
+
 
 	fun recalculateNationPower() {
 		for (id: Oid<Nation> in Nation.allIds()) {

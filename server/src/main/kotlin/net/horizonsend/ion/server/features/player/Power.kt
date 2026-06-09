@@ -104,17 +104,17 @@ object Power : IonServerComponent() {
 	@EventHandler
 	fun modifyPowerOnPlayerDeath(event: PlayerDeathEvent) {
 		if (!event.player.isConnected) {
-			Notify.allOnline(text("Player ${event.player.name} has died, but is not connected."))
+			log.info("Player ${event.player.name} has died, but is not connected.")
 			return
 		}
 		val victim = event.player
 		val killer = event.entity.killer
 		if (killer == null) {
-			Notify.allOnline(text("Player ${victim.name} has been killed by an unknown entity, no power gained."))
+			log.info("Player ${victim.name} has been killed by an unknown entity, no power gained.")
 			return // only player vs. player kills should modify power
 		}
 		if (!killer.isConnected) {
-			Notify.allOnline(text("Player ${killer.name} killed ${victim.name}, but is not connected."))
+			log.info("Player ${killer.name} killed ${victim.name}, but is not connected.")
 			return
 		}
 		val timeStamp = System.currentTimeMillis()
@@ -130,7 +130,7 @@ object Power : IonServerComponent() {
 		val victimNationId = PlayerCache[victim].nationOid
 
 		if (victimNationId == null) {
-			Notify.allOnline(text("Player ${victim.name} has died, but is not part of a nation."))
+			log.info("Player ${victim.name} has died, but is not part of a nation.")
 			return
 		}
 

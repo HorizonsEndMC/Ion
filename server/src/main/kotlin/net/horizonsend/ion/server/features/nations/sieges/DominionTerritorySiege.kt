@@ -70,7 +70,7 @@ class DominionTerritorySiege(
 
 	fun formatName(): Component {
 		return template(
-			text("{0}'s siege of {1}'s Solar Siege Zone in {2}", HE_MEDIUM_GRAY),
+			text("{0}'s siege of {1}'s Dominion Territory in {2}", HE_MEDIUM_GRAY),
 			attackerNameFormatted,
 			defenderNameFormatted,
 			region.world
@@ -116,7 +116,12 @@ class DominionTerritorySiege(
 	 **/
 	fun endSiege(disableEarlyCheck: Boolean = false) {
 		removeActive()
-		if (isSuccess()) succeed() else fail(disableEarlyCheck)
+		if (isSuccess()) {
+			DominionTerritorySieges.unclaim(region.id)
+			succeed()
+		} else {
+			fail(disableEarlyCheck)
+		}
 	}
 
 	private fun isSuccess(): Boolean {
@@ -124,55 +129,42 @@ class DominionTerritorySiege(
 	}
 
 	fun succeed() {
-		DominionTerritory.setNation(region.id, null)
-
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
 
 		Discord.sendEmbed(
 			ConfigurationFiles.discordSettings().eventsChannel,
 			Embed(
-				title = "Frontier Siege Success",
-				description = "$attackerName's siege of $defenderName's Nation in ${region.world} has succeeded.",
+				title = "Territory Siege Success",
+				description = "$attackerName's siege of $defenderName's Territory in ${region.world} has succeeded. The territory has been unclaimed.",
 				fields = listOf(
-					Embed.Field("$attackerName's Points,", "$attackerPoints", inline = true),
-					Embed.Field("$defenderName's Points,", "$defenderPoints", inline = true),
+					Embed.Field("$attackerName's Points", "$attackerPoints", inline = true),
+					Embed.Field("$defenderName's Points", "$defenderPoints", inline = true),
 				)
 			)
 		)
 
 		val totalWidth = lineBreak(48).minecraftLength + 8
-
 		val totalPoints = (defenderPoints + attackerPoints).toDouble()
 		val attackerWidth = ((attackerPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
 		val defenderWidth = ((defenderPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
-
 		val attackerColor = NationCache[attacker].textColor
 		val defenderColor = NationCache[defender].textColor
 
 		val guiText = GuiText("", guiWidth = totalWidth, initialShiftDown = -1)
-
 		guiText.add(text(repeatString("=", attackerWidth), attackerColor), -1, GuiText.TextAlignment.LEFT)
 		guiText.add(text(repeatString("=", defenderWidth), defenderColor), -1, GuiText.TextAlignment.RIGHT)
-
 		guiText.add(attackerNameFormatted, 0, GuiText.TextAlignment.LEFT)
 		guiText.add(defenderNameFormatted, 0, GuiText.TextAlignment.RIGHT)
-
 		guiText.add(text(attackerPoints, attackerColor), 1, GuiText.TextAlignment.LEFT)
 		guiText.add(text(defenderPoints, defenderColor), 1, GuiText.TextAlignment.RIGHT)
 
-		val headerLine = template(text("{0}'s siege of {1}'s Territory {2} has succeeded", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
-
-		val globalMessage = ofChildren(
-			headerLine, newline(),
-			guiText.build(),
-			newline(),
-			newline(),
-			newline(),
+		val headerLine = template(
+			text("{0}'s siege of {1}'s Territory {2} has succeeded - the territory has been unclaimed!", YELLOW),
+			attackerNameFormatted, defenderNameFormatted, region.name
 		)
 
-		Notify.allOnline(globalMessage)
-		Nation.delete(defender)
+		Notify.allOnline(ofChildren(headerLine, newline(), guiText.build(), newline(), newline(), newline()))
 	}
 
 	fun fail(disableEarlyCheck: Boolean = false) {

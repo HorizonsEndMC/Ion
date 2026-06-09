@@ -180,6 +180,7 @@ class MiningLaserSubsystem(
 		val initialPos = entity.getFirePos().toLocation(starship.world).toCenterLocation()
 		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 		val controller = starship.controller
+		val isTier1 = multiblock.tier == 1
 
 		if (!ActiveStarships.isActive(starship)) return setFiring(false)
 
@@ -188,12 +189,12 @@ class MiningLaserSubsystem(
 			return setFiring(false)
 		}
 
-		val power = entity.powerStorage.getPower()
-
-		if (power == 0) {
-			starship.alertSubtitle("Mining Laser at $pos ran out of power and was disabled!")
-
-			return setFiring(false)
+		if (!isTier1) {
+			val power = entity.powerStorage.getPower()
+			if (power == 0) {
+				starship.alertSubtitle("Mining Laser at $pos ran out of power and was disabled!")
+				return setFiring(false)
+			}
 		}
 
 		// Ray trace to get the hit position
@@ -277,7 +278,7 @@ class MiningLaserSubsystem(
 		)
 
 		if (blocksBroken > 0) {
-			entity.powerStorage.removePower((blockBreakPowerUsage * blocksBroken).toInt())
+			if (!isTier1) entity.powerStorage.removePower((blockBreakPowerUsage * blocksBroken).toInt())
 			laserEnd.world.spawnParticle(Particle.EXPLOSION, laserEnd, 1)
 		} else {
 			starship.sendActionBar(text("Mining laser is trying to break air!", NamedTextColor.RED))

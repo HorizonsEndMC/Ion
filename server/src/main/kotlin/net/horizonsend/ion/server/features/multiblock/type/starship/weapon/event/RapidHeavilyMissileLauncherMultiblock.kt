@@ -124,9 +124,6 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).type(Material.POLISHED_BASALT)
 			}
-			y(0) {
-				x(0).anyConcrete()
-			}
 			y(2) {
 				x(0).sponge()
 			}

@@ -247,7 +247,7 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private const val TIME_LIMIT = 23L
-	private const val TRADE_LIMIT_PER_CITY_PER_DAY = 3
+	private const val TRADE_LIMIT_PER_CITY_PER_DAY = 6767676767676767
 
 	private fun giveShipment(player: Player, shipment: UnclaimedShipment, count: Int) {
 		val cost = getCost(shipment, count)

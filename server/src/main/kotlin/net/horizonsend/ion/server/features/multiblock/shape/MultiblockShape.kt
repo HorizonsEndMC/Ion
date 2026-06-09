@@ -365,6 +365,10 @@ class MultiblockShape {
 		fun emeraldBlock() = type(Material.EMERALD_BLOCK)
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
 		fun lapisBlock() = type(Material.LAPIS_BLOCK)
+		fun scorditeBlock() = customBlock(CustomBlockKeys.SCORDITE_BLOCK.getValue())
+		fun vanadiumBlock() = customBlock(CustomBlockKeys.VANADIUM_BLOCK.getValue())
+		fun zirconBlock() = customBlock(CustomBlockKeys.ZIRCON_BLOCK.getValue())
+		fun atavumBlock() = customBlock(CustomBlockKeys.ATAVUM_BLOCK.getValue())
 
 		fun titaniumBlock() = customBlock(CustomBlockKeys.TITANIUM_BLOCK.getValue())
 		fun aluminumBlock() = customBlock(CustomBlockKeys.ALUMINUM_BLOCK.getValue())

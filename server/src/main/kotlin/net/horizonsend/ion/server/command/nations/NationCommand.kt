@@ -413,8 +413,8 @@ internal object NationCommand : SLCommand() {
 			val activeMembers = SLPlayer.count(
 				and(SLPlayer::nation eq nationId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
 			)
-			failIf(activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
-				"You need ${NATIONS_BALANCE.settlement.cityMinActive} active members to claim a dominion territory! You currently have $activeMembers."
+			failIf(activeMembers < 3) {
+				"You need ${3} active members to claim a dominion territory! You currently have $activeMembers."
 			}
 
 			failIf(sender.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "This territory is an NPC trade city and cannot be claimed!" }
@@ -429,6 +429,10 @@ internal object NationCommand : SLCommand() {
 
 			requireDominionUnclaimed(dominionTerritory)
 			DominionTerritory.setNation(dominionTerritory.id, nationId)
+
+			requireMoney(sender, 250000.0, "claim ${dominionTerritory.name}")
+
+			VAULT_ECO.withdrawPlayer(sender, 250000.0)
 
 			val nationName = getNationName(nationId)
 			Notify.chatAndEvents(nationImportantMessageFormat(

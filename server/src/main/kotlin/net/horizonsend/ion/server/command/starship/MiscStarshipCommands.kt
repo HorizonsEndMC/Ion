@@ -404,14 +404,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
 		for (planet in Space.getAllPlanets()) {
+				if (planet.spaceWorld != sender.world) continue
 				failIf(planet.location.distanceSquared(starship.centerOfMass) < 1000*1000) {"You cannot activate your jump beacon in a planet's gravity well!"}
 		}
 
 		failIf(!starship.canUseJumpBeacon) { "Your jump beacon is still on cooldown!" }
 
-		failIf(starship.world.hasFlag(WorldFlag.CORE_REGION_WORLD)) {"You cannot light a jump beacon in a core world!"}
-
 		for (star in Space.getStars()) {
+			if (star.spaceWorld != sender.world) continue
 			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800*1800) {"You cannot activate your jump beacon in a star's gravity well!"}
 		}
 
