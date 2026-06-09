@@ -102,6 +102,8 @@ object Discord : IonServerComponent(true) {
 
         JDA = jda
 		enabled = true
+
+		registerGtoggleListener()
 	}
 }
 
