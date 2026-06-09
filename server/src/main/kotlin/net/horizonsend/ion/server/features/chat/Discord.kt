@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.translation.GlobalTranslator
@@ -33,6 +34,8 @@ object Discord : IonServerComponent(true) {
 
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("DiscordSRV")) return
+
+		Tasks.asyncRepeat(20L * 60L, 20L * 60L, ::checkJda)
 
 		val jda = DiscordSRV.getPlugin().jda
 
@@ -90,6 +93,15 @@ object Discord : IonServerComponent(true) {
 	@Subscribe
 	fun onDiscordGuildMessagePreBroadcast(event: DiscordGuildMessagePreBroadcastEvent) {
 		event.recipients.removeAll { it is Player && GToggleCommand.isEnabled(it) }
+	}
+
+	fun checkJda() {
+		if (JDA != null) return
+
+        val jda = DiscordSRV.getPlugin().jda ?: return
+
+        JDA = jda
+		enabled = true
 	}
 }
 
