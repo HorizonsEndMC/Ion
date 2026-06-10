@@ -10,7 +10,9 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.packTerritoryPolygon
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
@@ -25,6 +27,7 @@ import org.dynmap.markers.CircleMarker
 import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 import org.litote.kmongo.eq
+import java.awt.Polygon
 import java.io.Closeable
 import kotlin.let
 
@@ -85,6 +88,7 @@ object NationsMap : IonServerComponent(true) {
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
 			Regions.getAllOf<RegionRegionalObjective>().forEach(::addRegionalObjective)
+			Regions.getAllOf<RegionDominionTerritory>().forEach(::addDominionTerritory)
 		}
 	}
 
@@ -97,6 +101,7 @@ object NationsMap : IonServerComponent(true) {
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 		Regions.getAllOf<RegionRegionalObjective>().forEach(NationsMap::updateRegionalObjective)
+		Regions.getAllOf<RegionDominionTerritory>().forEach(NationsMap::updateDominionTerritory)
 	}
 
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -524,4 +529,99 @@ object NationsMap : IonServerComponent(true) {
 	private fun getMarkerID(station: RegionSpaceStation<*, *>) =
 		"nation-station-" + station.id.toString()
 
+
+	fun addDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		try {
+			removeDominionTerritory(territory)
+
+			val world = territory.bukkitWorld ?: return@syncOnly
+			val worldBorder = world.worldBorder
+			val polygon = Polygon(
+					intArrayOf(
+						0,
+						0,
+						worldBorder.size.toInt(),
+						worldBorder.size.toInt(),
+					),
+					intArrayOf(
+						0,
+						worldBorder.size.toInt(),
+						worldBorder.size.toInt(),
+						0,
+					),
+					4
+				)
+
+			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
+			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
+
+			markerSet.createAreaMarker(
+				territory.id.toString(), // Id
+				territory.name, // Label
+				true, // Markup label
+				world.name, // World
+				xPoints.map { it.toDouble() }.toDoubleArray(),
+				yPoints.map { it.toDouble() }.toDoubleArray(),
+				false // Persistent
+			)
+
+			updateDominionTerritory(territory)
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
+	}
+
+	private fun removeDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
+		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+	}
+
+	fun updateDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+
+		if (marker == null) {
+			log.warn("No area marker for territory with ID ${territory.id}")
+			addDominionTerritory(territory)
+			return@syncOnly
+		}
+
+		var fillOpacity = 0.2
+		var fillRGB = Integer.parseInt("333333", 16)
+		var lineThickness = 3
+		var lineOpacity = 0.75
+		var lineRGB = Integer.parseInt("ffffff", 16)
+
+		val nation: Nation? = territory.nation?.let(Nation.Companion::findById) ?: territory.nation?.let(Nation.Companion::findById)
+
+		if (nation != null) {
+			val alias = territory.alias
+			var name = territory.name
+			if (alias != null) {
+				name = alias + " (${territory.name})"
+			}
+
+			val rgb = nation.color
+			fillOpacity = 0.2
+			fillRGB = rgb
+			lineOpacity = 0.5
+			lineRGB = rgb
+
+			marker.setLabel(
+				"<h3 style=\"text-align: center;\">${name}</h3>" +
+					"\n<h3 style=\"text-align: center;\">Owner: ${nation.name}</h3>" +
+					"\n<p style=\"padding-top: 0;\">${territory.name} is a space territory of the nation ${nation.name}</p>",
+				true
+			)
+		}
+
+		marker.setFillStyle(fillOpacity, fillRGB)
+		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
+	}
 }
