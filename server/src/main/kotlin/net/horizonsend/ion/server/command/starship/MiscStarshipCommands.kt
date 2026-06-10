@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import com.sk89q.worldedit.util.formatting.text.format.TextColor
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
@@ -21,7 +20,6 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
@@ -37,7 +35,6 @@ import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.GATE_TAX_AMOUNT
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.GATE_TAX_DAILY_CAP
@@ -45,7 +42,6 @@ import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.da
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.dailyGateTaxResetTime
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
-import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -92,7 +88,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
@@ -258,6 +253,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
 
+	private val jumpFieldGeneratorCooldown = object : PerPlayerCooldown(5L, TimeUnit.MINUTES) {
+		override fun cooldownRejected(player: UUID) {
+			Bukkit.getPlayer(player)?.userError("Your jump field generator cannot activate that frequently!")
+		}
+	}
+
 	@CommandAlias("jump")
 	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@spaceWorlds|@onlineNationMembers")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, another system or a member of your nation")
@@ -386,13 +387,21 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val x = destinationPos.x
 		val z = destinationPos.z
 
-		tryJump(
-			starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier,
-			beaconTarget = if (otherPlayer != null && otherPlayerStarship?.isJumpBeaconOn == true) otherPlayer else null
-		)
+		if (otherPlayerStarship != null) {
+			// Jump beacon jump
+			jumpFieldGeneratorCooldown.tryExec(sender) {
+				tryJump(
+					starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier,
+					beaconTarget = if (otherPlayerStarship.isJumpBeaconOn) otherPlayer else null
+				)
+			}
+		} else {
+			// Normal jump
+			tryJump(starship, x, z, destinationPos.bukkitWorld(), maxRange, sender, hyperdriveTier)
+		}
 	}
 
-	private val jumpBeaconCooldown = object : PerPlayerCooldown(30L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassjumpbeaconlimit") {
+	private val jumpBeaconCooldown = object : PerPlayerCooldown(5L, TimeUnit.MINUTES) {
 		override fun cooldownRejected(player: UUID) {
 			Bukkit.getPlayer(player)?.userError("Your jump beacon cannot switch on/off that frequently!")
 		}
@@ -404,27 +413,26 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
 		for (planet in Space.getAllPlanets()) {
-				if (planet.spaceWorld != sender.world) continue
-				failIf(planet.location.distanceSquared(starship.centerOfMass) < 1000*1000) {"You cannot activate your jump beacon in a planet's gravity well!"}
+			if (planet.spaceWorld != sender.world) continue
+			failIf(planet.location.distanceSquared(starship.centerOfMass) < 1000 * 1000) { "You cannot activate your jump beacon in a planet's gravity well!" }
 		}
 
 		failIf(!starship.canUseJumpBeacon) { "Your jump beacon is still on cooldown!" }
 
 		for (star in Space.getStars()) {
 			if (star.spaceWorld != sender.world) continue
-			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800*1800) {"You cannot activate your jump beacon in a star's gravity well!"}
+			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800 * 1800) { "You cannot activate your jump beacon in a star's gravity well!" }
 		}
 
 		failIf(starship.isDirectControlEnabled || starship.isMoving || StarshipCruising.isCruising(starship)) { "You cannot use a jump beacon while moving!" }
 
-		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) {"You cannot use a jump beacon in a trade world!"}
+		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "You cannot use a jump beacon in a trade world!" }
 
-		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) {"You can only use jump beacons in space!"}
+		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) { "You can only use jump beacons in space!" }
 
 		jumpBeaconCooldown.tryExec(sender) {
 			starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
 		}
-		return
 	}
 
 	@CommandAlias("disrupt")

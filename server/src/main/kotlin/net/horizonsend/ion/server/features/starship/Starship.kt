@@ -589,9 +589,9 @@ class Starship(
 			.map { it.pos.toLocation(world).block.state }
 
 		if (!value) {
-			onlinePassengers.forEach { player -> player.success("Jump Beacon disabled") }
+			onlinePassengers.forEach { player -> player.success("Jump Beacon Disabled") }
 			this.canUseJumpBeacon = false
-			Tasks.syncDelay(20L * 180L) {
+			Tasks.syncDelay(20L * 60L) {
 				if (ActiveStarships.isActive(this)) {
 					this.canUseJumpBeacon = true
 				}
@@ -599,7 +599,7 @@ class Starship(
 			return
 		}
 
-		onlinePassengers.forEach { player -> player.success("Jump beacon Enabled")
+		onlinePassengers.forEach { player -> player.success("Jump Beacon Enabled")
 		}
 	}
 
