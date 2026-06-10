@@ -414,21 +414,23 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		Hyperspace.findJumpBeacon(starship) ?: fail { "Intact jump Beacon not found!" }
 		for (planet in Space.getAllPlanets()) {
 			if (planet.spaceWorld != sender.world) continue
-			failIf(planet.location.distanceSquared(starship.centerOfMass) < 1000 * 1000) { "You cannot activate your jump beacon in a planet's gravity well!" }
+			failIf(planet.location.distanceSquared(starship.centerOfMass) < MassShadows.PLANET_RADIUS * MassShadows.PLANET_RADIUS) { "You cannot activate your jump beacon in a planet's gravity well!" }
 		}
 
 		failIf(!starship.canUseJumpBeacon) { "Your jump beacon is still on cooldown!" }
 
 		for (star in Space.getStars()) {
 			if (star.spaceWorld != sender.world) continue
-			failIf(star.location.distanceSquared(starship.centerOfMass) < 1800 * 1800) { "You cannot activate your jump beacon in a star's gravity well!" }
+			failIf(star.location.distanceSquared(starship.centerOfMass) < MassShadows.STAR_RADIUS * MassShadows.STAR_RADIUS) { "You cannot activate your jump beacon in a star's gravity well!" }
 		}
 
 		failIf(starship.isDirectControlEnabled || starship.isMoving || StarshipCruising.isCruising(starship)) { "You cannot use a jump beacon while moving!" }
 
-		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "You cannot use a jump beacon in a trade world!" }
+		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "You cannot activate a jump beacon in a trade world!" }
 
-		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) { "You can only use jump beacons in space!" }
+		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) { "You can only activate jump beacons in space!" }
+
+		failIf(starship.world.hasFlag(WorldFlag.CORE_REGION_WORLD)) { "You cannot activate a jump beacon in a core world!" }
 
 		jumpBeaconCooldown.tryExec(sender) {
 			starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
