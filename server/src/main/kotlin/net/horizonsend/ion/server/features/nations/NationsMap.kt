@@ -619,6 +619,12 @@ object NationsMap : IonServerComponent(true) {
 					"\n<p style=\"padding-top: 0;\">${territory.name} is a space territory of the nation ${nation.name}</p>",
 				true
 			)
+		} else {
+			marker.setLabel(
+				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
+					"\n<p style=\"padding-top: 0;\">This territory is unclaimed. It can be claimed for: 250000C</p>",
+				true
+			)
 		}
 
 		marker.setFillStyle(fillOpacity, fillRGB)
