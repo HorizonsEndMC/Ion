@@ -60,6 +60,13 @@ object StarshipDisplay : IonServerComponent(true) {
 	private fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
 		val charIdentifier = starship.charIdentifier
 		val displayName = starship.identifier
+		val controller = starship.controller
+		if (controller is PlayerController) {
+			if (!DynmapPlugin.plugin.getPlayerVisbility(controller.player)) {
+				starshipsIcons.remove(starship.charIdentifier)
+				return
+			}
+		}
 
 		val markerIcon = marker
 			?: markerAPI.getMarkerIcon(starship.type.dynmapIcon)

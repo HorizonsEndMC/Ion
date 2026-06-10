@@ -58,7 +58,7 @@ object Hyperspace : IonServerComponent() {
 	}
 
 	private const val DEFAULT_HYPERMATTER_AMOUNT = 2
-	const val INTER_SYSTEM_DISTANCE = 60000
+	const val INTER_SYSTEM_DISTANCE = 30000
 
 	override fun onDisable() {
 		movementTasks.forEach { (_, hyperspaceMovement) ->
