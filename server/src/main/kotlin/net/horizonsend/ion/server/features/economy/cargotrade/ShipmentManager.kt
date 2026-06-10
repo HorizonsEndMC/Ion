@@ -108,10 +108,12 @@ object ShipmentManager : IonServerComponent() {
 		val routeValue: Double
 	)
 
+	/*
 	private data class TradeTimeLimitData(
 		var trades: Int = 0,
 		var firstTrade: Long = 0,
 	)
+	 */
 
 	override fun onEnable() {
 		regenerateShipmentsAsync()
@@ -125,7 +127,7 @@ object ShipmentManager : IonServerComponent() {
 	 */
 	private var crateItemOwnershipMap = mutableMapOf<UUID, ItemOwnerData>()
 
-	private val playerCityTradeTimes = mutableMapOf<UUID, MutableMap<TradeCityData, TradeTimeLimitData>>()
+	//private val playerCityTradeTimes = mutableMapOf<UUID, MutableMap<TradeCityData, TradeTimeLimitData>>()
 
 	// Map of territory id to list of shipments
 	private val shipments = ConcurrentHashMap<Oid<Territory>, List<UnclaimedShipment>>()
@@ -246,8 +248,10 @@ object ShipmentManager : IonServerComponent() {
 		}
 	}
 
+	/*
 	private const val TIME_LIMIT = 23L
-	private const val TRADE_LIMIT_PER_CITY_PER_DAY = 6767676767676767
+	private const val TRADE_LIMIT_PER_CITY_PER_DAY = 3
+	 */
 
 	private fun giveShipment(player: Player, shipment: UnclaimedShipment, count: Int) {
 		val cost = getCost(shipment, count)
@@ -261,6 +265,7 @@ object ShipmentManager : IonServerComponent() {
 			// database stuff async
 			val playerId = player.slPlayerId
 
+			/*
 			val playerTradeData = playerCityTradeTimes[player.uniqueId]
 			if (playerTradeData != null) {
 				// player has traded since the last restart
@@ -280,6 +285,7 @@ object ShipmentManager : IonServerComponent() {
 					}
 				}
 			}
+			 */
 
 			/*
 			if (CargoCrateShipment.hasPurchasedFrom(playerId, shipment.from.territoryId, TIME_LIMIT)) {
@@ -311,6 +317,7 @@ object ShipmentManager : IonServerComponent() {
 					return@sync player.serverError("Shipment is not available")
 				}
 
+				/*
 				val playerTradeData = playerCityTradeTimes[player.uniqueId]
 				if (playerTradeData == null) {
 					playerCityTradeTimes[player.uniqueId] = mutableMapOf(
@@ -326,6 +333,7 @@ object ShipmentManager : IonServerComponent() {
 						playerCityTradeTimes[player.uniqueId]!![shipment.from]!!.trades += 1
 					}
 				}
+				 */
 
 				completePurchase(player, shipment, item, count)
 				player.closeInventory()
