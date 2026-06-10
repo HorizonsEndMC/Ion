@@ -435,6 +435,7 @@ object NationsMasterTasks : IonServerComponent() {
 				Nation.withdraw(nationId, balance)
 
 				val chosen = pool.random()
+				val name = chosen.name
 
 				if (chosen.isDominion) {
 					DominionTerritory.setNation(chosen.dominionId!!, null)
@@ -442,12 +443,16 @@ object NationsMasterTasks : IonServerComponent() {
 					Territory.setNation(chosen.normalId!!, null)
 				}
 
-				Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
-					"<red>$nationName's territory ${chosen.name} has been unclaimed due to inability to pay upkeep!"
+				Notify.chatAndEvents(MiniMessage.miniMessage().deserialize(
+					"<red>$nationName's territory $name has been unclaimed due to an inability to pay upkeep!"
 				))
-				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
-					"<red>Your nation could not afford territory upkeep of <yellow>${totalCost.toCreditsString()}<red>! ${chosen.name} has been unclaimed!"
-				))
+
+				ServerInboxes.sendServerMessages(
+					recipients = Nation.getMembers(nationId),
+					subject = Component.text("Nation Territory Unclaimed.", NamedTextColor.RED),
+					content = template(Component.text("Your nation's territory, {0}, was purged as your nation could not afford the territory upkeep cost of <yellow>${totalCost.toCreditsString()}.", NamedTextColor.RED), name)
+
+				)
 			}
 		}
 	}
