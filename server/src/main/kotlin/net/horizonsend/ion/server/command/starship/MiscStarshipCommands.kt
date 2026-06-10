@@ -361,12 +361,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					sender.userError("Your starship does not have a jump field generator! You may set a navigation waypoint to the target fleet member instead.")
 					sender.sendRichMessage(addToRouteMessage)
 					return
-				} else if (!starship.canUseJumpFieldGenerator) {
-					//Fail if the sender's starship jump field generator is still on cooldown
-					sender.userError("Your starship's jump field generator is still on cooldown!")
-					return
-				}
-				else if (!otherPlayerStarship.isJumpBeaconOn) {
+				} else if (!otherPlayerStarship.isJumpBeaconOn) {
 					// Fail if the other player's starship does not have an active jump beacon
 					sender.userError("The other player's starship does not have an active jump beacon! You may set a navigation waypoint to the target fleet member instead.")
 					sender.sendRichMessage(addToRouteMessage)
@@ -417,8 +412,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			failIf(planet.location.distanceSquared(starship.centerOfMass) < MassShadows.PLANET_RADIUS * MassShadows.PLANET_RADIUS) { "You cannot activate your jump beacon in a planet's gravity well!" }
 		}
 
-		failIf(!starship.canUseJumpBeacon) { "Your jump beacon is still on cooldown!" }
-
 		for (star in Space.getStars()) {
 			if (star.spaceWorld != sender.world) continue
 			failIf(star.location.distanceSquared(starship.centerOfMass) < MassShadows.STAR_RADIUS * MassShadows.STAR_RADIUS) { "You cannot activate your jump beacon in a star's gravity well!" }
@@ -433,7 +426,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(starship.world.hasFlag(WorldFlag.CORE_REGION_WORLD)) { "You cannot activate a jump beacon in a core world!" }
 
 		jumpBeaconCooldown.tryExec(sender) {
-			starship.toggleJumpBeacon(!starship.isJumpBeaconOn)
+			starship.enableJumpBeacon()
 		}
 	}
 

@@ -537,8 +537,6 @@ class Starship(
 
 	var isInterdicting = false; private set
 	var isJumpBeaconOn = false; private set
-	var canUseJumpBeacon: Boolean = true
-	var canUseJumpFieldGenerator: Boolean = true
 	var disruptorCount = mutableListOf<Player>()
 	var isDisrupting : Boolean = false; private set
 	var disruptorTarget: Player? = null
@@ -580,14 +578,12 @@ class Starship(
 		onlinePassengers.forEach { player -> player.success("Disruptor enabled") }
 	}
 
-	fun toggleJumpBeacon(value: Boolean) {
+	fun enableJumpBeacon() {
 		Tasks.checkMainThread()
-		isJumpBeaconOn = value
 
-		jumpBeacons
-			.filter { it.isIntact() }
-			.map { it.pos.toLocation(world).block.state }
+		jumpBeacons.filter { it.isIntact() }.map { it.pos.toLocation(world).block.state }
 
+		/*
 		if (!value) {
 			onlinePassengers.forEach { player -> player.success("Jump Beacon Disabled") }
 			this.canUseJumpBeacon = false
@@ -598,8 +594,14 @@ class Starship(
 			}
 			return
 		}
+		 */
 
-		onlinePassengers.forEach { player -> player.success("Jump Beacon Enabled")
+		isJumpBeaconOn = true
+		onlinePassengers.forEach { player -> player.success("Jump Beacon Enabled") }
+		Tasks.syncDelay(20L * 60L) {
+			if (ActiveStarships.isActive(this)) {
+				isJumpBeaconOn = false
+			}
 		}
 	}
 
