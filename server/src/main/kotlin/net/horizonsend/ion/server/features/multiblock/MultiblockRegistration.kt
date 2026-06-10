@@ -36,7 +36,6 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMu
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.GasHarvesterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -525,7 +524,6 @@ object MultiblockRegistration : IonServerComponent() {
 
 		// Fluids
 		registerMultiblock(BasicFluidStorageTankMultiblock)
-		registerMultiblock(GasHarvesterMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 	}
 
