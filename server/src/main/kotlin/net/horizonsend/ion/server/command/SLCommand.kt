@@ -316,4 +316,16 @@ abstract class SLCommand : BaseCommand() {
 	protected fun requireNotInCombat(sender: Player) = failIf(CombatTimer.isPvpCombatTagged(sender) || CombatTimer.isNpcCombatTagged(sender)) { "You can't do that while in combat!" }
 
 	open fun supportsVanilla(): Boolean = false
+
+	protected fun requireMoney(nationId: Oid<Nation>, amount: Number, text: String = "do that") {
+		requireEconomyEnabled()
+
+		val nation = Nation.findById(nationId) ?: fail { "You are not in a nation!" }
+		val balance = nation.balance
+
+		failIf(balance < amount.toDouble()) {
+			"Your nation doesn't have enough money to $text! It requires ${amount.toCreditsString()}, " +
+				"but your nation only has ${balance.toCreditsString()}"
+		}
+	}
 }

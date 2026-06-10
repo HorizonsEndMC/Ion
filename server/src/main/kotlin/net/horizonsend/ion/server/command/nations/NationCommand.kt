@@ -410,6 +410,8 @@ internal object NationCommand : SLCommand() {
 		// Check for dominion world first, then fall back to regular territory
 		val dominionTerritory = Regions.findFirstOf<RegionDominionTerritory>(sender.location)
 		if (dominionTerritory != null) {
+			val dominionTerritoryCost = 250000
+
 			val activeMembers = SLPlayer.count(
 				and(SLPlayer::nation eq nationId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
 			)
@@ -428,11 +430,11 @@ internal object NationCommand : SLCommand() {
 			}
 
 			requireDominionUnclaimed(dominionTerritory)
+
+			requireMoney(nationId, dominionTerritoryCost, "claim ${dominionTerritory.name}")
+			Nation.withdraw(nationId, dominionTerritoryCost)
+
 			DominionTerritory.setNation(dominionTerritory.id, nationId)
-
-			requireMoney(sender, 250000.0, "claim ${dominionTerritory.name}")
-
-			VAULT_ECO.withdrawPlayer(sender, 250000.0)
 
 			val nationName = getNationName(nationId)
 			Notify.chatAndEvents(nationImportantMessageFormat(
