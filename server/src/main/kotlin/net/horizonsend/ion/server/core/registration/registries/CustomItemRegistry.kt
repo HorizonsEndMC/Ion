@@ -316,7 +316,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.MOTHERBOARD, model = "industry/motherboard", displayName = Component.text("Motherboard"))
 		unStackable(key = CustomItemKeys.REACTOR_CONTROL, model = "industry/reactor_control", displayName = Component.text("Reactor Control", NamedTextColor.YELLOW))
 
-		unStackable(key = CustomItemKeys.SUPERCONDUCTOR, model = "industry/superconductor", displayName = Component.text("Superconductor"))
+		stackable(key = CustomItemKeys.SUPERCONDUCTOR, model = "industry/superconductor", displayName = Component.text("Superconductor"))
 		customBlockItem(
 			key = CustomItemKeys.SUPERCONDUCTOR_BLOCK,
 			model = "industry/superconductor_block",

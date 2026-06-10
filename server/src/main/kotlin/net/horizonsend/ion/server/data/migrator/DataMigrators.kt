@@ -925,6 +925,12 @@ object DataMigrators : IonServerComponent() {
 			)
 			.build()
 		)
+
+		registerDataVersion(DataVersion
+			.builder(7)
+			.addMigrator(ReplacementMigrator(CustomItemKeys.SUPERCONDUCTOR))
+			.build()
+		)
 	}
 
 	private fun registerDataVersion(dataVersion: DataVersion) {
