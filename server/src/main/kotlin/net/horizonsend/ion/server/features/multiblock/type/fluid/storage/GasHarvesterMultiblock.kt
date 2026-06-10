@@ -25,22 +25,17 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.space.signatures.SignatureManager
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.block.data.Bisected
-import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -57,50 +52,7 @@ object GasHarvesterMultiblock : Multiblock(), EntityMultiblock<GasHarvesterMulti
 	override val alternativeDetectionNames: Array<String> = arrayOf("harvester", "gasharvester")
 
 	override fun MultiblockShape.buildStructure() {
-		z(0) {
-			y(-1) {
-				x(-1).anyWall()
-				x(0).fluidInput()
-				x(1).anyWall()
-			}
-			y(0) {
-				x(0).anyTerracotta()
-			}
-			y(1) {
-				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-			}
-		}
-		z(1) {
-			y(-1) {
-				x(-1).anyCopperGrate()
-				x(0).anyCopperGrate()
-				x(1).anyCopperGrate()
-			}
-			y(0) {
-				x(-1).anyWall()
-				x(0).anyCopperGrate()
-				x(1).anyWall()
-			}
-			y(1) {
-				x(0).anyCopperBulb()
-			}
-			y(2) {
-				x(0).lightningRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP))
-			}
-		}
-		z(2) {
-			y(-1) {
-				x(-1).anyWall()
-				x(0).anyTerracotta()
-				x(1).anyWall()
-			}
-			y(0) {
-				x(0).anyTerracotta()
-			}
-			y(1) {
-				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-			}
-		}
+		// TODO: define the multiblock structure (shape will be determined after design review).
 	}
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): GasHarvesterMultiblockEntity {
@@ -123,7 +75,8 @@ object GasHarvesterMultiblock : Multiblock(), EntityMultiblock<GasHarvesterMulti
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override val ioData: IOData = IOData.Companion.builder(this)
-			.addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			// TODO: position the single fluid output port once the structure is finalized.
+			.addPort(IOType.FLUID, 1, -1, 0) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val mainStorage = FluidStorageContainer(data, "main_storage", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, 5_000.0, FluidRestriction.Unlimited)
