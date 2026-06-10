@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -253,7 +254,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			)) return
 
 		val victimNation = PlayerCache[controller.player].nationOid ?: return
-		val initPrintCost = (event.starship.initPrintCost * config.shipCostMultiplier).roundToInt()
+		val initPrintCost = (event.starship.initialBlockCount * config.shipCostMultiplier).roundToInt()
 
 		val victimIsDefenderSide = victimNation == siege.defender ||
 			(victimNation != siege.attacker && RelationCache[siege.defender, victimNation].ordinal >= NationRelation.Level.ALLY.ordinal)
@@ -397,7 +398,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	private val pointTickValue = calculateTickValue()
 
 	private fun calculateTickValue(): Int {
-		val referenceDestroyerValue = (config.referenceDestroyerPrice * config.shipCostMultiplier).roundToInt()
+		val referenceDestroyerValue = (StarshipType.DESTROYER.maxSize * config.shipCostMultiplier).roundToInt()
 		val durationMinutes = config.activeWindowDuration.toDuration().toMinutes().toInt()
 
 		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of

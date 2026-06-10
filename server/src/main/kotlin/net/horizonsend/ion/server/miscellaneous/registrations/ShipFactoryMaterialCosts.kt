@@ -324,6 +324,9 @@ object ShipFactoryMaterialCosts {
 	)
 
 	fun getPrice(data: BlockData): Double {
+		return 0.0 // Disable material print costs
+
+		/*
 		val customBlockKey = data.customBlock?.key
 
 		when (customBlockKey) {
@@ -366,5 +369,6 @@ object ShipFactoryMaterialCosts {
 					1.0
 				}
 		}
+		 */
 	}
 }
