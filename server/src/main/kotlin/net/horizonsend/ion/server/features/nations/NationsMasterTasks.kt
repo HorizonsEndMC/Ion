@@ -72,7 +72,7 @@ object NationsMasterTasks : IonServerComponent() {
 		val normalId: Oid<Territory>? = null
 	)
 
-	const val UPKEEP_COST = 2500
+	const val UPKEEP_COST = 2000
 
 	private fun executeAll() {
 		checkPurges()
