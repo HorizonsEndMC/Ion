@@ -6,11 +6,8 @@ import net.kyori.adventure.sound.Sound
 
 @Serializable
 data class PVPBalancingConfiguration(
-	val blasterWeapons: BlasterWeapons = BlasterWeapons(),
-	val meleeWeapons: MeleeWeapons = MeleeWeapons(),
-	val throwables: Throwables = Throwables(),
-	val consumables: Consumables = Consumables(),
-	val armour: Armor = Armor()
+	val energyWeapons: EnergyWeapons = EnergyWeapons(),
+	val throwables: Throwables = Throwables()
 ) {
 	@Serializable
 	data class Throwables(
@@ -36,163 +33,20 @@ data class PVPBalancingConfiguration(
 	) {
 		@Serializable
 		data class ThrowableBalancing(
-			var damage: Double,
-			var damageRadius: Double,
-			var throwVelocityMultiplier: Double,
-			var maxHealth: Int,
-			var maxTicks: Int,
-			var tickInterval: Long,
-			var throwCooldownTicks: Int,
-		)
-	}
-	@Serializable
-	data class Consumables(
-		val healthStim: ConsumableBalancing = ConsumableBalancing(
-			modifierValue = 8.0,
-			cooldownTicks = 5
-		),
-		val strengthStim: ConsumableBalancing = ConsumableBalancing(
-			modifierValue = 1.0,
-			cooldownTicks = 20
-		),
-		val emptySyringe: ConsumableBalancing = ConsumableBalancing(
-			modifierValue = 0.0,
-			cooldownTicks = 40
-		)
-	){
-		@Serializable
-		data class ConsumableBalancing(
-			var modifierValue: Double,
-			var cooldownTicks: Int,
+			val damage: Double,
+			val damageRadius: Double,
+			val throwVelocityMultiplier: Double,
+			val maxHealth: Int,
+			val maxTicks: Int,
+			val tickInterval: Long,
+			val throwCooldownTicks: Int,
 		)
 	}
 
 	@Serializable
-	data class MeleeWeapons(
-		val energySwordBalancing: EnergySwordBalancing = EnergySwordBalancing(
-			damage = 69.0, //WARNING: THIS NUMBER DOESNT WORK AND THE ATTACK DAMAGE IS DETERMINED IN THE ENERGY SWORD CLASS
-			blockAmount = 200,
-			blockRechargePerTick= 1.0,
-			type = WeaponTypeEnum.MELEE
-		),
-		val energyGreatswordBalancing: EnergySwordBalancing = EnergySwordBalancing(
-			damage = 6.0, //WARNING: THIS NUMBER DOESNT WORK AND THE ATTACK DAMAGE IS DETERMINED IN THE ENERGY GREATSWORD CLASS
-			blockAmount = 300,
-			blockRechargePerTick= 1.0,
-			type = WeaponTypeEnum.MELEE
-		)
-	){
-		@Serializable
-		data class EnergySwordBalancing(
-			var damage: Double,
-			var blockAmount: Int,
-			var blockRechargePerTick: Double,
-			override val type: WeaponTypeEnum
-		): BlasterWeapons.WeaponType
-	}
-
-	@Serializable
-	data class Armor(
-		val heavyPowerArmor: AttributeHolder = AttributeHolder(
-			speed = 0.0,
-			sneakSpeed = 0.0,
-			scale = 0.0,
-			entityReach = 0.0,
-			blockReach = 0.0,
-			armor = 5.25,
-			toughness = 3.0,
-			knockBackResistance = .1,
-			power = 100000,
-			powerConsumedPerSecond = 50,
-			stepHeight = 0.0,
-			maxHealth = 1.0,
-			jumpStrength = 0.0,
-			flyingSpeed = 0.0,
-			canDoubleJump = true,
-			canRocketBoot = true,
-			gravity = 0.0,
-			oxygenBonus = 0.0,
-			waterMovementEfficiency = 0.0,
-			maxPrimaryModules = 3,
-			maxSecondaryModules = 0
-		),
-		val mediumPowerArmor: AttributeHolder = AttributeHolder(
-			speed = 0.0,
-			sneakSpeed = 0.0,
-			scale = 0.0,
-			entityReach = 0.0,
-			blockReach = 0.0,
-			armor = 5.0,
-			toughness = 2.0,
-			knockBackResistance = 0.1,
-			power = 75000,
-			powerConsumedPerSecond = 25,
-			stepHeight = 0.0,
-			maxHealth = 0.0,
-			jumpStrength = 0.0,
-			flyingSpeed = 0.0,
-			canDoubleJump = true,
-			canRocketBoot = true,
-			gravity = 0.0,
-			oxygenBonus = 0.0,
-			waterMovementEfficiency = 0.0,
-			maxPrimaryModules = 1,
-			maxSecondaryModules = 1
-		),
-		val lightPowerArmor: AttributeHolder = AttributeHolder(
-			speed = 0.0,
-			sneakSpeed = 0.0,
-			scale = 0.0,
-			entityReach = 0.0,
-			blockReach = 0.0,
-			armor = 5.0,
-			toughness = 2.0,
-			knockBackResistance = 0.0,
-			power = 50000,
-			powerConsumedPerSecond = 10,
-			stepHeight = 0.0,
-			maxHealth = 0.0,
-			jumpStrength = 0.0,
-			flyingSpeed = 0.0,
-			canDoubleJump = true,
-			canRocketBoot = true,
-			gravity = 0.0,
-			oxygenBonus = 0.0,
-			waterMovementEfficiency = 0.0,
-			maxPrimaryModules = 2,
-			maxSecondaryModules = 0
-		),
-	){
-		@Serializable
-		data class AttributeHolder(
-			var speed: Double, //Percentage increase or decrease
-			var sneakSpeed: Double, //Percentage increase or decrease
-			var scale: Double, //Scalar add
-			var entityReach: Double, //Scalar add
-			var blockReach: Double, //Scalar add
-			var armor: Double, //Scalar add
-			var toughness: Double, //Scalar add
-			var knockBackResistance: Double, //Scalar add x10, 0.2 here is 2 ingame
-			var power: Int, //Pure number
-			var powerConsumedPerSecond: Int,
-			var stepHeight: Double,//Scalar add
-			var maxHealth: Double,//Scalar add
-			var jumpStrength: Double,//Scalar add
-			var flyingSpeed: Double,//Scalar add
-			var canDoubleJump: Boolean,//Boolean
-			var canRocketBoot: Boolean,//Boolean
-			var gravity: Double,//Scalar add
-			var oxygenBonus: Double,//Scalar add
-			var waterMovementEfficiency: Double,//Scalar add
-			var maxPrimaryModules: Int,
-			var maxSecondaryModules: Int
-		)
-	}
-
-	@Serializable
-	data class BlasterWeapons(
+	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 28.0,
+			damage = 3.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -220,15 +74,9 @@ data class PVPBalancingConfiguration(
 			soundRange = 50.0,
 			magazineIdentifier = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
-			type = WeaponTypeEnum.TERTIARY,
-			blockbreakAmount = 0.3,
-			switchToTimeTicks = 0,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
 		),
 		val rifle: Singleshot = Singleshot(
-			damage = 60.0,
+			damage = 5.5,
 			damageFalloffMultiplier = 0.0,
 			capacity = 20,
 			ammoPerRefill = 20,
@@ -256,15 +104,9 @@ data class PVPBalancingConfiguration(
 			soundRange = 50.0,
 			magazineIdentifier = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
-			type = WeaponTypeEnum.SECONDARY,
-			blockbreakAmount = 20.0,
-			switchToTimeTicks = 0,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 28.0,
+			damage = 1.5,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -292,22 +134,16 @@ data class PVPBalancingConfiguration(
 			soundRange = 50.0,
 			magazineIdentifier = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
-			type = WeaponTypeEnum.SECONDARY,
-			blockbreakAmount = 5.0,
-			switchToTimeTicks = 0,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
 		),
 		val sniper: Singleshot = Singleshot(
-			damage = 180.0,
+			damage = 12.0,
 			damageFalloffMultiplier = 30.0,
 			capacity = 5,
 			ammoPerRefill = 20,
-			packetsPerShot = 3,
+			packetsPerShot = 5,
 			pitch = 0f,
 			range = 160.0,
-			recoil = 2.5f,
+			recoil = 10.0f,
 			reload = 120,
 			shotSize = 0.0625,
 			shouldAkimbo = false,
@@ -328,15 +164,9 @@ data class PVPBalancingConfiguration(
 			soundRange = 100.0,
 			magazineIdentifier = "SPECIAL_MAGAZINE",
 			refillType = "minecraft:emerald",
-			type = WeaponTypeEnum.PRIMARY,
-			blockbreakAmount = 40.0,
-			switchToTimeTicks = 5,
-			shouldHaveCameraOverlay = true,
-			cameraOverlay = "horizonsend:overlays/sniper_scope",
-			zoomEffect = -0.9
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 20.0,
+			damage = 1.75,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -367,16 +197,10 @@ data class PVPBalancingConfiguration(
 			soundRange = 50.0,
 			magazineIdentifier = "SPECIAL_MAGAZINE",
 			refillType = "minecraft:emerald",
-			type = WeaponTypeEnum.PRIMARY,
-			blockbreakAmount = 10.0,
-			switchToTimeTicks = 5,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 15.0,
+			damage = 0.5,
 			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,
@@ -406,218 +230,116 @@ data class PVPBalancingConfiguration(
 			magazineIdentifier = "STANDARD_MAGAZINE",
 			explosiveShot = true,
 			refillType = "minecraft:lapis_lazuli",
-			type = WeaponTypeEnum.TERTIARY,
-			blockbreakAmount = 0.0,
-			switchToTimeTicks = 0,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
-		),
-		//KOTH weapons
-		val revolver: Singleshot = Singleshot(
-			damage = 50.0,
-			damageFalloffMultiplier = 0.0,
-			capacity = 6,
-			ammoPerRefill = 20,
-			packetsPerShot = 2,
-			pitch = 1.0f,
-			range = 100.0,
-			recoil = 3.0f,
-			reload = 10,
-			shotSize = 0.5,
-			shouldAkimbo = false,
-			shouldBypassHitTicks = true,
-			shouldHeadshot = true,
-			shouldPassThroughEntities = false,
-			speed = 10.0,
-			timeBetweenShots = 8,
-			shotDeviation = 0.0,
-			mobDamageMultiplier = 1.0,
-			consumesAmmo = true,
-			soundReloadStart = SoundInfo("horizonsend:blaster.pistol.reload.start", volume = 1f, source = Sound.Source.PLAYER),
-			soundReloadFinish = SoundInfo("horizonsend:blaster.pistol.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
-			soundFire = SoundInfo("horizonsend:blaster.pistol.shoot", volume = 1f, source = Sound.Source.PLAYER),
-			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
-			soundShell = SoundInfo("horizonsend:blaster.pistol.shell", volume = 1f, source = Sound.Source.PLAYER),
-			particleSize = 0.5f,
-			soundRange = 50.0,
-			magazineIdentifier = "SPECIAL_MAGAZINE",
-			refillType = "minecraft:emerald",
-			type = WeaponTypeEnum.TERTIARY,
-			blockbreakAmount = 10.0,
-			switchToTimeTicks = 5,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
-		),
-		val lightMachineBlaster: Singleshot = Singleshot(
-			damage = 40.0,
-			damageFalloffMultiplier = 0.0,
-			capacity = 90,
-			ammoPerRefill = 20,
-			packetsPerShot = 1,
-			pitch = 2f,
-			range = 150.0,
-			recoil = 1.5f,
-			reload = 60,
-			shotSize = 0.25,
-			shouldAkimbo = false,
-			shouldBypassHitTicks = true,
-			shouldHeadshot = true,
-			shouldPassThroughEntities = false,
-			speed = 8.0,
-			timeBetweenShots = 2,
-			shotDeviation = 0.05,
-			mobDamageMultiplier = 2.0,
-			consumesAmmo = true,
-			soundReloadStart = SoundInfo("horizonsend:blaster.submachine_blaster.reload.start", volume = 1f, source = Sound.Source.PLAYER),
-			soundReloadFinish = SoundInfo("horizonsend:blaster.submachine_blaster.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
-			soundFire = SoundInfo("horizonsend:blaster.submachine_blaster.shoot", volume = 1f, source = Sound.Source.PLAYER),
-			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
-			soundShell = SoundInfo("horizonsend:blaster.submachine_blaster.shell", volume = 1f, source = Sound.Source.PLAYER),
-			particleSize = 0.5f,
-			soundRange = 100.0,
-			magazineIdentifier = "SPECIAL_MAGAZINE",
-			refillType = "minecraft:emerald",
-			type = WeaponTypeEnum.PRIMARY,
-			blockbreakAmount = 5.0,
-			switchToTimeTicks = 0,
-			shouldHaveCameraOverlay = false,
-			cameraOverlay = "",
-			zoomEffect = 0.0
 		),
 
 		val standardMagazine: AmmoStorage = AmmoStorage(
-			capacity = 80,
+			capacity = 60,
 			refillType = "minecraft:lapis_lazuli",
-			ammoPerRefill = 30
+			ammoPerRefill = 20
 		),
 		val specialMagazine: AmmoStorage = AmmoStorage(
-			capacity = 40,
+			capacity = 20,
 			refillType = "minecraft:emerald",
-			ammoPerRefill = 30
-		),
+			ammoPerRefill = 20
+		)
 	) {
 		@Serializable
 		data class Singleshot(
-			override var damage: Double,
-			override var explosionPower: Float = 0f,
-			override var damageFalloffMultiplier: Double,
-			override var capacity: Int,
-			override var ammoPerRefill: Int,
-			override var packetsPerShot: Int,
-			override var pitch: Float,
-			override var range: Double,
-			override var recoil: Float,
-			override var reload: Int,
-			override var shotSize: Double,
-			override var shouldAkimbo: Boolean,
-			override var shouldBypassHitTicks: Boolean,
-			override var shouldHeadshot: Boolean,
-			override var shouldPassThroughEntities: Boolean,
-			override var particleSize: Float,
-			override var speed: Double,
-			override var timeBetweenShots: Int,
-			override var shotDeviation: Double,
-			override var mobDamageMultiplier: Double,
-			override var consumesAmmo: Boolean,
-			override var displayDurability: Boolean = true,
-			override var magazineIdentifier: String,
-			override var refillType: String,
-			override var blockbreakAmount: Double,
-			override var switchToTimeTicks: Int,
+			override val damage: Double,
+			override val explosionPower: Float = 0f,
+			override val damageFalloffMultiplier: Double,
+			override val capacity: Int,
+			override val ammoPerRefill: Int,
+			override val packetsPerShot: Int,
+			override val pitch: Float,
+			override val range: Double,
+			override val recoil: Float,
+			override val reload: Int,
+			override val shotSize: Double,
+			override val shouldAkimbo: Boolean,
+			override val shouldBypassHitTicks: Boolean,
+			override val shouldHeadshot: Boolean,
+			override val shouldPassThroughEntities: Boolean,
+			override val particleSize: Float,
+			override val speed: Double,
+			override val timeBetweenShots: Int,
+			override val shotDeviation: Double,
+			override val mobDamageMultiplier: Double,
+			override val consumesAmmo: Boolean,
+			override val displayDurability: Boolean = true,
+			override val magazineIdentifier: String,
+			override val refillType: String,
 
-			override var soundRange: Double,
+			override val soundRange: Double,
 			override val soundReloadStart: SoundInfo,
 			override val soundReloadFinish: SoundInfo,
 			override val soundFire: SoundInfo,
 			override val soundWhizz: SoundInfo,
 			override val soundShell: SoundInfo,
 
-			override var explosiveShot: Boolean = false,
-			override val type: WeaponTypeEnum,
-
-
-			override var shouldHaveCameraOverlay: Boolean,
-			override var cameraOverlay: String,
-			override var zoomEffect: Double,
-			override var scopedInItemModel: String = "empty"
+			override val explosiveShot: Boolean = false
 		) : Balancing()
 
 		@Serializable
 		data class Multishot(
-			var shotCount: Int,
-			var offsetMax: Double,
-			var delay: Int,
+			val shotCount: Int,
+			val offsetMax: Double,
+			val delay: Int,
 
-			override var damage: Double,
-			override var explosionPower: Float = 0f,
-			override var damageFalloffMultiplier: Double,
-			override var capacity: Int,
-			override var ammoPerRefill: Int,
-			override var packetsPerShot: Int,
-			override var pitch: Float,
-			override var range: Double,
-			override var recoil: Float,
-			override var reload: Int,
-			override var shotSize: Double,
-			override var shouldAkimbo: Boolean,
-			override var shouldBypassHitTicks: Boolean,
-			override var shouldHeadshot: Boolean,
-			override var shouldPassThroughEntities: Boolean,
-			override var particleSize: Float,
-			override var speed: Double,
-			override var timeBetweenShots: Int,
-			override var shotDeviation: Double,
-			override var mobDamageMultiplier: Double,
-			override var consumesAmmo: Boolean,
-			override var displayDurability: Boolean = true,
-			override var magazineIdentifier: String,
-			override var refillType: String,
-			override var blockbreakAmount: Double,
-			override var switchToTimeTicks: Int,
+			override val damage: Double,
+			override val explosionPower: Float = 0f,
+			override val damageFalloffMultiplier: Double,
+			override val capacity: Int,
+			override val ammoPerRefill: Int,
+			override val packetsPerShot: Int,
+			override val pitch: Float,
+			override val range: Double,
+			override val recoil: Float,
+			override val reload: Int,
+			override val shotSize: Double,
+			override val shouldAkimbo: Boolean,
+			override val shouldBypassHitTicks: Boolean,
+			override val shouldHeadshot: Boolean,
+			override val shouldPassThroughEntities: Boolean,
+			override val particleSize: Float,
+			override val speed: Double,
+			override val timeBetweenShots: Int,
+			override val shotDeviation: Double,
+			override val mobDamageMultiplier: Double,
+			override val consumesAmmo: Boolean,
+			override val displayDurability: Boolean = true,
+			override val magazineIdentifier: String,
+			override val refillType: String,
 
-			override var soundRange: Double,
+			override val soundRange: Double,
 			override val soundReloadStart: SoundInfo,
 			override val soundReloadFinish: SoundInfo,
 			override val soundFire: SoundInfo,
 			override val soundWhizz: SoundInfo,
 			override val soundShell: SoundInfo,
 
-			override var explosiveShot: Boolean = false,
-			override val type: WeaponTypeEnum,
-
-			override var shouldHaveCameraOverlay: Boolean,
-			override var cameraOverlay: String,
-			override var zoomEffect: Double,
-			override var scopedInItemModel: String = "empty"
+			override val explosiveShot: Boolean = false
 		) : Balancing()
 
 		@Serializable
 		data class AmmoStorage(
-			override var capacity: Int,
-			override var refillType: String,
-			override var ammoPerRefill: Int,
-			override var displayDurability: Boolean = true
+			override val capacity: Int,
+			override val refillType: String,
+			override val ammoPerRefill: Int,
+			override val displayDurability: Boolean = true
 		) : AmmoStorageBalancing, AmmoLoaderUsable
 
-		abstract class Balancing : ProjectileBalancing, AmmoStorageBalancing, WeaponType {
-			abstract var magazineIdentifier: String
-			abstract var packetsPerShot: Int
-			abstract var pitch: Float
-			abstract var recoil: Float
-			abstract var reload: Int
-			abstract var shouldAkimbo: Boolean
-			abstract var timeBetweenShots: Int
-			abstract var consumesAmmo: Boolean
-			abstract var switchToTimeTicks: Int
+		abstract class Balancing : ProjectileBalancing, AmmoStorageBalancing {
+			abstract val magazineIdentifier: String
+			abstract val packetsPerShot: Int
+			abstract val pitch: Float
+			abstract val recoil: Float
+			abstract val reload: Int
+			abstract val shouldAkimbo: Boolean
+			abstract val timeBetweenShots: Int
+			abstract val consumesAmmo: Boolean
 
-			abstract var shouldHaveCameraOverlay: Boolean
-			abstract var cameraOverlay: String
-			abstract var zoomEffect: Double //NOTE any speed value change lower then -0.9 will make the player unable to move!
-			abstract var scopedInItemModel: String
-
-			abstract var soundRange: Double
+			abstract val soundRange: Double
 			abstract val soundFire: SoundInfo
 			abstract val soundWhizz: SoundInfo
 			abstract val soundShell: SoundInfo
@@ -626,41 +348,29 @@ data class PVPBalancingConfiguration(
 		}
 
 		interface ProjectileBalancing {
-			var speed: Double
-			var damage: Double
-			var explosionPower: Float
-			var damageFalloffMultiplier: Double
-			var shouldPassThroughEntities: Boolean
-			var shotSize: Double
-			var shouldBypassHitTicks: Boolean
-			var range: Double
-			var shouldHeadshot: Boolean
-			var mobDamageMultiplier: Double
-			var shotDeviation: Double
-			var explosiveShot: Boolean
-			var particleSize: Float
-			var blockbreakAmount: Double
+			val speed: Double
+			val damage: Double
+			val explosionPower: Float
+			val damageFalloffMultiplier: Double
+			val shouldPassThroughEntities: Boolean
+			val shotSize: Double
+			val shouldBypassHitTicks: Boolean
+			val range: Double
+			val shouldHeadshot: Boolean
+			val mobDamageMultiplier: Double
+			val shotDeviation: Double
+			val explosiveShot: Boolean
+			val particleSize: Float
 		}
 
 		interface AmmoStorageBalancing : AmmoLoaderUsable {
-			var capacity: Int
-			var displayDurability: Boolean
+			val capacity: Int
+			val displayDurability: Boolean
 		}
 
 		interface AmmoLoaderUsable {
-			var refillType: String
-			var ammoPerRefill: Int
+			val refillType: String
+			val ammoPerRefill: Int
 		}
-
-		interface WeaponType{
-			val type: WeaponTypeEnum
-		}
-	}
-
-	enum class WeaponTypeEnum{
-		PRIMARY,
-		SECONDARY,
-		TERTIARY,
-		MELEE
 	}
 }

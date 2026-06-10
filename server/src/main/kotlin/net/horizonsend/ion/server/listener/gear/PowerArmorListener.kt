@@ -1,10 +1,7 @@
 package net.horizonsend.ion.server.listener.gear
 
+import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
-import com.destroystokyo.paper.event.player.PlayerJumpEvent
-import io.papermc.paper.event.player.PlayerArmSwingEvent
-import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
@@ -12,17 +9,8 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ArmorLockMod
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.ArmorLockMod.setLocked
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.GravityFieldMod.setGravity
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.HoverMod.setHover
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
-import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
-import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergyGreatSword
-import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
-import net.horizonsend.ion.server.features.explosions.presets.MiniNukeModExplosion
-import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -30,23 +18,13 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityToggleGlideEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType.REGENERATION
-import org.bukkit.potion.PotionEffectType.RESISTANCE
 import java.time.Instant
 import java.util.UUID
 
@@ -105,7 +83,7 @@ object PowerArmorListener : SLEventListener() {
 			val powerStorage = customItem.getComponent(POWER_STORAGE)
 			val power = powerStorage.getPower(item)
 
-			if (power < 1) continue
+			if (power < 100) continue
 
 			if (item.enchantments.none()) {
 				modifier += 0.5 / 4
@@ -115,7 +93,7 @@ object PowerArmorListener : SLEventListener() {
 				!player.world.hasFlag(WorldFlag.ARENA) &&
 				!ProtectionListener.isProtectedCity(player.location)
 			) {
-				powerStorage.removePower(item, customItem, 0)
+				powerStorage.removePower(item, customItem, 100)
 			}
 
 			for (module in customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)) {
@@ -128,7 +106,7 @@ object PowerArmorListener : SLEventListener() {
 				modifier = 0.0
 				if (!player.world.hasFlag(WorldFlag.ARENA)) {
 					val customItem = moduleItem.customItem ?: continue
-					customItem.getComponent(POWER_STORAGE).removePower(moduleItem, customItem, 0)
+					customItem.getComponent(POWER_STORAGE).removePower(moduleItem, customItem, 10)
 				}
 			}
 		}
@@ -164,12 +142,10 @@ object PowerArmorListener : SLEventListener() {
 		val power = customItem.getComponent(POWER_STORAGE).getPower(boots)
 		if (power <= 0) return
 
-		if (CombatTimer.isPvpCombatTagged(player)) return
-
 		setGliding(player, true)
 	}
 
-/*	@EventHandler
+	@EventHandler
 	fun onEntityKnockBackEvent(event: EntityKnockbackByEntityEvent) {
 		val player = event.entity as? Player ?: return
 
@@ -189,7 +165,7 @@ object PowerArmorListener : SLEventListener() {
 			event.isCancelled = true
 			return
 		}
-	} */
+	}
 
 	@EventHandler
 	fun onEntityToggleGlideEvent(event: EntityToggleGlideEvent) {
@@ -205,205 +181,5 @@ object PowerArmorListener : SLEventListener() {
 		if (event.cause != EntityDamageEvent.DamageCause.FLY_INTO_WALL) return
 
 		event.isCancelled = true
-	}
-
-	@EventHandler
-	fun onPlayerDeath(event: EntityDeathEvent) {
-		if (event.entity !is Player) return
-		for (item in (event.entity as Player).inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.MINI_NUKE)) continue
-
-			val location = event.entity.location
-			MiniNukeModExplosion(location).spawnExplosion(event.entity as Player)
-			return
-		}
-	}
-
-	@EventHandler
-	fun onSavePlayer(event: EntityDamageEvent) {
-		if (event.entity !is Player) return
-		for (item in (event.entity as Player).inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.PALADIN)) continue
-			if (!(event.finalDamage > (event.entity as Player).maxHealth*0.9)) return
-			event.setDamage(1.0)
-			(event.entity as Player).health = 10.0
-			event.entity.world.playSound(event.entity.location, Sound.ITEM_TOTEM_USE, 1.0f ,1.0f)
-			return
-		}
-	}
-	//Stop guns sending people flying
-	@EventHandler
-	fun onGunHit(event: EntityDamageByEntityEvent) {
-		if (event.entity !is Player) return
-		if (event.damager !is Player) return
-		val damager = (event.damager as Player)
-		val damaged = (event.entity as Player)
-		val customItem = damager.inventory.itemInMainHand.customItem ?: return
-		if (customItem !is Blaster<*>) return
-		event.isCancelled = true
-		damaged.damage(event.finalDamage)
-	}
-
-	//Prevent the pickup of lightsabers while using guns, and vice versa to prevent mid fight trolling
-	@EventHandler
-	fun onGunPickup(event: EntityPickupItemEvent) {
-		if (event.item !is Blaster<*>) return
-		if (event.entity !is Player) return
-		val player = event.entity as Player
-		for (item in player.inventory) {
-			if (item.customItem is EnergyGreatSword || item.customItem is EnergySword) {
-				event.isCancelled = true
-				return
-			}
-		}
-	}
-
-	@EventHandler
-	fun onSaberPickup(event: EntityPickupItemEvent) {
-		if (event.item.itemStack.customItem !is EnergySword && event.item.itemStack.customItem !is EnergyGreatSword) return
-		if (event.entity !is Player) return
-		val player = event.entity as Player
-		for (item in player.inventory) {
-			if (item.customItem is Blaster<*>) {
-				event.isCancelled = true
-				return
-			}
-		}
-	}
-
-	@EventHandler
-	fun onPlayerLowHealth1(event: PrePlayerAttackEntityEvent) {
-		if (event.attacked !is Player) return
-		val player = event.attacked as Player
-		if (player.health > (player.maxHealth * 0.25)) return
-		for (item in (event.attacked as Player).inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.ADRENALINE_BOOSTING)) continue
-			val potionEffect = PotionEffect(REGENERATION, 100, 0)
-			player.addPotionEffect(potionEffect)
-			return
-		}
-	}
-
-	@EventHandler
-	fun onPlayerLowHealth(event: PrePlayerAttackEntityEvent) {
-		if (event.attacked !is Player) return
-		val player = event.attacked as Player
-		if (player.health > (player.maxHealth * 0.25)) return
-		for (item in (event.attacked as Player).inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.GUARDIAN)) continue
-			val potionEffect = PotionEffect(RESISTANCE, 100, 0)
-			player.addPotionEffect(potionEffect)
-			return
-		}
-	}
-
-	@EventHandler
-	fun damageDebug(event: EntityDamageByEntityEvent) {
-		if (event.entity !is Player) return
-		if (event.damager !is Player) return
-		val damager = event.damager as Player
-		event.entity.debug("damage: ${event.finalDamage}")
-		event.entity.debug("item in hand: ${damager.inventory.itemInMainHand}")
-	}
-
-	@EventHandler
-	fun onPlayerKill(event: EntityDeathEvent) {
-		if (event.entity !is Player) return
-		if (event.damageSource.causingEntity !is Player) return
-		for (item in (event.damageSource.causingEntity as Player).inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.SIPHON)) continue
-			(event.damageSource.causingEntity as Player).heal(15.0)
-			return
-		}
-	}
-
-	@EventHandler
-	fun onPlayerGravityAttempt(event: PlayerToggleSneakEvent) {
-		if (event.player.isSneaking) return
-		for (item in event.player.inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.GRAVITY_FIELD)) continue
-			return setGravity(event.player)
-		}
-	}
-
-	@EventHandler
-	fun onPlayerHoverAttempt(event: PlayerToggleSneakEvent) {
-		if (event.player.isSneaking) return
-		if (event.player.isOnGround) return
-		for (item in event.player.inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.HOVER)) continue
-			return setHover(event.player)
-		}
-	}
-
-	@EventHandler
-	fun onPlayerLockAttempt(event: PlayerInteractEvent) {
-		if (!(!event.action.isRightClick && event.player.isSneaking && event.player.isOnGround && event.player.inventory.itemInMainHand.type == Material.AIR)) return
-		for (item in event.player.inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.ARMOR_LOCK)) continue
-
-			return setLocked(event.player)
-		}
-	}
-
-	//LISTENERS FOR ARMOUR LOCK
-	@EventHandler
-	fun onPlayerRegen(event: EntityRegainHealthEvent) {
-		if (event.entity !is Player) return
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.entity.uniqueId)) event.isCancelled = true
-		return
-	}
-	@EventHandler
-	fun onPlayerJump(event: PlayerJumpEvent) {
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
-		return
-	}
-	@EventHandler
-	fun onPlayerSwing(event: PlayerArmSwingEvent) {
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
-		return
-	}
-	@EventHandler
-	fun onPlayerInteract(event: PlayerInteractEvent) {
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
-		return
-	}
-	@EventHandler
-	fun onPlayerHotbarMove(event: PlayerItemHeldEvent) {
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
-	}
-	@EventHandler
-	fun onPlayerWalk(event: PlayerMoveEvent) {
-		if (ArmorLockMod.armorLockEnabledPlayers.contains(event.player.uniqueId)) event.isCancelled = true
-		return
 	}
 }

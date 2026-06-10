@@ -34,8 +34,6 @@ class VeinMinerMod(
 		AOEDMod::class,
 		VeinMinerMod::class
 	)
-	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
-
 
 	override val priority: Int = 1
 

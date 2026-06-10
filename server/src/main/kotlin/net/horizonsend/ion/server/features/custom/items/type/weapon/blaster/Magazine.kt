@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.BlasterWeapons.AmmoStorage
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorage
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.AmmunitionStorage

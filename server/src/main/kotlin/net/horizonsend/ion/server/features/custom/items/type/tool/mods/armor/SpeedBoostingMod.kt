@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.entity.Player
@@ -23,18 +22,13 @@ import kotlin.reflect.KClass
 
 object SpeedBoostingMod : ItemModification {
 	override val key = ItemModKeys.SPEED_BOOSTING
-	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.HEAVY_POWER_ARMOR_LEGGINGS),
-		ApplicationPredicate.SpecificPredicate(CustomItemKeys.MEDIUM_POWER_ARMOR_LEGGINGS),
-		ApplicationPredicate.SpecificPredicate(CustomItemKeys.LIGHT_POWER_ARMOR_LEGGINGS))
+	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_LEGGINGS))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
 	override val crouchingDisables: Boolean = false
-	override val displayName: Component = ofChildren(		Component.text("Speed Boosting", NamedTextColor.RED),
-		Component.text(" Module", NamedTextColor.GOLD),
-		Component.text(" Leggings Module", NamedTextColor.DARK_GRAY))
-	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
+	override val displayName: Component = ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD))
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.LEGS), SPEED, 60, 1, 0) { entity, _, _ ->
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.LEGS), SPEED, 60, 2, 1) { entity, _, _ ->
 		entity is Player
 			&& hasMovedInLastSecond(entity)
 			&& !entity.world.hasFlag(WorldFlag.ARENA)

@@ -37,8 +37,6 @@ class AOEDMod(
 		text(1 + (2 * radius), HEColorScheme.HE_LIGHT_ORANGE).decoration(TextDecoration.ITALIC, false),
 		text(" Range", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
 	)
-	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
-
 
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(
 		AOEDMod::class,

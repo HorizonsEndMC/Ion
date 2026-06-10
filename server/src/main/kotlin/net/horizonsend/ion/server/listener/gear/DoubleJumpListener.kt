@@ -2,9 +2,7 @@ package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
-import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -27,7 +25,6 @@ object DoubleJumpListener : SLEventListener() {
 
 		if (isGrounded(player)) {
 			jumpingPlayers.remove(player.uniqueId)
-			if (CombatTimer.isPvpCombatTagged(player) && player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD)) return
 			player.allowFlight = true
 		}
 	}
@@ -54,10 +51,8 @@ object DoubleJumpListener : SLEventListener() {
 			return
 		}
 
-		if (!CombatTimer.isPvpCombatTagged(player) || !player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD)) {
-			player.velocity = player.velocity.add(Vector(0.0, 0.75, 0.0))
-			jumpingPlayers.add(player.uniqueId)
-		}
+		player.velocity = player.velocity.add(Vector(0.0, 0.75, 0.0))
+		jumpingPlayers.add(player.uniqueId)
 		player.allowFlight = false
 	}
 

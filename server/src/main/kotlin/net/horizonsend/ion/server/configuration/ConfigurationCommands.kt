@@ -31,11 +31,8 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipDefaultWeapons = ConfigurationFiles.starshipBalancing.get().weaponDefaults.weapons
 	private val starshipDefaultCommandBursts = ConfigurationFiles.starshipBalancing.get().commandBurstDefaults.commandBursts
 
-	private val meleeWeaponTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
 	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
-	private val consumableTypes = PVPBalancingConfiguration.Consumables::class.memberProperties
-	private val armorTypes = PVPBalancingConfiguration.Armor::class.memberProperties
-	private val blasterTypes = PVPBalancingConfiguration.BlasterWeapons::class.memberProperties
+	private val blasterTypes = PVPBalancingConfiguration.EnergyWeapons::class.memberProperties
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("starshipTypes") {
@@ -54,50 +51,13 @@ object ConfigurationCommands : SLCommand() {
 			starshipDefaultCommandBursts.map { it::class.simpleName }
 		}
 
-		manager.commandCompletions.registerCompletion("meleeWeaponTypes") {
-			meleeWeaponTypes.map { it.name }
-		}
-
 		manager.commandCompletions.registerCompletion("throwablesTypes") {
 			throwableTypes.map { it.name }
-		}
-
-		manager.commandCompletions.registerCompletion("consumablesTypes") {
-			consumableTypes.map { it.name }
-		}
-
-		manager.commandCompletions.registerCompletion("armorTypes") {
-			armorTypes.map { it.name }
 		}
 
 		manager.commandCompletions.registerCompletion("blasterTypes") {
 			blasterTypes.map { it.name }
 		}
-	}
-
-	@Subcommand("config get meleeWeapons")
-	@CommandCompletion("@meleeWeaponTypes property")
-	fun getMeleeWeaponProperties(sender: CommandSender, meleeWeaponName: String, fieldName: String) = asyncCommand(sender) {
-		getConfigProperty(
-			sender,
-			meleeWeaponTypes,
-			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
-			meleeWeaponName,
-			fieldName
-		)
-	}
-
-	@Subcommand("config set meleeWeapons")
-	@CommandCompletion("@meleeWeaponTypes property value")
-	fun setMeleeWeaponProperties(sender: CommandSender, meleeWeaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
-		setConfigProperty(
-			sender,
-			meleeWeaponTypes,
-			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
-			meleeWeaponName,
-			fieldName,
-			value
-		)
 	}
 
 	@Subcommand("config get throwables")
@@ -125,63 +85,13 @@ object ConfigurationCommands : SLCommand() {
 		)
 	}
 
-	@Subcommand("config get consumables")
-	@CommandCompletion("@consumablesTypes property")
-	fun getConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String) = asyncCommand(sender) {
-		getConfigProperty(
-			sender,
-			consumableTypes,
-			ConfigurationFiles.pvpBalancing.get().consumables,
-			consumableName,
-			fieldName
-		)
-	}
-
-	@Subcommand("config set consumables")
-	@CommandCompletion("@consumablesTypes property value")
-	fun setConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String, value: String) = asyncCommand(sender) {
-		setConfigProperty(
-			sender,
-			consumableTypes,
-			ConfigurationFiles.pvpBalancing.get().consumables,
-			consumableName,
-			fieldName,
-			value
-		)
-	}
-
-	@Subcommand("config get armor")
-	@CommandCompletion("@armorTypes property")
-	fun getArmorProperties(sender: CommandSender, armorName: String, fieldName: String) = asyncCommand(sender) {
-		getConfigProperty(
-			sender,
-			armorTypes,
-			ConfigurationFiles.pvpBalancing.get().armour,
-			armorName,
-			fieldName
-		)
-	}
-
-	@Subcommand("config set armor")
-	@CommandCompletion("@armorTypes property value")
-	fun setArmorProperties(sender: CommandSender, armorName: String, fieldName: String, value: String) = asyncCommand(sender) {
-		setConfigProperty(
-			sender,
-			armorTypes,
-			ConfigurationFiles.pvpBalancing.get().armour,
-			armorName,
-			fieldName,
-			value
-		)
-	}
-
 	@Subcommand("config get blaster")
 	@CommandCompletion("@blasterTypes property value")
 	fun getBlasterProperties(sender: CommandSender, blasterName: String, fieldName: String) = asyncCommand(sender) {
 		getConfigProperty(
 			sender,
 			blasterTypes,
-			ConfigurationFiles.pvpBalancing.get().blasterWeapons,
+			ConfigurationFiles.pvpBalancing.get().energyWeapons,
 			blasterName,
 			fieldName
 		)
@@ -193,7 +103,7 @@ object ConfigurationCommands : SLCommand() {
 		setConfigProperty(
 			sender,
 			blasterTypes,
-			ConfigurationFiles.pvpBalancing.get().blasterWeapons,
+			ConfigurationFiles.pvpBalancing.get().energyWeapons,
 			blasterName,
 			fieldName,
 			value

@@ -24,8 +24,6 @@ object CollectorModifier : ItemModification {
 		ApplicationPredicate.ClassPredicate(PowerChainsaw::class)
 	)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
-
 
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem>? = CustomItemKeys.TOOL_MODIFICATION_COLLECTOR
 

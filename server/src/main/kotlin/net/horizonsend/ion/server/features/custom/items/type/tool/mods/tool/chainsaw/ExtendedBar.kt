@@ -22,8 +22,6 @@ object ExtendedBar : ItemModification {
 
 	// Just a range extender for something that already vein mines
 	override val crouchingDisables: Boolean = false
-	override val primaryOrSecondary: ItemModification.PrimaryOrSecondary = ItemModification.PrimaryOrSecondary.SECONDARY
-
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }

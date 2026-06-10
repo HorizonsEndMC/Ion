@@ -1,36 +1,24 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
-import com.manya.key.KeyFactory.plugin
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.utils.DamageEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import org.bukkit.NamespacedKey
-import org.bukkit.damage.DamageType
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.potion.PotionEffectType.SLOWNESS
-import org.litote.kmongo.util.idValue
 import kotlin.math.roundToInt
 
 class BlasterListeners : SLEventListener() {
@@ -71,13 +59,10 @@ class BlasterListeners : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
-		var speedyPullout = false
 		val itemStack = event.player.inventory.getItem(event.newSlot) ?: return
 		val customItem = itemStack.customItem as? Blaster<*> ?: return
 
 		// adding a potion effect because it takes ages for that attack cooldown to come up
-		val slowness = PotionEffect(SLOWNESS, 10, 1)
-		event.player.addPotionEffect(slowness)
 		event.player.addPotionEffect(PotionEffect(PotionEffectType.HASTE, 20, 5, false, false, false))
 
 		val ammunition = customItem.ammoComponent.getAmmo(itemStack)
@@ -88,26 +73,6 @@ class BlasterListeners : SLEventListener() {
 				NamedTextColor.RED
 			)
 		)
-		for (item in event.player.inventory.armorContents) {
-			val customItem = item?.customItem ?: continue
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
-			if (!mods.contains(ItemModKeys.QUICKDRAW)) continue
-			speedyPullout = true
-		}
-		val pullOutTime = if (speedyPullout) {customItem.balancing.switchToTimeTicks / 2} else {customItem.balancing.switchToTimeTicks}
-		if (event.player.hasCooldown(itemStack.type) && event.player.getCooldown(itemStack) < pullOutTime){
-			event.player.setCooldown(itemStack.type, pullOutTime) //add a cooldown for some weapons
-		}
-
-	}
-
-	@EventHandler
-	fun onPlayerItemHoldEvent1(event: PlayerItemHeldEvent) {
-		val itemStack = event.player.inventory.getItem(event.previousSlot) ?: return
-		val customItem = itemStack.customItem as? Blaster<*> ?: return
-		customItem.zoomOut(itemStack)
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
