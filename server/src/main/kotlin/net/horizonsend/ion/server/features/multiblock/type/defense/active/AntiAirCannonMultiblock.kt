@@ -6,8 +6,11 @@ import net.horizonsend.ion.server.configuration.starship.AntiAirProjectileBalanc
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
@@ -34,12 +37,10 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-object AntiAirCannonBaseMultiblock : Multiblock(), InteractableMultiblock {
+object AntiAirCannonBaseMultiblock : Multiblock(), InteractableMultiblock, EntityMultiblock<AntiAirCannonBaseMultiblock.AntiAirCannonBaseEntity> {
 	override val name: String = "antiaircannon"
 
 	private val turretPivotPoint = Vec3i(0, 3, -4)
-
-	override val requiredPermission: String = "ion.multiblock.aagun"
 
 	/** Gets the coordinate of the pivot point of the turret **/
 	fun getTurretPivotPoint(sign: Sign): Vec3i = getTurretPivotPointOffset(sign.getFacing()) + Vec3i(sign.location)
@@ -61,6 +62,10 @@ object AntiAirCannonBaseMultiblock : Multiblock(), InteractableMultiblock {
 		null,
 		null
 	)
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AntiAirCannonBaseEntity {
+		return AntiAirCannonBaseEntity(data, manager, x, y, z, world, structureDirection)
+	}
 
 	/** Provided the sign of the base, get the turret **/
 	fun turretIntact(sign: Sign): BlockFace? {
@@ -328,6 +333,22 @@ object AntiAirCannonBaseMultiblock : Multiblock(), InteractableMultiblock {
 			}
 		}
 	}
+
+	class AntiAirCannonBaseEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : SimplePoweredEntity(data, AntiAirCannonBaseMultiblock, manager, x, y, z, world, structureDirection, 100_000), LegacyMultiblockEntity {
+		override val displayHandler = standardPowerDisplay(this)
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
+	}
 }
 
 object AntiAirCannonTurretMultiblock: RotatingMultiblock(), DisplayNameMultilblock, EntityMultiblock<AntiAirCannonTurretMultiblock.AntiAirCannonEntity> {
@@ -356,7 +377,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock(), DisplayNameMultilblo
 	)
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AntiAirCannonEntity {
-		return AntiAirCannonEntity(manager, this,x, y, z, world, structureDirection)
+		return AntiAirCannonEntity(data, manager, this, x, y, z, world, structureDirection)
 	}
 
 	// Centered on pivot point
@@ -723,9 +744,11 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock(), DisplayNameMultilblo
 	private const val POWER_PER_SHOT = 1000
 
 	fun shoot(shooter: Player, facing: BlockFace, turretBaseSign: Sign) {
-		val power = 0
+		val entity = MultiblockEntities.getMultiblockEntity(turretBaseSign) as? AntiAirCannonBaseMultiblock.AntiAirCannonBaseEntity
+			?: return shooter.userError("Turret entity not found!")
 
-		//if (power < POWER_PER_SHOT) return shooter.userError("Out of power!") unused
+		if (entity.powerStorage.getPower() < POWER_PER_SHOT) return shooter.userError("Out of power!")
+		entity.powerStorage.removePower(POWER_PER_SHOT)
 
 		val left = AntiAirCannons.lastBarrel[shooter.uniqueId] ?: false
 		val barrelEndPosition =
@@ -735,18 +758,17 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock(), DisplayNameMultilblo
 
 		AntiAirCannons.lastBarrel[shooter.uniqueId] = !left
 
-		val dir = shooter.location.direction
-
 		AntiAirCannonProjectile(
 			source = AntiAirCannonProjectileSource(shooter),
 			location = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
-			direction = dir,
+			direction = shooter.location.direction,
 			shooter,
 			AntiAirProjectileBalancing(),
 		).fire()
 	}
 
 	class AntiAirCannonEntity(
+		data: PersistentMultiblockData,
 		manager: MultiblockManager,
 		override val multiblock: AntiAirCannonTurretMultiblock,
 		x: Int,
@@ -754,10 +776,19 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock(), DisplayNameMultilblo
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock,  world, x, y, z, structureDirection) {
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000),
+		LegacyMultiblockEntity {
 
-		override val ioData: IOData = IOData.builder(this)
+		override val ioData: IOData = IOData.Builder(this)
+			.addPowerInput(0, -1, 0)
+			.registerSignInputs()
 			.build()
+
+		override val displayHandler = standardPowerDisplay(this)
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 
 		override fun onLoad() {
 			world.ion.multiblockManager.register(this)

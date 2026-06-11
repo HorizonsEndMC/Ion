@@ -355,7 +355,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 		val siegeAudience = ForwardingAudience {
 			Bukkit.getOnlinePlayers().filter { player ->
-				player.world.name == siege.region.world && siege.region.contains(player.location)
+				siege.region.contains(player.location)
 			}
 		}
 

@@ -165,18 +165,18 @@ import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
 	var blockprice = mapOf(
-		IRON_BLOCK to 0.1,
-		DIAMOND_BLOCK to 0.1,
-		GOLD_BLOCK to 0.1,
-		COPPER_BLOCK to 0.1,
-		EXPOSED_COPPER to 0.1,
-		WEATHERED_COPPER to 0.1,
-		OXIDIZED_COPPER to 0.1,
-		WAXED_COPPER_BLOCK to 0.1,
-		WAXED_EXPOSED_COPPER to 0.1,
-		WAXED_WEATHERED_COPPER to 0.1,
-		WAXED_OXIDIZED_COPPER to 0.1,
-		REDSTONE_BLOCK to 0.1,
+		IRON_BLOCK to 0.0,
+		DIAMOND_BLOCK to 0.0,
+		GOLD_BLOCK to 0.0,
+		COPPER_BLOCK to 0.0,
+		EXPOSED_COPPER to 0.0,
+		WEATHERED_COPPER to 0.0,
+		OXIDIZED_COPPER to 0.0,
+		WAXED_COPPER_BLOCK to 0.0,
+		WAXED_EXPOSED_COPPER to 0.0,
+		WAXED_WEATHERED_COPPER to 0.0,
+		WAXED_OXIDIZED_COPPER to 0.0,
+		REDSTONE_BLOCK to 0.0,
 
 		GRINDSTONE to 0.1,
 		END_ROD to 0.1,
@@ -324,19 +324,33 @@ object ShipFactoryMaterialCosts {
 	)
 
 	fun getPrice(data: BlockData): Double {
-		return 0.0 // Disable material print costs
 
-		/*
 		val customBlockKey = data.customBlock?.key
 
 		when (customBlockKey) {
-			CustomBlockKeys.TITANIUM_BLOCK -> return 0.1
-			CustomBlockKeys.URANIUM_BLOCK -> return 0.1
-			CustomBlockKeys.CHETHERITE_BLOCK -> return 0.1
-			CustomBlockKeys.ALUMINUM_BLOCK -> return 0.1
-			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return 0.1
-			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return 0.1
-			CustomBlockKeys.RAW_URANIUM_BLOCK -> return 0.1
+			CustomBlockKeys.TITANIUM_BLOCK -> return 0.0
+			CustomBlockKeys.TITANIUM_ORE -> return 0.0
+			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return 0.0
+			CustomBlockKeys.URANIUM_BLOCK -> return 0.0
+			CustomBlockKeys.URANIUM_ORE -> return 0.0
+			CustomBlockKeys.RAW_URANIUM_BLOCK -> return 0.0
+			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> return 0.0
+			CustomBlockKeys.CHETHERITE_BLOCK -> return 0.0
+			CustomBlockKeys.CHETHERITE_ORE -> return 0.0
+			CustomBlockKeys.ALUMINUM_BLOCK -> return 0.0
+			CustomBlockKeys.ALUMINUM_ORE -> return 0.0
+			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return 0.0
+			CustomBlockKeys.ATAVUM_BLOCK -> return 0.0
+			CustomBlockKeys.ATAVUM_ORE -> return 0.0
+			CustomBlockKeys.VANADIUM_BLOCK -> return 0.0
+			CustomBlockKeys.VANADIUM_ORE -> return 0.0
+			CustomBlockKeys.ZIRCON_BLOCK -> return 0.0
+			CustomBlockKeys.ZIRCON_ORE -> return 0.0
+			CustomBlockKeys.SCORDITE_BLOCK -> return 0.0
+			CustomBlockKeys.SCORDITE_ORE -> return 0.0
+			CustomBlockKeys.STEEL_BLOCK -> return 0.0
+			CustomBlockKeys.SUPERCONDUCTOR_BLOCK -> return 0.0
+			CustomBlockKeys.NETHERITE_CASING -> return 0.0
 		}
 
 		return when (data) {
@@ -369,6 +383,6 @@ object ShipFactoryMaterialCosts {
 					1.0
 				}
 		}
-		 */
+
 	}
 }

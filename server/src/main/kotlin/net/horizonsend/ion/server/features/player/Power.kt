@@ -124,7 +124,7 @@ object Power : IonServerComponent() {
 			return
 		}}
 
-		SLXP.addPowerAsync(victim.uniqueId, -10)
+		SLXP.addPowerAsync(victim.uniqueId, -5)
 		SLXP.addPowerAsync(killer.uniqueId, 2)
 
 		val victimNationId = PlayerCache[victim].nationOid

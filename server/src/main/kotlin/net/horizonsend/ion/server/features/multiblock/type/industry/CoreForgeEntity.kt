@@ -120,13 +120,13 @@ abstract class CoreForgeEntity (
 			currentCore.customItem?.key == CRUISER_REACTOR_CORE){
 			val playerRegion = Regions.findFirstOf<RegionDominionTerritory>(player.location) ?: return disable(
 				Component.text(
-					"You must be in your dominion territory to create a large reactor core!",
+					"You must be in your dominion territory to create a super capital reactor core!",
 					HE_DARK_ORANGE
 				)
 			)
 			if (playerRegion.nation != PlayerCache[player].nationOid) return disable(
 				Component.text(
-					"You must be in your dominion territory to create a large reactor core!",
+					"You must be in your dominion territory to create a super capital reactor core!",
 					HE_DARK_ORANGE
 				)
 			)
