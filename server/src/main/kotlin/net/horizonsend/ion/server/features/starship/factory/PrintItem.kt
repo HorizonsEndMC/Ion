@@ -82,7 +82,7 @@ data class PrintItem(val itemString: String) {
 					return PrintItem(Material.COPPER_TORCH)
 				}
 
-				data is Banner -> {
+				data.material.name.contains("WALL_BANNER") -> {
 					val itemMat = Material.getMaterial(data.material.name.replace("WALL_BANNER", "BANNER"))
 					checkNotNull(itemMat)
 					return PrintItem(itemMat)
