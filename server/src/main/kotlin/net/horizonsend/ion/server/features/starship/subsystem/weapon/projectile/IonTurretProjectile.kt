@@ -31,7 +31,7 @@ class IonTurretProjectile(
 		val particle = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 
-		helixAroundVector(oldLocation, vector, 0.3, 20, wavelength = 1.0) {
+		helixAroundVector(oldLocation, vector, 0.3, 5, wavelength = 1.0) {
 			location.world.spawnParticle(
 				Particle.WAX_OFF,
 				it,
