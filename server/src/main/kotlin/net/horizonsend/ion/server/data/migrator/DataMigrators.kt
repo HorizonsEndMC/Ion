@@ -928,7 +928,36 @@ object DataMigrators : IonServerComponent() {
 
 		registerDataVersion(DataVersion
 			.builder(7)
-			.addMigrator(ReplacementMigrator(CustomItemKeys.SUPERCONDUCTOR))
+			.addMigrator(ReplacementMigrator(
+				CustomItemKeys.SUPERCONDUCTOR,
+				CustomItemKeys.URANIUM_ROD,
+				CustomItemKeys.FUEL_ROD_CORE,
+				CustomItemKeys.FUEL_CELL,
+				CustomItemKeys.FUEL_CONTROL,
+				CustomItemKeys.REACTIVE_HOUSING,
+				CustomItemKeys.REACTIVE_MEMBRANE,
+				CustomItemKeys.REACTIVE_ASSEMBLY,
+				CustomItemKeys.FABRICATED_ASSEMBLY,
+				CustomItemKeys.CIRCUIT_BOARD,
+				CustomItemKeys.MOTHERBOARD,
+				CustomItemKeys.REACTOR_CONTROL,
+				CustomItemKeys.STEEL_PLATE,
+				CustomItemKeys.STEEL_CHASSIS,
+				CustomItemKeys.REINFORCED_FRAME,
+				CustomItemKeys.REACTOR_FRAME,
+				CustomItemKeys.UNLOADED_SHELL,
+				CustomItemKeys.UNCHARGED_SHELL,
+				CustomItemKeys.BREACHER_SHELL_UNLOADED,
+				CustomItemKeys.STASIS_CHARGE_UNLOADED,
+				CustomItemKeys.ENTROPIC_CHARGE_UNLOADED,
+				CustomItemKeys.HELIX_SHELL_UNLOADED,
+				CustomItemKeys.SIEGE_SHELL_UNLOADED,
+				CustomItemKeys.STELLAR_PRISM_UNLOADED,
+				CustomItemKeys.GAS_CANISTER_NITROGEN,
+				CustomItemKeys.GAS_CANISTER_METHANE,
+				CustomItemKeys.GAS_CANISTER_CHLORINE,
+				CustomItemKeys.GAS_CANISTER_FLUORINE,
+			))
 			.build()
 		)
 	}
