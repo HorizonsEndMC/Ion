@@ -44,12 +44,12 @@ class PhaserProjectile(
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val origin = Location(location.world, x, y, z)
 
-		origin.spherePoints(0.25, 3).forEach {
-			it.world.spawnParticle(
+		//origin.spherePoints(0.25, 3).forEach {
+			origin.world.spawnParticle(
 				Particle.DUST_COLOR_TRANSITION,
-				it.x,
-				it.y,
-				it.z,
+				origin.x,
+				origin.y,
+				origin.z,
 				1,
 				0.0,
 				0.0,
@@ -58,11 +58,11 @@ class PhaserProjectile(
 				blueParticleData,
 				force
 			)
-		}
+		//}
 
-		origin.spherePoints(0.5, 5).forEach {
-			it.world.spawnParticle(Particle.SOUL_FIRE_FLAME, it.x, it.y, it.z, 1, 0.1, 0.1, 0.1, 0.0, null, force)
-		}
+		//origin.spherePoints(0.5, 5).forEach {
+			origin.world.spawnParticle(Particle.SOUL_FIRE_FLAME, origin.x, origin.y, origin.z, 1, 0.1, 0.1, 0.1, 0.0, null, force)
+		//}
 	}
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
@@ -94,6 +94,7 @@ class PhaserProjectile(
 			}
 		}
 
+		/*
 		newLoc.world.spawnParticle(
 			Particle.GLOW,
 			newLoc.x,
@@ -107,6 +108,7 @@ class PhaserProjectile(
 			null,
 			true
 		)
+		 */
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
