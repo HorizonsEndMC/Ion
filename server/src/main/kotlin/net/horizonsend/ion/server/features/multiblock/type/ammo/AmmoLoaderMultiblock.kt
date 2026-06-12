@@ -1,15 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
-import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
-import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerlessIndustryEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
@@ -19,7 +12,6 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.inventory.FurnaceInventory
 
 object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity>, DisplayNameMultilblock {
 	override fun MultiblockShape.buildStructure() {
@@ -155,5 +147,5 @@ object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultibloc
 		x: Int, y: Int, z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : PowerlessIndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace)
+	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 100_000)
 }
