@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.start
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
-import net.horizonsend.ion.server.features.world.generation.feature.nms.NMSStructureIntegration
+import net.horizonsend.ion.server.features.world.generation.feature.nms.PieceDataStorage
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.StructureStart
@@ -21,13 +21,13 @@ data class FeatureStart(
 			feature.ionStructure.value(),
 			ChunkPos(x.shr(4), z.shr(4)),
 			0,
-			PiecesContainer(listOf(NMSStructureIntegration.PieceDataStorage(Vec3i(x, y, z), feature, metaData)))
+			PiecesContainer(listOf(PieceDataStorage(Vec3i(x, y, z), feature, metaData)))
 		)
 	}
 
 	companion object {
 		fun fromNMS(start: StructureStart): FeatureStart = try {
-			val piece = start.pieces.first() as NMSStructureIntegration.PieceDataStorage
+			val piece = start.pieces.first() as PieceDataStorage
 
 			FeatureStart(
 				piece.feature,
