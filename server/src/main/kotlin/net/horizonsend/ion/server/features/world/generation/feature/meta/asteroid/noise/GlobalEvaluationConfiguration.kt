@@ -74,3 +74,11 @@ data class ThresholdConfigurationGlobal(
 		return Threshhold(a.build(seed), b.build(seed), threshold.build(seed), selector.build(seed))
 	}
 }
+
+
+@Serializable
+data class BeltDensityConfiguration(val x: Int, val z: Int, val innerRadius: Int, val outerRadius: Int, val density: GlobalEvaluationConfiguration) : GlobalEvaluationConfiguration {
+	override fun build(seed: Long): IterativeValueProvider {
+		return Belt(x, z, innerRadius, outerRadius, density.build(seed))
+	}
+}
