@@ -51,8 +51,10 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.starlegacy.javautil.BannerUtils.BannerData
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.Material
+import org.bukkit.block.Banner
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
@@ -301,6 +303,7 @@ class ShipFactoryPrintTask(
 			blockQueue.remove(entry)
 			val blockData = blockMap.remove(entry) ?: continue
 			val signData = signMap.remove(entry)
+			val bannerData = bannerMap.remove(entry)
 
 			val block = entity.world.getBlockAt(getX(entry), getY(entry), getZ(entry))
 
@@ -324,7 +327,7 @@ class ShipFactoryPrintTask(
 
 			// If all good, place the block
 			placements++
-			placeBlock(entry, blockData, signData)
+			placeBlock(entry, blockData, signData, bannerData)
 		}
 
 		if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
@@ -334,7 +337,7 @@ class ShipFactoryPrintTask(
 		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(consumedMoney)
 	}
 
-	private fun placeBlock(printPosition: BlockKey, data: BlockData, signData: SignData?) {
+	private fun placeBlock(printPosition: BlockKey, data: BlockData, signData: SignData?, bannerData: BannerData?) {
 		var placedData = data
 
 		val (x, y, z) = toVec3i(printPosition)
@@ -354,17 +357,20 @@ class ShipFactoryPrintTask(
 
 		data.customBlock?.placeCallback(null, block)
 
-		val state = block.state as? Sign
-		if (state != null) {
-			signData?.applyTo(state)
+		val signState = block.state as? Sign
+		if (signState != null) {
+			signData?.applyTo(signState)
 			Tasks.syncDelay(2L) {
-				val placed = MultiblockEntities.loadFromSign(state)
+				val placed = MultiblockEntities.loadFromSign(signState)
 
 				if (placed is LegacyMultiblockEntity) placed.resetSign()
 
 				if (placed is PoweredMultiblockEntity) placed.powerStorage.setPower(0)
 			}
 		}
+
+		val bannerState = block.state as? Banner
+		bannerData?.applyTo(bannerState ?: return)
 	}
 	//</editor-fold>
 

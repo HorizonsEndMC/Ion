@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
+import net.starlegacy.javautil.BannerUtils
+import net.starlegacy.javautil.BannerUtils.BannerData
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -36,6 +38,7 @@ abstract class ShipFactoryBlockProcessor(
 	// Use a RB tree map for key ordering.
 	val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 	protected val signMap: MutableMap<BlockKey, SignData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
+	protected val bannerMap: MutableMap<BlockKey, BannerData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 
 	var blockQueue = ConcurrentLinkedQueue<Long>()
 
@@ -60,6 +63,10 @@ abstract class ShipFactoryBlockProcessor(
 
 			if (data.material.isSign) {
 				signMap[worldKey] = SignUtils.readSignData(baseBlock.nbt)
+			}
+
+			if (data.material.name.endsWith("_BANNER")) {
+				bannerMap[worldKey] = BannerUtils.readBannerData(baseBlock.nbt)
 			}
 
 			blockQueue.add(worldKey)
