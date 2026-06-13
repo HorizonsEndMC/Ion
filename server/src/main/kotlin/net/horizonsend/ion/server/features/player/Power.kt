@@ -44,14 +44,14 @@ object Power : IonServerComponent() {
 				for (nation in NationCache.all()) {
 					val dominionCount = getDominionTerritoryCount(nation)
 					if (dominionCount == 0) {
-						if (nation.siegeable) Nation.setSiegeable(nation.id, false)
+						if (nation.siegeable == true) Nation.setSiegeable(nation.id, false)
 						continue
 					}
 
 					val power = Nation.getTotalPower(nation.id, ACTIVE_AFTER_TIME)
 					val powerCost = dominionTerritoryCost(nation)
 
-					if (nation.siegeable && power >= powerCost) {
+					if (nation.siegeable == true && power >= powerCost) {
 						// Recovered and no longer siegable
 						Nation.setSiegeable(nation.id, false)
 						Discord.sendEmbed(
@@ -67,7 +67,7 @@ object Power : IonServerComponent() {
 						)
 						Notify.allOnline(ofChildren(headerLine, newline(), newline()))
 
-					} else if (!nation.siegeable && power < powerCost) {
+					} else if (nation.siegeable == false || nation.siegeable == null && power < powerCost) {
 						// Dropped below threshold due to inactivity and now siegable
 						Nation.setSiegeable(nation.id, true)
 						Discord.sendEmbed(
@@ -161,7 +161,7 @@ object Power : IonServerComponent() {
 		val dominionCount = getDominionTerritoryCount(NationCache[nationId])
 		if (dominionCount == 0) return // Early return if no territories
 
-		if (power < powerCost && !NationCache[nationId].siegeable) {
+		if (power < powerCost && NationCache[nationId].siegeable == false || NationCache[nationId].siegeable == null) {
 			Nation.setSiegeable(nationId, true)
 			val victimNationName = NationCache[nationId].name
 			val victimNationNameFormatted = formatNationName(nationId)

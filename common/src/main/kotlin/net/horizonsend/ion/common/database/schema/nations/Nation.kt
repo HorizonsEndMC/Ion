@@ -57,7 +57,7 @@ data class Nation(
 	var color: Int,
 	override var balance: Int = 0,
 	val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
-	override var siegeable: Boolean = false,
+	override var siegeable: Boolean? = false,
 ) : DbObject, MoneyHolder, Siegeable {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))

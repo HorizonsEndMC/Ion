@@ -19,7 +19,7 @@ object NationCache : ManualCache() {
 		var name: String,
 		var capital: Oid<Settlement>,
 		var color: Int,
-		var siegeable: Boolean,
+		var siegeable: Boolean?,
 		var invites: Set<Oid<Settlement>>
 	) {
 		val leader get() = SettlementCache[capital].leader

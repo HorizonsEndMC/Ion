@@ -25,7 +25,6 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -40,7 +39,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
@@ -116,7 +114,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	private fun canBeSieged(region: RegionDominionTerritory): Boolean {
 		val nation = region.nation ?: return false
 		val nationData = NationCache[nation]
-		if (!nationData.siegeable) return false
+		if (nationData.siegeable == false || nationData.siegeable == null) return false
 
 		val activeSiegeCount = getAllSieges().count { it.defender == nation }
 

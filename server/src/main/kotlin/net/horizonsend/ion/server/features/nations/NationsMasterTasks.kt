@@ -54,11 +54,16 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import java.lang.Integer.min
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {
+		Tasks.async {
+			for (nation in Nation.all()) {
+				if (nation.siegeable == null) nation.siegeable = false
+			}
+		}
+
 		if (ConfigurationFiles.legacySettings().master) {
 			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
 			Tasks.asyncRepeat(20 * 60, 20 * 60 * 60, ::executeAll)
