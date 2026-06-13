@@ -47,4 +47,8 @@ class Vec3i: DBVec3i {
 	fun below(blocks: Int = 1) = Vec3i(x, y - blocks, z)
 	operator fun times(m: Double): Vec3i = Vec3i((x * m).toInt(), (y * m).toInt(), (z * m).toInt())
 	operator fun times(m: Int): Vec3i = Vec3i((x * m), (y * m), (z * m))
+
+	companion object {
+		val ZERO = Vec3i(0, 0, 0)
+	}
 }

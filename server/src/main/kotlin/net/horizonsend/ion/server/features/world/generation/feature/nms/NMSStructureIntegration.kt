@@ -9,40 +9,27 @@ import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
-import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.core.MappedRegistry
 import net.minecraft.core.RegistrationInfo
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.GenerationChunkHolder
 import net.minecraft.tags.BiomeTags
-import net.minecraft.util.RandomSource
 import net.minecraft.util.StaticCache2D
-import net.minecraft.world.level.ChunkPos
-import net.minecraft.world.level.StructureManager
-import net.minecraft.world.level.WorldGenLevel
 import net.minecraft.world.level.chunk.ChunkAccess
-import net.minecraft.world.level.chunk.ChunkGenerator
 import net.minecraft.world.level.chunk.status.ChunkPyramid
 import net.minecraft.world.level.chunk.status.ChunkStatus
 import net.minecraft.world.level.chunk.status.ChunkStatusTask
 import net.minecraft.world.level.chunk.status.ChunkStep
 import net.minecraft.world.level.chunk.status.WorldGenContext
-import net.minecraft.world.level.levelgen.structure.BoundingBox
 import net.minecraft.world.level.levelgen.structure.Structure
 import net.minecraft.world.level.levelgen.structure.Structure.StructureSettings
-import net.minecraft.world.level.levelgen.structure.StructurePiece
 import net.minecraft.world.level.levelgen.structure.StructureType
-import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType.StructureTemplateType
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import org.bukkit.NamespacedKey
 import sun.misc.Unsafe
 import java.lang.reflect.Field
@@ -195,32 +182,6 @@ object NMSStructureIntegration : IonServerComponent() {
 					settingsCodec(instance),
 					Codec.string(0, 100).fieldOf("ion_feature").forGetter { structure -> structure.feature.key }
 				).apply(instance) { settings, ionFeatureKey -> IonStructure(settings, WorldGenerationFeatureKeys[NamespacedKey.fromString(ionFeatureKey)!!]!!) }
-			}
-		}
-	}
-
-	class PieceDataStorage(val pos: Vec3i, val feature: GeneratedFeature<*>, val metaData: FeatureMetaData) : StructurePiece(Type, 1, BoundingBox.infinite()) {
-		override fun addAdditionalSaveData(context: StructurePieceSerializationContext, tag: CompoundTag) {
-			tag.putInt("x", pos.x)
-			tag.putInt("y", pos.y)
-			tag.putInt("z", pos.z)
-			tag.putString("feature", feature.key.ionNamespacedKey.asString())
-
-			tag.put("meta_data", feature.metaFactory.castAndSave(metaData))
-		}
-
-		override fun postProcess(p0: WorldGenLevel, p1: StructureManager, p2: ChunkGenerator, p3: RandomSource, p4: BoundingBox, p5: ChunkPos, p6: BlockPos) {}
-
-		companion object Type : StructureTemplateType {
-			override fun load(context: StructureTemplateManager, tag: CompoundTag): StructurePiece {
-				val namespacedKey = NamespacedKey.fromString(tag.getString("feature").get()) ?: throw IllegalArgumentException("Invalid namespaced key ${tag.getString("feature")}!")
-				val feature = WorldGenerationFeatureKeys[namespacedKey]?.getValue() ?: throw NullPointerException("World generation feature ${namespacedKey.asString()} not found!")
-
-				return PieceDataStorage(
-					Vec3i(tag.getInt("x").get(), tag.getInt("y").get(), tag.getInt("z").get()),
-					feature,
-					feature.metaFactory.load(tag.getCompound("meta_data").get())
-				)
 			}
 		}
 	}
