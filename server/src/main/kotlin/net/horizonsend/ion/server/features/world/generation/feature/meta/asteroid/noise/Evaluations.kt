@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise
 
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
 data class Sum(val values: List<IterativeValueProvider>) : IterativeValueProvider {
@@ -96,5 +97,19 @@ data class Threshhold(
 
 	override fun getValue(x: Double, y: Double, z: Double, origin: Vec3i): Double {
 		return if (selector.getValue(x, y, z, origin) > threshold.getValue(x, y, z, origin)) a.getValue(x, y, z, origin) else b.getValue(x, y, z, origin)
+	}
+}
+
+data class Belt(val x: Int, val z: Int, val innerRadius: Int, val outerRadius: Int, val density: IterativeValueProvider) : IterativeValueProvider {
+	val innerSq = innerRadius.squared()
+	val outerSq = outerRadius.squared()
+
+	override fun getFallbackValue(): Double {
+		return density.getFallbackValue()
+	}
+
+	override fun getValue(x: Double, y: Double, z: Double, origin: Vec3i): Double {
+		val distance = (this.x - x).squared() + (this.z - z).squared()
+		return if (distance < outerSq && distance > innerSq) return density.getValue(x, y, z, origin) else 0.0
 	}
 }
