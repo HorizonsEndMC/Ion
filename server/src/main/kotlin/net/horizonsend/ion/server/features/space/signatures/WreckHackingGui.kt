@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.space.signatures
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -236,11 +237,11 @@ class WreckHackingGui(
 			val inventory = chest.inventory
 			inventory.clear()
 
-			inventory.addItem(CustomItemKeys.DATA_CHIP.getValue().constructItemStack(Random.nextInt(1, 21)))
-			inventory.addItem(CustomItemKeys.GUIDANCE_SYSTEM.getValue().constructItemStack(Random.nextInt(1, 21)))
-			inventory.addItem(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(Random.nextInt(1, 21)))
+			giveOrDropItems(CustomItemKeys.DATA_CHIP.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
+			giveOrDropItems(CustomItemKeys.GUIDANCE_SYSTEM.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
+			giveOrDropItems(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
 
-			viewer.success("Hacking successful! The chest has been unlocked.")
+			viewer.success("Hacking successful! The chest has deposited rewards into your inventory.")
 		}
 	}
 
