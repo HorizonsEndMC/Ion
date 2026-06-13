@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
@@ -23,10 +24,10 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.type.DaylightDetector
 import org.bukkit.entity.Player
 
-@CommandPermission("ion.fixextractors")
 object FixExtractorsCommand : SLCommand() {
 	@CommandAlias("fixextractors")
 	@Suppress("unused")
+	@CommandPermission("ion.fixextractors")
 	fun onFixExtractors(sender: Player) {
 		val selection = getSelection(sender, 200000) ?: return
 
@@ -57,6 +58,7 @@ object FixExtractorsCommand : SLCommand() {
 
 	@CommandAlias("fixsolarpanels")
 	@Suppress("unused")
+	@CommandPermission("ion.fixextractors")
 	fun onFixSolarPanels(sender: Player) {
 		val selection = getSelection(sender, 200000) ?: return
 
@@ -86,6 +88,29 @@ object FixExtractorsCommand : SLCommand() {
 		}
 
 		sender.success("Fixed $count inverted daylight detectors")
+	}
+
+	@CommandAlias("removestarships")
+	@Suppress("unused")
+	fun onRemoveStarships(sender: Player) {
+		val selection = getSelection(sender, 200000) ?: return
+
+		if (sender.world.name != selection.world?.name) return
+
+		var count = 0
+
+		for (blockPosition in selection) {
+			val x = blockPosition.x()
+			val y = blockPosition.y()
+			val z = blockPosition.z()
+
+			val starshipData = DeactivatedPlayerStarships[sender.world, x, y, z] ?: continue
+
+			DeactivatedPlayerStarships.destroyAsync(starshipData)
+			count++
+		}
+
+		sender.success("Destroyed $count starship computers")
 	}
 
 	private fun getSelection(sender: Player, maxSelectionVolume: Int): Region? {

@@ -32,7 +32,6 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.block.data.Ageable
 
 abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<HarvesterMultiblock.HarvesterEntity>, DisplayNameMultilblock {
 	override val name: String = "harvester"
@@ -145,11 +144,9 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
 
 			for (block in region) {
-				val data = block.blockData
-
-				if (data !is Ageable) continue
-				if (data.age != data.maximumAge) continue
 				val crop = Crop[block.type] ?: continue
+
+				if (!crop.canBeHarvested(block)) continue
 
 				val drops = crop.getDrops(block).toTypedArray()
 

@@ -7,7 +7,9 @@ import org.bukkit.event.HandlerList
 
 class StarshipUnpilotEvent(
 	ship: ActiveControlledStarship,
-	val controller: Controller
+	val oldController: Controller,
+	val newController: Controller,
+	val cancellable: Boolean = false
 ) : ControlledStarshipEvent(ship), Cancellable {
 	private var cancelled: Boolean = false
 
@@ -15,10 +17,12 @@ class StarshipUnpilotEvent(
 		return handlerList
 	}
 
-	override fun isCancelled() = cancelled
+	override fun isCancelled(): Boolean {
+		return cancelled
+	}
 
-	override fun setCancelled(cancelled: Boolean) {
-		this.cancelled = cancelled
+	override fun setCancelled(cancel: Boolean) {
+		cancelled = if (!cancellable) false else cancel
 	}
 
 	companion object {

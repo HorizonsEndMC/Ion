@@ -52,7 +52,7 @@ class DistancePositioningModule(
 
 	private fun calcCombatDist(): Double {
 		val target = generalTarget.get()
-		if (target is GoalTarget) return 0.1
+		if (target is GoalTarget) return target.orbitDistance
 		if (target !is StarshipTarget) return optimalDist
 		val blockRatio = target.ship.initialBlockCount.toDouble() / starship.initialBlockCount.toDouble()
 		val optimalDist = distanceFromRatio(blockRatio, minDist, optimalDist, maxDist)

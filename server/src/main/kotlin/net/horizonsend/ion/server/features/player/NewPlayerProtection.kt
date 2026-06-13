@@ -128,7 +128,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	fun Player.protectionTime(): Long {
 		if (hasMetadata("NPC")) return 0L
 
-		val player = PlayerCache[this]
+		val player = PlayerCache.getIfOnline(this) ?: return 0L
 		val playerLevel = PlayerXPLevelCache[this].level
 
 		if (hasPermission("ion.core.protection.removed")) return 0L // If protection has been removed by staff.

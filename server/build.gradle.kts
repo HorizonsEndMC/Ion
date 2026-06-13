@@ -41,7 +41,7 @@ dependencies {
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }
 	compileOnly("net.citizensnpcs:citizens-main:2.0.41-SNAPSHOT") { exclude("*") }
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("com.discordsrv:discordsrv:1.30.1")
+	compileOnly("com.discordsrv:discordsrv:1.30.5")
 	compileOnly("net.luckperms:api:5.5")
 	compileOnly("xyz.xenondevs.invui:invui:1.49") // Downloaded via paper library manager for remapping
 	compileOnly("net.dmulloy2:ProtocolLib:5.4.0")

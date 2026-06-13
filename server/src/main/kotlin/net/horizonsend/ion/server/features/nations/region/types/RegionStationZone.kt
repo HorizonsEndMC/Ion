@@ -52,7 +52,6 @@ class RegionStationZone(zone: StationZone) : Region<StationZone>(zone) {
 	override val world: String get() = SpaceStationCache[station]?.world ?: ""
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
-		println("$name: $x, $y, $z, ${minPoint.x}, ${minPoint.y}, ${minPoint.z}, ${maxPoint.x}, ${maxPoint.y}, ${maxPoint.z}}")
 		return x >= minPoint.x && x <= maxPoint.x &&
 			y >= minPoint.y && y <= maxPoint.y &&
 			z >= minPoint.z && z <= maxPoint.z

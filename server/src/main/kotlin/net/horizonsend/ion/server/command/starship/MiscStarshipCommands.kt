@@ -55,6 +55,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.event.StarshipJumpWarmupEvent
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
@@ -64,6 +65,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
@@ -150,7 +152,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("unpilot")
 	fun onUnpilot(sender: Player) {
 		val starship = getStarshipPiloting(sender)
-		PilotedStarships.unpilot(starship)
+		if (!PilotedStarships.unpilot(starship, true)) {
+			sender.userError("Failed to unpilot ship")
+			return
+		}
 		sender.information("Unpiloted ship, but left it activated")
 	}
 
@@ -215,7 +220,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
-		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
+		if (navComp == null && !starship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) sender.userError("Navigation Computer not found; jump range halved")
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -251,7 +256,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
-		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
+		if (navComp == null && !starship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) sender.userError("Navigation Computer not found; jump range halved")
 
 		if (Hyperspace.isWarmingUp(starship)) fail { "Starship is already warming up!" }
 
@@ -284,8 +289,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		} ?: ConfigurationFiles.serverConfiguration().beacons.firstOrNull {
 			// Check if the destination is a beacon
 			it.name.replace(" ", "_") == destination
-		}?.spaceLocation
-		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
+		}?.let { if (starship.beacon != null && starship.beacon!!.name == it.name.replace("_", " ")) {
+			// Use the beacon if the player is close enough, otherwise return the beacon's location
+			onUseBeacon(sender)
+			return
+		} else it.spaceLocation
+		} ?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
 			// Check if the destination is a saved player bookmark
 			Pos(
 				it.worldName,
@@ -434,6 +443,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					"Automatically shortening jump. New Coordinates: $x1, $z1"
 			)
 		}
+
+		val jumpWarmupEvent = StarshipJumpWarmupEvent(
+			starship,
+			origin.toLocation(starship.world),
+			Location(destinationWorld, x1.toDouble(), 0.0, z1.toDouble())
+		)
+		failIf(!jumpWarmupEvent.callEvent()) { "Jump warmup cancelled!" }
 
 		sender.success("Initiating hyperspace jump to ${destinationWorld.name} ($x1, $z1)")
 

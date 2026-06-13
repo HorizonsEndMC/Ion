@@ -43,7 +43,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.EntityBlock
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -360,7 +360,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.world.getBlockAt(x, y, z)
 						val blockData = block.blockData
-						if (blockData.nms.block is BaseEntityBlock) {
+						if (blockData.nms.block is EntityBlock) {
 							return@iterateBlocks
 						}
 						block.setType(Material.AIR, false)

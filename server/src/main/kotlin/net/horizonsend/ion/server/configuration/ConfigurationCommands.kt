@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing.We
 import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
@@ -189,6 +191,12 @@ object ConfigurationCommands : SLCommand() {
 				sender.success("Reloaded configs.")
 			}
 		}
+	}
+
+	@Subcommand("registries reload")
+	fun onRegistriesReload(sender: CommandSender) {
+		sender.information("Reloading registries")
+		Tasks.syncBlocking { IonRegistries.bootstrapAll() }
 	}
 
 	private fun reloadOthers() {

@@ -131,6 +131,7 @@ class GoalTarget(
 	private val world: World,
 	var hyperspace: Boolean,
 	val weight: Double = 1.0,
+	val orbitDistance: Double = 0.1,
 	attack: Boolean = false,
 ) : AITarget(attack) {
 	override var offset: Vec3i = Vec3i(0, 0, 0)

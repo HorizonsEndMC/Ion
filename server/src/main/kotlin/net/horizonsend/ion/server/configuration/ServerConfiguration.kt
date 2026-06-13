@@ -2,14 +2,18 @@ package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.common.utils.NavigationObject
 import net.horizonsend.ion.server.configuration.util.Pos
-import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip.SerializableDealerShipInformation
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import java.time.DayOfWeek
 import kotlinx.serialization.SerialName
 
@@ -20,7 +24,7 @@ data class ServerConfiguration(
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<NPCDealerShip.SerializableDealerShipInformation> = listOf(),
+	val soldShips: List<SerializableDealerShipInformation> = listOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
 	val getPosMaxRange: Double = 600.0,
@@ -37,6 +41,20 @@ data class ServerConfiguration(
 
 	@SerialName("waypoint_receive_range")
 	val waypointReceiveRange: Double = 200.0,
+
+	val tutorialEscapePodShip: SerializableDealerShipInformation = SerializableDealerShipInformation(
+		price = 0.0,
+		schematicName = "TutorialEscapePod",
+		guiMaterial = Material.SPONGE,
+		displayName = "",
+		cooldown = 0L,
+		protectionCanBypass = true,
+		shipClass = StarshipType.SHUTTLE.name,
+		lore = listOf(),
+		pilotOffset = Vec3i(0, 0, 5)
+	),
+	val tutorialOrigin: DBVec3i = Vec3i(1250, 192, 2000),
+	val tutorialTransitHubOrigin: DBVec3i = Vec3i(1000, 192, 1000)
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -58,7 +76,7 @@ data class ServerConfiguration(
 		/**
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
-		 * @param ores:  list of Palettes used for ore placement
+		 * @param ores: list of Palettes used for ore placement
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */

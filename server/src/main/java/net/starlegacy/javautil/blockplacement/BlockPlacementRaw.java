@@ -11,7 +11,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -180,7 +180,7 @@ public class BlockPlacementRaw {
 
 					BlockState oldData = section.getBlockState(x, y & 15, z);
 
-					if (oldData.getBlock() instanceof BaseEntityBlock && oldData.getBlock() != newData.getBlock()) {
+					if (oldData.getBlock() instanceof EntityBlock && oldData.getBlock() != newData.getBlock()) {
 						BlockPos pos = nmsChunk.getPos().getWorldPosition().offset(x, y, z);
 						nmsWorld.removeBlockEntity(pos);
 					}

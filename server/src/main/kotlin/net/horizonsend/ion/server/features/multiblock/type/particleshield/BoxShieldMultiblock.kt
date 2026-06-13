@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.particleshield
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -22,7 +24,7 @@ object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	override val description: Component get() = text("Protects a starship from explosion damage within a user-specified rectangular region, between $MIN_DIMENSION and $MAX_DIMENSION blocks long for each side.")
 
 	override fun setupSign(player: Player, sign: Sign) {
-		val line = sign.getLine(2)
+		val line = sign.front().line(2).plainText()
 
 		val split = line.replace(",", " ").split(" ")
 
@@ -57,7 +59,7 @@ object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.setLine(3, sign.getLine(2))
+		sign.front().line(3, sign.front().line(2))
 		super.onTransformSign(player, sign)
 	}
 
@@ -99,7 +101,7 @@ object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	}
 
 	override fun getShieldBlocks(sign: Sign): List<Vec3i> {
-		val dimensions = sign.getLine(3)
+		val dimensions = sign.front().line(3).plainText()
 			.replace(",", " ")
 			.split(" ")
 			.map { it.toInt() }

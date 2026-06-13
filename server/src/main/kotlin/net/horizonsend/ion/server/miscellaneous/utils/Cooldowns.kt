@@ -13,7 +13,7 @@ open class AbstractCooldown <T> (cooldown: Long, timeUnit: TimeUnit = TimeUnit.M
 
 	val cooldownNanos = timeUnit.toNanos(cooldown)
 
-	fun tryExec(player: T, block: () -> Unit) = tryExec(player, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
+	fun tryExec(entity: T, block: () -> Unit) = tryExec(entity, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
 
 	open fun tryExec(player: T, cooldown: Long, timeUnit: TimeUnit, block: () -> Unit) {
 		if (nanoTime() - map.getOrElse(player) { 0 } >= timeUnit.toNanos(cooldown)) {

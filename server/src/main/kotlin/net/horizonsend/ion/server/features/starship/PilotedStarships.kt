@@ -32,8 +32,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
@@ -195,7 +195,7 @@ object PilotedStarships : IonServerComponent() {
 		return (starship.controller as? PlayerController)?.player?.uniqueId == player.uniqueId
 	}
 
-	fun unpilot(starship: ActiveControlledStarship) {
+	fun unpilot(starship: ActiveControlledStarship, cancellable: Boolean = false): Boolean {
 		Tasks.checkMainThread()
 		val controller = starship.controller
 
@@ -205,6 +205,8 @@ object PilotedStarships : IonServerComponent() {
 			is PlayerController -> UnpilotedController(controller)
 			else -> NoOpController(starship, starship.controller.damager)
 		}
+
+		if (!StarshipUnpilotEvent(starship, controller, unpilotedController, cancellable).callEvent()) return false
 
 		map.remove(starship.controller)
 
@@ -216,7 +218,7 @@ object PilotedStarships : IonServerComponent() {
 		starship.shieldBars.values.forEach { it.removeAll() }
 		starship.shieldBars.clear()
 
-		StarshipUnpilotedEvent(starship, controller, unpilotedController).callEvent()
+		return true
 	}
 
 	operator fun get(player: Player): ActiveControlledStarship? = get(player.uniqueId)
@@ -484,7 +486,7 @@ object PilotedStarships : IonServerComponent() {
 	fun tryRelease(starship: ActiveControlledStarship, bypassCombatTag: Boolean = false): Boolean {
 		val controller = starship.controller
 
-		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
+		if (!StarshipReleaseEvent(starship, controller).callEvent()) return false
 		log.info("${starship.controller.name} unpiloted ${starship.getDisplayNamePlain()} (${starship.initialBlockCount}) at ${starship.world.name}, ${starship.centerOfMass}")
 
 		if (Hyperspace.isMoving(starship)) {

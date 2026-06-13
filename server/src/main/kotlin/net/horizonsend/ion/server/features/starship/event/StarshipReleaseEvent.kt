@@ -2,15 +2,23 @@ package net.horizonsend.ion.server.features.starship.event
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
-class StarshipUnpilotedEvent(
+class StarshipReleaseEvent(
 	ship: ActiveControlledStarship,
-	val oldController: Controller,
-	val newController: Controller
-) : ControlledStarshipEvent(ship) {
+	val controller: Controller
+) : ControlledStarshipEvent(ship), Cancellable {
+	private var cancelled: Boolean = false
+
 	override fun getHandlers(): HandlerList {
 		return handlerList
+	}
+
+	override fun isCancelled() = cancelled
+
+	override fun setCancelled(cancelled: Boolean) {
+		this.cancelled = cancelled
 	}
 
 	companion object {

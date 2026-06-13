@@ -35,7 +35,7 @@ class AutoMasonIntegration(
 	override fun asyncSetup(task: ShipFactoryPrintTask) {
 		val usedMaterials = task.blockMap.values.mapTo(mutableSetOf()) { it.material }
 
-		for (recipe in MultiblockRecipeKeys.allkeys()) {
+		for (recipe in MultiblockRecipeKeys.allKeys()) {
 			val recipeValue = recipe.getValue()
 			if (recipeValue !is AutoMasonRecipe) continue
 			val resultType = recipeValue.result.result.asItem().type

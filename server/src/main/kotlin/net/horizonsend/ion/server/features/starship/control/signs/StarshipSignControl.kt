@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -36,7 +38,7 @@ object StarshipSignControl : IonServerComponent() {
 	}
 
 	private fun clickSign(player: Player, rightClick: Boolean, sign: Sign) {
-		for (signType in StarshipSigns.values()) {
+		for (signType in StarshipSigns.entries) {
 			if (rightClick && firstLineMatchesUndetected(sign, signType)) {
 				detectSign(signType, player, sign)
 				return
@@ -52,13 +54,13 @@ object StarshipSignControl : IonServerComponent() {
 	}
 
 	private fun firstLineMatchesUndetected(sign: Sign, signType: StarshipSigns): Boolean {
-		return sign.getLine(0) == signType.undetectedText
+		return sign.front().line(0).plainText() == signType.undetectedText
 	}
 
 	private fun matchesDetectedSign(signType: StarshipSigns, sign: Sign): Boolean {
 		val baseLines = signType.baseLines
 		return baseLines.withIndex().none { (index, line) ->
-			line != null && sign.getLine(index) != line
+			line != null && sign.front().line(index).plainText() != line.plainText()
 		}
 	}
 
@@ -68,7 +70,7 @@ object StarshipSignControl : IonServerComponent() {
 				if (line == null) {
 					continue
 				}
-				sign.setLine(index, line)
+				sign.front().line(index, line)
 			}
 			sign.update()
 		}

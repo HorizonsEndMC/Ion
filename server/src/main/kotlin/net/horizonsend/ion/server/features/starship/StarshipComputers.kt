@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
@@ -24,6 +25,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
@@ -33,6 +35,7 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.listener.misc.ProtectionListener.isRegionDenied
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -54,6 +57,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.joml.Vector2i.distance
 import org.litote.kmongo.setValue
 import java.util.concurrent.TimeUnit
 
@@ -141,7 +145,11 @@ object StarshipComputers : IonServerComponent() {
 	}
 
 	private fun createComputer(player: Player, block: Block) {
-		if (isRegionDenied(player, player.location)) return player.userError("You can only detect computers in territories you can access.")
+		// Allow computers within an NPC space station that is not protected to be detected
+		if (Regions.find(block.location).none { it is RegionNPCSpaceStation && !it.isProtected }
+			&& isRegionDenied(player, block.location)) {
+			return player.userError("You can only detect computers in territories you can access.")
+		}
 
 		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
 			player.successActionMessage("Registered starship computer!")
@@ -192,6 +200,8 @@ object StarshipComputers : IonServerComponent() {
 			|| (isMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))   // passing this implies the player is a member of the settlement
 			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP)) // passing this implies the player is part of the nation
 			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true)) // passing this implies the player has access to a station
+			|| (isInsideUnprotectedNpcStation(data)) // Starship data is inside an NPC space station
+			|| (isNearbyHyperspaceBeacon(data)) // Starship data is nearby a beacon
 	}
 
 	fun takeOwnership(player: Player, data: PlayerStarshipData) {
@@ -218,6 +228,14 @@ object StarshipComputers : IonServerComponent() {
 		val stationRegion = Regions.findFirstOf<RegionSpaceStation<*, *>>(location) ?: return null
 
 		return SpaceStationCache[stationRegion.name]
+	}
+
+	private fun getComputerNpcStation(data: PlayerStarshipData): NPCSpaceStation? {
+		val location = Vec3i(data.blockKey).toLocation(data.bukkitWorld())
+
+		val npcStationRegion = Regions.findFirstOf<RegionNPCSpaceStation>(location) ?: return null
+
+		return NPCSpaceStation.findById(npcStationRegion.id)
 	}
 
 	private fun isSettlementOwner(player: Player, data: PlayerStarshipData): Boolean {
@@ -271,5 +289,29 @@ object StarshipComputers : IonServerComponent() {
 			(RelationCache[station.owner, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal)) return station
 
 		return null
+	}
+
+	private fun isInsideUnprotectedNpcStation(data: PlayerStarshipData): Boolean {
+		val npcSpaceStation = getComputerNpcStation(data) ?: return false
+		return !npcSpaceStation.isProtected
+	}
+
+	private fun isNearbyHyperspaceBeacon(data: PlayerStarshipData): Boolean {
+		val location = Vec3i(data.blockKey).toLocation(data.bukkitWorld())
+
+		return HyperspaceBeaconManager.beaconWorlds[location.world]?.any { beacon ->
+			val distance = distance(
+				beacon.spaceLocation.x,
+				beacon.spaceLocation.z,
+				(location.x.toInt()),
+				(location.z.toInt())
+			)
+
+			if (distance <= beacon.radius) {
+				true
+			} else {
+				false
+			}
+		} ?: false
 	}
 }

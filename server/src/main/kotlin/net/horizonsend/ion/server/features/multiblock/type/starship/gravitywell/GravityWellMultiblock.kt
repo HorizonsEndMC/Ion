@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.ChatColor
 import org.bukkit.block.BlockFace
@@ -56,7 +57,7 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 
 		@JvmStatic
 		fun isEnabled(sign: Sign): Boolean {
-			return sign.getLine(2) == ENABLED
+			return sign.front().line(2).plainText() == ENABLED
 		}
 
 		@JvmStatic

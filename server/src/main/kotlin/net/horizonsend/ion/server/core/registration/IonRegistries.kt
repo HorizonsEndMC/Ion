@@ -11,17 +11,26 @@ import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
+import net.horizonsend.ion.server.features.sequences.SequenceRegistry
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = mutableListOf<Registry<*>>()
 	private val byId = Object2ObjectOpenHashMap<IonBindableResourceKey<out Registry<*>>, Registry<*>>()
 
 	override fun onEnable() {
-		allRegistries.forEach { registry ->
-			log.info("Bootstrapping ${registry.id.key}")
-			registry.boostrap()
-			registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
-		}
+		bootstrapAll()
+	}
+
+	fun bootstrapAll() {
+		allRegistries.forEach(::bootstrap)
+	}
+
+	fun bootstrap(registry: Registry<*>) {
+		log.info("Bootstrapping ${registry.id.key}")
+		registry.boostrap()
+		registry.getKeySet().allKeys().forEach { key -> key.checkBound() }
+		log.info("Registered ${registry.getAll().size} entries.")
 	}
 
 	val FLUID_TYPE = register(FluidTypeRegistry())
@@ -32,6 +41,9 @@ object IonRegistries : IonComponent() {
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
 	val TRANSPORT_NETWORK_NODE_TYPE = register(TransportNetworkNodeTypeRegistry())
 	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
+
+	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
+	val SEQUENCE = register(SequenceRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry

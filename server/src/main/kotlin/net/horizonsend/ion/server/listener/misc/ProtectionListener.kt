@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait
@@ -316,7 +317,8 @@ object ProtectionListener : SLEventListener() {
 
 	fun isProtectedCity(location: Location): Boolean = Regions
 		.find(location)
-		.any { it is RegionTerritory && it.isProtected }
+		.any { (it is RegionTerritory && it.isProtected)
+				|| (it is RegionNPCSpaceStation && it.isProtected) }
 
 	@EventHandler
 	fun onExplosionDamage(event: EntityDamageEvent) {

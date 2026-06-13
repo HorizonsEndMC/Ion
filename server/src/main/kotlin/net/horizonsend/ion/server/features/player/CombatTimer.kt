@@ -18,7 +18,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -55,7 +55,7 @@ import java.util.UUID
 object CombatTimer : IonServerComponent() {
 	private val PVP_TIMER_MINS = Duration.ofMinutes(5)
 	private val NPC_TIMER_MINS = Duration.ofMinutes(2).plusSeconds(30)
-	private const val PROXIMITY_COMBAT_DIST = 500.0
+	private const val SVP_ENTER_COMBAT_DIST = 500.0
 	private const val MAINTAIN_COMBAT_DIST = 1000.0
 	private const val REASON_NPC_SVS_COMBAT = "Engaging in combat with an NPC starship"
 	private const val REASON_PVP_SVS_COMBAT = "Engaging in combat with another player's starship"
@@ -82,20 +82,18 @@ object CombatTimer : IonServerComponent() {
 		Tasks.syncRepeat(0L, 20L) {
 
 			// Remove combat tags if enough time has elapsed
-			for (entry in npcTimer) {
-				if (entry.value <= System.currentTimeMillis()) {
-					npcTimer.remove(entry.key)
-					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (NPC)")
-					if (!pvpTimer.contains(entry.key) && killLog.contains(entry.key)) announceLog.add(entry.key)
-				}
+			val npcKeysToRemove = npcTimer.filter { it.value <= System.currentTimeMillis() }.keys
+			for (uuid in npcKeysToRemove) {
+				npcTimer.remove(uuid)
+				Bukkit.getPlayer(uuid)?.success("You are no longer in combat (NPC)")
+				if (!pvpTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
-			for (entry in pvpTimer) {
-				if (entry.value <= System.currentTimeMillis()) {
-					pvpTimer.remove(entry.key)
-					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (PvP)")
-					if (!npcTimer.contains(entry.key) && killLog.contains(entry.key)) announceLog.add(entry.key)
-				}
+			val pvpKeysToRemove = pvpTimer.filter { it.value <= System.currentTimeMillis() }.keys
+			for (uuid in pvpKeysToRemove) {
+				pvpTimer.remove(uuid)
+				Bukkit.getPlayer(uuid)?.success("You are no longer in combat (PvP)")
+				if (!npcTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
 			Bukkit.getOnlinePlayers().forEach { player ->
@@ -103,7 +101,7 @@ object CombatTimer : IonServerComponent() {
 
 				// Three types of proximity combat tag triggers:
 				// - Starship enters the interdiction range of an enemy starship that is currently interdicting
-				// - Player or starship enters the combat range of an enemy ship
+				// - Player enters the SvP range of an enemy ship
 				// - Ship pilot is already combat tagged and there is an enemy ship within the maintain combat range
 
 				// If the aggressing ship is less than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, they can only incur proximity tag on other ships that are smaller than 4000 blocks
@@ -129,10 +127,11 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will place combat tags on other players and starships that are unfriendly if they are within SVP_ENTER_COMBAT_DIST blocks, the defender is not piloting a ship, not in a protected city, and
+					// Piloted ships will place combat tags on other players that are unfriendly if they are within SVP_ENTER_COMBAT_DIST blocks, the defender is not piloting a ship, not in a protected city, and
 					// larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT
-					toPlayersInRadius(starshipCom, PROXIMITY_COMBAT_DIST) { otherPlayer ->
-						if (!ProtectionListener.isProtectedCity(otherPlayer.location) &&
+					toPlayersInRadius(starshipCom, SVP_ENTER_COMBAT_DIST) { otherPlayer ->
+						if (PilotedStarships[otherPlayer] == null &&
+							!ProtectionListener.isProtectedCity(otherPlayer.location) &&
 							pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT) {
 							evaluatePvp(
 								player,
@@ -217,7 +216,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshNpcTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isNpcCombatTagged(player) && player.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)) {
+		if (!isNpcCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
 			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
@@ -231,7 +230,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshPvpTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isPvpCombatTagged(player) && player.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)) {
+		if (!isPvpCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
 			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}
@@ -248,6 +247,7 @@ object CombatTimer : IonServerComponent() {
 	fun evaluatePvp(attacker: Player, defender: Player, reason: String, neutralTriggersCombat: Boolean = true, tagAttacker: Boolean = true) {
 		if (!enabled) return
 		if (attacker == defender) return
+		if (defender.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
@@ -262,11 +262,11 @@ object CombatTimer : IonServerComponent() {
 
 		if (attackerFleet != null && attackerFleet == defenderFleet ) return
 
-		val attackerData = PlayerCache[attacker]
+		val attackerData = PlayerCache.getIfOnline(attacker) ?: return
 		val attackerNation = attackerData.nationOid
 
-		val defenderData = PlayerCache[defender]
-		val defenderNation = defenderData.nationOid
+		val defenderData = PlayerCache.getIfOnline(defender)
+		val defenderNation = defenderData?.nationOid
 
 		if (attackerNation == defenderNation) return
 
@@ -297,6 +297,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun evaluateSvs(shooter: Damager, defendingStarship: ActiveStarship) {
 		if (!enabled) return
+		if (defendingStarship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 		if (shooter is PlayerDamager && shooter.player.hasPermission("group.dutymode")) return
 		if (defendingStarship.playerPilot?.hasPermission("group.dutymode") == true) return
 

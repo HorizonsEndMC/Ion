@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet
 import it.unimi.dsi.fastutil.shorts.ShortSet
 import net.horizonsend.ion.server.features.starship.BlockingBypass
 import net.horizonsend.ion.server.features.starship.Hangars
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -29,18 +28,20 @@ import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
-import net.minecraft.world.level.block.BaseEntityBlock
-import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.BushBlock
+import net.minecraft.world.level.block.CropBlock
 import net.minecraft.world.level.block.DoublePlantBlock
+import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.FungusBlock
 import net.minecraft.world.level.block.GlowLichenBlock
 import net.minecraft.world.level.block.GrowingPlantBlock
 import net.minecraft.world.level.block.LeavesBlock
 import net.minecraft.world.level.block.LiquidBlock
 import net.minecraft.world.level.block.NetherPortalBlock
+import net.minecraft.world.level.block.SeaPickleBlock
 import net.minecraft.world.level.block.StainedGlassBlock
+import net.minecraft.world.level.block.SugarCaneBlock
 import net.minecraft.world.level.block.VineBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
@@ -233,7 +234,7 @@ object OptimizedMovement {
 		newBlockData.block is StainedGlassBlock
 		|| newBlockData.block is NetherPortalBlock
 		|| newBlockData.block is LiquidBlock
-		|| newBlockData.block is BushBlock // most types of crop/grass blocks
+		|| newBlockData.block is BushBlock
 		|| newBlockData.block is VineBlock // normal vines
 		|| newBlockData.block is GrowingPlantBlock // twisted vines on Luxiterna, kelp, etc.
 		|| newBlockData.block is LeavesBlock
@@ -243,6 +244,8 @@ object OptimizedMovement {
 		|| newBlockData.block is FungusBlock
 		|| newBlockData.block is DoublePlantBlock
 		|| newBlockData.block is GlowLichenBlock
+		|| newBlockData.block is CropBlock
+		|| newBlockData.block is SugarCaneBlock
 
 	/**
 	 * Removes hangar-style destination obstructions collected during collision checks.
@@ -307,7 +310,7 @@ object OptimizedMovement {
 					capturedStates[index] = type
 
 					val blockPos = BlockPos(x, y, z)
-					if (type.block is BaseEntityBlock) {
+					if (type.block is EntityBlock) {
 						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 

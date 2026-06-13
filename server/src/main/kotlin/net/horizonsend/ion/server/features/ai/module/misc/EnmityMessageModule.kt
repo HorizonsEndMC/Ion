@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
@@ -24,6 +26,7 @@ class EnmityMessageModule(
 	override fun tick() {
 		val enmity = enmityModule
 		val config = configSupplier()
+		if (controller.getWorld().hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 
 		for (opponent in enmity.enmityList) {
 			for (msg in messages) {

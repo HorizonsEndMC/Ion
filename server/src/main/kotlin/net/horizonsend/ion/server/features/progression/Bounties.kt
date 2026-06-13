@@ -44,7 +44,7 @@ object Bounties : IonServerComponent() {
 		// gets the victim's slPlayerId, even if they are offline (in the case of combat NPCs)
 		val victimSlPlayerId = if (Bukkit.getPlayer(victim.name) != null) victim.slPlayerId
 		// Combat NPC entities are the "Player" class, but attempting to resolve their slPlayerId directly won't work
-		else Bukkit.getOfflinePlayerIfCached(victim.name)?.let { PlayerCache[it.uniqueId].id } ?: return@async
+		else Bukkit.getOfflinePlayerIfCached(victim.name)?.let { cachedPlayer -> cachedPlayer.name?.let { name -> SLPlayer[name]?._id } } ?: return@async
 
 		collectBounty(killer, victimSlPlayerId, victim.name)
 

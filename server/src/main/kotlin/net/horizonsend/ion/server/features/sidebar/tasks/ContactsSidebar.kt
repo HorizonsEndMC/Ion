@@ -49,6 +49,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.A
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -284,7 +286,7 @@ object ContactsSidebar {
         val bookmarksEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::bookmarksEnabled) ?: true
 
         // identify contacts that should be displayed (enabled and in range)
-        val starships: List<ActiveStarship> = if (starshipsEnabled) {
+        val starships: List<ActiveStarship> = if (starshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
                         it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
