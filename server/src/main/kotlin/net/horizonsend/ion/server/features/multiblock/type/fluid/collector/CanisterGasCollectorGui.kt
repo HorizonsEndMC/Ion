@@ -33,7 +33,7 @@ class CanisterGasCollectorGui(viewer: Player, val entity: CanisterGasCollectorMu
 		val guiBuilder = Gui.normal()
 			.setStructure(
 				". . . . . . . . .",
-				"a b c d . e f g h",
+				"h f d b . a c e g",
 				". . . . . . . . .",
 				". . . . s . . . .",
 				". . . . . . . . ."

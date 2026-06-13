@@ -64,7 +64,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 					this@CoreForgeGui.refreshButtons()
 				}
 			})
-			.addIngredient('g', tracked { id ->
+			.addIngredient('9', tracked { id ->
 				AsyncItem({ LARGE_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = LARGE_REACTOR_CORE.getValue().constructItemStack()
 					this@CoreForgeGui.refreshButtons()
@@ -82,7 +82,7 @@ class CoreForgeGui(viewer: Player, val entity: CoreForgeEntity) : InvUIWindowWra
 					this@CoreForgeGui.refreshButtons()
 				}
 			})
-			.addIngredient('9', tracked { id ->
+			.addIngredient('g', tracked { id ->
 				AsyncItem({ BARGE_REACTOR_CORE.getValue().constructItemStack() }) {
 					entity.targetCore = BARGE_REACTOR_CORE.getValue().constructItemStack()
 					this@CoreForgeGui.refreshButtons()
