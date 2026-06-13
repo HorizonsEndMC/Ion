@@ -259,7 +259,9 @@ class WreckHackingGui(
 	override fun buildTitle(): Component = GuiText("Hacking Terminal").build()
 
 	override fun buildWindow(): Window = normalWindow(buildGui(), closeHandlers = listOf(Runnable {
-		viewer.userError("The hacking sequence was interrupted!")
+		if (!success) {
+			viewer.userError("The hacking sequence was interrupted!")
+		}
 		destroyChest()
 	}))
 
