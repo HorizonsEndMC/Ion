@@ -6,8 +6,13 @@ import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.common.database.none
 import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
+import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.trx
 import org.litote.kmongo.and
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -92,6 +97,22 @@ data class Territory(
 			val id = objId<Territory>()
 			col.insertOne(sess, Territory(id, name, world, polygonData))
 			return@trx id
+		}
+
+		// This is actually terrifying, and I hope this never needs to be used
+		fun delete(id: Oid<Territory>) = trx { sess ->
+			require(exists(sess, id))
+
+			BazaarItem.col.deleteMany(sess, BazaarItem::cityTerritory eq id)
+			BazaarOrder.col.deleteMany(sess, BazaarOrder::cityTerritory eq id)
+			CargoCrateShipment.col.deleteMany(sess, or(CargoCrateShipment::originTerritory eq id, CargoCrateShipment::destinationTerritory eq id))
+			CityNPC.col.deleteMany(sess, CityNPC::territory eq id)
+			NPCTerritoryOwner.col.deleteMany(sess, NPCTerritoryOwner::territory eq id)
+			Settlement.col.deleteMany(sess, Settlement::territory eq id)
+			SettlementZone.col.deleteMany(sess, SettlementZone::territory eq id)
+			TradeWorldTerritory.col.deleteMany(sess, TradeWorldTerritory::backingTerritory eq id)
+
+			col.deleteOneById(sess, id)
 		}
 
 		fun findByName(name: String): Territory? = trx { sess ->

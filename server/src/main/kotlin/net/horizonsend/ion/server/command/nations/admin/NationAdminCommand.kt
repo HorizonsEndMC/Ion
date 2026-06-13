@@ -373,6 +373,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 			))
 			val territoryId = Territory.create(displayName, worldName, dummyPolygon)
 			NPCTerritoryOwner.create(territoryId, displayName, color, tradeCity = true)
+			Territory.findById(territoryId)?.isProtected = false
 			TradeWorldTerritory.create(worldName, displayName, color, territoryId)
 
 			Tasks.sync {
@@ -397,7 +398,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 
 			TradeWorldTerritory.col.deleteOneById(tradeWorld._id)
 			NPCTerritoryOwner.delete(npcOwner)
-			Territory.col.deleteOneById(territory._id)
+			Territory.delete(territory._id)
 
 			Tasks.sync {
 				IonWorld[world].configuration.flags.remove(WorldFlag.DOMINION_TRADE_WORLD)
