@@ -622,8 +622,8 @@ data class LightMissileLauncherBalancing(
 
 	@Serializable
 	data class LightMissileLauncherProjectileBalancing(
-		override var range: Double = 280.0,
-		override var speed: Double = 70.0,
+		override var range: Double = 300.0,
+		override var speed: Double = 75.0,
 		override var explosionPower: Float = 5.50f,
 		override var starshipShieldDamageMultiplier: Double = 7.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
@@ -668,8 +668,8 @@ data class RapidHeavyMissileLauncherBalancing(
 
 	@Serializable
 	data class RapidHeavyMissileLauncherProjectileBalancing(
-		override var range: Double = 290.0,
-		override var speed: Double = 32.0,
+		override var range: Double = 300.0,
+		override var speed: Double = 35.0,
 		override var explosionPower: Float = 7.0f,
 		override var starshipShieldDamageMultiplier: Double = 10.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
@@ -904,7 +904,7 @@ data class QuadTurretBalancing(
 	@Serializable
 	data class QuadTurretProjectileBalancing(
         override var range: Double = 500.0,
-        override var speed: Double = 32.5,
+        override var speed: Double = 37.5,
         override var explosionPower: Float = 5f,
         override var starshipShieldDamageMultiplier: Double = 6.9,
         override var areaShieldDamageMultiplier: Double = 6.0,
@@ -936,7 +936,7 @@ data class ACAPTurretBalancing(
 	@Serializable
 	data class ACAPTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 32.5,
+		override var speed: Double = 37.5,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 9.5,
 		override var areaShieldDamageMultiplier: Double = 6.0,
@@ -968,7 +968,7 @@ data class IonTurretBalancing(
 	@Serializable
 	data class IonTurretProjectileBalancing(
 		override var range: Double = 400.0,
-		override var speed: Double = 60.0,
+		override var speed: Double = 55.0,
 		override var explosionPower: Float = 3f,
 		override var starshipShieldDamageMultiplier: Double = 3.7,
 		override var areaShieldDamageMultiplier: Double = 60.0,
@@ -1038,7 +1038,7 @@ data class PulseCannonBalancing(
 	@Serializable
 	data class PulseCannonProjectileBalancing(
         override var range: Double = 160.0,
-        override var speed: Double = 300.0,
+        override var speed: Double = 230.0,
         override var explosionPower: Float = 1.5f,
         override var starshipShieldDamageMultiplier: Double = 1.8,
         override var areaShieldDamageMultiplier: Double = 2.0,

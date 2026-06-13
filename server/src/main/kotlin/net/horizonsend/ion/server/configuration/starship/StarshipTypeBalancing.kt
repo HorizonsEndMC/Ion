@@ -1166,7 +1166,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1000,
 			warmupTime = 15,
-			jumpStrength = 1.0,
+			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.85,
 			hyperspaceRangeMultiplier = 1.9,
@@ -1255,7 +1255,7 @@ data class NewStarshipBalancing(
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.90,
-			shieldPowerMultiplier = 1.00,
+			shieldPowerMultiplier = 0.95,
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -1302,11 +1302,11 @@ data class NewStarshipBalancing(
 			interdictionRange = 1250,
 			warmupTime = 30,
 			jumpStrength = 3.0,
-			wellStrength = 3.0,
+			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.9,
-			cruiseSpeedMultiplier = 0.75,
+			cruiseSpeedMultiplier = 0.85,
 			shieldPowerMultiplier = 0.8,
-			shieldRegenMultiplier = 3.5,
+			shieldRegenMultiplier = 4.0,
 			commandBurstOverrides = listOf(
 				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
 					IncompatibleSubsystemInfo(
@@ -1372,7 +1372,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
 			warmupTime = 30,
-			jumpStrength = 2.0,
+			jumpStrength = 3.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.85,
