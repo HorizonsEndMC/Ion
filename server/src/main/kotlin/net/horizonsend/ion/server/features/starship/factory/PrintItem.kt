@@ -87,9 +87,19 @@ data class PrintItem(val itemString: String) {
 					checkNotNull(itemMat)
 					return PrintItem(itemMat)
 				}
-				data.material.name.contains("POTTED") -> {
-					val itemMat = Material.getMaterial(data.material.name.replace("POTTED_", ""))
-					checkNotNull(itemMat)
+
+				data.material.name.startsWith("POTTED_") -> {
+					val plantName = data.material.name.removePrefix("POTTED_")
+
+					val itemMat =
+						Material.getMaterial(plantName)
+							?: Material.getMaterial(plantName.removeSuffix("_BUSH"))
+
+					if (itemMat == null) {
+						log.warn("No item material for potted block ${data.material}; tried $plantName")
+						return null
+					}
+
 					return PrintItem(itemMat)
 				}
 
