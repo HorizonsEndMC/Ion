@@ -88,6 +88,7 @@ object AIControllerFactories : IonServerComponent() {
 					configSupplier = { aiPowerModeConfig.starfighterPowerModeConfiguration }
 				)
 			)
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -97,6 +98,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -154,6 +156,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -163,6 +166,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -213,6 +217,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -222,6 +227,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -279,6 +285,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -288,6 +295,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder.addModule(ContactsJammerModule::class, ContactsJammerModule(controller, 300.0, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTargets() }))
 			builder
@@ -346,6 +354,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -355,6 +364,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -412,6 +422,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -421,6 +432,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -481,6 +493,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -490,6 +503,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 
 			builder
@@ -549,6 +563,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -558,6 +573,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -614,6 +630,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -623,6 +640,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 
 			builder
@@ -680,6 +698,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -689,6 +708,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 
 			builder
@@ -748,6 +768,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -757,6 +778,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 
 			builder
@@ -815,6 +837,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -824,6 +847,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 
 			builder
@@ -883,6 +907,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -892,6 +917,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -951,6 +977,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -960,6 +987,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
@@ -1058,6 +1086,7 @@ object AIControllerFactories : IonServerComponent() {
 				)
 			)
 
+			/*
 			if (difficultyManager.doNavigation) {
 				builder.addModule(
 					NavigationModule::class, NavigationModule(
@@ -1067,6 +1096,7 @@ object AIControllerFactories : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
 			builder
 		}
