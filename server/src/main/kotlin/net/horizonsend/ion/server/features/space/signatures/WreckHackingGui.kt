@@ -245,7 +245,7 @@ class WreckHackingGui(
 			giveOrDropItems(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
 
 			viewer.world.playSound(Sound.sound(key("horizonsend:wrecks.hacking.completion"), Sound.Source.PLAYER, 5.0f, 1.0f), viewer)
-			viewer.success("Hacking successful! The chest has deposited rewards into your inventory.")
+			viewer.success("Hacking successful! The chest has been unlocked.")
 		}
 	}
 
