@@ -87,6 +87,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -102,6 +104,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -585,6 +589,7 @@ class Starship(
 
 		isJumpBeaconOn = true
 		onlinePassengers.forEach { player -> player.success("Jump Beacon Enabled") }
+		playSoundInRadius(centerOfMass.toLocation(world), 500.0, Sound.sound(key("horizonsend:starship.jump.beacon"), Sound.Source.PLAYER, 5.0f, 1.0f))
 		Tasks.syncDelay(20L * 60L) {
 			if (ActiveStarships.isActive(this)) {
 				isJumpBeaconOn = false

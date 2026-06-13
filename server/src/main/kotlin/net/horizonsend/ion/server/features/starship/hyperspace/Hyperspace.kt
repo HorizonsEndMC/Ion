@@ -189,12 +189,6 @@ object Hyperspace : IonServerComponent() {
 			Tasks.syncDelay(2L) {
 				StarshipEnterHyperspaceEvent(starship, movement).callEvent()
 			}
-			if (warmup.beaconTarget != null) starship.canUseJumpFieldGenerator = false
-			Tasks.syncDelay(delay = 20L * 180L) {
-				if (ActiveStarships.isActive(starship)) {
-					starship.canUseJumpFieldGenerator = true
-				}
-			}
 		}
 	}
 

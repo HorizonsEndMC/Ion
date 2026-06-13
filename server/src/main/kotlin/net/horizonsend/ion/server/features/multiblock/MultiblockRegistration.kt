@@ -512,8 +512,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 		registerMultiblock(RemoteSellerMultiblock)
 
-		registerMultiblock(AntiAirCannonBaseMultiblock)
-		registerMultiblock(AntiAirCannonTurretMultiblock)
+		//registerMultiblock(AntiAirCannonBaseMultiblock)
+		//registerMultiblock(AntiAirCannonTurretMultiblock)
 
 		/*
 		if (ConfigurationFiles.featureFlags().graphTransfer) {

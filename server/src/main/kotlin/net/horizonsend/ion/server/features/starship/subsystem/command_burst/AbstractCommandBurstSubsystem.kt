@@ -6,8 +6,11 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Particle
@@ -44,6 +47,11 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 		val starshipsInRange = ActiveStarships.getInWorld(starship.world).filter { otherStarship ->
 			otherStarship.centerOfMass.toLocation(otherStarship.world).distanceSquared(starship.centerOfMass.toLocation(starship.world)) <= balancing.range * balancing.range
 		}
+
+		playSoundInRadius(
+			starship.centerOfMass.toLocation(starship.world),
+			balancing.range,
+			Sound.sound(key("horizonsend:starship.weapon.commandburst.fire"), Sound.Source.PLAYER, 5.0f, 1.0f))
 
 		activateEffect(starshipsInRange.toSet())
 		spawnParticles()

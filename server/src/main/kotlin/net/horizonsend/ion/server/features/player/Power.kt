@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.player
 
+import net.horizonsend.ion.common.ServerType
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -35,6 +36,7 @@ object Power : IonServerComponent() {
 		// 20 ticks * 60 minutes converted to seconds
 		Tasks.syncRepeat(0L, 20L * TimeUnit.MINUTES.toSeconds(60)) {
 			for (player in Bukkit.getOnlinePlayers()) {
+				if (ConfigurationFiles.serverConfiguration().serverName != "survival") continue
 				SLXP.addPowerAsync(player.uniqueId, 5)
 			}
 
@@ -56,11 +58,11 @@ object Power : IonServerComponent() {
 							ConfigurationFiles.discordSettings().eventsChannel,
 							Embed(
 								title = "Nation No Longer Siegeable",
-								description = "${nation.name}'s power has recovered and they can no longer be sieged!",
+								description = "${nation.name}'s power has recovered and no new sieges can be initiated on their territories!",
 							)
 						)
 						val headerLine = template(
-							text("{0}'s power has recovered and they can no longer be sieged!", YELLOW),
+							text("{0}'s power has recovered and no new sieges can be initiated on their territories!", YELLOW),
 							formatNationName(nation.id)
 						)
 						Notify.allOnline(ofChildren(headerLine, newline(), newline()))
@@ -72,11 +74,11 @@ object Power : IonServerComponent() {
 							ConfigurationFiles.discordSettings().eventsChannel,
 							Embed(
 								title = "Nation Siegeable",
-								description = "${nation.name}'s power has dropped too low, their territory can now be sieged!",
+								description = "${nation.name}'s power has dropped too low, their dominion territories can now be sieged!",
 							)
 						)
 						val headerLine = template(
-							text("{0}'s power has dropped too low! Their territory can now be sieged!", YELLOW),
+							text("{0}'s power has dropped too low! Their dominion territories can now be sieged!", YELLOW),
 							formatNationName(nation.id)
 						)
 						Notify.allOnline(ofChildren(headerLine, newline(), newline()))
@@ -103,6 +105,7 @@ object Power : IonServerComponent() {
 
 	@EventHandler
 	fun modifyPowerOnPlayerDeath(event: PlayerDeathEvent) {
+		if (ConfigurationFiles.serverConfiguration().serverName != "survival") return
 		if (!event.player.isConnected) {
 			log.info("Player ${event.player.name} has died, but is not connected.")
 			return

@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
@@ -194,6 +196,7 @@ class WreckHackingGui(
 
 				livesRemaining--
 				viewer.sendMessage(text("⚡ Firewall hit! $livesRemaining lives remaining.", RED))
+				viewer.world.playSound(Sound.sound(key("horizonsend:wrecks.hacking.firewall"), Sound.Source.PLAYER, 5.0f, 1.0f), viewer)
 				revealed[row][col] = true
 
 				if (livesRemaining <= 0) {
@@ -241,6 +244,7 @@ class WreckHackingGui(
 			giveOrDropItems(CustomItemKeys.GUIDANCE_SYSTEM.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
 			giveOrDropItems(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
 
+			viewer.world.playSound(Sound.sound(key("horizonsend:wrecks.hacking.completion"), Sound.Source.PLAYER, 5.0f, 1.0f), viewer)
 			viewer.success("Hacking successful! The chest has deposited rewards into your inventory.")
 		}
 	}

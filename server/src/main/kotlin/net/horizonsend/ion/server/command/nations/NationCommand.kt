@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
@@ -410,6 +411,11 @@ internal object NationCommand : SLCommand() {
 		// Check for dominion world first, then fall back to regular territory
 		val dominionTerritory = Regions.findFirstOf<RegionDominionTerritory>(sender.location)
 		if (dominionTerritory != null) {
+
+			failIf(DominionTerritorySieges.isOnCooldown(dominionTerritory.id)) {
+				"This territory was recently sieged and cannot be claimed until 1 hour has passed!"
+			}
+
 			val dominionTerritoryCost = 250000
 
 			val activeMembers = SLPlayer.count(

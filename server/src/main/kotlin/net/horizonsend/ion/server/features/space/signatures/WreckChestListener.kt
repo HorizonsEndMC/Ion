@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.space.signatures
 
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -31,6 +33,7 @@ object WreckChestListener : SLEventListener() {
 		if (!chest.persistentDataContainer.has(NamespacedKeys.WRECK_CHEST, PersistentDataType.BOOLEAN)) return
 
 		event.isCancelled = true
+		event.player.world.playSound(Sound.sound(key("horizonsend:wrecks.hacking.open"), Sound.Source.PLAYER, 5.0f, 1.0f), event.player)
 		WreckHackingGui(event.player, chest).openGui()
 	}
 }

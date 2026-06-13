@@ -170,7 +170,7 @@ class DominionTerritorySiege(
 	fun fail(disableEarlyCheck: Boolean = false) {
 		if (isPreparationPeriod() && !disableEarlyCheck) {
 			Notify.chatAndEvents(template(
-				text("{0} has abandoned their upcoming siege of {1}'s Frontier Nation in {2}"),
+				text("{0} has abandoned their upcoming siege of {1}'s Dominion territory in {2}"),
 				attackerNameFormatted,
 				defenderNameFormatted,
 				region.world
@@ -184,8 +184,8 @@ class DominionTerritorySiege(
 		Discord.sendEmbed(
 			ConfigurationFiles.discordSettings().eventsChannel,
 			Embed(
-				title = "Frontier Siege Failure",
-				description = "$attackerName's siege of $defenderName's Frontier Territory in ${region.world} has failed.",
+				title = "Dominion Territory Failure",
+				description = "$attackerName's siege of $defenderName's Dominion Territory in ${region.world} has failed.",
 				fields = listOf(
 					Embed.Field("$attackerName's Points,", "$attackerPoints", inline = true),
 					Embed.Field("$defenderName's Points,", "$defenderPoints", inline = true),
@@ -213,7 +213,7 @@ class DominionTerritorySiege(
 		guiText.add(text(attackerPoints, attackerColor), 1, GuiText.TextAlignment.LEFT)
 		guiText.add(text(defenderPoints, defenderColor), 1, GuiText.TextAlignment.RIGHT)
 
-		val headerLine = template(text("{0}'s siege of {1}'s Frontier Nation {2} has failed", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
+		val headerLine = template(text("{0}'s siege of {1}'s Dominion Territory {2} has failed", YELLOW), attackerNameFormatted, defenderNameFormatted, region.name)
 
 		val globalMessage = ofChildren(
 			headerLine, newline(),
@@ -225,7 +225,10 @@ class DominionTerritorySiege(
 
 		Notify.allOnline(globalMessage)
 
-		for (player in Nation.getMembers(defender)) SLXP.addPowerAsync(player.uuid, 40)
+		for (player in Nation.getMembers(defender)) {
+			SLXP.addPowerAsync(player.uuid, 400)
+			SLXP.setPowerAsync(player.uuid, 20)
+		}
 	}
 
 	private fun scheduleStart() {
@@ -235,7 +238,7 @@ class DominionTerritorySiege(
 			Notify.chatAndGlobal(template(text("{0} has begun.", HE_MEDIUM_GRAY), formatName()))
 			Discord.sendEmbed(
 				ConfigurationFiles.discordSettings().eventsChannel, Embed(
-				title = "Frontier Siege Start",
+				title = "Dominion Territory Start",
 				description = "${formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(getSiegeEnd())}:R>."
 			))
 
