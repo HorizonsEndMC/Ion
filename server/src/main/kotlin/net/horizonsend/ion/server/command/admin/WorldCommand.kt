@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.command.admin
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
@@ -32,27 +34,36 @@ import org.bukkit.entity.Player
 @CommandAlias("ionworld")
 @CommandPermission("ion.admin.world")
 object WorldCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerAsyncCompletion("worldflags") { _ -> WorldFlag.entries.map { it.name } }
+		manager.commandCompletions.registerAsyncCompletion("environments") { _ -> Environment.entries.map { it.name } }
+		manager.commandCompletions.registerAsyncCompletion("worldpresets") { _ -> WorldPreset.entries.map { it.name } }
+	}
+
 	@Subcommand("flag add")
+	@CommandCompletion("@worlds @worldflags")
     fun onAddWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
 		val ionWorld = IonWorld[world]
 
-		if (ionWorld.configuration.flags.add(flag)) sender.success("Added flag $flag")
+		if (ionWorld.configuration.flags.add(flag)) sender.success("Added flag $flag to world ${world.name}")
 		else return sender.userError("World ${world.name} already had the flag $flag")
 
 		ionWorld.saveConfiguration()
 	}
 
 	@Subcommand("flag remove")
+	@CommandCompletion("@worlds @worldflags")
     fun onRemoveWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
 		val ionWorld = IonWorld[world]
 
-		if (ionWorld.configuration.flags.remove(flag)) sender.success("Removed flag $flag")
+		if (ionWorld.configuration.flags.remove(flag)) sender.success("Removed flag $flag from world ${world.name}")
 		else return sender.userError("World ${world.name} did not have flag $flag")
 
 		ionWorld.saveConfiguration()
 	}
 
 	@Subcommand("flag list")
+	@CommandCompletion("@worlds")
     fun onListFlags(sender: CommandSender, world: World, @Optional page: Int?) {
 		if ((page ?: 1) <= 0) return sender.userError("Page must not be less than or equal to zero!")
 
@@ -102,6 +113,7 @@ object WorldCommand : SLCommand() {
 //	}
 
 	@Subcommand("environment list")
+	@CommandCompletion("@worlds")
     fun onListEnvironments(sender: CommandSender, world: World, @Optional page: Int?) {
 		if ((page ?: 1) <= 0) return sender.userError("Page must not be less than or equal to zero!")
 
@@ -131,6 +143,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("apply preset")
+	@CommandCompletion("@worlds @worldpresets")
     fun setPreset(sender: CommandSender, world: World, preset: WorldPreset) {
 		preset.setup(world)
 		sender.success("Applied preset $preset to ${world.name}")
@@ -145,7 +158,6 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_SPACE_STATIONS)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_AI_SPAWNS)
-				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_MINING_LASERS)
 
 //				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
@@ -154,14 +166,17 @@ object WorldCommand : SLCommand() {
 				ionWorld.saveConfiguration()
 			}
 		},
-		SECONDARY_SPACE {
+		DOMINION_SPACE {
 			override fun setup(world: World) {
 				val ionWorld = world.ion
 
 				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_AI_SPAWNS)
-				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_MINING_LASERS)
+				ionWorld.configuration.flags.add(WorldFlag.DOMINION_WORLD)
+				ionWorld.configuration.flags.add(WorldFlag.NO_SHIP_LOCKS)
+				ionWorld.configuration.flags.add(WorldFlag.NOT_SECURE)
+				ionWorld.configuration.flags.add(WorldFlag.ALLOW_SIGNATURE_SPAWNS)
 
 				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
 				ionWorld.configuration.environments.add(Environment.VACUUM)
@@ -173,7 +188,26 @@ object WorldCommand : SLCommand() {
 			override fun setup(world: World) {
 				val ionWorld = world.ion
 
+				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
 				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
+				ionWorld.configuration.flags.add(WorldFlag.NO_SHIP_LOCKS)
+				ionWorld.configuration.flags.add(WorldFlag.HYPERSPACE_WORLD)
+
+				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
+				ionWorld.configuration.environments.add(Environment.VACUUM)
+
+				ionWorld.saveConfiguration()
+			}
+		},
+		DOMINION_HYPERSPACE {
+			override fun setup(world: World) {
+				val ionWorld = world.ion
+
+				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
+				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
+				ionWorld.configuration.flags.add(WorldFlag.NO_SHIP_LOCKS)
+				ionWorld.configuration.flags.add(WorldFlag.HYPERSPACE_WORLD)
+				ionWorld.configuration.flags.add(WorldFlag.DOMINION_WORLD)
 
 //				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
 //				ionWorld.configuration.environments.add(Environment.VACUUM)
@@ -189,6 +223,7 @@ object WorldCommand : SLCommand() {
 
 	@Subcommand("list")
 	@Description("List worlds with the specified flag")
+	@CommandCompletion("@worldflags")
 	fun onList(sender: CommandSender, flag: WorldFlag) {
 		sender.information("$flag Worlds: " + (
 			Bukkit.getWorlds()
