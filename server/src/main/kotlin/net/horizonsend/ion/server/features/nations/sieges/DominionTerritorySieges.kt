@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTe
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -254,7 +255,15 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			)) return
 
 		val victimNation = PlayerCache[controller.player].nationOid ?: return
-		val initPrintCost = (event.starship.initialBlockCount * config.shipCostMultiplier).roundToInt()
+
+		var totalPoints = when {
+			event.starship.type.typeCategory == TypeCategory.TRADE_SHIP -> config.miningShipKillPoints
+			event.starship.initialBlockCount < 4501 -> config.subCapitalKillPoints
+			event.starship.initialBlockCount in 4501..12501 -> config.capitalKillPoints
+			event.starship.initialBlockCount in 12501..36000 -> config.superCapitalKillPoints
+			else -> 1.0
+		}
+		if (event.starship.type.tech2) totalPoints *= config.tech2Multiplier
 
 		val victimIsDefenderSide = victimNation == siege.defender ||
 			(victimNation != siege.attacker && RelationCache[siege.defender, victimNation].ordinal >= NationRelation.Level.ALLY.ordinal)
@@ -271,7 +280,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			val damagerPlayer = (damager as? PlayerDamager)?.player ?: continue
 			val damagerNation = PlayerCache[damagerPlayer].nationOid ?: continue
 			val percent = damageData.points.get().toDouble() / damagePointsSum.toDouble()
-			val points = (initPrintCost * percent).roundToInt()
+			val points = (totalPoints * percent).roundToInt()
 
 			val damagerIsDefenderSide = damagerNation == siege.defender ||
 				(damagerNation != siege.attacker && RelationCache[siege.defender, damagerNation].ordinal >= NationRelation.Level.ALLY.ordinal)
@@ -371,7 +380,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 				(nation == siege.attacker || RelationCache[siege.defender, nation].ordinal < NationRelation.Level.ALLY.ordinal)
 		}
 
-		val defenderNew = defenderCount.coerceAtMost(3) * pointTickValue
+		val defenderNew = (defenderCount.coerceAtMost(5) * config.passivePoints).roundToInt()
 		if (defenderNew > 0) {
 			siege.defenderPoints += defenderNew
 			log.info("Awarded defender $defenderNew passive points")
@@ -382,7 +391,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			))
 		}
 
-		val attackerNew = attackerCount.coerceAtMost(3) * pointTickValue
+		val attackerNew = (attackerCount.coerceAtMost(5) * config.passivePoints).roundToInt()
 		if (attackerNew > 0) {
 			siege.attackerPoints += attackerNew
 			log.info("Awarded attacker $attackerNew passive points")
@@ -392,42 +401,6 @@ object DominionTerritorySieges : IonServerComponent(true) {
 				attackerNew
 			))
 		}
-	}
-
-	// Constant
-	private val pointTickValue = calculateTickValue()
-
-	private fun calculateTickValue(): Int {
-		val referenceDestroyerValue = (StarshipType.DESTROYER.maxSize * config.shipCostMultiplier).roundToInt()
-		val durationMinutes = config.activeWindowDuration.toDuration().toMinutes().toInt()
-
-		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of
-		// 3 players contesting should be equal to the reference value of a sunk destroyer
-		return (referenceDestroyerValue / durationMinutes) / 3
-	}
-
-	// Participation utils
-	data class ParticipationData(val player: UUID, val siege: Oid<DominionTerritorySiegeData>, val tagTime: Long)
-
-	private val participationData = mutableMapOf<UUID, ParticipationData>()
-
-	private fun updateParticipation(player: Player, siege: DominionTerritorySiege) {
-		participationData[player.uniqueId] = ParticipationData(player.uniqueId, siege.databaseId, System.currentTimeMillis())
-	}
-
-	private fun getParticipating(player: Player): DominionTerritorySiege? {
-		val participationData = participationData[player.uniqueId]
-		if (participationData != null) {
-			val now = System.currentTimeMillis()
-			val participationLength = config.participationLength.toDuration()
-			if (participationData.tagTime - now <= participationLength.toMillis()) {
-				if (activeSieges.containsKey(participationData.siege)) return participationData.siege.let(activeSieges::get)
-			}
-		}
-
-		val contained = getAllActiveSieges().firstOrNull { it.region.contains(player.location) && it.isActivePeriod() } ?: return null
-		updateParticipation(player, contained)
-		return contained
 	}
 
 	// Load from restart

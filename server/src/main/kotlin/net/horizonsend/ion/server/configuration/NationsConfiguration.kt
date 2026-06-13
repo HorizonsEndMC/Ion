@@ -27,12 +27,16 @@ data class NationsConfiguration(
 	@Serializable
 	data class DominionTerritorySieges(
 		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 60),
-		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 120),
-		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 5),
-		val playerKillPoints: Int = 5_000,
+		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 60),
+		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 3),
+		val playerKillPoints: Int = 1,
+		val passivePoints: Double = 0.25,
+		val subCapitalKillPoints: Double = 300.0,
+		val capitalKillPoints: Double = 500.0,
+		val superCapitalKillPoints: Double = 1000.0,
+		val miningShipKillPoints: Double = 1.0,
+		val tech2Multiplier: Double = 2.0,
 		val shipCostMultiplier: Double = 1.0,
-		val referenceDestroyerPrice: Int = 19_765,
-		val rewardPointCap: Int = 100_000,
 		val minimumPassivePointsShipSize: Int = 350
 	)
 }
