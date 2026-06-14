@@ -735,7 +735,7 @@ object HudIcons : IonServerComponent() {
             if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
             val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
             if (distance > 1000) continue
-			if (distance > 700 && starship.type == StarshipType.BLACK_OPS_FRIGATE) continue
+			if (distance > 700 && (starship.type == StarshipType.BLACK_OPS_FRIGATE || starship.type == StarshipType.BLOCKADE_RUNNER)) continue
 			if (distance > 500 && starship.type == StarshipType.RECON_STARFIGHTER) continue
             val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
 
