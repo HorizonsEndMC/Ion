@@ -51,7 +51,7 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 		playSoundInRadius(
 			starship.centerOfMass.toLocation(starship.world),
 			balancing.range,
-			Sound.sound(key("horizonsend:starship.weapon.commandburst.fire"), Sound.Source.PLAYER, 5.0f, 1.0f))
+			Sound.sound(key("horizonsend:starship.weapon.command_burst.fire"), Sound.Source.PLAYER, 5.0f, 1.0f))
 
 		activateEffect(starshipsInRange.toSet())
 		spawnParticles()
