@@ -45,227 +45,227 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 	override fun boostrap() {
 		register(
-            CustomBlockKeys.ALUMINUM_ORE, CustomBlock(
-                key = CustomBlockKeys.ALUMINUM_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM),
+			CustomBlockKeys.ALUMINUM_ORE, CustomBlock(
+				key = CustomBlockKeys.ALUMINUM_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM),
 					silkTouchDrops = customItemDrop(CustomItemKeys.ALUMINUM_ORE)
-                ),
-                CustomItemKeys.ALUMINUM_ORE
-            )
-        )
-		register(
-            CustomBlockKeys.ALUMINUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.ALUMINUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.ALUMINUM_BLOCK)
-                ),
-                CustomItemKeys.ALUMINUM_BLOCK
-            )
-        )
-		register(
-            CustomBlockKeys.RAW_ALUMINUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.RAW_ALUMINUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.NORTH)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.RAW_ALUMINUM_BLOCK)
-                ),
-                CustomItemKeys.RAW_ALUMINUM_BLOCK
-            )
-        )
-
-		register(
-            CustomBlockKeys.CHETHERITE_ORE, CustomBlock(
-                key = CustomBlockKeys.CHETHERITE_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE),
-					silkTouchDrops = customItemDrop(CustomItemKeys.CHETHERITE_ORE)
-                ),
-                CustomItemKeys.CHETHERITE_ORE
-            )
-        )
-		register(
-            CustomBlockKeys.CHETHERITE_BLOCK, CustomBlock(
-                key = CustomBlockKeys.CHETHERITE_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.CHETHERITE_BLOCK)
-                ),
-                CustomItemKeys.CHETHERITE_BLOCK
-            )
-        )
-
-		register(
-            CustomBlockKeys.TITANIUM_ORE, CustomBlock(
-                key = CustomBlockKeys.TITANIUM_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM),
-					silkTouchDrops = customItemDrop(CustomItemKeys.TITANIUM_ORE)
-                ),
-                CustomItemKeys.TITANIUM_ORE
-            )
-        )
-		register(
-            CustomBlockKeys.TITANIUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.TITANIUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.SOUTH, BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.TITANIUM_BLOCK)
-                ),
-                CustomItemKeys.TITANIUM_BLOCK
-            )
-        )
-		register(
-            CustomBlockKeys.RAW_TITANIUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.RAW_TITANIUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.RAW_TITANIUM_BLOCK)
-                ),
-                CustomItemKeys.RAW_TITANIUM_BLOCK
-            )
-        )
-
-		register(
-            CustomBlockKeys.URANIUM_ORE, CustomBlock(
-                key = CustomBlockKeys.URANIUM_ORE,
-                blockData = mushroomBlockData(setOf(BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM),
-					silkTouchDrops = customItemDrop(CustomItemKeys.URANIUM_ORE)
-                ),
-                CustomItemKeys.URANIUM_ORE
-            )
-        )
-		register(
-            CustomBlockKeys.URANIUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.URANIUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.URANIUM_BLOCK)
-                ),
-                CustomItemKeys.URANIUM_BLOCK
-            )
-        )
-		register(
-            CustomBlockKeys.RAW_URANIUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.RAW_URANIUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.RAW_URANIUM_BLOCK)
-                ),
-                CustomItemKeys.RAW_ALUMINUM_BLOCK
-            )
-        )
-
-		register(
-            CustomBlockKeys.ENRICHED_URANIUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.ENRICHED_URANIUM_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.ENRICHED_URANIUM_BLOCK)
-                ),
-                CustomItemKeys.ENRICHED_URANIUM_BLOCK
-            )
-        )
-		register(
-            CustomBlockKeys.NETHERITE_CASING, CustomBlock(
-                key = CustomBlockKeys.NETHERITE_CASING,
-                blockData = mushroomBlockData(setOf(BlockFace.WEST, BlockFace.NORTH, BlockFace.DOWN, BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.NETHERITE_CASING)
-                ),
-                CustomItemKeys.NETHERITE_CASING
-            )
-        )
-		register(
-            CustomBlockKeys.STEEL_BLOCK, CustomBlock(
-                key = CustomBlockKeys.STEEL_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.DOWN)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.STEEL_BLOCK)
-                ),
-                CustomItemKeys.STEEL_BLOCK
-            )
-        )
-		register(
-            CustomBlockKeys.SUPERCONDUCTOR_BLOCK, CustomBlock(
-                key = CustomBlockKeys.SUPERCONDUCTOR_BLOCK,
-                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN)),
-                drops = BlockLoot(
-                    requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.SUPERCONDUCTOR_BLOCK)
-                ),
-                CustomItemKeys.SUPERCONDUCTOR_BLOCK
-            )
-        )
-
-		register(
-            CustomBlockKeys.BATTLECRUISER_REACTOR_CORE, CustomBlock(
-                key = CustomBlockKeys.BATTLECRUISER_REACTOR_CORE,
-                blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.BATTLECRUISER_REACTOR_CORE)
-                ),
-                CustomItemKeys.BATTLECRUISER_REACTOR_CORE
-            )
-        )
-		register(
-            CustomBlockKeys.BARGE_REACTOR_CORE, CustomBlock(
-                key = CustomBlockKeys.BARGE_REACTOR_CORE,
-                blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.BARGE_REACTOR_CORE)
-                ),
-                CustomItemKeys.BARGE_REACTOR_CORE
-            )
-        )
-		register(
-            CustomBlockKeys.CRUISER_REACTOR_CORE, CustomBlock(
-                key = CustomBlockKeys.CRUISER_REACTOR_CORE,
-                blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.CRUISER_REACTOR_CORE)
-                ),
-                CustomItemKeys.CRUISER_REACTOR_CORE
-            )
-        )
-		register(
-		CustomBlockKeys.MINI_REACTOR_CORE, CustomBlock(
-		key = CustomBlockKeys.MINI_REACTOR_CORE,
-		blockData = redMushroomBlockData(setOf(BlockFace.EAST)),
-		drops = BlockLoot(
-			requiredTool = null,
-			drops = customItemDrop(CustomItemKeys.MINI_REACTOR_CORE)
-		),
-		CustomItemKeys.MINI_REACTOR_CORE
+				),
+				CustomItemKeys.ALUMINUM_ORE
+			)
 		)
+		register(
+			CustomBlockKeys.ALUMINUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.ALUMINUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.ALUMINUM_BLOCK)
+				),
+				CustomItemKeys.ALUMINUM_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.RAW_ALUMINUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.RAW_ALUMINUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.RAW_ALUMINUM_BLOCK)
+				),
+				CustomItemKeys.RAW_ALUMINUM_BLOCK
+			)
+		)
+
+		register(
+			CustomBlockKeys.CHETHERITE_ORE, CustomBlock(
+				key = CustomBlockKeys.CHETHERITE_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE),
+					silkTouchDrops = customItemDrop(CustomItemKeys.CHETHERITE_ORE)
+				),
+				CustomItemKeys.CHETHERITE_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.CHETHERITE_BLOCK, CustomBlock(
+				key = CustomBlockKeys.CHETHERITE_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.CHETHERITE_BLOCK)
+				),
+				CustomItemKeys.CHETHERITE_BLOCK
+			)
+		)
+
+		register(
+			CustomBlockKeys.TITANIUM_ORE, CustomBlock(
+				key = CustomBlockKeys.TITANIUM_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.TITANIUM_ORE)
+				),
+				CustomItemKeys.TITANIUM_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.TITANIUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.TITANIUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.SOUTH, BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.TITANIUM_BLOCK)
+				),
+				CustomItemKeys.TITANIUM_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.RAW_TITANIUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.RAW_TITANIUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.EAST)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.RAW_TITANIUM_BLOCK)
+				),
+				CustomItemKeys.RAW_TITANIUM_BLOCK
+			)
+		)
+
+		register(
+			CustomBlockKeys.URANIUM_ORE, CustomBlock(
+				key = CustomBlockKeys.URANIUM_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.URANIUM_ORE)
+				),
+				CustomItemKeys.URANIUM_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.URANIUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.URANIUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.URANIUM_BLOCK)
+				),
+				CustomItemKeys.URANIUM_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.RAW_URANIUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.RAW_URANIUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.RAW_URANIUM_BLOCK)
+				),
+				CustomItemKeys.RAW_ALUMINUM_BLOCK
+			)
+		)
+
+		register(
+			CustomBlockKeys.ENRICHED_URANIUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.ENRICHED_URANIUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.ENRICHED_URANIUM_BLOCK)
+				),
+				CustomItemKeys.ENRICHED_URANIUM_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.NETHERITE_CASING, CustomBlock(
+				key = CustomBlockKeys.NETHERITE_CASING,
+				blockData = mushroomBlockData(setOf(BlockFace.WEST, BlockFace.NORTH, BlockFace.DOWN, BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.NETHERITE_CASING)
+				),
+				CustomItemKeys.NETHERITE_CASING
+			)
+		)
+		register(
+			CustomBlockKeys.STEEL_BLOCK, CustomBlock(
+				key = CustomBlockKeys.STEEL_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.DOWN)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.STEEL_BLOCK)
+				),
+				CustomItemKeys.STEEL_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.SUPERCONDUCTOR_BLOCK, CustomBlock(
+				key = CustomBlockKeys.SUPERCONDUCTOR_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN)),
+				drops = BlockLoot(
+					requiredTool = { BlockLoot.Tool.PICKAXE },
+					drops = customItemDrop(CustomItemKeys.SUPERCONDUCTOR_BLOCK)
+				),
+				CustomItemKeys.SUPERCONDUCTOR_BLOCK
+			)
+		)
+
+		register(
+			CustomBlockKeys.BATTLECRUISER_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.BATTLECRUISER_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.BATTLECRUISER_REACTOR_CORE)
+				),
+				CustomItemKeys.BATTLECRUISER_REACTOR_CORE
+			)
+		)
+		register(
+			CustomBlockKeys.BARGE_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.BARGE_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.BARGE_REACTOR_CORE)
+				),
+				CustomItemKeys.BARGE_REACTOR_CORE
+			)
+		)
+		register(
+			CustomBlockKeys.CRUISER_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.CRUISER_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.CRUISER_REACTOR_CORE)
+				),
+				CustomItemKeys.CRUISER_REACTOR_CORE
+			)
+		)
+		register(
+			CustomBlockKeys.MINI_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.MINI_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.MINI_REACTOR_CORE)
+				),
+				CustomItemKeys.MINI_REACTOR_CORE
+			)
 		)
 		register(
 			CustomBlockKeys.SMALL_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.SMALL_REACTOR_CORE,
-				blockData = redMushroomBlockData(setOf(BlockFace.WEST)),
+				blockData = mushroomBlockData(setOf(BlockFace.WEST)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.SMALL_REACTOR_CORE)
@@ -273,21 +273,21 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 				CustomItemKeys.SMALL_REACTOR_CORE
 			)
 		)
-        register(
-            CustomBlockKeys.ASSEMBLY_CORE, CustomBlock(
-                key = CustomBlockKeys.ASSEMBLY_CORE,
-                blockData = redMushroomBlockData(setOf(BlockFace.EAST, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = null,
-                    drops = customItemDrop(CustomItemKeys.ASSEMBLY_CORE)
-                ),
-                CustomItemKeys.ASSEMBLY_CORE
-            )
-        )
+		register(
+			CustomBlockKeys.ASSEMBLY_CORE, CustomBlock(
+				key = CustomBlockKeys.ASSEMBLY_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.EAST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.ASSEMBLY_CORE)
+				),
+				CustomItemKeys.ASSEMBLY_CORE
+			)
+		)
 		register(
 			CustomBlockKeys.MEDIUM_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.MEDIUM_REACTOR_CORE,
-				blockData = redMushroomBlockData(setOf(BlockFace.NORTH)),
+				blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.DOWN)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.MEDIUM_REACTOR_CORE)
@@ -298,7 +298,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 			CustomBlockKeys.LARGE_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.LARGE_REACTOR_CORE,
-				blockData = redMushroomBlockData(setOf(BlockFace.SOUTH)),
+				blockData = mushroomBlockData(setOf(BlockFace.DOWN)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.LARGE_REACTOR_CORE)
@@ -307,102 +307,102 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			)
 		)
 
-        //New Server Ores
-        register(
-            CustomBlockKeys.SCORDITE_ORE, CustomBlock(
-                key = CustomBlockKeys.SCORDITE_ORE,
-                blockData = redMushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.NORTH)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.SCORDITE),
+		//New Server Ores
+		register(
+			CustomBlockKeys.SCORDITE_ORE, CustomBlock(
+				key = CustomBlockKeys.SCORDITE_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.NORTH)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.SCORDITE),
 					silkTouchDrops = customItemDrop(CustomItemKeys.SCORDITE_ORE)
-                ),
-                CustomItemKeys.SCORDITE_ORE
-            )
-        )
-        register(
-            CustomBlockKeys.SCORDITE_BLOCK, CustomBlock(
-                key = CustomBlockKeys.SCORDITE_BLOCK,
-                blockData = redMushroomBlockData(setOf(BlockFace.UP)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.SCORDITE_BLOCK)
-                ),
-                CustomItemKeys.SCORDITE_BLOCK
-            )
-        )
-        register(
-            CustomBlockKeys.VANADIUM_ORE, CustomBlock(
-                key = CustomBlockKeys.VANADIUM_ORE,
-                blockData = redMushroomBlockData(setOf(BlockFace.DOWN)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.VANADIUM),
+				),
+				CustomItemKeys.SCORDITE_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.SCORDITE_BLOCK, CustomBlock(
+				key = CustomBlockKeys.SCORDITE_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.UP)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.SCORDITE_BLOCK)
+				),
+				CustomItemKeys.SCORDITE_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.VANADIUM_ORE, CustomBlock(
+				key = CustomBlockKeys.VANADIUM_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.VANADIUM),
 					silkTouchDrops = customItemDrop(CustomItemKeys.VANADIUM_ORE)
-                ),
-                CustomItemKeys.VANADIUM_ORE
-            )
-        )
-        register(
-            CustomBlockKeys.VANADIUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.VANADIUM_BLOCK,
-                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK),
+				),
+				CustomItemKeys.VANADIUM_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.VANADIUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.VANADIUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK),
 					silkTouchDrops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK)
-                ),
-                CustomItemKeys.VANADIUM_BLOCK
-            )
-        )
-        register(
-            CustomBlockKeys.ZIRCON_ORE, CustomBlock(
-                key = CustomBlockKeys.ZIRCON_ORE,
-                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.ZIRCON),
+				),
+				CustomItemKeys.VANADIUM_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.ZIRCON_ORE, CustomBlock(
+				key = CustomBlockKeys.ZIRCON_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.ZIRCON),
 					silkTouchDrops = customItemDrop(CustomItemKeys.ZIRCON_ORE)
-                ),
-                CustomItemKeys.ZIRCON_ORE
-            )
-        )
-        register(
-            CustomBlockKeys.ZIRCON_BLOCK, CustomBlock(
-                key = CustomBlockKeys.ZIRCON_BLOCK,
-                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK),
+				),
+				CustomItemKeys.ZIRCON_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.ZIRCON_BLOCK, CustomBlock(
+				key = CustomBlockKeys.ZIRCON_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK),
 					silkTouchDrops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK)
-                ),
-                CustomItemKeys.ZIRCON_BLOCK
-            )
-        )
-        register(
-            CustomBlockKeys.ATAVUM_ORE, CustomBlock(
-                key = CustomBlockKeys.ATAVUM_ORE,
-                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.ATAVUM),
+				),
+				CustomItemKeys.ZIRCON_BLOCK
+			)
+		)
+		register(
+			CustomBlockKeys.ATAVUM_ORE, CustomBlock(
+				key = CustomBlockKeys.ATAVUM_ORE,
+				blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.ATAVUM),
 					customItemDrop(CustomItemKeys.ATAVUM_ORE)
-                ),
-                CustomItemKeys.ATAVUM_ORE
-            )
-        )
-        register(
-            CustomBlockKeys.ATAVUM_BLOCK, CustomBlock(
-                key = CustomBlockKeys.ATAVUM_BLOCK,
-                blockData = redMushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH)),
-                drops = BlockLoot(
-                    requiredTool = {BlockLoot.Tool.PICKAXE},
-                    drops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK),
+				),
+				CustomItemKeys.ATAVUM_ORE
+			)
+		)
+		register(
+			CustomBlockKeys.ATAVUM_BLOCK, CustomBlock(
+				key = CustomBlockKeys.ATAVUM_BLOCK,
+				blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH)),
+				drops = BlockLoot(
+					requiredTool = {BlockLoot.Tool.PICKAXE},
+					drops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK),
 					silkTouchDrops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK)
-                ),
-                CustomItemKeys.ATAVUM_BLOCK
-            )
-        )
+				),
+				CustomItemKeys.ATAVUM_BLOCK
+			)
+		)
 
 
 		register(CustomBlockKeys.MULTIBLOCK_WORKBENCH, MultiblockWorkbench)
@@ -497,10 +497,10 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		fun customItemDrop(key: IonRegistryKey<CustomItem, out CustomItem>, amount: Int = 1): (ItemStack?) -> Collection<ItemStack> {
 			return {
-                val itemStack = key.getValue().constructItemStack()
-                itemStack.amount = amount
-                listOf(itemStack)
-            }
+				val itemStack = key.getValue().constructItemStack()
+				itemStack.amount = amount
+				listOf(itemStack)
+			}
 		}
 
 		fun fortuneEnabledCustomItemDrop(key: IonRegistryKey<CustomItem, out CustomItem>, amount: Int = 1): (ItemStack?) -> Collection<ItemStack> {
