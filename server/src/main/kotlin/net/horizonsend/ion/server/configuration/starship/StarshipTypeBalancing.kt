@@ -354,10 +354,6 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
-				),
-				IncompatibleSubsystemInfo(
-					JumpBeaconSubsystem::class.java,
-					"This ship cannot use jump beacons!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -451,10 +447,6 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
-				),
-				IncompatibleSubsystemInfo(
-					JumpBeaconSubsystem::class.java,
-					"This ship cannot use jump beacons!"
 				),
 			),
 			requiredMultiblocks = listOf(
