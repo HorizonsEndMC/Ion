@@ -31,6 +31,7 @@ import org.litote.kmongo.pullAll
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
+import org.litote.kmongo.updateMany
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 
@@ -164,6 +165,7 @@ data class Settlement(
 					SettlementZone::trustedSettlements ne null,
 					pull(SettlementZone::trustedSettlements, settlementId)
 				)
+				Territory.col.updateMany(sess, pull(Territory::trustedSettlements, settlementId))
 
 				SettlementSpaceStation.col.deleteMany(sess,SettlementSpaceStation::owner eq settlementId)
 

@@ -27,6 +27,7 @@ import org.litote.kmongo.inc
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.pull
+import org.litote.kmongo.updateMany
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import java.util.Date
 
@@ -135,6 +136,7 @@ data class Nation(
 			NationSpaceStation.col.updateMany(sess, NationSpaceStation::owner ne id, pull(NationSpaceStation::trustedNations, id))
 			SettlementSpaceStation.col.updateAll(sess, pull(SettlementSpaceStation::trustedNations, id))
 			PlayerSpaceStation.col.updateAll(sess, pull(PlayerSpaceStation::trustedNations, id))
+			Territory.col.updateMany(sess, pull(Territory::trustedNations, id))
 
 			Settlement.col.updateAll(sess, pull(Settlement::trustedNations, id))
 
@@ -144,7 +146,7 @@ data class Nation(
 
 			SolarSiegeData.col.deleteMany(sess, or(SolarSiegeData::attacker eq id, SolarSiegeData::defender eq id))
 
-			DominionTerritory.col.deleteMany(sess, DominionTerritory::nation eq id)
+			DominionTerritory.col.updateMany(sess, DominionTerritory::nation eq id, org.litote.kmongo.setValue(DominionTerritory::nation, null))
 
 			DominionTerritorySiegeData.col.deleteMany(sess, or(DominionTerritorySiegeData::attacker eq id, DominionTerritorySiegeData::defender eq id))
 

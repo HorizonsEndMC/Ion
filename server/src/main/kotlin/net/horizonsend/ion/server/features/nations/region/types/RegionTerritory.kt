@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.array
 import net.horizonsend.ion.common.database.binary
 import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
@@ -9,14 +10,17 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -43,6 +47,10 @@ class RegionTerritory(territory: Territory) :
 	var npcOwner: Oid<NPCTerritoryOwner>? = territory.npcOwner; private set
 	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 	var isProtected: Boolean = territory.isProtected; private set
+	var trustedNations: Set<Oid<Nation>> = territory.trustedNations; private set
+	var trustedSettlements: Set<Oid<Settlement>> = territory.trustedSettlements; private set
+	var trustedPlayers: Set<SLPlayerId> = territory.trustedPlayers; private set
+
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
 
 	val oldCost
@@ -87,6 +95,15 @@ class RegionTerritory(territory: Territory) :
 			centerX = polygon.xpoints.average().roundToInt()
 			centerZ = polygon.ypoints.average().roundToInt()
 		}
+		delta[Territory::trustedNations]?.let { bson ->
+			trustedNations = bson.array().mappedSet { it.oid() }
+		}
+		delta[Territory::trustedSettlements]?.let { bson ->
+			trustedSettlements = bson.array().mappedSet { it.oid() }
+		}
+		delta[Territory::trustedPlayers]?.let { bson ->
+			trustedPlayers = bson.array().mappedSet { it.slPlayerId() }
+		}
 
 		NationsMap.updateTerritory(this)
 	}
@@ -126,6 +143,17 @@ class RegionTerritory(territory: Territory) :
 
 		// allow nation members
 		if (playerNation == nation) {
+			return null
+		}
+
+		// Territory nation claim trusting
+		if (trustedPlayers.contains(playerData.id)) {
+			return null
+		}
+		if (trustedSettlements.contains(playerData.settlementOid)) {
+			return null
+		}
+		if (trustedNations.contains(playerData.nationOid)) {
 			return null
 		}
 
