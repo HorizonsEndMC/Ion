@@ -345,6 +345,323 @@ object AsteroidStructures {
         "YELLOW" to SimpleMaterialConfiguration(Material.YELLOW_CONCRETE),
         "PURPLE" to SimpleMaterialConfiguration(Material.PURPLE_CONCRETE),
         "ORANGE" to SimpleMaterialConfiguration(Material.ORANGE_CONCRETE),
+        "CLASSIC_ANCIENT_DEBRIS_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEAD_TUBE_CORAL_BLOCK), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BASALT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BLACKSTONE), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.NETHER_BRICKS), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.NETHERRACK), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_GLAZED_TERRACOTTA), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.NETHERRACK), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_NETHER_BRICKS), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.NETHER_BRICKS), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BLACKSTONE), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BASALT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEAD_TUBE_CORAL_BLOCK), 6.0),
+            )
+        ),
+        "CLASSIC_NETHER_QUARTZ_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MAGMA_BLOCK), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GRANITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.NETHERRACK), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_GRANITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_TERRACOTTA), 2.0),
+            )
+        ),
+        "CLASSIC_COAL_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLACKSTONE), 5.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BLACKSTONE), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEEPSLATE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_SANDSTONE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_RED_SANDSTONE), 4.0),
+            )
+        ),
+        "CLASSIC_COPPER_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIRT), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DRIPSTONE_BLOCK), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GRANITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_ICE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_MUD), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_GRANITE), 3.0),
+            )
+        ),
+        "CLASSIC_IRON_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GRANITE), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_GRANITE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_MUD), 7.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DRIPSTONE_BLOCK), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEEPSLATE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BASALT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.STONE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_ANDESITE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLESTONE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CLAY), 6.0),
+            )
+        ),
+        "CLASSIC_EMERALD_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.VERDANT_FROGLIGHT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIME_TERRACOTTA), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DARK_PRISMARINE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PURPLE_TERRACOTTA), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MAGENTA_TERRACOTTA), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PURPLE_TERRACOTTA), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLED_DEEPSLATE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEEPSLATE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_DIORITE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 4.0),
+            )
+        ),
+        "CLASSIC_URANIUM_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.VERDANT_FROGLIGHT), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SLIME_BLOCK), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIME_TERRACOTTA), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.END_STONE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.END_STONE_BRICKS), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SANDSTONE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_SANDSTONE), 4.0),
+            )
+        ),
+        "CLASSIC_GOLD_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SANDSTONE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_SANDSTONE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SANDSTONE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.OCHRE_FROGLIGHT), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SANDSTONE), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_DIORITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_DIORITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CLAY), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 3.0),
+            )
+        ),
+        "CLASSIC_REDSTONE_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_NETHER_BRICKS), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.NETHERRACK), 5.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_GLAZED_TERRACOTTA), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_DIORITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.QUARTZ_BRICKS), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.QUARTZ_BLOCK), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_QUARTZ), 3.0),
+            )
+        ),
+        "CLASSIC_DIAMOND_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_ICE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ICE), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PRISMARINE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PRISMARINE_BRICKS), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_DIORITE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.QUARTZ_BLOCK), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_QUARTZ), 6.0),
+            )
+        ),
+        "CLASSIC_ALUMINUM_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SNOW_BLOCK), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 5.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 12.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BASALT), 3.0),
+            )
+        ),
+        "CLASSIC_TITANIUM_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SEA_LANTERN), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 5.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CYAN_TERRACOTTA), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.STONE), 8.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CYAN_TERRACOTTA), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 2.0),
+            )
+        ),
+        "CLASSIC_LAPIS_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CRYING_OBSIDIAN), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLACKSTONE), 2.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BLACKSTONE), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 6.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CYAN_TERRACOTTA), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MUD), 4.0),
+            )
+        ),
+        "CLASSIC_CHETHERITE_PALETTE" to NoiseMaterialConfiguration(
+            NoiseConfiguration3d(
+                noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+                    featureSize = 20f
+                ),
+                fractalSettings = FractalSettings.None,
+                domainWarpConfiguration = DomainWarpConfiguration.None,
+                amplitude = 1.0,
+                normalizedPositive = true
+            ),
+            listOf(
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PEARLESCENT_FROGLIGHT), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PURPUR_BLOCK), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.AMETHYST_BLOCK), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BUDDING_AMETHYST), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.AMETHYST_BLOCK), 3.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_TERRACOTTA), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 4.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEEPSLATE), 1.0),
+                WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLED_DEEPSLATE), 1.0),
+            )
+        ),
     )
 
     val defaultBuilders: Map<String, AsteroidBuilder> = mapOf(
@@ -357,5 +674,160 @@ object AsteroidStructures {
         "TEST7" to AsteroidBuilder.StaticCombination("CLASSIC", "YELLOW", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
         "TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
         "TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
+
+        "CLASSIC_ANCIENT_DEBRIS_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_ANCIENT_DEBRIS_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.ANCIENT_DEBRIS),
+                    0,
+                    0.0095 / 8
+                )
+            )
+        ),
+        "CLASSIC_NETHER_QUARTZ_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_NETHER_QUARTZ_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.NETHER_QUARTZ_ORE),
+                    0,
+                    0.008 / 8
+                )
+            )
+        ),
+        "CLASSIC_COAL_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_COAL_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.COAL_ORE),
+                    0,
+                    0.004 / 8
+                )
+            )
+        ),
+        "CLASSIC_COPPER_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_COPPER_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.COPPER_ORE),
+                    0,
+                    0.0045 / 8
+                )
+            )
+        ),
+        "CLASSIC_IRON_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_IRON_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.IRON_ORE),
+                    0,
+                    0.0095 / 8
+                )
+            )
+        ),
+        "CLASSIC_EMERALD_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_EMERALD_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.DEEPSLATE_EMERALD_ORE),
+                    0,
+                    0.0095 / 8
+                )
+            )
+        ),
+        "CLASSIC_URANIUM_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_URANIUM_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.URANIUM_ORE),
+                    0,
+                    0.0045 / 8
+                )
+            )
+        ),
+        "CLASSIC_GOLD_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_GOLD_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.GOLD_ORE),
+                    0,
+                    0.0045 / 8
+                )
+            )
+        ),
+        "CLASSIC_REDSTONE_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_REDSTONE_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.REDSTONE_ORE),
+                    0,
+                    0.0085 / 8
+                )
+            )
+        ),
+        "CLASSIC_DIAMOND_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_DIAMOND_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.DIAMOND_ORE),
+                    0,
+                    0.009 / 8
+                )
+            )
+        ),
+        "CLASSIC_ALUMINUM_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_ALUMINUM_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.ALUMINUM_ORE),
+                    0,
+                    0.0055 / 8
+                )
+            )
+        ),
+        "CLASSIC_TITANIUM_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_TITANIUM_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.TITANIUM_ORE),
+                    0,
+                    0.0055 / 8
+                )
+            )
+        ),
+        "CLASSIC_LAPIS_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_LAPIS_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.MaterialType(Material.DEEPSLATE_LAPIS_ORE),
+                    0,
+                    0.0035 / 8
+                )
+            )
+        ),
+        "CLASSIC_CHETHERITE_BUILDER" to AsteroidBuilder.StaticCombination(
+            "CLASSIC",
+            "CLASSIC_CHETHERITE_PALETTE",
+            mutableListOf(
+                OreDefinition(
+                    OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_ORE),
+                    0,
+                    0.0095 / 8
+                )
+            )
+        ),
     )
 }
