@@ -85,7 +85,11 @@ abstract class SinkProvider(
 					CustomBlockWrapper(CustomBlockKeys.BARGE_REACTOR_CORE) to Pair(1.0, Always),
 					CustomBlockWrapper(CustomBlockKeys.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
 					CustomBlockWrapper(CustomBlockKeys.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
-				))
+					CustomBlockWrapper(CustomBlockKeys.LARGE_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.SMALL_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.MEDIUM_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.MINI_REACTOR_CORE) to Pair(1.0, Always),
+					))
 			}
 		},
 
@@ -122,7 +126,11 @@ abstract class SinkProvider(
 					CustomBlockWrapper(CustomBlockKeys.BARGE_REACTOR_CORE) to Pair(1.0, Always),
 					CustomBlockWrapper(CustomBlockKeys.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
 					CustomBlockWrapper(CustomBlockKeys.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
-				))
+					CustomBlockWrapper(CustomBlockKeys.LARGE_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.SMALL_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.MEDIUM_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.MINI_REACTOR_CORE) to Pair(1.0, Always),
+					))
 			}
 		};
 
