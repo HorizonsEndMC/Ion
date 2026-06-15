@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.world.environment.configuration.NoGra
 import net.horizonsend.ion.server.features.world.environment.configuration.VacuumEnvironmentConfiguration
 import net.horizonsend.ion.server.features.world.environment.configuration.WorldEnvironmentConfiguration
 import net.horizonsend.ion.server.features.world.environment.modules.GravityModule.Companion.DEFAULT_GRAVITY
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.StaticConfigurationGlobal
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.WreckPlacementConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.FeatureGeneratorConfiguration
@@ -814,6 +815,29 @@ object DefaultWorldConfiguration {
 					VacuumEnvironmentConfiguration
 				)
 			),
+			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
+				AsteroidPlacementConfiguration(
+					densityProvider = StaticConfigurationGlobal(0.065),
+					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ANCIENT_DEBRIS_BUILDER") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_NETHER_QUARTZ_BUILDER") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_COAL_BUILDER") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_COPPER_BUILDER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_IRON_BUILDER") to 8.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_EMERALD_BUILDER") to 7.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_URANIUM_BUILDER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_GOLD_BUILDER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_REDSTONE_BUILDER") to 6.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_DIAMOND_BUILDER") to 5.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ALUMINUM_BUILDER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_TITANIUM_BUILDER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_LAPIS_BUILDER") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_CHETHERITE_BUILDER") to 6.0,
+					)),
+					minSize = 75.0,
+					maxSize = 100.0
+				)
+			))
 		)
 	)
 
@@ -1095,6 +1119,38 @@ object DefaultWorldConfiguration {
 					VacuumEnvironmentConfiguration
 				)
 			),
+		)
+	)
+
+	val LOA_7 = register(
+		"LOA-7", WorldSettings(
+			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
+				AsteroidPlacementConfiguration(
+					densityProvider = StaticConfigurationGlobal(0.06),
+					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ANCIENT_DEBRIS_BUILDER") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_NETHER_QUARTZ_BUILDER") to 1.0
+					)),
+					minSize = 75.0,
+					maxSize = 150.0
+				)
+			))
+		)
+	)
+
+	val TT_91 = register(
+		"TT-91", WorldSettings(
+			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
+				AsteroidPlacementConfiguration(
+					densityProvider = StaticConfigurationGlobal(0.1),
+					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ANCIENT_DEBRIS_BUILDER") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_NETHER_QUARTZ_BUILDER") to 1.0
+					)),
+					minSize = 75.0,
+					maxSize = 150.0
+				)
+			))
 		)
 	)
 }
