@@ -216,7 +216,7 @@ data class HeavyLaserBalancing(
 		override var maxDegrees: Double = 25.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override var effectStrength: Double = 0.85,
+		override var effectStrength: Double = 0.15,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L)
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
