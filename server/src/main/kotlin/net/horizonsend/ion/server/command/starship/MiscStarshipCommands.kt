@@ -917,7 +917,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		toggleGravityWell(starship)
 	}
-
+/*
 	@Suppress("unused")
 	@CommandAlias("gravpulse")
 	@Description("Invoke a gravity pulse on your starship")
@@ -930,7 +930,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val sign = block.getState(false) as Sign
 
 		pulseGravityWell(sender, starship, sign)
-	}
+	}*/
 
 	@Suppress("unused")
 	@CommandAlias("pilot")

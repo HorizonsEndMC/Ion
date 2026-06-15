@@ -32,7 +32,7 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 
 		if (StarshipCruising.isCruising(starship)) return player.userError("Cannot activate while cruising")
 		if (starship.type != StarshipType.INTERDICTOR_GUNSHIP && starship.type != StarshipType.INTERDICTOR_CORVETTE && starship.type != StarshipType.INTERDICTOR_DESTROYER) {
-			return player.userError("YOU CAN ONLY USE GRAVITY WELLS ON INTERDICTORS!!!")
+			return player.userError("Only interdictors can use gravity wells!")
 		}
 
 		when (event.action) {
@@ -41,7 +41,7 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 			}
 
 			Action.LEFT_CLICK_BLOCK -> {
-				Interdiction.pulseGravityWell(player, starship, sign)
+				//Interdiction.pulseGravityWell(player, starship, sign)
 			}
 
 			else -> return
