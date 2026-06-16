@@ -214,6 +214,8 @@ object RegionalObjectiveSieges : IonServerComponent() {
 			return@asyncLocked player.userError("You cannot siege in a ship smaller than $MIN_SHIP_SIZE blocks.")
 		}
 
+		val dominionCount =
+
 		activeSieges.add(ActiveSiege(region.id, region.type, System.currentTimeMillis()))
 
 		val nationName = NationCache[nation].name

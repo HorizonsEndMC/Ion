@@ -31,16 +31,6 @@ class ScramblerProjectile(
 	override val color: Color = Color.BLUE
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		val speedPenalty = 1 - balancing.effectStrength
-
-		starship.addStatusEffect(StarshipStatusEffect(
-			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
-			speedPenalty,
-			balancing.effectDurationMillis
-		))
-
-		starship.userErrorAction("Direct Control speed slowed by ${(speedPenalty * 100).toInt()}%!")
-
 		val shooterStarship = shooter.starship ?: return
 
 		val task = Tasks.syncRepeatTask(0L, 2L) {
@@ -64,6 +54,19 @@ class ScramblerProjectile(
 		Tasks.syncDelay(20L) {
 			task.cancel()
 		}
+
+		if (starship.initialBlockCount > 12500) return
+
+		val speedPenalty = 1 - balancing.effectStrength
+
+		starship.addStatusEffect(StarshipStatusEffect(
+			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
+			speedPenalty,
+			balancing.effectDurationMillis
+		))
+
+		starship.userErrorAction("Direct Control speed slowed by ${(speedPenalty * 100).toInt()}%!")
+
 
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.JAMMED,

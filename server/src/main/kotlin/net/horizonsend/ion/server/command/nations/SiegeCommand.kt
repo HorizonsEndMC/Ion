@@ -211,14 +211,20 @@ object SiegeCommand : SLCommand() {
 	@Subcommand("abandonDominion")
 	@CommandCompletion("@dominionSieges")
 	fun onAbandonDominion(sender: Player, siege: DominionTerritorySiege) {
-		if (siege.isAttacker(sender.slPlayerId)) {
+		/*if (siege.isAttacker(sender.slPlayerId)) {
 			if (!NationRole.hasPermission(sender.slPlayerId, NationRole.Permission.START_NATION_SIEGE)) {
 				sender.userError("Your nation prevents you from abandoning sieges!")
 				return
 			}
 			return DominionTerritorySieges.attackerAbandonSiege(sender, siege)
+		} */
+		if (siege.isDefender(sender.slPlayerId)) {
+			if (!NationRole.hasPermission(sender.slPlayerId, NationRole.Permission.START_NATION_SIEGE)) {
+				sender.userError("Your nation prevents you from abandoning sieges!")
+				return
+			}
+			return DominionTerritorySieges.defenderAbandonSiege(sender, siege)
 		}
-		if (siege.isDefender(sender.slPlayerId)) return DominionTerritorySieges.defenderAbandonSiege(sender, siege)
 		fail { "You aren't a participant of this siege!" }
 	}
 

@@ -16,7 +16,6 @@ import net.horizonsend.ion.common.utils.text.formatNationName
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -62,7 +61,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	override fun onEnable() {
 		tryLoadSieges()
 		Tasks.asyncRepeat(60L, 60L) { getAllActiveSieges().filter { it.needsSave }.forEach(DominionTerritorySiege::saveSiegeData) }
-		Tasks.asyncRepeat(20L * 60L, 20L * 60L, ::processPassivePoints)
+		Tasks.syncRepeat(20L * 60L, 20L * 60L, ::processPassivePoints)
 
 		Nation.watchDeletes { handleNationDisband(it.oid) }
 	}
@@ -236,23 +235,25 @@ object DominionTerritorySieges : IonServerComponent(true) {
 		unclaim(siege.region.id)
 	}
 
+	private fun siegeAudience(siege: DominionTerritorySiege) = ForwardingAudience {
+		Bukkit.getOnlinePlayers().filter { player ->
+			siege.region.contains(player.location)
+		}
+	}
+
 	// Point accrual
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val controller = event.previousController as? PlayerController ?: return
 
-		// Find a siege in the same world as the sunk ship
 		val sunkWorld = event.starship.world.name
 		val siege = getAllActiveSieges().firstOrNull { it.region.world == sunkWorld } ?: return
 
-		// Check if the ship was in the siege zone
 		if (!siege.region.contains(
 				event.starship.centerOfMass.x,
 				event.starship.centerOfMass.y,
 				event.starship.centerOfMass.z
 			)) return
-
-		val victimNation = PlayerCache[controller.player].nationOid ?: return
 
 		var totalPoints = when {
 			event.starship.type.typeCategory == TypeCategory.TRADE_SHIP -> config.miningShipKillPoints
@@ -263,12 +264,11 @@ object DominionTerritorySieges : IonServerComponent(true) {
 		}
 		if (event.starship.type.tech2) totalPoints *= config.tech2Multiplier
 
-		val victimIsDefenderSide = victimNation == siege.defender ||
-			(victimNation != siege.attacker && RelationCache[siege.defender, victimNation].ordinal >= NationRelation.Level.ALLY.ordinal)
+		val victimIsDefenderSide = siege.isDefender(controller.player.slPlayerId)
 
 		val damagers = event.starship.damagers
 			.filter { it.key is PlayerDamager }
-			.filterNot { PlayerCache[(it.key as PlayerDamager).player]?.nationOid == victimNation }
+			.filterNot { PlayerCache[(it.key as PlayerDamager).player]?.nationOid == PlayerCache[controller.player].nationOid }
 
 		if (damagers.isEmpty()) return
 
@@ -276,12 +276,10 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 		for ((damager, damageData) in damagers) {
 			val damagerPlayer = (damager as? PlayerDamager)?.player ?: continue
-			val damagerNation = PlayerCache[damagerPlayer].nationOid ?: continue
 			val percent = damageData.points.get().toDouble() / damagePointsSum.toDouble()
 			val points = (totalPoints * percent).roundToInt()
 
-			val damagerIsDefenderSide = damagerNation == siege.defender ||
-				(damagerNation != siege.attacker && RelationCache[siege.defender, damagerNation].ordinal >= NationRelation.Level.ALLY.ordinal)
+			val damagerIsDefenderSide = siege.isDefender(damagerPlayer.slPlayerId)
 
 			if (victimIsDefenderSide && !damagerIsDefenderSide) {
 				siege.attackerPoints += points
@@ -292,9 +290,9 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			}
 		}
 
-		IonServer.server.sendMessage(template(
+		siegeAudience(siege).sendMessage(template(
 			text("A ship belonging to {0} was sunk during the siege of {1}!"),
-			formatNationName(victimNation),
+			formatNationName(PlayerCache[controller.player].nationOid ?: return),
 			siege.region.name
 		))
 	}
@@ -306,7 +304,6 @@ object DominionTerritorySieges : IonServerComponent(true) {
 	}
 
 	private fun processKill(player: Player, killer: Player, points: Int) {
-		// Only process kills in the same world as the siege
 		val siege = getAllActiveSieges().firstOrNull {
 			it.region.world == player.world.name && it.region.contains(player.location)
 		} ?: getAllActiveSieges().firstOrNull {
@@ -315,20 +312,13 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 		if (!killer.isOnline) return
 
-		val playerNation = PlayerCache[player].nationOid ?: return
-		val killerNation = PlayerCache[killer].nationOid ?: return
+		val playerIsDefenderSide = siege.isDefender(player.slPlayerId)
+		val killerIsDefenderSide = siege.isDefender(killer.slPlayerId)
 
-		val playerIsDefenderSide = siege.isDefender(player.slPlayerId) ||
-			(playerNation != siege.attacker && RelationCache[siege.defender, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal)
-
-		val killerIsDefenderSide = siege.isDefender(killer.slPlayerId) ||
-			(killerNation != siege.attacker && RelationCache[siege.defender, killerNation].ordinal >= NationRelation.Level.ALLY.ordinal)
-
-		// Killer is attacker side, victim is defender side
 		if (!killerIsDefenderSide && playerIsDefenderSide) {
 			siege.attackerPoints += points
 			log.info("Awarded attacker $points points for killing ${player.name}")
-			IonServer.server.sendMessage(template(
+			siegeAudience(siege).sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
 				formatNationName(siege.attacker),
 				points,
@@ -336,11 +326,10 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			))
 		}
 
-		// Killer is defender side, victim is attacker side
 		if (killerIsDefenderSide && !playerIsDefenderSide) {
 			siege.defenderPoints += points
 			log.info("Awarded defender $points points for killing ${player.name}")
-			IonServer.server.sendMessage(template(
+			siegeAudience(siege).sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
 				formatNationName(siege.defender),
 				points,
@@ -355,34 +344,20 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 	private fun processPassivePoints(siege: DominionTerritorySiege) {
 		val world = siege.region.bukkitWorld ?: return
-		val starships = ActiveStarships.getInWorld(world)
-		val contained = starships
+		val contained = ActiveStarships.getInWorld(world)
 			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= config.minimumPassivePointsShipSize }
 			.mapNotNull { it.controller as? PlayerController }
 
-		val siegeAudience = ForwardingAudience {
-			Bukkit.getOnlinePlayers().filter { player ->
-				siege.region.contains(player.location)
-			}
-		}
+		val audience = siegeAudience(siege)
 
-		val defenderCount = contained.count { controller ->
-			val nation = PlayerCache[controller.player].nationOid ?: return@count false
-			siege.isDefender(controller.player.slPlayerId) ||
-				(nation != siege.attacker && RelationCache[siege.defender, nation].ordinal >= NationRelation.Level.ALLY.ordinal)
-		}
-
-		val attackerCount = contained.count { controller ->
-			val nation = PlayerCache[controller.player].nationOid ?: return@count false
-			!siege.isDefender(controller.player.slPlayerId) &&
-				(nation == siege.attacker || RelationCache[siege.defender, nation].ordinal < NationRelation.Level.ALLY.ordinal)
-		}
+		val defenderCount = contained.count { siege.isDefender(it.player.slPlayerId) }
+		val attackerCount = contained.count { siege.isAttacker(it.player.slPlayerId) }
 
 		val defenderNew = (defenderCount.coerceAtMost(5) * config.passivePoints).roundToInt()
 		if (defenderNew > 0) {
 			siege.defenderPoints += defenderNew
 			log.info("Awarded defender $defenderNew passive points")
-			siegeAudience.sendMessage(template(
+			audience.sendMessage(template(
 				text("{0} accrued {1} passive points for being inside the nation territory."),
 				formatNationName(siege.defender),
 				defenderNew
@@ -393,7 +368,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 		if (attackerNew > 0) {
 			siege.attackerPoints += attackerNew
 			log.info("Awarded attacker $attackerNew passive points")
-			siegeAudience.sendMessage(template(
+			audience.sendMessage(template(
 				text("{0} accrued {1} passive points for being inside the nation territory."),
 				formatNationName(siege.attacker),
 				attackerNew
@@ -456,22 +431,5 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			text("{0} has been unclaimed!", HE_MEDIUM_GRAY),
 			Regions.get<RegionDominionTerritory>(territoryId).name
 		))
-	}
-
-	fun isWinner(siege: Oid<DominionTerritorySiegeData>, nation: Oid<Nation>): Boolean {
-		val completed = DominionTerritorySiegeData.findOnePropById(siege, DominionTerritorySiegeData::complete)
-		if (completed != true) return false
-
-		val props = DominionTerritorySiegeData.findPropsById(siege, DominionTerritorySiegeData::attacker, DominionTerritorySiegeData::defender, DominionTerritorySiegeData::attackerPoints, DominionTerritorySiegeData::defenderPoints) ?: return false
-		val attacker = props[DominionTerritorySiegeData::attacker]
-		val attackerPoints = props[DominionTerritorySiegeData::attackerPoints]
-		val defender = props[DominionTerritorySiegeData::defender]
-		val defenderPoints = props[DominionTerritorySiegeData::defenderPoints]
-
-		val success = attackerPoints > defenderPoints
-		if (nation == attacker && success) return true
-		if (nation == defender && !success) return true
-
-		return false
 	}
 }

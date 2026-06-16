@@ -67,7 +67,7 @@ object Power : IonServerComponent() {
 						)
 						Notify.allOnline(ofChildren(headerLine, newline(), newline()))
 
-					} else if (nation.siegeable == false || nation.siegeable == null && power < powerCost) {
+					} else if ((nation.siegeable == false || nation.siegeable == null) && power < powerCost) {
 						// Dropped below threshold due to inactivity and now siegable
 						Nation.setSiegeable(nation.id, true)
 						Discord.sendEmbed(
@@ -161,7 +161,7 @@ object Power : IonServerComponent() {
 		val dominionCount = getDominionTerritoryCount(NationCache[nationId])
 		if (dominionCount == 0) return // Early return if no territories
 
-		if (power < powerCost && NationCache[nationId].siegeable == false || NationCache[nationId].siegeable == null) {
+		if (power < powerCost && (NationCache[nationId].siegeable == false || NationCache[nationId].siegeable == null)) {
 			Nation.setSiegeable(nationId, true)
 			val victimNationName = NationCache[nationId].name
 			val victimNationNameFormatted = formatNationName(nationId)

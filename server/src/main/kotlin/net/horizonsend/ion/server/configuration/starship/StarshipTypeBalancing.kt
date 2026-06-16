@@ -499,6 +499,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					MiniReactorSubsystem::class.java,
+					"Tech 1 ships cannot house tech 2 reactors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -640,6 +644,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					MiniReactorSubsystem::class.java,
+					"Tech 1 ships cannot house tech 2 reactors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -749,6 +757,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					SmallReactorSubsystem::class.java,
+					"Tech 1 ships cannot house tech 2 reactors!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -1001,6 +1013,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					MediumReactorSubsystem::class.java,
+					"Tech 1 ships cannot house tech 2 reactors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -1193,6 +1209,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					MediumReactorSubsystem::class.java,
+					"Tech 1 ships cannot house tech 2 reactors!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,

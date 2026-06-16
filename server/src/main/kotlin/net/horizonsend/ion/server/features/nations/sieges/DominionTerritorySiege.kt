@@ -2,10 +2,12 @@ package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
 import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -78,15 +80,13 @@ class DominionTerritorySiege(
 	}
 
 	fun isAttacker(player: SLPlayerId): Boolean {
-		val playerNation = PlayerCache[player].nationOid ?: return false
-
-		return attacker == playerNation
+		return !isDefender(player)
 	}
 
 	fun isDefender(player: SLPlayerId): Boolean {
 		val playerNation = PlayerCache[player].nationOid ?: return false
-
-		return defender == playerNation
+		if (playerNation == defender) return true
+		return RelationCache[defender, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal
 	}
 
 	fun isActivePeriod(): Boolean {
@@ -238,9 +238,9 @@ class DominionTerritorySiege(
 			Notify.chatAndGlobal(template(text("{0} has begun.", HE_MEDIUM_GRAY), formatName()))
 			Discord.sendEmbed(
 				ConfigurationFiles.discordSettings().eventsChannel, Embed(
-				title = "Dominion Territory Start",
-				description = "${formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(getSiegeEnd())}:R>."
-			))
+					title = "Dominion Territory Start",
+					description = "${formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(getSiegeEnd())}:R>."
+				))
 
 			DominionTerritorySieges.setActive(this@DominionTerritorySiege)
 			scheduleEnd()
@@ -282,5 +282,4 @@ class DominionTerritorySiege(
 
 	val defenderNameFormatted get() = formatNationName(defender)
 	val attackerNameFormatted get() = formatNationName(attacker)
-
 }
