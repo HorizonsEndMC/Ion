@@ -817,7 +817,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.065),
+					densityProvider = StaticConfigurationGlobal(0.06),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_NETHER_QUARTZ") to 1.0,
@@ -1150,7 +1150,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.06),
+					densityProvider = StaticConfigurationGlobal(0.055),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_IRON") to 1.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_CHETHERITE") to 1.0
@@ -1212,7 +1212,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.1),
+					densityProvider = StaticConfigurationGlobal(0.55),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_IRON") to 1.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_CHETHERITE") to 1.0
@@ -1274,7 +1274,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.1),
+					densityProvider = StaticConfigurationGlobal(0.06),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_NETHER_QUARTZ") to 1.0,
