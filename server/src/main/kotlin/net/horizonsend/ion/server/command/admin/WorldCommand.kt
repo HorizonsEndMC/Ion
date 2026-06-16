@@ -178,9 +178,6 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.flags.add(WorldFlag.NOT_SECURE)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_SIGNATURE_SPAWNS)
 
-				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
-				ionWorld.configuration.environments.add(Environment.VACUUM)
-
 				ionWorld.saveConfiguration()
 			}
 		},
@@ -192,9 +189,6 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 				ionWorld.configuration.flags.add(WorldFlag.NO_SHIP_LOCKS)
 				ionWorld.configuration.flags.add(WorldFlag.HYPERSPACE_WORLD)
-
-				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
-				ionWorld.configuration.environments.add(Environment.VACUUM)
 
 				ionWorld.saveConfiguration()
 			}
