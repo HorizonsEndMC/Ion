@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.core.registration.registries
 
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.keys.SignatureTypeKeys
@@ -68,7 +70,14 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			),
 			scannableBehavior = ScannableBehavior(
 				onScan = { signature, starship ->
-					signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
+					val pasteResult = signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
+					if (pasteResult == false) {
+						starship.serverError("Could not generate asteroid field; spawning a new asteroid field soon")
+						IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
+						signature.destroyNextTick = true
+						return@ScannableBehavior
+					}
+
 					starship.success("Discovered an asteroid field at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
 					IonServer.logger.info("Generated asteroid field for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
 					signature.destroyNextTick = true
@@ -165,7 +174,14 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			),
 			scannableBehavior = ScannableBehavior(
 				onScan = { signature, starship ->
-					signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
+					val pasteResult = signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
+					if (pasteResult == false) {
+						starship.serverError("Could not generate wreck site; spawning a new wreck site soon")
+						IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
+						signature.destroyNextTick = true
+						return@ScannableBehavior
+					}
+
 					starship.success("Discovered a wreck site at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
 					IonServer.logger.info("Generated wreck site for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
 					signature.destroyNextTick = true

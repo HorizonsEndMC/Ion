@@ -1,13 +1,18 @@
 package net.horizonsend.ion.server.features.space.signatures
 
 import com.google.common.cache.LoadingCache
+import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.math.BlockVector3
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.command.starship.BlueprintCommand
+import net.horizonsend.ion.server.command.starship.BlueprintCommand.getPasteVector
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
@@ -36,14 +41,34 @@ data class SchematicBehavior(
 		val schematicFile: File = IonServer.dataFolder.resolve("signatures").resolve("$schematicName.schem")
 		val clipboard: Clipboard = cache[schematicFile].getOrNull() ?: return false
 
-		val target = StarshipDealers.resolveTarget(clipboard, location)
-		val vec3i = Vec3i(target)
+		return Tasks.getSyncBlocking {
+			if (isObstructed(location, clipboard, Vec3i(location.x.toInt(), location.y.toInt(), location.z.toInt()))) {
+				return@getSyncBlocking false
+			}
 
-		placeSchematicEfficiently(clipboard, location.world, vec3i, true) { placedBlocks ->
-			callback.invoke(placedBlocks, location.world)
+			val target = StarshipDealers.resolveTarget(clipboard, location)
+			val vec3i = Vec3i(target)
+
+			placeSchematicEfficiently(clipboard, location.world, vec3i, true) { placedBlocks ->
+				callback.invoke(placedBlocks, location.world)
+			}
+
+			return@getSyncBlocking true
+		}
+	}
+
+	fun isObstructed(location: Location, schematic: Clipboard, pilotLoc: Vec3i): Boolean {
+		val world = BukkitAdapter.adapt(location.world)
+		val vec: BlockVector3 = getPasteVector(location, pilotLoc)
+		val region = schematic.region.clone()
+		val offset = vec.subtract(schematic.origin)
+		for (point in region) {
+			if (!BlueprintCommand.isAir(schematic.getBlock(point)) && !BlueprintCommand.isAir(world.getBlock(point.add(offset)))) {
+				return true
+			}
 		}
 
-		return true
+		return false
 	}
 }
 

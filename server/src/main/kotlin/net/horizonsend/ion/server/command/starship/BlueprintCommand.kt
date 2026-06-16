@@ -393,7 +393,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun getPasteVector(origin: Location, pilotLoc: Vec3i): BlockVector3 {
+	fun getPasteVector(origin: Location, pilotLoc: Vec3i): BlockVector3 {
 		return BukkitAdapter.asVector(origin).toBlockPoint().subtract(BlockVector3.at(pilotLoc.x, pilotLoc.y, pilotLoc.z))
 	}
 
@@ -429,7 +429,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun isAir(state: BlockState?) = state?.blockType?.material?.isAir != false
+	fun isAir(state: BlockState?) = state?.blockType?.material?.isAir != false
 
 	fun showMaterials(sender: Player, blueprint: Blueprint) {
 		val clipboard = blueprint.loadClipboard()
