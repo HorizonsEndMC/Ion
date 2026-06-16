@@ -144,6 +144,15 @@ class IonWorld private constructor(
 		}
 	}
 
+	fun getSpaceRegionName() = when (getSpaceRegion()) {
+		SpaceRegion.WARD -> "Ward"
+		SpaceRegion.BREACH -> "Breach"
+		SpaceRegion.MONOLITH -> "Monolith"
+		SpaceRegion.FRACTURE -> "Fracture"
+		SpaceRegion.SPINE -> "Spine"
+		SpaceRegion.NONE -> "Unknown"
+	}
+
 	/** Get all environments applied to this world */
 	val environments get() = configuration.environments
 

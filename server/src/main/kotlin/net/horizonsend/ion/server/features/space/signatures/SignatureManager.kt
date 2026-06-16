@@ -65,7 +65,7 @@ object SignatureManager : IonServerComponent(true) {
 				log.info("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world.name}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}")
 
 				IonServer.server.sendMessage(
-					text("A ${signature.signatureType.displayName.plainText()} has spawned somewhere in ${signature.location.world.name}!", HE_LIGHT_BLUE)
+					text("A ${signature.signatureType.displayName.plainText()} has spawned somewhere in the ${signature.location.world.ion.getSpaceRegionName()} region!", HE_LIGHT_BLUE)
 				)
 
 				if (persistent != null) activeSignatures[signature] = System.currentTimeMillis()
