@@ -909,7 +909,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandAlias("gravwell")
+	@CommandAlias("gravwell|gravitywell|interdictionwell|well")
 	@Description("Toggle all gravity wells on your starship")
 	fun onToggleGravwell(sender: Player) {
 		val starship = getStarshipPiloting(sender)
