@@ -30,7 +30,9 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 		val starship = ActiveStarships.findByPassenger(player) ?: return player.userError("You're not riding the starship")
 		if (!starship.contains(sign.x, sign.y, sign.z)) return
 
-		if (StarshipCruising.isCruising(starship)) return player.userError("Cannot activate while cruising")
+		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 4800) {
+			return player.userError("This cannot be activated while cruising on ships smaller than 4800 blocks!")
+		}
 		if (starship.type != StarshipType.INTERDICTOR_GUNSHIP && starship.type != StarshipType.INTERDICTOR_CORVETTE && starship.type != StarshipType.INTERDICTOR_DESTROYER) {
 			return player.userError("Only interdictors can use gravity wells!")
 		}
