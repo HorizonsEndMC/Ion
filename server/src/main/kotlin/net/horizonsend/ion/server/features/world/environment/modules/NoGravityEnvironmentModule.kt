@@ -24,7 +24,8 @@ class NoGravityEnvironmentModule(manager: WorldEnvironmentManager, val ignoreInd
 			// do not update fly speed if the player is piloting and is in direct control
 			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true && player.getSetting(PlayerSettings::floatWhileDc) == true) return
 
-			if (!ignoreIndoors || isInside(player.eyeLocation, 1)) {
+			// only allow players to fly at full speed if ignoreIndoors is false and the player is inside
+			if (!ignoreIndoors && isInside(player.eyeLocation, 1)) {
 				removeEffects(player)
 
 				return

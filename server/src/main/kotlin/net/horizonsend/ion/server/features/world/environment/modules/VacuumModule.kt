@@ -27,7 +27,7 @@ class VacuumModule(manager: WorldEnvironmentManager) : EnvironmentModule(manager
 
 		if (isInside(player.eyeLocation, 1)) return
 
-		if (!tickPressureFieldModule(player, 10)) return
+		if (tickPressureFieldModule(player, 10)) return
 
 		player.damage(0.5)
 	}
