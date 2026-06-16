@@ -23,9 +23,9 @@ import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
 	fun toggleGravityWell(starship: ActiveStarship) {
-		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 4800) {
+		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 5000) {
 			starship.setIsInterdicting(false)
-			starship.userError("Ships smaller than 4800 blocks cannot activate gravity wells while cruising")
+			starship.userError("Ships smaller than 5000 blocks cannot activate gravity wells while cruising")
 			return
 		}
 

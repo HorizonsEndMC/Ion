@@ -871,7 +871,7 @@ data class GaussCannonBalancing(
 
 	@Serializable
 	data class GaussCannonProjectileBalancing(
-		override var range: Double = 300.0,
+		override var range: Double = 250.0,
 		override var speed: Double = 130.0,
 		override var explosionPower: Float = 3.5f,
 		override var starshipShieldDamageMultiplier: Double = 4.5,

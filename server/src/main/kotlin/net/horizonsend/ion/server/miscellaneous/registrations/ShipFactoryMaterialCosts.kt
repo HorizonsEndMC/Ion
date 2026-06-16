@@ -178,98 +178,98 @@ object ShipFactoryMaterialCosts {
 		WAXED_OXIDIZED_COPPER to 0.0,
 		REDSTONE_BLOCK to 0.0,
 
-		GRINDSTONE to 5.0,
-		END_ROD to 5.0,
-		BELL to 5.0,
+		GRINDSTONE to 8.0,
+		END_ROD to 8.0,
+		BELL to 8.0,
 		SPONGE to 2.0,
-		END_PORTAL_FRAME to 5.0,
+		END_PORTAL_FRAME to 8.0,
 		PISTON to 2.0,
-		STICKY_PISTON to 5.0,
+		STICKY_PISTON to 8.0,
 		REDSTONE to 2.0,
-		JUKEBOX to 5.0,
-		CRAFTING_TABLE to 5.0,
-		DROPPER to 5.0,
-		HOPPER to 5.0,
+		JUKEBOX to 8.0,
+		CRAFTING_TABLE to 8.0,
+		DROPPER to 8.0,
+		HOPPER to 8.0,
 		LEVER to 2.0,
-		CHEST to 5.0,
-		FURNACE to 5.0,
-		DISPENSER to 5.0,
+		CHEST to 8.0,
+		FURNACE to 8.0,
+		DISPENSER to 8.0,
 		MAGMA_BLOCK to 8.0,
-		SEA_LANTERN to 25.0,
+		SEA_LANTERN to 28.0,
 		REDSTONE_LAMP to 8.0,
 		OCHRE_FROGLIGHT to 8.0,
 		VERDANT_FROGLIGHT to 8.0,
 		PEARLESCENT_FROGLIGHT to 8.0,
 		SHROOMLIGHT to 8.0,
-		IRON_TRAPDOOR to 5.0,
+		IRON_TRAPDOOR to 8.0,
 		NOTE_BLOCK to 10.0,
 		IRON_BARS to 2.0,
-		OBSERVER to 5.0,
-		TRAPPED_CHEST to 5.0,
+		OBSERVER to 8.0,
+		TRAPPED_CHEST to 8.0,
 		BARREL to 8.0,
 		LODESTONE to 8.0,
 
-		OAK_PLANKS to 5.0,
-		SPRUCE_PLANKS to 5.0,
-		BIRCH_PLANKS to 5.0,
-		JUNGLE_PLANKS to 5.0,
-		ACACIA_PLANKS to 5.0,
-		DARK_OAK_PLANKS to 5.0,
-		MANGROVE_PLANKS to 5.0,
-		CRIMSON_PLANKS to 5.0,
-		WARPED_PLANKS to 5.0,
-		STONE to 5.0,
-		SMOOTH_STONE to 5.0,
-		SANDSTONE to 5.0,
-		CUT_SANDSTONE to 5.0,
+		OAK_PLANKS to 8.0,
+		SPRUCE_PLANKS to 8.0,
+		BIRCH_PLANKS to 8.0,
+		JUNGLE_PLANKS to 8.0,
+		ACACIA_PLANKS to 8.0,
+		DARK_OAK_PLANKS to 8.0,
+		MANGROVE_PLANKS to 8.0,
+		CRIMSON_PLANKS to 8.0,
+		WARPED_PLANKS to 8.0,
+		STONE to 8.0,
+		SMOOTH_STONE to 8.0,
+		SANDSTONE to 8.0,
+		CUT_SANDSTONE to 8.0,
 		COBBLESTONE to 1.0,
 		BRICKS to 1.0,
-		STONE_BRICKS to 5.0,
-		MUD_BRICKS to 5.0,
-		NETHER_BRICKS to 5.0,
-		QUARTZ_BLOCK to 5.0,
-		RED_SANDSTONE to 5.0,
-		CUT_RED_SANDSTONE to 5.0,
-		PURPUR_BLOCK to 5.0,
-		PRISMARINE to 5.0,
-		PRISMARINE_BRICKS to 5.0,
-		DARK_PRISMARINE to 5.0,
-		POLISHED_GRANITE to 5.0,
-		SMOOTH_RED_SANDSTONE to 5.0,
-		MOSSY_STONE_BRICKS to 5.0,
-		POLISHED_DIORITE to 5.0,
-		MOSSY_COBBLESTONE to 5.0,
-		END_STONE_BRICKS to 5.0,
-		SMOOTH_SANDSTONE to 5.0,
-		SMOOTH_QUARTZ to 5.0,
-		GRANITE to 5.0,
-		ANDESITE to 5.0,
-		RED_NETHER_BRICKS to 5.0,
-		POLISHED_ANDESITE to 5.0,
-		DIORITE to 5.0,
-		COBBLED_DEEPSLATE to 5.0,
-		POLISHED_DEEPSLATE to 5.0,
-		DEEPSLATE_BRICKS to 5.0,
-		DEEPSLATE_TILES to 5.0,
-		BLACKSTONE to 5.0,
-		POLISHED_BLACKSTONE to 5.0,
-		POLISHED_BLACKSTONE_BRICKS to 5.0,
+		STONE_BRICKS to 8.0,
+		MUD_BRICKS to 8.0,
+		NETHER_BRICKS to 8.0,
+		QUARTZ_BLOCK to 8.0,
+		RED_SANDSTONE to 8.0,
+		CUT_RED_SANDSTONE to 8.0,
+		PURPUR_BLOCK to 8.0,
+		PRISMARINE to 8.0,
+		PRISMARINE_BRICKS to 8.0,
+		DARK_PRISMARINE to 8.0,
+		POLISHED_GRANITE to 8.0,
+		SMOOTH_RED_SANDSTONE to 8.0,
+		MOSSY_STONE_BRICKS to 8.0,
+		POLISHED_DIORITE to 8.0,
+		MOSSY_COBBLESTONE to 8.0,
+		END_STONE_BRICKS to 8.0,
+		SMOOTH_SANDSTONE to 8.0,
+		SMOOTH_QUARTZ to 8.0,
+		GRANITE to 8.0,
+		ANDESITE to 8.0,
+		RED_NETHER_BRICKS to 8.0,
+		POLISHED_ANDESITE to 8.0,
+		DIORITE to 8.0,
+		COBBLED_DEEPSLATE to 8.0,
+		POLISHED_DEEPSLATE to 8.0,
+		DEEPSLATE_BRICKS to 8.0,
+		DEEPSLATE_TILES to 8.0,
+		BLACKSTONE to 8.0,
+		POLISHED_BLACKSTONE to 8.0,
+		POLISHED_BLACKSTONE_BRICKS to 8.0,
 
-		CHISELED_DEEPSLATE to 5.0,
-		CHISELED_NETHER_BRICKS to 5.0,
-		CHISELED_POLISHED_BLACKSTONE to 5.0,
-		CHISELED_QUARTZ_BLOCK to 5.0,
-		CHISELED_RED_SANDSTONE to 5.0,
-		CHISELED_SANDSTONE to 5.0,
-		CHISELED_STONE_BRICKS to 5.0,
-		QUARTZ_BRICKS to 5.0,
-		QUARTZ_PILLAR to 5.0,
-		PURPUR_PILLAR to 5.0,
-		CRACKED_STONE_BRICKS to 5.0,
-		CRACKED_DEEPSLATE_BRICKS to 5.0,
-		CRACKED_DEEPSLATE_TILES to 5.0,
-		CRACKED_NETHER_BRICKS to 5.0,
-		CRACKED_POLISHED_BLACKSTONE_BRICKS to 5.0,
+		CHISELED_DEEPSLATE to 8.0,
+		CHISELED_NETHER_BRICKS to 8.0,
+		CHISELED_POLISHED_BLACKSTONE to 8.0,
+		CHISELED_QUARTZ_BLOCK to 8.0,
+		CHISELED_RED_SANDSTONE to 8.0,
+		CHISELED_SANDSTONE to 8.0,
+		CHISELED_STONE_BRICKS to 8.0,
+		QUARTZ_BRICKS to 8.0,
+		QUARTZ_PILLAR to 8.0,
+		PURPUR_PILLAR to 8.0,
+		CRACKED_STONE_BRICKS to 8.0,
+		CRACKED_DEEPSLATE_BRICKS to 8.0,
+		CRACKED_DEEPSLATE_TILES to 8.0,
+		CRACKED_NETHER_BRICKS to 8.0,
+		CRACKED_POLISHED_BLACKSTONE_BRICKS to 8.0,
 
 		DIRT to 3.0,
 		GRASS_BLOCK to 3.0,
@@ -298,10 +298,10 @@ object ShipFactoryMaterialCosts {
 		SOUL_SOIL to 3.0,
 		BONE_BLOCK to 10.0,
 		BASALT to 3.0,
-		SMOOTH_BASALT to 5.0,
+		SMOOTH_BASALT to 8.0,
 		END_STONE to 8.1,
-		POLISHED_BASALT to 5.0,
-		AMETHYST_BLOCK to 5.0,
+		POLISHED_BASALT to 8.0,
+		AMETHYST_BLOCK to 8.0,
 
 
 		WHITE_CONCRETE_POWDER to 3.0,
@@ -356,31 +356,31 @@ object ShipFactoryMaterialCosts {
 		return when (data) {
 			else ->
 				if (data.material.isGlass) {
-					3.0
+					4.0
 				} else if (data.material.isConcrete) {
-					3.0
+					4.0
 				} else if (data.material.isGlassPane) {
-					3.0
+					4.0
 				} else if (data.material.isSlab) {
-					5.0
+					10.0
 				} else if (data.material.isStairs) {
-					5.0
+					10.0
 				} else if (data.material.isStainedTerracotta) {
-					5.0
+					10.0
 				} else if (data.material.isGlazedTerracotta) {
-					5.0
+					10.0
 				} else if (data.material.isConcrete) {
-					5.0
+					8.0
 				} else if (data.material.isSign) {
-					15.0
+					18.0
 				} else if (data.material.isWallSign) {
-					15.0
+					18.0
 				} else if (data.material.isWall) {
-					5.0
+					10.0
 				} else if (blockprice.containsKey(data.material)) {
 					blockprice[data.material]!!.toDouble()
 				} else {
-					6.0
+					10.0
 				}
 		}
 

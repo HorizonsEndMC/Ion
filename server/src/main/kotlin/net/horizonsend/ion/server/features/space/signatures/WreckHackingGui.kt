@@ -46,7 +46,7 @@ class WreckHackingGui(
 		enum class Difficulty(val horizontalGridSize: Int, val verticalGridSize: Int, val trapCount: Int) {
 			EASY(5, 4, 3),
 			MEDIUM(7, 5, 5),
-			HARD(9, 6, 10)
+			HARD(9, 6, 7)
 		}
 	}
 
@@ -240,9 +240,11 @@ class WreckHackingGui(
 			val inventory = chest.inventory
 			inventory.clear()
 
-			giveOrDropItems(CustomItemKeys.DATA_CHIP.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
-			giveOrDropItems(CustomItemKeys.GUIDANCE_SYSTEM.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
-			giveOrDropItems(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(), Random.nextInt(1, 21), viewer)
+			giveOrDropItems(CustomItemKeys.DATA_CHIP.getValue().constructItemStack(), Random.nextInt(5, 13), viewer)
+			giveOrDropItems(CustomItemKeys.GUIDANCE_SYSTEM.getValue().constructItemStack(), Random.nextInt(1, 4), viewer)
+			giveOrDropItems(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(), Random.nextInt(3, 13), viewer)
+			giveOrDropItems(CustomItemKeys.SCORDITE.getValue().constructItemStack(), Random.nextInt(0, 18), viewer)
+			giveOrDropItems(CustomItemKeys.VANADIUM.getValue().constructItemStack(), Random.nextInt(0, 9), viewer)
 
 			viewer.world.playSound(Sound.sound(key("horizonsend:wrecks.hacking.completion"), Sound.Source.PLAYER, 5.0f, 1.0f), viewer)
 			viewer.success("Hacking successful! The chest has been unlocked.")

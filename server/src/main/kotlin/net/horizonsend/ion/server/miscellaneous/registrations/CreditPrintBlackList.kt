@@ -35,7 +35,10 @@ object CreditPrintBlackList {
 		Material.REDSTONE_ORE,
 		Material.DEEPSLATE_IRON_ORE,
 		Material.LAPIS_ORE,
-		Material.NETHER_GOLD_ORE
+		Material.NETHER_GOLD_ORE,
+		Material.BEDROCK,
+		Material.BARRIER,
+		Material.REINFORCED_DEEPSLATE
 	)
 
 	fun checkForCreditPrintBlacklist(data: BlockData): Boolean {
@@ -70,6 +73,9 @@ object CreditPrintBlackList {
 			CustomBlockKeys.SMALL_REACTOR_CORE -> return true
 			CustomBlockKeys.MEDIUM_REACTOR_CORE -> return true
 			CustomBlockKeys.LARGE_REACTOR_CORE -> return true
+			CustomBlockKeys.STEEL_BLOCK -> return true
+			CustomBlockKeys.NETHERITE_CASING -> return true
+			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> return true
 		}
 		return false
 	}
