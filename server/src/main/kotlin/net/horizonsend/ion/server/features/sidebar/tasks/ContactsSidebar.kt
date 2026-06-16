@@ -86,7 +86,13 @@ object ContactsSidebar {
 		 */
 		val dominionContactRangeModifier = if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE))
 			DominionTerritoryBuffTypes.CONTACT_RANGE.value else 0.0
-		return settingValue?.plus(/*nationContactRangeModifier + */dominionContactRangeModifier)?.squared()?.toInt() ?: 0
+		return if (player.world.hasFlag(WorldFlag.DOMINION_WORLD)) {
+			(settingValue?.plus(/*nationContactRangeModifier + */dominionContactRangeModifier)?.times(0.5))?.squared()?.toInt()
+				?: 0
+		} else {
+			settingValue?.plus(/*nationContactRangeModifier + */dominionContactRangeModifier)?.squared()?.toInt()
+				?: 0
+		}
     }
 
     private fun priorityColorChange(): Boolean {
