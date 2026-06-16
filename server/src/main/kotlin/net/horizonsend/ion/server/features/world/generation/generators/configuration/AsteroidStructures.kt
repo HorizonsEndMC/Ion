@@ -675,159 +675,339 @@ object AsteroidStructures {
         "TEST8" to AsteroidBuilder.StaticCombination("CLASSIC", "PURPLE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
         "TEST9" to AsteroidBuilder.StaticCombination("CLASSIC", "ORANGE", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
 
-        "CLASSIC_ANCIENT_DEBRIS_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_ANCIENT_DEBRIS" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_ANCIENT_DEBRIS_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.ANCIENT_DEBRIS),
                     0,
-                    0.0095 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_NETHER_QUARTZ_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_NETHER_QUARTZ" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_NETHER_QUARTZ_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.NETHER_QUARTZ_ORE),
                     0,
-                    0.008 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_COAL_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_COAL" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_COAL_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.COAL_ORE),
                     0,
-                    0.004 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_COPPER_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_COPPER" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_COPPER_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.COPPER_ORE),
                     0,
-                    0.0045 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_IRON_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_IRON" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_IRON_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.IRON_ORE),
                     0,
-                    0.0095 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_EMERALD_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_EMERALD" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_EMERALD_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.DEEPSLATE_EMERALD_ORE),
                     0,
-                    0.0095 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_URANIUM_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_URANIUM" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_URANIUM_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.URANIUM_ORE),
                     0,
-                    0.0045 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_GOLD_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_GOLD" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_GOLD_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.GOLD_ORE),
                     0,
-                    0.0045 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_REDSTONE_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_REDSTONE" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_REDSTONE_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.REDSTONE_ORE),
                     0,
-                    0.0085 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_DIAMOND_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_DIAMOND" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_DIAMOND_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.DIAMOND_ORE),
                     0,
-                    0.009 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_ALUMINUM_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_ALUMINUM" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_ALUMINUM_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.ALUMINUM_ORE),
                     0,
-                    0.0055 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_TITANIUM_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_TITANIUM" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_TITANIUM_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.TITANIUM_ORE),
                     0,
-                    0.0055 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_LAPIS_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_LAPIS" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_LAPIS_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.MaterialType(Material.DEEPSLATE_LAPIS_ORE),
                     0,
-                    0.0035 / 8
+                    0.019 / 8
                 )
             )
         ),
-        "CLASSIC_CHETHERITE_BUILDER" to AsteroidBuilder.StaticCombination(
+        "TRENCH_CHETHERITE" to AsteroidBuilder.StaticCombination(
             "CLASSIC",
             "CLASSIC_CHETHERITE_PALETTE",
             mutableListOf(
                 OreDefinition(
                     OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_ORE),
                     0,
-                    0.0095 / 8
+                    0.019 / 8
                 )
             )
         ),
+
+		// MINING_WORLD
+		"MINING_WORLD_ANCIENT_DEBRIS" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_ANCIENT_DEBRIS_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.ANCIENT_DEBRIS),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_NETHER_QUARTZ" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_NETHER_QUARTZ_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.NETHER_QUARTZ_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_COAL" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_COAL_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.COAL_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_COPPER" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_COPPER_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.COPPER_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_IRON" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_IRON_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.IRON_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_EMERALD" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_EMERALD_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.DEEPSLATE_EMERALD_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_URANIUM" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_URANIUM_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.URANIUM_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_GOLD" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_GOLD_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.GOLD_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_REDSTONE" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_REDSTONE_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.REDSTONE_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_DIAMOND" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_DIAMOND_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.DIAMOND_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_ALUMINUM" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_ALUMINUM_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.ALUMINUM_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_TITANIUM" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_TITANIUM_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.TITANIUM_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_LAPIS" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_LAPIS_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.DEEPSLATE_LAPIS_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_CHETHERITE" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_CHETHERITE_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_ORE),
+					0,
+					0.025 / 8
+				)
+			)
+		),
+
+		// DEEP_SPACE
+		"DEEP_SPACE_IRON" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_IRON_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.MaterialType(Material.IRON_ORE),
+					0,
+					0.012 / 8
+				)
+			)
+		),
+		"DEEP_SPACE_CHETHERITE" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"CLASSIC_CHETHERITE_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_ORE),
+					0,
+					0.012 / 8
+				)
+			)
+		),
     )
 }

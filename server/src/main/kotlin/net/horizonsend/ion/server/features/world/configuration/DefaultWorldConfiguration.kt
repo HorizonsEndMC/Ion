@@ -819,22 +819,20 @@ object DefaultWorldConfiguration {
 				AsteroidPlacementConfiguration(
 					densityProvider = StaticConfigurationGlobal(0.065),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ANCIENT_DEBRIS_BUILDER") to 2.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_NETHER_QUARTZ_BUILDER") to 1.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_COAL_BUILDER") to 2.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_COPPER_BUILDER") to 3.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_IRON_BUILDER") to 8.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_EMERALD_BUILDER") to 7.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_URANIUM_BUILDER") to 3.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_GOLD_BUILDER") to 3.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_REDSTONE_BUILDER") to 6.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_DIAMOND_BUILDER") to 5.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ALUMINUM_BUILDER") to 3.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_TITANIUM_BUILDER") to 3.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_LAPIS_BUILDER") to 2.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_CHETHERITE_BUILDER") to 6.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_ANCIENT_DEBRIS") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_NETHER_QUARTZ") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_COAL") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_COPPER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_IRON") to 8.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_EMERALD") to 7.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_URANIUM") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_GOLD") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_REDSTONE") to 6.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_TITANIUM") to 5.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_LAPIS") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_CHETHERITE") to 6.0,
 					)),
-					minSize = 75.0,
+					minSize = 30.0,
 					maxSize = 100.0
 				)
 			))
@@ -1124,33 +1122,197 @@ object DefaultWorldConfiguration {
 
 	val LOA_7 = register(
 		"LOA-7", WorldSettings(
+			aiDifficulty = WeightedIntegerAmount(
+				setOf(
+					Pair(0, 0.15),
+					Pair(1, 0.35),
+					Pair(2, 0.35),
+					Pair(3, 0.15)
+				)
+			),
+			flags = mutableSetOf(
+				WorldFlag.ALLOW_AI_SPAWNS,
+				WorldFlag.ALLOW_MINING_LASERS,
+				WorldFlag.NO_SHIP_LOCKS,
+				WorldFlag.NOT_SECURE,
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
+				WorldFlag.DOMINION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
 					densityProvider = StaticConfigurationGlobal(0.06),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ANCIENT_DEBRIS_BUILDER") to 1.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_NETHER_QUARTZ_BUILDER") to 1.0
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_IRON") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_CHETHERITE") to 1.0
 					)),
-					minSize = 75.0,
-					maxSize = 150.0
+					minSize = 30.0,
+					maxSize = 75.0
 				)
 			))
 		)
 	)
 
+	val LOA_7_HYPERSPACE = register(
+		"LOA-7_hyperspace", WorldSettings(
+			flags = mutableSetOf(
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.NO_SHIP_LOCKS,
+				WorldFlag.DOMINION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
+		)
+	)
+
 	val TT_91 = register(
 		"TT-91", WorldSettings(
+			aiDifficulty = WeightedIntegerAmount(
+				setOf(
+					Pair(0, 0.15),
+					Pair(1, 0.35),
+					Pair(2, 0.35),
+					Pair(3, 0.15)
+				)
+			),
+			flags = mutableSetOf(
+				WorldFlag.ALLOW_AI_SPAWNS,
+				WorldFlag.ALLOW_MINING_LASERS,
+				WorldFlag.NO_SHIP_LOCKS,
+				WorldFlag.NOT_SECURE,
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
+				WorldFlag.DOMINION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
 					densityProvider = StaticConfigurationGlobal(0.1),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_ANCIENT_DEBRIS_BUILDER") to 1.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("CLASSIC_NETHER_QUARTZ_BUILDER") to 1.0
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_IRON") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_CHETHERITE") to 1.0
 					)),
-					minSize = 75.0,
-					maxSize = 150.0
+					minSize = 30.0,
+					maxSize = 75.0
 				)
 			))
+		)
+	)
+
+	val TT_91_HYPERSPACE = register(
+		"TT-91_hyperspace", WorldSettings(
+			flags = mutableSetOf(
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.NO_SHIP_LOCKS,
+				WorldFlag.DOMINION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
+		)
+	)
+
+	val FAULT = register(
+		"Fault", WorldSettings(
+			aiDifficulty = WeightedIntegerAmount(
+				setOf(
+					Pair(0, 0.15),
+					Pair(1, 0.35),
+					Pair(2, 0.35),
+					Pair(3, 0.15)
+				)
+			),
+			flags = mutableSetOf(
+				WorldFlag.ALLOW_AI_SPAWNS,
+				WorldFlag.ALLOW_MINING_LASERS,
+				WorldFlag.NO_SHIP_LOCKS,
+				WorldFlag.NOT_SECURE,
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
+				WorldFlag.DOMINION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
+			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
+				AsteroidPlacementConfiguration(
+					densityProvider = StaticConfigurationGlobal(0.1),
+					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ANCIENT_DEBRIS") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_NETHER_QUARTZ") to 1.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_COAL") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_COPPER") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_IRON") to 8.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_EMERALD") to 7.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_URANIUM") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_GOLD") to 3.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_REDSTONE") to 6.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_TITANIUM") to 5.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_LAPIS") to 2.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_CHETHERITE") to 6.0,
+					)),
+					minSize = 30.0,
+					maxSize = 75.0
+				)
+			))
+		)
+	)
+
+	val FAULT_HYPERSPACE = register(
+		"Fault_hyperspace", WorldSettings(
+			flags = mutableSetOf(
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.NO_SHIP_LOCKS,
+				WorldFlag.DOMINION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
 		)
 	)
 }
