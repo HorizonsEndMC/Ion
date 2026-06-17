@@ -549,7 +549,7 @@ data class NewStarshipBalancing(
 				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
-			shieldPowerMultiplier = 0.5,
+			shieldPowerMultiplier = 0.4,
 			shieldRegenMultiplier = 0.7,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
@@ -822,7 +822,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.7,
+			shieldPowerMultiplier = 0.8,
 			shieldRegenMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(

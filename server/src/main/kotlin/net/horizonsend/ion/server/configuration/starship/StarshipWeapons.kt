@@ -401,7 +401,7 @@ data class PhaserBalancing(
 data class WebifierBalancing(
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000, incompatibleMultiblocks = listOf()),
-	override var firePowerConsumption: Int = 20000,
+	override var firePowerConsumption: Int = 18000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = null,
 	override var applyCooldownToAll: Boolean = false,
@@ -424,7 +424,7 @@ data class WebifierBalancing(
 	@Serializable
 	data class WebifierProjectileBalancing(
 		override var range: Double = 220.0,
-		override var speed: Double = 125.0,
+		override var speed: Double = 135.0,
 		override var explosionPower: Float = 2.5f,
 		override var starshipShieldDamageMultiplier: Double = 7.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
@@ -459,11 +459,11 @@ data class ArsenalRocketBalancing(
 
 	@Serializable
 	data class ArsenalRocketProjectileBalancing(
-		override var range: Double = 280.0,
+		override var range: Double = 300.0,
 		override var speed: Double = 42.0,
 		override var explosionPower: Float = 7.5f,
 		override var starshipShieldDamageMultiplier: Double = 7.5,
-		override var areaShieldDamageMultiplier: Double = 5.0,
+		override var areaShieldDamageMultiplier: Double = 100.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
@@ -479,7 +479,7 @@ data class ArsenalRocketBalancing(
 data class EMPMissileBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override var firePowerConsumption: Int = 22500,
+	override var firePowerConsumption: Int = 27500,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = null,
 	override var applyCooldownToAll: Boolean = false,
@@ -531,7 +531,7 @@ data class ThermonuclearMissileBalancing(
 	@Serializable
 	data class ThermonuclearMissileProjectileBalancing(
 		override var range: Double = 245.0,
-		override var speed: Double = 32.0,
+		override var speed: Double = 37.5,
 		override var explosionPower: Float = 20f,
 		override var starshipShieldDamageMultiplier: Double = 15.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
@@ -807,9 +807,9 @@ data class AutocannonBalancing(
 	@Serializable
 	data class AutocannonProjectileBalancing(
 		override var range: Double = 200.0,
-		override var speed: Double = 400.0,
-		override var explosionPower: Float = 2.0f,
-		override var starshipShieldDamageMultiplier: Double = 2.0,
+		override var speed: Double = 450.0,
+		override var explosionPower: Float = 4.0f,
+		override var starshipShieldDamageMultiplier: Double = 1.2,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -871,7 +871,7 @@ data class GaussCannonBalancing(
 
 	@Serializable
 	data class GaussCannonProjectileBalancing(
-		override var range: Double = 250.0,
+		override var range: Double = 230.0,
 		override var speed: Double = 130.0,
 		override var explosionPower: Float = 3.5f,
 		override var starshipShieldDamageMultiplier: Double = 4.5,
@@ -1076,7 +1076,7 @@ data class ScramblerBalancing(
 		override var range: Double = 145.0,
 		override var speed: Double = 400.0,
 		override var explosionPower: Float = 4.0f,
-		override var starshipShieldDamageMultiplier: Double = 3.5,
+		override var starshipShieldDamageMultiplier: Double = 3.2,
 		override var areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.scrambler.shoot.near", volume = 1f, source = Sound.Source.PLAYER),

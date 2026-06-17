@@ -662,7 +662,96 @@ object AsteroidStructures {
                 WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLED_DEEPSLATE), 1.0),
             )
         ),
+		"SCORDITE_PALETTE" to NoiseMaterialConfiguration(
+			NoiseConfiguration3d(
+				noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 20f
+				),
+				fractalSettings = FractalSettings.None,
+				domainWarpConfiguration = DomainWarpConfiguration.None,
+				amplitude = 1.0,
+				normalizedPositive = true
+			),
+			listOf(
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MOSS_BLOCK), 3.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GREEN_CONCRETE), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GREEN_TERRACOTTA), 1.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MOSSY_STONE_BRICKS), 6.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLED_DEEPSLATE), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.STONE_BRICKS), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_TUFF), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CHISELED_TUFF), 4.0),
+			)
+		),
+		"VANADIUM_PALETTE" to NoiseMaterialConfiguration(
+			NoiseConfiguration3d(
+				noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 20f
+				),
+				fractalSettings = FractalSettings.None,
+				domainWarpConfiguration = DomainWarpConfiguration.None,
+				amplitude = 1.0,
+				normalizedPositive = true
+			),
+			listOf(
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_CONCRETE), 3.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_TERRACOTTA), 1.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GRAY_GLAZED_TERRACOTTA), 6.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BASALT), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DEEPSLATE), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.WARPED_HYPHAE), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MUD), 4.0),
+			)
+		),
+		"ZIRCON_PALETTE" to NoiseMaterialConfiguration(
+			NoiseConfiguration3d(
+				noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 20f
+				),
+				fractalSettings = FractalSettings.None,
+				domainWarpConfiguration = DomainWarpConfiguration.None,
+				amplitude = 1.0,
+				normalizedPositive = true
+			),
+			listOf(
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CHISELED_TUFF), 3.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_TUFF), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.STONE_BRICKS), 1.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 6.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GRAY_CONCRETE), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.POLISHED_BLACKSTONE), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CHERRY_WOOD), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CHISELED_NETHER_BRICKS), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PURPLE_TERRACOTTA), 4.0),
+			)
+		),
+		"ATAVUM_PALETTE" to NoiseMaterialConfiguration(
+			NoiseConfiguration3d(
+				noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 20f
+				),
+				fractalSettings = FractalSettings.None,
+				domainWarpConfiguration = DomainWarpConfiguration.None,
+				amplitude = 1.0,
+				normalizedPositive = true
+			),
+			listOf(
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLACKSTONE), 3.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.MUD), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLED_DEEPSLATE), 1.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SMOOTH_BASALT), 6.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.GRAY_CONCRETE), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_NETHER_BRICKS), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.STRIPPED_MANGROVE_WOOD), 2.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_TERRACOTTA), 4.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.RED_GLAZED_TERRACOTTA), 4.0),
+			)
+		),
     )
+
 
     val defaultBuilders: Map<String, AsteroidBuilder> = mapOf(
         "TEST" to AsteroidBuilder.StaticCombination("CLASSIC", "POLKA", mutableListOf(OreDefinition(OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_BLOCK), 0, 0.005))),
@@ -982,6 +1071,50 @@ object AsteroidStructures {
 					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.CHETHERITE_ORE),
 					0,
 					0.025 / 8
+				)
+			)
+		),
+		"MINING_WORLD_SCORDITE" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"SCORDITE_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.SCORDITE_ORE),
+					0,
+					0.005 / 8
+				)
+			)
+		),
+		"MINING_WORLD_VANADIUM" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"VANADIUM_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
+					0,
+					0.003 / 8
+				)
+			)
+		),
+		"TEST_WORLD_ZIRCON" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"ZIRCON_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
+					0,
+					0.001 / 8
+				)
+			)
+		),
+		"TEST_WORLD_ATAVUM" to AsteroidBuilder.StaticCombination(
+			"CLASSIC",
+			"ATAVUM_PALETTE",
+			mutableListOf(
+				OreDefinition(
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
+					0,
+					0.001 / 8
 				)
 			)
 		),

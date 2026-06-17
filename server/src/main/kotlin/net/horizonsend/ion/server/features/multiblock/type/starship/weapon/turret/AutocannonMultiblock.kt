@@ -89,7 +89,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 						shape = Stairs.Shape.STRAIGHT
 					)
 				)
-				x(0).kothBlock()
+				x(0).assemblyCore()
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,

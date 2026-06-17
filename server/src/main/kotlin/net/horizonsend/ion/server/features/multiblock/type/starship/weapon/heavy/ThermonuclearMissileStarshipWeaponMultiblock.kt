@@ -147,16 +147,16 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 				)
 			}
 			y(1) {
-				x(2).anyTerracotta()
+				x(2).assemblyCore()
 				x(1).ironBlock()
 				x(-1).ironBlock()
-				x(-2).anyTerracotta()
+				x(-2).assemblyCore()
 			}
 			y(2) {
-				x(2).anyTerracotta()
+				x(2).assemblyCore()
 				x(1).ironBlock()
 				x(-1).ironBlock()
-				x(-2).anyTerracotta()
+				x(-2).assemblyCore()
 			}
 			y(3) {
 				x(2).titaniumBlock()
@@ -298,7 +298,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 						shape = Stairs.Shape.STRAIGHT
 					)
 				)
-				x(0).anyTerracotta()
+				x(0).assemblyCore()
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -369,7 +369,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 			}
 			y(1) {
 				x(1).ironBlock()
-				x(0).anyTerracotta()
+				x(0).assemblyCore()
 				x(-1).ironBlock()
 			}
 			y(2) {
@@ -380,7 +380,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 						shape = Stairs.Shape.STRAIGHT
 					)
 				)
-				x(0).anyTerracotta()
+				x(0).assemblyCore()
 				x(-1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
