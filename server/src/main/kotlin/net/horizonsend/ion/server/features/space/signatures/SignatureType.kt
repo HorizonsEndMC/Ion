@@ -41,6 +41,9 @@ data class SchematicBehavior(
 		val schematicFile: File = IonServer.dataFolder.resolve("signatures").resolve("$schematicName.schem")
 		val clipboard: Clipboard = cache[schematicFile].getOrNull() ?: return false
 
+		// prevents the signature from spawning if it would replace another structure (uncomment this if someone's
+		// base actually does get nuked)
+		/*
 		return Tasks.getSyncBlocking {
 			if (isObstructed(location, clipboard, Vec3i(location.x.toInt(), location.y.toInt(), location.z.toInt()))) {
 				return@getSyncBlocking false
@@ -55,6 +58,16 @@ data class SchematicBehavior(
 
 			return@getSyncBlocking true
 		}
+		 */
+
+		val target = StarshipDealers.resolveTarget(clipboard, location)
+		val vec3i = Vec3i(target)
+
+		placeSchematicEfficiently(clipboard, location.world, vec3i, true) { placedBlocks ->
+			callback.invoke(placedBlocks, location.world)
+		}
+
+		return true
 	}
 
 	fun isObstructed(location: Location, schematic: Clipboard, pilotLoc: Vec3i): Boolean {

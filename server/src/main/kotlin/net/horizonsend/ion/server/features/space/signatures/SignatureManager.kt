@@ -24,6 +24,7 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.io.File
+import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.pow
@@ -141,6 +142,9 @@ object SignatureManager : IonServerComponent(true) {
                         potentialZ) <= (NATIONS_BALANCE.capturableStation.radius + MIN_DISTANCE_FROM_STATIONS).toDouble().pow(2)
                 ) continue
             }
+
+			// only spawn away from inhabited chunks (this might need to be increased later on)
+			if (randomSpaceWorld.getChunkAt(potentialX.toInt(), potentialZ.toInt()).inhabitedTime >= Duration.ofHours(1).toSeconds() * 20) continue
 
             return Location(randomSpaceWorld, potentialX, potentialY, potentialZ)
         }
