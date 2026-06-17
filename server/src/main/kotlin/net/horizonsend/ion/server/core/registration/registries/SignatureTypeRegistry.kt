@@ -57,15 +57,15 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			minSpawnTime = Duration.ofHours(2L),
 			maxSpawnTime = Duration.ofHours(4L),
 			persistentBehavior = PersistentBehavior(
-				maximumPerServer = 5,
+				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),
 			),
 			schematicBehavior = SchematicBehavior(
 				schematicNames = WeightedRandomList(
-					"scordite_field" to 35,
+					"scordite_field" to 50,
 					"vanadium_field" to 35,
-					"zircon_field" to 25,
-					"atavum_field" to 5,
+					"zircon_field" to 13,
+					"atavum_field" to 2,
 				),
 			),
 			scannableBehavior = ScannableBehavior(
@@ -91,7 +91,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			minSpawnTime = Duration.ofHours(1L),
 			maxSpawnTime = Duration.ofHours(3L),
 			persistentBehavior = PersistentBehavior(
-				maximumPerServer = 5,
+				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),
 			),
 			schematicBehavior = SchematicBehavior(
