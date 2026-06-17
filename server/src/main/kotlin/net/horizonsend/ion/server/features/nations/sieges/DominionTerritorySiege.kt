@@ -187,7 +187,7 @@ class DominionTerritorySiege(
 				title = "Dominion Territory Failure",
 				description = "$attackerName's siege of $defenderName's Dominion Territory in ${region.world} has failed.",
 				fields = listOf(
-					Embed.Field("$attackerName's Points,", "$attackerPoints", inline = true),
+					Embed.Field("Besieger Points,", "$attackerPoints", inline = true),
 					Embed.Field("$defenderName's Points,", "$defenderPoints", inline = true),
 				)
 			)

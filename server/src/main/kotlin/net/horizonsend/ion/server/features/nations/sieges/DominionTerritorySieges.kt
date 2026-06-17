@@ -319,8 +319,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			siege.attackerPoints += points
 			log.info("Awarded attacker $points points for killing ${player.name}")
 			siegeAudience(siege).sendMessage(template(
-				text("{0} accrued {1} points for killing {2}."),
-				formatNationName(siege.attacker),
+				text("The besiegers accrued {0} points for killing {1}."),
 				points,
 				player.name
 			))
@@ -369,8 +368,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			siege.attackerPoints += attackerNew
 			log.info("Awarded attacker $attackerNew passive points")
 			audience.sendMessage(template(
-				text("{0} accrued {1} passive points for being inside the nation territory."),
-				formatNationName(siege.attacker),
+				text("The besiegers accrued {0} passive points for being inside the nation territory."),
 				attackerNew
 			))
 		}
