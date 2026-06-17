@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -56,6 +57,7 @@ object RegionalObjectiveSieges : IonServerComponent() {
 	const val MIN_SHIP_SIZE = 8000
 	const val COOLDOWN_HOURS = 24L
 	const val XENON_REWARD = 10
+	const val MIN_DOMINION_TERRITORIES = 2
 
 	// Points awarded per tick for presence
 	private const val PRESENCE_POINTS = 2
@@ -214,7 +216,10 @@ object RegionalObjectiveSieges : IonServerComponent() {
 			return@asyncLocked player.userError("You cannot siege in a ship smaller than $MIN_SHIP_SIZE blocks.")
 		}
 
-		val dominionCount =
+		val dominionCount = Regions.getAllOf<RegionDominionTerritory>().count { it.nation == nation }
+		if (dominionCount < MIN_DOMINION_TERRITORIES) {
+			return@asyncLocked player.userError("Your nation needs to own at least $MIN_DOMINION_TERRITORIES dominion territories to siege a regional objective.")
+		}
 
 		activeSieges.add(ActiveSiege(region.id, region.type, System.currentTimeMillis()))
 
