@@ -191,7 +191,7 @@ object AISpawners : IonServerComponent(true) {
 				it,
 				AISpawnerTicker(
 					0.5,
-					pointThreshold = 20 * 60 * 7
+					pointThreshold = 20 * 60 * 11
 				),
 				SingleSpawn(
 					WeightedShipSupplier(
@@ -215,11 +215,11 @@ object AISpawners : IonServerComponent(true) {
 			duration = { Duration.ofMinutes(20) },
 			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(9)) },
 			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {0} at {1} {3}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
+			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {4}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has disappeared".miniMessage(),
 			radius = 1500.0,
 			spawnSeparation = { getRandomDuration(Duration.ofSeconds(90), Duration.ofSeconds(130)) },
-			listOf("Trench", "AU-0821", "Horizon")
+			listOf(*deepSpaceWorlds().toTypedArray())
 		)
 
 		registerGlobalSpawner(
@@ -240,13 +240,13 @@ object AISpawners : IonServerComponent(true) {
 			)
 		)
 
-		registerSingleWorldSpawner("Trench", "AU-0821") {
+		registerSingleWorldSpawner("Trench", "AU-0821", *deepSpaceWorlds().toTypedArray()) {
 			SingleWorldSpawner(
 				"WATCHER_BAG_SPAWNER",
 				it,
 				AISpawnerTicker(
 					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7 * 5
+					pointThreshold = 20 * 60 * 11 * 5
 				),
 				BagSpawner(
 					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0),
@@ -269,11 +269,11 @@ object AISpawners : IonServerComponent(true) {
 			duration = { Duration.ofMinutes(30) },
 			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(9)) },
 			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-			"<${HE_MEDIUM_GRAY}>An <$吃饭人_STANDARD>Unknown Signal<${吃饭人_STANDARD}> has been detected in {0} at {1} {3}. <$吃饭人_STANDARD>Alien starships patrol the area.".miniMessage(),
+			"<${HE_MEDIUM_GRAY}>An <$吃饭人_STANDARD>Unknown Signal<${吃饭人_STANDARD}> has been detected in {4}. <$吃饭人_STANDARD>Alien starships patrol the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$吃饭人_STANDARD>Unknown Signal<${吃饭人_STANDARD}> has disappeared".miniMessage(),
 			radius = 1500.0,
 			spawnSeparation = { getRandomDuration(Duration.ofSeconds(50), Duration.ofSeconds(100)) },
-			listOf("Trench", "AU-0821", "Horizon")
+			listOf(*deepSpaceWorlds().toTypedArray())
 		)
 
 		registerGlobalSpawner(
@@ -299,13 +299,13 @@ object AISpawners : IonServerComponent(true) {
 			)
 		)
 
-		registerSingleWorldSpawner("Trench", "AU-0821") {
+		registerSingleWorldSpawner("Trench", "AU-0821", *deepSpaceWorlds().toTypedArray()) {
 			SingleWorldSpawner(
 				"吃饭人_BAG_SPAWNER",
 				it,
 				AISpawnerTicker(
 					pointChance = 0.7,
-					pointThreshold = 20 * 60 * 7 * 5
+					pointThreshold = 20 * 60 * 11 * 5
 				),
 				BagSpawner(
 					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0),
@@ -498,7 +498,19 @@ object AISpawners : IonServerComponent(true) {
 							spawnChance(吃饭人.asSpawnedShip(LOUMAI), 0.1),
 							spawnChance(吃饭人.asSpawnedShip(FASHIGUN), 0.5),
 						)
-					)
+					),
+					*WorldSettings(
+						worldName = "LOA-7",
+						probability = 0.05,
+						minDistanceFromPlayer = 2000.0,
+						maxDistanceFromPlayer = 4000.0,
+						templates = listOf(
+							spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCED), 0.5),
+							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5),
+							spawnChance(吃饭人.asSpawnedShip(LOUMAI), 0.1),
+							spawnChance(吃饭人.asSpawnedShip(FASHIGUN), 0.05),
+						)
+					).forWorlds(*deepSpaceWorlds().toTypedArray()).toTypedArray()
 				)
 			)
 		)
@@ -623,7 +635,22 @@ object AISpawners : IonServerComponent(true) {
 							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.FYR), 0.2),
 							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR), 0.2)
 						)
-					)
+					),
+					*WorldSettings(
+						worldName = "LOA-7",
+						probability = 0.03,
+						minDistanceFromPlayer = 2000.0,
+						maxDistanceFromPlayer = 4000.0,
+						templates = listOf(
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.VENDETTA), 0.2),
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.ANAAN), 0.2),
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.CORMORANT), 0.2),
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.MANTIS), 0.2),
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.HERNSTEIN), 0.2),
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.FYR), 0.2),
+							spawnChance(PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR), 0.2)
+						)
+					).forWorlds(*deepSpaceWorlds().toTypedArray()).toTypedArray()
 				)
 			)
 		)
@@ -742,6 +769,8 @@ object AISpawners : IonServerComponent(true) {
 					explorerWorld("Horizon", 0.27),
 					explorerWorld("Trench", 0.055),
 					explorerWorld("AU-0821", 0.055),
+					*explorerWorld("LOA-7", 0.01)
+						.forWorlds(*deepSpaceWorlds().toTypedArray()).toTypedArray(),
 				)
 			)
 		)
@@ -1458,6 +1487,11 @@ object AISpawners : IonServerComponent(true) {
 
 		Configuration.save(PersistentSpawnerData(data), IonServer.dataFolder, "persistentSpawnerData.json")
 	}
+
+	fun deepSpaceWorlds() = listOf("LOA-7", "TT-91", "CXK-3", "QIM-8", "F3L-I", "BQ-5A", "KRY-2", "OMN-6",
+		"Sunder", "Meridian", "TNS-44", "HL-81", "KTR-18", "URT-8", "LM-77", "JCT-3", "AXA-2", "PRM-16",
+		"STR-29", "Axis", "XN-81", "VXM-11", "DN-4V", "GRX-5", "NTH-3", "PDN-2", "IX-Q3", "XRW-9",
+		"TH-88", "OQ-77", "Conduit")
 
 	@Serializable
 	class PersistentSpawnerData(

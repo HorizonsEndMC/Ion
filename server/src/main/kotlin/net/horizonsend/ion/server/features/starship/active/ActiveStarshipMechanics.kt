@@ -388,13 +388,18 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
 
+	/**
+	 * Map visibility check
+	 */
 	private fun isInPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
 		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
 
 		val beacons = ConfigurationFiles.serverConfiguration().beacons
 			.filter { it.spaceLocation.world == player.world.name }
 
+		// not visible if not in a core region
 		if (starship?.world?.hasFlag(WorldFlag.CORE_REGION_WORLD) == false) return false
+
 		if (starship != null) {
 			for (beacon in beacons) if ((distanceSquared(beacon.spaceLocation.toVec3i(), starship.centerOfMass) <= 500*500)) return true
 		} else {
@@ -403,6 +408,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		return false
 	}
 
+	/**
+	 * Second, important visibility check (basically only for combat)
+	 */
 	private fun isInSuperPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
 		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
 		return CombatTimer.isPvpCombatTagged(player)

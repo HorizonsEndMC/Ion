@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
@@ -17,6 +18,9 @@ import net.horizonsend.ion.server.features.nations.NationsMap.dynmapLoaded
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
@@ -138,9 +142,16 @@ class LocusScheduler(
 				center!!.world.name,
 				center!!.blockX,
 				center!!.blockY,
-				center!!.blockZ
+				center!!.blockZ,
+				center!!.world.ion.getSpaceRegionName()
 			)
 		)
+
+		if (center!!.world.ion.hasFlag(WorldFlag.DOMINION_WORLD)) {
+			IonWorld.getPlayersInRegion(center!!.world.ion.getSpaceRegion()).forEach {
+				it.hint("The ${displayName.plainText()} has spawned in the ${center!!.world.name} system!")
+			}
+		}
 	}
 
 	fun end() {
@@ -199,11 +210,11 @@ class LocusScheduler(
 
 	private fun markDynmapZone() {
 		if (!active) return
-		addLocus(this)
+		//addLocus(this)
 	}
 
 	private fun removeDynmapZone() {
-		removeLocus(this)
+		//removeLocus(this)
 	}
 
 	/** The location provider to give the spawner. */
@@ -227,6 +238,7 @@ class LocusScheduler(
 
 	companion object {
 		const val LOCUS_Y = 192.0
+		/*
 		private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 		private val markerSet
 			get() = markerAPI.getMarkerSet("events")
@@ -263,6 +275,7 @@ class LocusScheduler(
 			if (!dynmapLoaded) return
 			markerSet.findCircleMarker("${locus.getSpawner().identifier}_LOCUS")?.deleteMarker()
 		}
+		 */
 	}
 
 	private fun addGravityWell() {

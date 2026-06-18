@@ -4,8 +4,11 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
@@ -14,12 +17,15 @@ import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -65,9 +71,18 @@ object SignatureManager : IonServerComponent(true) {
 				val signature = generateNewSignature(signatureType) ?: continue
 				log.info("Signature ${signature.signatureType.displayName.plainText()} spawned in ${signature.location.world.name}, ${signature.location.x}, ${signature.location.y}, ${signature.location.z}")
 
-				IonServer.server.sendMessage(
-					text("A ${signature.signatureType.displayName.plainText()} has spawned somewhere in the ${signature.location.world.ion.getSpaceRegionName()} region!", HE_LIGHT_BLUE)
+				Notify.chatAndGlobal(
+					template(
+						Component.text("A {0} has spawned somewhere in the {1} region!", HE_LIGHT_BLUE),
+						paramColor = HE_LIGHT_GRAY,
+						useQuotesAroundObjects = false,
+						signature.signatureType.displayName.plainText(),
+						signature.location.world.ion.getSpaceRegionName(),
+					)
 				)
+				IonWorld.getPlayersInRegion(signature.location.world.ion.getSpaceRegion()).forEach {
+					it.hint("The ${signature.signatureType.displayName.plainText()} has spawned in the ${signature.location.world.name} system!")
+				}
 
 				if (persistent != null) activeSignatures[signature] = System.currentTimeMillis()
 			}

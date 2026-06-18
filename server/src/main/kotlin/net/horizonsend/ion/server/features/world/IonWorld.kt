@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.world.WorldInitEvent
@@ -269,6 +270,8 @@ class IonWorld private constructor(
 		val World.ion: IonWorld get() = get(this)
 		fun World.hasFlag(flag: WorldFlag): Boolean = ion.hasFlag(flag)
 //		fun World.environments(): Set<Environment> = ion.environments
+
+		fun getPlayersInRegion(region: SpaceRegion): List<Player> = Bukkit.getOnlinePlayers().filter { it.location.world.ion.getSpaceRegion() == region }
 	}
 
 	private fun loadForbiddenBlocks(): LongOpenHashSet {

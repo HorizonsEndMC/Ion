@@ -18,7 +18,7 @@ object SpaceMap : IonServerComponent(true) {
 	private lateinit var markerSet: MarkerSet
 	private lateinit var gravityWellMarkerSet: MarkerSet
 	// TODO: REMOVE THIS; FOR DEBUG USES ONLY
-	private lateinit var debugWaypointMarkerSet: MarkerSet
+	//private lateinit var debugWaypointMarkerSet: MarkerSet
 
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("dynmap")) {
@@ -39,8 +39,8 @@ object SpaceMap : IonServerComponent(true) {
 		markerAPI.getMarkerSet("gravity_well")?.deleteMarkerSet()
 		gravityWellMarkerSet = markerAPI.createMarkerSet("gravity_well", "Gravity Wells", null, false)
 		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
-		markerAPI.getMarkerSet("debug_waypoints")?.deleteMarkerSet()
-		debugWaypointMarkerSet = markerAPI.createMarkerSet("debug_waypoints", "DEBUG: Waypoints", null, false)
+		//markerAPI.getMarkerSet("debug_waypoints")?.deleteMarkerSet()
+		//debugWaypointMarkerSet = markerAPI.createMarkerSet("debug_waypoints", "DEBUG: Waypoints", null, false)
 
 		for (star in Space.getStars()) {
 			if (star.name == "EdenHack") continue
