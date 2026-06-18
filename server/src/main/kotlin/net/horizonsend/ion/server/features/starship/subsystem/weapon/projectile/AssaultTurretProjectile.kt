@@ -24,8 +24,12 @@ class AssaultTurretProjectile(
 	side: Boolean
 ): LaserProjectile<AssaultTurretBalancing.AssaultTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 	val currentSide = side
+	private var tick = 0
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
+		tick++
+		if (tick % 5 != 0) return
+
 		val origin = Location(location.world, x, y, z)
 		val forwardDirection = origin.direction.clone().normalize()
 		val rightDirection = forwardDirection.clone().crossProduct(Vector(0.0, 1.5, 0.0)).normalize()

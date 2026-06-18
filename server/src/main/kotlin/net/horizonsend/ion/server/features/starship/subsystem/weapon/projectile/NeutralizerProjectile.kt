@@ -30,6 +30,7 @@ class NeutralizerProjectile(
 ) : TrackingLaserProjectile<NeutralizerBalancing.NeutralizerProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, NeutralizerStarshipWeaponMultiblock.damageType) {
 	override val color: Color = Color.ORANGE
 
+	/*
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		super.spawnParticle(x, y, z, force)
 		for (startPoint in subsystem.getFirePos().toLocation(location.world).circlePoints(2.0, 10, direction)) {
@@ -46,6 +47,7 @@ class NeutralizerProjectile(
 			)
 		}
 	}
+	 */
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         val shooterStarship = shooter.starship ?: return
@@ -79,10 +81,10 @@ class NeutralizerProjectile(
 
 		}
 
-		val task = Tasks.syncRepeatTask(0L, 2L) {
+		val task = Tasks.syncRepeatTask(0L, 5L) {
 			val endLocation = subsystem.getFirePos().toLocation(shooterStarship.world).toCenterLocation()
 
-			for (startPoint in impactLocation.circlePoints(5.0, 20, direction)) {
+			for (startPoint in impactLocation.circlePoints(5.0, 10, direction)) {
 				shooterStarship.world.spawnParticle(
 					Particle.TRAIL,
 					startPoint,

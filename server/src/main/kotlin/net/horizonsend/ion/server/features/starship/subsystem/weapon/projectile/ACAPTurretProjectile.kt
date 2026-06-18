@@ -34,6 +34,8 @@ class ACAPTurretProjectile(
 	)
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
+		tick++
+		if (tick % 5 != 0) return
 		val particle1 = Particle.DUST_COLOR_TRANSITION
 		val particle2 = Particle.SONIC_BOOM
 		location.world.spawnParticle(particle2, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
@@ -42,8 +44,7 @@ class ACAPTurretProjectile(
 
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if (starship.initialBlockCount > 12000)
-		impactLocation.createExplosion(6.0f)
+		if (starship.initialBlockCount > 12000) impactLocation.createExplosion(6.0f)
 		addToDamagers(impactLocation.world, impactLocation.block, shooter, 6.0f.roundToInt(), explosionOccurred = false, runStarshipImpactEvent = false)
 	}
 }
