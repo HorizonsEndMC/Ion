@@ -145,6 +145,9 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_WARD,
 			)
 		)
 	)
@@ -182,6 +185,9 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_WARD
 			)
 		)
 	)
@@ -227,6 +233,9 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_WARD
 			)
 		)
 	)
@@ -251,6 +260,9 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_WARD
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.3,
@@ -300,6 +312,9 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_WARD
 			)
 		)
 	)
@@ -343,6 +358,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_MONOLITH,
 			)
 		)
 	)
@@ -385,6 +402,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_MONOLITH,
 			)
 		)
 	)
@@ -421,6 +440,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_MONOLITH,
 			)
 		)
 	)
@@ -451,6 +472,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_MONOLITH,
 			)
 		)
 	)
@@ -481,6 +504,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
 			)
 		)
 	)
@@ -511,6 +536,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
 			)
 		)
 	)
@@ -541,6 +568,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
 			)
 		)
 	)
@@ -583,6 +612,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
 			)
 		)
 	)
@@ -631,6 +662,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_SPINE,
 			)
 		)
 	)
@@ -655,6 +688,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_SPINE,
 			)
 		)
 	)
@@ -685,6 +720,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_SPINE,
 			)
 		)
 	)
@@ -709,6 +746,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_SPINE,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -759,6 +798,8 @@ object DefaultWorldConfiguration {
 			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_BREACH,
 			)
 		)
 	)
@@ -781,6 +822,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_BREACH,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -861,6 +904,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_BREACH,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -886,6 +931,9 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SPACE_STATIONS,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.REGION_WORLD_WARD,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -912,6 +960,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SPACE_STATIONS,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_MONOLITH,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -938,6 +988,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SPACE_STATIONS,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_SPINE,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -964,6 +1016,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SPACE_STATIONS,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -981,6 +1035,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
 				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_FRACTURE,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -998,6 +1054,9 @@ object DefaultWorldConfiguration {
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
 				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.SAFE_WORLD,
+				WorldFlag.REGION_WORLD_WARD,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -1015,6 +1074,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
 				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_MONOLITH,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -1032,6 +1093,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
 				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_SPINE,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -1049,6 +1112,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
 				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_BREACH
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -1083,6 +1148,8 @@ object DefaultWorldConfiguration {
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
 				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.CORE_REGION_WORLD,
+				WorldFlag.REGION_WORLD_BREACH
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -1609,6 +1676,7 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_FRACTURE,
+				WorldFlag.DOMINION_TRADE_WORLD,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -1724,7 +1792,6 @@ object DefaultWorldConfiguration {
 				)
 			),
 			flags = mutableSetOf(
-				WorldFlag.ALLOW_AI_SPAWNS,
 				WorldFlag.ALLOW_MINING_LASERS,
 				WorldFlag.NO_SHIP_LOCKS,
 				WorldFlag.NOT_SECURE,
@@ -2401,7 +2468,6 @@ object DefaultWorldConfiguration {
 				)
 			),
 			flags = mutableSetOf(
-				WorldFlag.ALLOW_AI_SPAWNS,
 				WorldFlag.ALLOW_MINING_LASERS,
 				WorldFlag.NO_SHIP_LOCKS,
 				WorldFlag.NOT_SECURE,
@@ -2463,7 +2529,6 @@ object DefaultWorldConfiguration {
 				)
 			),
 			flags = mutableSetOf(
-				WorldFlag.ALLOW_AI_SPAWNS,
 				WorldFlag.ALLOW_MINING_LASERS,
 				WorldFlag.NO_SHIP_LOCKS,
 				WorldFlag.NOT_SECURE,
@@ -2534,6 +2599,7 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_SPINE,
+				WorldFlag.DOMINION_TRADE_WORLD,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
@@ -3207,7 +3273,6 @@ object DefaultWorldConfiguration {
 				)
 			),
 			flags = mutableSetOf(
-				WorldFlag.ALLOW_AI_SPAWNS,
 				WorldFlag.ALLOW_MINING_LASERS,
 				WorldFlag.NO_SHIP_LOCKS,
 				WorldFlag.NOT_SECURE,
@@ -3278,6 +3343,7 @@ object DefaultWorldConfiguration {
 				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_MONOLITH,
+				WorldFlag.DOMINION_TRADE_WORLD,
 			),
 			environments = WorldEnvironmentConfiguration(
 				atmosphericPressure = 0.0,
