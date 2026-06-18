@@ -141,7 +141,7 @@ object CombatNPCs : IonServerComponent(true) {
 			event.drops.addAll(drops)
 
 			destroyNPC(npc)
-			SLXP.addPowerAsync(playerId, -4)
+			SLXP.addPowerAsync(playerId, -5)
 			if (killer is Player) SLXP.addPowerAsync(killer.uniqueId, 2)
 
 			Tasks.async {
