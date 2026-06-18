@@ -401,9 +401,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		if (starship?.world?.hasFlag(WorldFlag.CORE_REGION_WORLD) == false) return false
 
 		if (starship != null) {
-			for (beacon in beacons) if ((distanceSquared(beacon.spaceLocation.toVec3i(), starship.centerOfMass) <= 500*500)) return true
+			for (beacon in beacons) if (beacon.proximityReveal == true && (distanceSquared(beacon.spaceLocation.toVec3i(), starship.centerOfMass) <= 500 * 500)) return true
 		} else {
-			for (beacon in beacons) if ((distanceSquared(beacon.spaceLocation.toVector(), player.location.toVector()) <= 500*500)) return true
+			for (beacon in beacons) if (beacon.proximityReveal == true && (distanceSquared(beacon.spaceLocation.toVector(), player.location.toVector()) <= 500 * 500)) return true
 		}
 		return false
 	}

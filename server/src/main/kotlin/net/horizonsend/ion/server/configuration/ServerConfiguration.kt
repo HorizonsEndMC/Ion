@@ -203,7 +203,8 @@ data class ServerConfiguration(
 		val destination: Pos,
 		val destinationName: String? = null,
 		val exits: ArrayList<Pos>? = null,
-		val prompt: String? = null
+		val prompt: String? = null,
+		val proximityReveal: Boolean? = false
 	) : NavigationObject
 
 	@Serializable
