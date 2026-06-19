@@ -148,7 +148,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.06),
+					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_SCORDITE") to 5.0,
@@ -880,7 +880,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.06),
+					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TRENCH_NETHER_QUARTZ") to 1.0,
@@ -2104,7 +2104,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.06),
+					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_NETHER_QUARTZ") to 1.0,
@@ -2735,7 +2735,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.055),
+					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_NETHER_QUARTZ") to 1.0,
@@ -2808,7 +2808,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.055),
+					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_NETHER_QUARTZ") to 1.0,
@@ -3564,7 +3564,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.055),
+					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ANCIENT_DEBRIS") to 2.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_NETHER_QUARTZ") to 1.0,
