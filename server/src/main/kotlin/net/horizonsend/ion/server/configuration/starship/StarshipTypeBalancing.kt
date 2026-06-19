@@ -1030,7 +1030,7 @@ data class NewStarshipBalancing(
 			),
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
-				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1, firePowerConsumption = 25000),
+				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
