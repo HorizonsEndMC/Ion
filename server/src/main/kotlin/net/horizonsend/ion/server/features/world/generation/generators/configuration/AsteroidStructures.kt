@@ -1103,7 +1103,7 @@ object AsteroidStructures {
 				OreDefinition(
 					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
 					0,
-					0.005 / 8
+					0.002 / 8
 				)
 			)
 		),
@@ -1114,7 +1114,7 @@ object AsteroidStructures {
 				OreDefinition(
 					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
 					0,
-					0.005 / 8
+					0.001 / 8
 				)
 			)
 		),
