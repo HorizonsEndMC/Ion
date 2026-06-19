@@ -84,8 +84,6 @@ class WebifierProjectile(
 		}
 	}
 
-	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
-
 	private fun curveEquation(x: Double, horizontalShift: Double) = (1.025.pow(x - horizontalShift) + 1) / 8
 
 	companion object {
