@@ -152,6 +152,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.2,
+			maxCruiseSpeed = 35,
 			shieldPowerMultiplier = 1.0,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -180,6 +181,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.25,
+			maxCruiseSpeed = 30,
 			shieldPowerMultiplier = 1.0,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -246,6 +248,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.35,
+			maxCruiseSpeed = 23,
 			shieldPowerMultiplier = 1.0,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -270,6 +273,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.35,
+			maxCruiseSpeed = 35,
 			shieldPowerMultiplier = 0.5,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -310,6 +314,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.4,
+			maxCruiseSpeed = 21,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
@@ -335,6 +340,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
 			cruiseSpeedMultiplier = 0.65,
+			maxCruiseSpeed = 14,
 			shieldPowerMultiplier = 1.00,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -430,6 +436,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
 			cruiseSpeedMultiplier = 0.50,
+			maxCruiseSpeed = 14,
 			shieldPowerMultiplier = 1.50,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -1704,6 +1711,7 @@ sealed interface StarshipTypeBalancing {
 	val wellStrength: Double
 	val hyperspaceRangeMultiplier: Double
 	val cruiseSpeedMultiplier: Double
+	val maxCruiseSpeed: Int
 	val shieldPowerMultiplier: Double
 	val shieldRegenMultiplier: Double
 
@@ -1731,6 +1739,7 @@ open class StanrdardStarshipTypeBalancing(
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
 	override var cruiseSpeedMultiplier: Double = 1.0,
+	override var maxCruiseSpeed: Int = Int.MAX_VALUE,
 	override var shieldPowerMultiplier: Double = 1.0,
 	override var shieldRegenMultiplier: Double = 1.0,
 
@@ -1757,6 +1766,7 @@ open class GroundStarshipBalancing(
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
 	override var cruiseSpeedMultiplier: Double = 1.0,
+	override var maxCruiseSpeed: Int = Int.MAX_VALUE,
 	override var shieldPowerMultiplier: Double = 1.0,
 	override var shieldRegenMultiplier: Double = 1.0,
 

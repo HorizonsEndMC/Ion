@@ -247,6 +247,7 @@ object StarshipCruising : IonServerComponent() {
 
 		maxSpeed /= 2
 		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
+		maxSpeed = minOf(maxSpeed, starship.balancing.maxCruiseSpeed)
 
 		val wasCruising = isCruisingAndAccelerating(starship)
 
