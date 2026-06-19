@@ -1262,7 +1262,7 @@ enum class StarshipType(
 		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#0c5ce8",
 		dynmapIcon = "barge",
-		maxMiningLasers = 10,
+		maxMiningLasers = 14,
 		miningLaserTier = 4,
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,

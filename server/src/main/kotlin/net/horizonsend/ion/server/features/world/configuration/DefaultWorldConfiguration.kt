@@ -1211,10 +1211,8 @@ object DefaultWorldConfiguration {
 		"Venture", WorldSettings(
 			aiDifficulty = WeightedIntegerAmount(
 				setOf(
-					Pair(0, 0.15),
-					Pair(1, 0.35),
-					Pair(2, 0.35),
-					Pair(3, 0.15)
+					Pair(0, 0.70),
+					Pair(1, 0.30)
 				)
 			),
 			flags = mutableSetOf(
@@ -1224,7 +1222,6 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
-				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_WARD,
 			),
@@ -1273,10 +1270,8 @@ object DefaultWorldConfiguration {
 		"Reserve", WorldSettings(
 			aiDifficulty = WeightedIntegerAmount(
 				setOf(
-					Pair(0, 0.15),
-					Pair(1, 0.35),
-					Pair(2, 0.35),
-					Pair(3, 0.15)
+					Pair(0, 0.70),
+					Pair(1, 0.30)
 				)
 			),
 			flags = mutableSetOf(
@@ -1286,7 +1281,6 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
-				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_WARD,
 			),
@@ -1335,10 +1329,8 @@ object DefaultWorldConfiguration {
 		"Traverse", WorldSettings(
 			aiDifficulty = WeightedIntegerAmount(
 				setOf(
-					Pair(0, 0.15),
-					Pair(1, 0.35),
-					Pair(2, 0.35),
-					Pair(3, 0.15)
+					Pair(0, 0.70),
+					Pair(1, 0.30)
 				)
 			),
 			flags = mutableSetOf(
@@ -1348,7 +1340,6 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
-				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_WARD,
 			),
@@ -1410,7 +1401,6 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
-				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_BREACH,
 			),
@@ -2030,7 +2020,6 @@ object DefaultWorldConfiguration {
 				WorldFlag.NOT_SECURE,
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
-				WorldFlag.ALLOW_SIGNATURE_SPAWNS,
 				WorldFlag.DOMINION_WORLD,
 				WorldFlag.REGION_WORLD_FRACTURE,
 			),

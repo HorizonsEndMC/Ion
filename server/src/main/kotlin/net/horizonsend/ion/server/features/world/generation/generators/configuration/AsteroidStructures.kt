@@ -1101,9 +1101,9 @@ object AsteroidStructures {
 			"ZIRCON_PALETTE",
 			mutableListOf(
 				OreDefinition(
-					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.ZIRCON_ORE),
 					0,
-					0.002 / 8
+					0.003 / 8
 				)
 			)
 		),
@@ -1112,7 +1112,7 @@ object AsteroidStructures {
 			"ATAVUM_PALETTE",
 			mutableListOf(
 				OreDefinition(
-					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.VANADIUM_ORE),
+					OreDefinition.BlockType.CustomBlockType(CustomBlockKeys.ATAVUM_ORE),
 					0,
 					0.001 / 8
 				)
