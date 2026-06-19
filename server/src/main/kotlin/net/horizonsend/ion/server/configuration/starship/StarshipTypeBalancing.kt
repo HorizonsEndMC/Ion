@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.configuration.starship
+﻿package net.horizonsend.ion.server.configuration.starship
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -84,6 +84,7 @@ data class NewStarshipBalancing(
 			PlasmaCannonBalancing(),
 			LaserCannonBalancing(),
 			InterceptorCannonBalancing(),
+			AdvancedProbeBalancing(),
 			ProbeBalancing(),
 
 			// Event weapons
@@ -198,7 +199,7 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				ProbeBalancing(
+				AdvancedProbeBalancing(
 					fireRestrictions = FireRestrictions(canFire = true)
 				)
 			),
@@ -231,7 +232,7 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				ProbeBalancing(
+				AdvancedProbeBalancing(
 					fireRestrictions = FireRestrictions(canFire = true)
 				)
 			),
@@ -352,7 +353,7 @@ data class NewStarshipBalancing(
 					firePowerConsumption = 3333,
 					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
 				),
-				ProbeBalancing(
+				AdvancedProbeBalancing(
 					fireRestrictions = FireRestrictions(canFire = true)
 				)
 			),
@@ -448,7 +449,7 @@ data class NewStarshipBalancing(
 					firePowerConsumption = 3333,
 					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
 				),
-				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
+				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -514,6 +515,9 @@ data class NewStarshipBalancing(
 					"This ship cannot use jump beacons!"
 				)
 			),
+			weaponOverrides = listOf(
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -553,7 +557,7 @@ data class NewStarshipBalancing(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
-				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
 			shieldPowerMultiplier = 0.4,
@@ -587,7 +591,7 @@ data class NewStarshipBalancing(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 			),
 			shieldPowerMultiplier = 0.35,
 			shieldRegenMultiplier = 0.25,
@@ -660,7 +664,8 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000)),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -779,7 +784,8 @@ data class NewStarshipBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.MILLISECONDS.toNanos(4500)
 				),
-				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000))
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000)),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -851,7 +857,7 @@ data class NewStarshipBalancing(
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				WebifierBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
 				ArtilleryBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
-				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2)
 			),
 			forbiddenMultiblocks = listOf(
@@ -1031,6 +1037,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
@@ -1110,7 +1117,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
-				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
+				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1206,7 +1213,8 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.80,
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
-				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8)),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1326,6 +1334,7 @@ data class NewStarshipBalancing(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 17500),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1451,7 +1460,7 @@ data class NewStarshipBalancing(
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				RapidHeavyMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				LightMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true)),
-				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				ThermonuclearMissileBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			requiredMultiblocks = listOf(
@@ -1511,6 +1520,7 @@ data class NewStarshipBalancing(
 				),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(

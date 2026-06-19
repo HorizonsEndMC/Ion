@@ -3,11 +3,14 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heav
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ProbeWeaponSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object ProbeStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ProbeWeaponSubsystem>(), DisplayNameMultilblock {
@@ -17,44 +20,31 @@ object ProbeStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ProbeWea
 	}
 
 	override val displayName: Component
-		get() = text("Probe")
+		get() = text("Probe Launcher")
 	override val description: Component
-		get() = text("Fires off a probe that displays nearby players and their distance.")
+		get() = text("Fires a scanner probe that detects nearby signatures.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {
+				x(1).sponge()
 				x(0).powerInput()
-				x(+1).anyStairs()
 			}
 		}
 		z(1) {
 			y(0) {
-				x(0).ironBlock()
-				x(+1).sponge()
+				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+				x(0).dispenser()
 			}
 		}
 		z(2) {
 			y(0) {
-				x(0).ironBlock()
-				x(+1).grindstone()
+				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
 			}
 		}
 		z(3) {
 			y(0) {
-				x(0).dispenser()
-				x(+1).grindstone(
-				)
-			}
-		}
-		z(4) {
-			y(0) {
-				x(+1).endRod()
-			}
-		}
-		z(5) {
-			y(0) {
-				x(+1).endRod()
+				x(1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.END_ROD.createBlockData()))
 			}
 		}
 	}

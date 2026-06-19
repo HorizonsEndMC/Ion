@@ -191,6 +191,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalSwarmMissileStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.NeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AdvancedProbeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ProbeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopSwarmMissileStarshipWeaponMultiblock
@@ -375,6 +376,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PointDefenseStarshipWeaponMultiblockSide)
 		registerMultiblock(PointDefenseStarshipWeaponMultiblockBottom)
 		registerMultiblock(ProbeStarshipWeaponMultiblock)
+		registerMultiblock(AdvancedProbeStarshipWeaponMultiblock)
 		registerMultiblock(TopLightTurretMultiblock)
 		registerMultiblock(BottomLightTurretMultiblock)
 		registerMultiblock(TopHeavyTurretMultiblock)
