@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.GAS_COLLECTOR_BACKGROUND_CHARACTER
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
@@ -59,6 +61,15 @@ class CanisterGasCollectorGui(viewer: Player, val entity: CanisterGasCollectorMu
 	}
 
 	override fun buildTitle(): Component {
-		return GuiText("Gas Collector").build()
+		val text = GuiText(entity.guiTitle)
+			.addBackground(
+				GuiText.GuiBackground(
+					backgroundChar = GAS_COLLECTOR_BACKGROUND_CHARACTER,
+					backgroundWidth = DEFAULT_GUI_WIDTH,
+					verticalShift = 0,
+					horizontalShift = 0
+				)
+			)
+		return text.build()
 	}
 }

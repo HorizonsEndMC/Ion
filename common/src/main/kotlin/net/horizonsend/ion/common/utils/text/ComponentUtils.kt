@@ -171,6 +171,7 @@ const val MEDIUM_FREIGHTER_ICON = '\uF8D5'
 const val HEAVY_FREIGHTER_ICON = '\uF8D4'
 const val BARGE_ICON = '\uF8D3'
 const val CORE_FORGE_BACKGROUND_CHARACTER = '\uF8D2'
+const val GAS_COLLECTOR_BACKGROUND_CHARACTER = '\uF8D1'
 
 // Custom characters end
 

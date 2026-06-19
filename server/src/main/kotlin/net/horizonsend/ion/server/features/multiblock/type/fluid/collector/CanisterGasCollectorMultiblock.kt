@@ -92,6 +92,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 		data: PersistentMultiblockData
 	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, world, x, y, z, structureDirection), SyncTickingMultiblockEntity, FurnaceBasedMultiblockEntity, DisplayMultiblockEntity, StatusTickedMultiblockEntity {
 
+		val guiTitle: String = "Gas Collector"
 		val configuration get() = globalGassesConfiguration()
 
 		// Persist selected gas by identifier string
