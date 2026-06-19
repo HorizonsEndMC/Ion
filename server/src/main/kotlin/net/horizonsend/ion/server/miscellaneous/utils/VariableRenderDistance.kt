@@ -19,16 +19,18 @@ object VariableRenderDistance: IonServerComponent() {
 	fun updatePlayerRenderDistance() {
 		for (player in Bukkit.getOnlinePlayers()) {
 			val renderDistance = when {
-				//When dead
+				// When dead
 				player.isDead -> 4
-				//When oped or in dutymode
-				(player.isOp || player.hasPermission("group.dutymode")) -> 32 //REMINDER, CHANGE BACK TO 22
-				//When on planet
-				!player.world.hasFlag(WorldFlag.EXTRA_RENDER_WORLD) -> 7
-				//When in combat but not piloting
+				// When oped or in dutymode
+				(player.isOp || player.hasPermission("group.dutymode")) -> 22
+				// When on planet
+				player.world.hasFlag(WorldFlag.PLANET_WORLD) -> 7
+				// When in a creative server arena
+				player.world.hasFlag(WorldFlag.ARENA) -> 22
+				// When in combat but not piloting
 				isPvpCombatTagged(player) && !isPiloting(player) -> 8
 				//When in combat and piloting
-				isPvpCombatTagged(player) || isNpcCombatTagged(player) && isPiloting(player) -> 22
+				(isPvpCombatTagged(player) || isNpcCombatTagged(player)) && isPiloting(player) -> 22
 				//Other cases, like when piloting but not in combat
 				else -> 8
 			}
