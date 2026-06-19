@@ -198,7 +198,7 @@ class ShipFactoryPrintTask(
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
 			//Check if the current block can be credit printed
-			val isntCreditPrintable = CreditPrintBlackList.checkForCreditPrintBlacklist(blockData)
+			val isNotCreditPrintable = CreditPrintBlackList.isInBlacklist(blockData) || !CreditPrintBlackList.isInWhitelist(blockData)
 
 			// Try material print first regardless of credit printability
 			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount)
@@ -210,7 +210,7 @@ class ShipFactoryPrintTask(
 			}
 
 			// If no items available and block is credit printable, try credit print
-			if (!isntCreditPrintable) {
+			if (!isNotCreditPrintable) {
 				if (availableCredits - tickCredits < price) {
 					markItemMissing(printItem, requiredAmount)
 					continue

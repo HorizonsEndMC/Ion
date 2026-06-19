@@ -371,9 +371,9 @@ object ShipFactoryMaterialCosts {
 				} else if (data.material.isConcrete) {
 					12.0
 				} else if (data.material.isSign) {
-					112.0
+					12.0
 				} else if (data.material.isWallSign) {
-					112.0
+					12.0
 				} else if (data.material.isWall) {
 					12.0
 				} else if (blockprice.containsKey(data.material)) {
