@@ -923,11 +923,11 @@ data class NewStarshipBalancing(
 			interdictionRange = 650,
 			jumpStrength = 1.0,
 			warmupTime = 10,
-			wellStrength = 1.0,
+			wellStrength = 0.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 0.60,
-			shieldRegenMultiplier = 1.20,
+			shieldRegenMultiplier = 1.25,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -1001,7 +1001,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			cruiseSpeedMultiplier = 0.85,
+			cruiseSpeedMultiplier = 0.8,
 			shieldPowerMultiplier = 0.5,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1039,7 +1039,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.25,
-			cruiseSpeedMultiplier = 0.8,
+			cruiseSpeedMultiplier = 0.85,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1129,7 +1129,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
 			warmupTime = 15,
-			jumpStrength = 1.0,
+			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 0.77,
@@ -1196,7 +1196,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
 			shieldPowerMultiplier = 0.6,
-			cruiseSpeedMultiplier = 0.85,
+			cruiseSpeedMultiplier = 0.80,
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
