@@ -125,9 +125,7 @@ object Interdiction : IonServerComponent() {
 		.lastOrNull()
 
 	fun starshipInterdictionRangeEquation(starship: Starship): Double {
-		if (starship.initialBlockCount < CombatTimer.MINIMUM_WELL_PROXIMITY_BLOCK_COUNT ||
-			starship.type == StarshipType.PLATFORM) return 1.0
-		return if (starship.type.typeCategory == TypeCategory.WAR_SHIP) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
-		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
+		if (starship.type == StarshipType.PLATFORM) return 1.0
+		return starship.type.balancing.interdictionRange.toDouble()
 	}
 }
