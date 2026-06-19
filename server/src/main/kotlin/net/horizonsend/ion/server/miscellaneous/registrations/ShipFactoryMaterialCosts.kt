@@ -180,7 +180,7 @@ object ShipFactoryMaterialCosts {
 
 		GRINDSTONE to 12.0,
 		END_ROD to 12.0,
-		BELL to 12.0,
+		BELL to 25.0,
 		SPONGE to 5.0,
 		END_PORTAL_FRAME to 12.0,
 		PISTON to 5.0,
@@ -192,7 +192,7 @@ object ShipFactoryMaterialCosts {
 		LEVER to 5.0,
 		CHEST to 12.0,
 		FURNACE to 12.0,
-		DISPENSER to 12.0,
+		DISPENSER to 25.0,
 		MAGMA_BLOCK to 12.0,
 		SEA_LANTERN to 12.0,
 		REDSTONE_LAMP to 12.0,
