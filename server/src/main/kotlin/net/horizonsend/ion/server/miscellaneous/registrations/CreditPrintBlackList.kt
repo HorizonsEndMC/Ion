@@ -2,15 +2,26 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.miscellaneous.utils.isBed
+import net.horizonsend.ion.server.miscellaneous.utils.isButton
+import net.horizonsend.ion.server.miscellaneous.utils.isCandle
+import net.horizonsend.ion.server.miscellaneous.utils.isCarpet
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
+import net.horizonsend.ion.server.miscellaneous.utils.isDoor
+import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlazedTerracotta
+import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
+import net.horizonsend.ion.server.miscellaneous.utils.isLog
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
+import net.horizonsend.ion.server.miscellaneous.utils.isTintedGlass
+import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.isWood
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 
@@ -252,7 +263,18 @@ object CreditPrintBlackList {
 			|| data.material.isConcrete
 			|| data.material.isSign
 			|| data.material.isWallSign
-			|| data.material.isWall) return true
+			|| data.material.isWall
+			|| data.material.isTintedGlass
+			|| data.material.isButton
+			|| data.material.isCandle
+			|| data.material.isDoor
+			|| data.material.isTrapdoor
+			|| data.material.isLeaves
+			|| data.material.isLog
+			|| data.material.isWood
+			|| data.material.isCarpet
+			|| data.material.isBed
+			|| data.material.isFence) return true
 
 		return false
 	}
