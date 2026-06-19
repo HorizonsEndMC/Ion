@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.core.registration.registries
+﻿package net.horizonsend.ion.server.core.registration.registries
 
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -339,18 +339,18 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		stackable(key = CustomItemKeys.UNCHARGED_SHELL, model = "industry/uncharged_shell", displayName = Component.text("Uncharged Shell"))
 		stackable(key = CustomItemKeys.CHARGED_SHELL, model = "industry/charged_shell", displayName = Component.text("Charged Shell"))
 
-		stackable(key = CustomItemKeys.BREACHER_SHELL_UNLOADED, model = "industry/breacher_shell_unloaded", displayName = Component.text("Unloaded Breacher Shell"))
-		stackable(key = CustomItemKeys.BREACHER_SHELL_LOADED, model = "industry/breacher_shell_loaded", displayName = Component.text("Breacher Shell"))
-		stackable(key = CustomItemKeys.STASIS_CHARGE_UNLOADED, model = "industry/stasis_charge_unloaded", displayName = Component.text("Uncharged Stasis Charge"))
-		stackable(key = CustomItemKeys.STASIS_CHARGE_LOADED, model = "industry/stasis_charge_loaded", displayName = Component.text("Stasis Charge"))
-		stackable(key = CustomItemKeys.ENTROPIC_CHARGE_UNLOADED, model = "industry/entropic_charge_unloaded", displayName = Component.text("Uncharged Entropic Charge"))
-		stackable(key = CustomItemKeys.ENTROPIC_CHARGE_LOADED, model = "industry/entropic_charge_loaded", displayName = Component.text("Entropic Charge"))
-		stackable(key = CustomItemKeys.HELIX_SHELL_UNLOADED, model = "industry/helix_shell_unloaded", displayName = Component.text("Unloaded Helix Shell"))
-		stackable(key = CustomItemKeys.HELIX_SHELL_LOADED, model = "industry/helix_shell_loaded", displayName = Component.text("Helix Shell"))
-		stackable(key = CustomItemKeys.SIEGE_SHELL_UNLOADED, model = "industry/siege_shell_unloaded", displayName = Component.text("Unloaded Siege Shell"))
-		stackable(key = CustomItemKeys.SIEGE_SHELL_LOADED, model = "industry/siege_shell_loaded", displayName = Component.text("Siege Shell"))
-		stackable(key = CustomItemKeys.STELLAR_PRISM_UNLOADED, model = "industry/stellar_prism_unloaded", displayName = Component.text("Uncharged Stellar Prism"))
-		stackable(key = CustomItemKeys.STELLAR_PRISM_LOADED, model = "industry/stellar_prism_loaded", displayName = Component.text("Stellar Prism"))
+		stackable(key = CustomItemKeys.UNLOADED_BREACHER_SHELL, model = "industry/unloaded_breacher_shell", displayName = Component.text("Unloaded Breacher Shell"))
+		stackable(key = CustomItemKeys.LOADED_BREACHER_SHELL, model = "industry/loaded_breacher_shell", displayName = Component.text("Breacher Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_STASIS_CHARGE, model = "industry/unloaded_stasis_charge", displayName = Component.text("Uncharged Stasis Charge"))
+		stackable(key = CustomItemKeys.LOADED_STASIS_CHARGE, model = "industry/loaded_stasis_charge", displayName = Component.text("Stasis Charge"))
+		stackable(key = CustomItemKeys.UNLOADED_ENTROPIC_CHARGE, model = "industry/unloaded_entropic_charge", displayName = Component.text("Uncharged Entropic Charge"))
+		stackable(key = CustomItemKeys.LOADED_ENTROPIC_CHARGE, model = "industry/loaded_entropic_charge", displayName = Component.text("Entropic Charge"))
+		stackable(key = CustomItemKeys.UNLOADED_HELIX_SHELL, model = "industry/unloaded_helix_shell", displayName = Component.text("Unloaded Helix Shell"))
+		stackable(key = CustomItemKeys.LOADED_HELIX_SHELL, model = "industry/loaded_helix_shell", displayName = Component.text("Helix Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_SIEGE_SHELL, model = "industry/unloaded_siege_shell", displayName = Component.text("Unloaded Siege Shell"))
+		stackable(key = CustomItemKeys.LOADED_SIEGE_SHELL, model = "industry/loaded_siege_shell", displayName = Component.text("Siege Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_STELLAR_PRISM, model = "industry/unloaded_stellar_prism", displayName = Component.text("Uncharged Stellar Prism"))
+		stackable(key = CustomItemKeys.LOADED_STELLAR_PRISM, model = "industry/loaded_stellar_prism", displayName = Component.text("Stellar Prism"))
 
 		stackable(key = CustomItemKeys.ARSENAL_MISSILE, model = "projectile/arsenal_missile", displayName = Component.text("Arsenal Missile"))
 		stackable(key = CustomItemKeys.EMP_MISSILE, model = "projectile/emp_missile", displayName = Component.text("EMP Missile"))

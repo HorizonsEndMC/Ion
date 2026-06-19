@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
+﻿package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.starship.ACAPTurretBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -25,7 +25,7 @@ class ACAPTurretWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.SIEGE_SHELL_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.LOADED_SIEGE_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

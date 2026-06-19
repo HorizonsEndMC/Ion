@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.data.migrator
+﻿package net.horizonsend.ion.server.data.migrator
 
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -947,12 +947,12 @@ object DataMigrators : IonServerComponent() {
 				CustomItemKeys.REACTOR_FRAME,
 				CustomItemKeys.UNLOADED_SHELL,
 				CustomItemKeys.UNCHARGED_SHELL,
-				CustomItemKeys.BREACHER_SHELL_UNLOADED,
-				CustomItemKeys.STASIS_CHARGE_UNLOADED,
-				CustomItemKeys.ENTROPIC_CHARGE_UNLOADED,
-				CustomItemKeys.HELIX_SHELL_UNLOADED,
-				CustomItemKeys.SIEGE_SHELL_UNLOADED,
-				CustomItemKeys.STELLAR_PRISM_UNLOADED,
+				CustomItemKeys.UNLOADED_BREACHER_SHELL,
+				CustomItemKeys.UNLOADED_STASIS_CHARGE,
+				CustomItemKeys.UNLOADED_ENTROPIC_CHARGE,
+				CustomItemKeys.UNLOADED_HELIX_SHELL,
+				CustomItemKeys.UNLOADED_SIEGE_SHELL,
+				CustomItemKeys.UNLOADED_STELLAR_PRISM,
 				CustomItemKeys.GAS_CANISTER_NITROGEN,
 				CustomItemKeys.GAS_CANISTER_METHANE,
 				CustomItemKeys.GAS_CANISTER_CHLORINE,

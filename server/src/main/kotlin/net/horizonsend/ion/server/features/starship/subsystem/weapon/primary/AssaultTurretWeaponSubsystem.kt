@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
+﻿package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.starship.AssaultTurretBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -23,7 +23,7 @@ class AssaultTurretWeaponSubsystem(
 		return Component.text("Assault Turret")
 	}
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.HELIX_SHELL_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.LOADED_HELIX_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

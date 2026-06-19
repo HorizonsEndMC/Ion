@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
+﻿package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.starship.WebifierBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -61,7 +61,7 @@ class WebifierWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.STASIS_CHARGE_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.LOADED_STASIS_CHARGE.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

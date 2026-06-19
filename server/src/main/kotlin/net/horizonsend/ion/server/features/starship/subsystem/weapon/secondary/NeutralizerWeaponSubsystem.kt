@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
+﻿package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing
 import net.horizonsend.ion.server.configuration.starship.NeutralizerBalancing
@@ -38,7 +38,7 @@ class NeutralizerWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.ENTROPIC_CHARGE_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.LOADED_ENTROPIC_CHARGE.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

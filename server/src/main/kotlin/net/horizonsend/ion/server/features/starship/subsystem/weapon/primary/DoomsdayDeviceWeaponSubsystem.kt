@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
+﻿package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
@@ -125,7 +125,7 @@ class DoomsdayDeviceWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemKeys.STELLAR_PRISM_LOADED.getValue(), 1)
+		return requireCustomItem(item, CustomItemKeys.LOADED_STELLAR_PRISM.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

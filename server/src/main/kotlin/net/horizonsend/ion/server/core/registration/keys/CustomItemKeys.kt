@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.core.registration.keys
+﻿package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
@@ -128,18 +128,18 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val UNCHARGED_SHELL = registerKey("UNCHARGED_SHELL")
 	val CHARGED_SHELL = registerKey("CHARGED_SHELL")
 
-	val BREACHER_SHELL_UNLOADED = registerKey("BREACHER_SHELL_UNLOADED")	// Gauss Cannon
-	val BREACHER_SHELL_LOADED = registerKey("BREACHER_SHELL_LOADED")
-	val STASIS_CHARGE_UNLOADED = registerKey("STASIS_CHARGE_UNLOADED")	// Webifier
-	val STASIS_CHARGE_LOADED = registerKey("STASIS_CHARGE_LOADED")
-	val ENTROPIC_CHARGE_UNLOADED = registerKey("ENTROPIC_CHARGE_UNLOADED")// Neutralizer + Heavy Neutralizer
-	val ENTROPIC_CHARGE_LOADED = registerKey("ENTROPIC_CHARGE_LOADED")
-	val HELIX_SHELL_UNLOADED = registerKey("HELIX_SHELL_UNLOADED")		// Assault Turret
-	val HELIX_SHELL_LOADED = registerKey("HELIX_SHELL_LOADED")
-	val SIEGE_SHELL_UNLOADED = registerKey("SIEGE_SHELL_UNLOADED")		// ACAP Turret
-	val SIEGE_SHELL_LOADED = registerKey("SIEGE_SHELL_LOADED")
-	val STELLAR_PRISM_UNLOADED = registerKey("STELLAR_PRISM_UNLOADED")    // Doomsday Laser
-	val STELLAR_PRISM_LOADED = registerKey("STELLAR_PRISM_LOADED")
+	val UNLOADED_BREACHER_SHELL = registerKey("UNLOADED_BREACHER_SHELL")	// Gauss Cannon
+	val LOADED_BREACHER_SHELL = registerKey("LOADED_BREACHER_SHELL")
+	val UNLOADED_STASIS_CHARGE = registerKey("UNLOADED_STASIS_CHARGE")	// Webifier
+	val LOADED_STASIS_CHARGE = registerKey("LOADED_STASIS_CHARGE")
+	val UNLOADED_ENTROPIC_CHARGE = registerKey("UNLOADED_ENTROPIC_CHARGE")// Neutralizer + Heavy Neutralizer
+	val LOADED_ENTROPIC_CHARGE = registerKey("LOADED_ENTROPIC_CHARGE")
+	val UNLOADED_HELIX_SHELL = registerKey("UNLOADED_HELIX_SHELL")		// Assault Turret
+	val LOADED_HELIX_SHELL = registerKey("LOADED_HELIX_SHELL")
+	val UNLOADED_SIEGE_SHELL = registerKey("UNLOADED_SIEGE_SHELL")		// ACAP Turret
+	val LOADED_SIEGE_SHELL = registerKey("LOADED_SIEGE_SHELL")
+	val UNLOADED_STELLAR_PRISM = registerKey("UNLOADED_STELLAR_PRISM")    // Doomsday Laser
+	val LOADED_STELLAR_PRISM = registerKey("LOADED_STELLAR_PRISM")
 
 	val ARSENAL_MISSILE = registerKey("ARSENAL_MISSILE")
 	val UNLOADED_ARSENAL_MISSILE = registerKey("UNLOADED_ARSENAL_MISSILE")
