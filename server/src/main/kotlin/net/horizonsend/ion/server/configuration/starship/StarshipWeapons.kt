@@ -479,12 +479,12 @@ data class ArsenalRocketBalancing(
 data class EMPMissileBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override var firePowerConsumption: Int = 27500,
+	override var firePowerConsumption: Int = 23000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = null,
 	override var applyCooldownToAll: Boolean = false,
 
-	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(6),
+	override var boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(8),
 
 	override val projectile: EMPMissileProjectileBalancing = EMPMissileProjectileBalancing()
 ) : StarshipHeavyWeaponBalancing<EMPMissileBalancing.EMPMissileProjectileBalancing> {

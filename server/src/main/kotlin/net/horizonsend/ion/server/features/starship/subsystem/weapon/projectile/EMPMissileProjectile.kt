@@ -36,7 +36,7 @@ class EMPMissileProjectile(
 	var flightPath2Completed = false
 	var age = 0
 
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_light_missile").construct()
+	val item = ItemFactory.unStackableCustomItem("projectile/activated_emp_missile").construct()
 	override val color: Color = Color.ORANGE
 
 	init {

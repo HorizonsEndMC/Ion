@@ -68,6 +68,7 @@ object CreditPrintBlackList {
 			CustomBlockKeys.VANADIUM_ORE -> return true
 			CustomBlockKeys.ASSEMBLY_CORE -> return true
 			CustomBlockKeys.BATTLECRUISER_REACTOR_CORE -> return true
+			CustomBlockKeys.BARGE_REACTOR_CORE -> return true
 			CustomBlockKeys.CRUISER_REACTOR_CORE -> return true
 			CustomBlockKeys.MINI_REACTOR_CORE -> return true
 			CustomBlockKeys.SMALL_REACTOR_CORE -> return true

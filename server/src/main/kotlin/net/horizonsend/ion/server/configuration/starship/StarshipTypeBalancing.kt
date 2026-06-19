@@ -683,7 +683,7 @@ data class NewStarshipBalancing(
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
-				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
+				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(10))
 				),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
