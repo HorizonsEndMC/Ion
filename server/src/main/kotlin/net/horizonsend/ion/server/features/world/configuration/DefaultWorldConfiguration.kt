@@ -3659,4 +3659,54 @@ object DefaultWorldConfiguration {
 			),
 		)
 	)
+
+	val TUTORIAL = register(
+		"Tutorial", WorldSettings(
+			flags = mutableSetOf(
+				WorldFlag.ALLOW_AI_SPAWNS,
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.TUTORIAL_WORLD,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			)
+		)
+	)
+
+	val TUTORIAL_HYPERSPACE = register(
+		"Conduit_hyperspace", WorldSettings(
+			flags = mutableSetOf(
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.HYPERSPACE_WORLD,
+				WorldFlag.TUTORIAL_WORLD,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			),
+		)
+	)
+
+	val TRANSIT_HUB = register(
+		"TransitHub", WorldSettings(
+			flags = mutableSetOf(
+				WorldFlag.SPACE_WORLD,
+				WorldFlag.TUTORIAL_WORLD,
+			),
+			environments = WorldEnvironmentConfiguration(
+				atmosphericPressure = 0.0,
+				moduleConfiguration = listOf(
+					NoGravityModuleConfiguration(ignoreIndoors = false),
+					VacuumEnvironmentConfiguration
+				)
+			)
+		)
+	)
 }
