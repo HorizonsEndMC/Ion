@@ -1537,7 +1537,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.55),
+					densityProvider = StaticConfigurationGlobal(0.055),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_IRON") to 1.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_CHETHERITE") to 1.0
@@ -1598,7 +1598,7 @@ object DefaultWorldConfiguration {
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 				AsteroidPlacementConfiguration(
-					densityProvider = StaticConfigurationGlobal(0.55),
+					densityProvider = StaticConfigurationGlobal(0.055),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_IRON") to 1.0,
 						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("DEEP_SPACE_CHETHERITE") to 1.0
