@@ -64,7 +64,11 @@ object CreditPrintBlackList {
 
 		Material.BEDROCK,
 		Material.BARRIER,
-		Material.REINFORCED_DEEPSLATE
+		Material.REINFORCED_DEEPSLATE,
+		Material.BEACON,
+		Material.GOLD_BLOCK,
+		Material.EMERALD_BLOCK
+
 	)
 
 	var creditPrintWhiteList = setOf(
