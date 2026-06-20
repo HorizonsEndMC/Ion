@@ -463,7 +463,7 @@ data class WebifierBalancing(
 
 	@Serializable
 	data class WebifierProjectileBalancing(
-		override var range: Double = 220.0,
+		override var range: Double = 230.0,
 		override var speed: Double = 135.0,
 		override var explosionPower: Float = 2.5f,
 		override var starshipShieldDamageMultiplier: Double = 7.0,
@@ -663,7 +663,7 @@ data class LightMissileLauncherBalancing(
 	@Serializable
 	data class LightMissileLauncherProjectileBalancing(
 		override var range: Double = 300.0,
-		override var speed: Double = 75.0,
+		override var speed: Double = 85.0,
 		override var explosionPower: Float = 5.50f,
 		override var starshipShieldDamageMultiplier: Double = 7.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
@@ -911,7 +911,7 @@ data class GaussCannonBalancing(
 
 	@Serializable
 	data class GaussCannonProjectileBalancing(
-		override var range: Double = 230.0,
+		override var range: Double = 225.0,
 		override var speed: Double = 130.0,
 		override var explosionPower: Float = 3.5f,
 		override var starshipShieldDamageMultiplier: Double = 4.5,
