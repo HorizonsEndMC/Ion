@@ -151,10 +151,10 @@ object DefaultWorldConfiguration {
 					densityProvider = StaticConfigurationGlobal(0.07),
 					selector = AsteroidPlacementConfiguration.AsteroidSelectorCondition.WeightedRandom(listOf(
 
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_SCORDITE") to 5.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_VANADIUM") to 5.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TEST_WORLD_ZIRCON") to 5.0,
-						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_ATAVUM") to 5.0
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_SCORDITE") to 0.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("MINING_WORLD_VANADIUM") to 0.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TEST_WORLD_ZIRCON") to 0.0,
+						AsteroidPlacementConfiguration.AsteroidSelectorCondition.BuilderReference("TEST_WORLD_ATAVUM") to 5.0
 						,
 					)),
 					minSize = 50.0,
