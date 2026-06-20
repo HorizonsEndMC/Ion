@@ -526,10 +526,12 @@ object ShipmentManager : IonServerComponent() {
 
 				val playernationid = PlayerCache[player].nationOid
 
+				/*
 				val capturedStationCount =
 					min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
+				 */
 
 				val dominionCrateBonus = DominionTerritoryBuffTypes.getCrateBonus(player)
 				val dominionBonus = totalRevenue * dominionCrateBonus
@@ -550,9 +552,11 @@ object ShipmentManager : IonServerComponent() {
 					}
 				}
 
+				/*
 				player.information("Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations.")
 
 				totalRevenue += siegeBonus
+				 */
 
 				if (totalRevenue > 0) {
 					player msg "&1Revenue from all updated shipments, after tax: " +

@@ -161,6 +161,7 @@ object NationsMasterTasks : IonServerComponent() {
 			val nation: NationCache.NationData = NationCache[nationId]
 
 			// Give the nation its station income if it has stations
+			/*
 			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
 			val stationIncome = if (stationCount > 2) stationCount * 75 else stationCount * 50
 
@@ -174,7 +175,9 @@ object NationsMasterTasks : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
+			/*
 			val solarSiegeCount = SolarSiegeZone.count(SolarSiegeZone::nation eq nationId).toInt()
 			val solarSiegeIncome = solarSiegeCount * 100
 
@@ -185,6 +188,7 @@ object NationsMasterTasks : IonServerComponent() {
 					template(Component.text("Your nation received {0} credits of hourly income for owning {1} solar siege zones.", HE_MEDIUM_GRAY), solarSiegeIncome.toCreditComponent(), stationCount)
 				)
 			}
+			 */
 
 			val activeCount = SLPlayer.count(
 				and(SLPlayer::lastSeen gte ACTIVE_AFTER_TIME, SLPlayer::nation eq nationId)

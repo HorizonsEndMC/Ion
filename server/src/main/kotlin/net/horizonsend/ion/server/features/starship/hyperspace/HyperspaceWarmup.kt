@@ -40,9 +40,9 @@ class HyperspaceWarmup(
 	init {
 		if (ship is ActiveControlledStarship) {
 			(ship.controller as? PlayerController)?.player?.let {
-				val stationCount = CapturableStation.count(CapturableStation::nation eq PlayerCache[it].nationOid).toInt()
+				//val stationCount = CapturableStation.count(CapturableStation::nation eq PlayerCache[it].nationOid).toInt()
 
-				warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
+				//warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
 
 				/*
 				val nationJumpWarmupBuffActive = NationBuffTypes.isEffectActive(it, NationBuffTypes.JUMP_WARMUP)
