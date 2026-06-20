@@ -457,6 +457,15 @@ object HudIcons : IonServerComponent() {
         }
 
         else if (name.contains(STAR_PREFIX)) {
+            // lazy fix until i can add real star textures to the rp
+            if (!name.contains("asteri_2")
+                && !name.contains("regulus_2")
+                && !name.contains("sirius_2")
+                && !name.contains("ilios_2")
+                && !name.contains("horizon_2")) {
+                return CachedStar.DEFAULT_ITEM_FACTORY.construct()
+            }
+
             return Space.getStar(name.replace(STAR_PREFIX, ""))?.starIconFactory?.construct()
                 ?: CachedStar.DEFAULT_ITEM_FACTORY.construct()
         }
