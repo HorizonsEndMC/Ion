@@ -212,10 +212,10 @@ object NationsMasterTasks : IonServerComponent() {
 			val ownedDepots = Regions.getAllOf<RegionRegionalObjective>()
 				.filter { it.nation == nationId && it.type == RegionalObjectiveType.GAS_DEPOT }
 			for (depot in ownedDepots) {
-				val rewardMap = mutableMapOf(itemString to 9)
+				val rewardMap = mutableMapOf(itemString to 4)
 				RegionalObjectiveSiegeData.create(depot.id, nationId, rewardMap, passive = true)
 				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
-					"<gold>Your nation received 9 Xenon Canisters from Gas Depot ${depot.name}!"
+					"<gold>Your nation received 4 Xenon Canisters from Gas Depot ${depot.name}!"
 				))
 			}
 		}
