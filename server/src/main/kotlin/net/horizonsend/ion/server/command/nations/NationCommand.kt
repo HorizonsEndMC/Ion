@@ -1165,7 +1165,7 @@ internal object NationCommand : SLCommand() {
 
 		message.append(namesList)
 
-		val currentPower = Nation.getTotalPower(nationId)
+		val currentPower = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
 		val totalPossiblePower = active * MAX_POWER
 
 		val powerBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
@@ -1208,7 +1208,7 @@ internal object NationCommand : SLCommand() {
 
 		val nationName = getNationName(nationId)
 
-		val currentPower = Nation.getTotalPower(nationId)
+		val currentPower = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
 
 		val members: List<Triple<SLPlayerId, String, Date>> = SLPlayer
 			.findProps(SLPlayer::nation eq nationId, SLPlayer::lastKnownName, SLPlayer::lastSeen)
