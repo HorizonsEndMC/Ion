@@ -404,6 +404,14 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			GuiItem.MATERIALS,
 			false
 		),
+		BooleanSupplierConsumerButton(
+			entity.settings::creditPrinting,
+			{ entity.settings.creditPrinting = it },
+			text("Credit Printing"),
+			"Allows missing materials to be substituted with credits for eligible blocks. Only applicable to the Advanced Ship Factory.",
+			GuiItem.COLLECT_CREDITS,
+			false
+		),
 	).apply { setParent(this@ShipFactoryGui) }
 
 	private fun getMergeIndicator(): Item {

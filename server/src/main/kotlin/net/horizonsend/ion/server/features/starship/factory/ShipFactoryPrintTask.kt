@@ -55,6 +55,7 @@ import net.starlegacy.javautil.BannerUtils.BannerData
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.Material
 import org.bukkit.block.Banner
+import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
@@ -146,6 +147,12 @@ class ShipFactoryPrintTask(
 
 		val availableCredits = player.getMoneyBalance()
 
+		val creditPrintingEnabled = if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
+			entity.settings.creditPrinting
+		} else {
+			(entity.getBlockRelative(0, 0, 0).state as? Furnace)?.inventory?.contains(Material.GOLD_NUGGET) ?: false
+		}
+
 		// Check if the player has any credits
 		checkAvailablecredits(availableCredits, 0.001)
 
@@ -210,7 +217,7 @@ class ShipFactoryPrintTask(
 			}
 
 			// If no items available and block is credit printable, try credit print
-			if (!isNotCreditPrintable) {
+			if (!isNotCreditPrintable && creditPrintingEnabled) {
 				if (availableCredits - tickCredits < price) {
 					markItemMissing(printItem, requiredAmount)
 					continue
