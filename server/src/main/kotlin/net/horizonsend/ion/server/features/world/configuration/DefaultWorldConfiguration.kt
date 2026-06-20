@@ -3400,8 +3400,8 @@ object DefaultWorldConfiguration {
 		)
 	)
 
-	val TH_88 = register(
-		"TH-88", WorldSettings(
+	val TH_89 = register(
+		"TH-89", WorldSettings(
 			aiDifficulty = WeightedIntegerAmount(
 				setOf(
 					Pair(0, 0.15),
@@ -3442,8 +3442,8 @@ object DefaultWorldConfiguration {
 		)
 	)
 
-	val TH_88_HYPERSPACE = register(
-		"TH-88_hyperspace", WorldSettings(
+	val TH_89_HYPERSPACE = register(
+		"TH-89_hyperspace", WorldSettings(
 			flags = mutableSetOf(
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
@@ -3462,8 +3462,8 @@ object DefaultWorldConfiguration {
 		)
 	)
 
-	val OQ_77 = register(
-		"OQ-77", WorldSettings(
+	val OQ_04 = register(
+		"OQ-04", WorldSettings(
 			aiDifficulty = WeightedIntegerAmount(
 				setOf(
 					Pair(0, 0.15),
@@ -3504,8 +3504,8 @@ object DefaultWorldConfiguration {
 		)
 	)
 
-	val OQ_77_HYPERSPACE = register(
-		"OQ-77_hyperspace", WorldSettings(
+	val OQ_04_HYPERSPACE = register(
+		"OQ-04_hyperspace", WorldSettings(
 			flags = mutableSetOf(
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
