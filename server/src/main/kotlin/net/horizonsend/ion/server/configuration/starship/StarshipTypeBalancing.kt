@@ -169,6 +169,9 @@ data class NewStarshipBalancing(
 					"This ship cannot use jump beacons!"
 				)
 			),
+			weaponOverrides = listOf(
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -261,6 +264,9 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				)
 			),
+			weaponOverrides = listOf(
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -302,6 +308,9 @@ data class NewStarshipBalancing(
 					"This ship cannot use jump beacons!"
 				)
 			),
+			weaponOverrides = listOf(
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -325,6 +334,9 @@ data class NewStarshipBalancing(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
 				)
+			),
+			weaponOverrides = listOf(
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			shieldPowerMultiplier = 1.0,
 			shipSounds = StarshipSounds(
@@ -399,7 +411,8 @@ data class NewStarshipBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
 					firePowerConsumption = 3333,
 					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
-				)
+				),
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(

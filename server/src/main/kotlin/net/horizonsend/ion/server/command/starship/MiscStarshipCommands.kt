@@ -371,6 +371,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					sender.userError("Cannot jump to a player in a different space region!")
 					sender.sendRichMessage(addToRouteMessage)
 					return
+				} else if (starship.world.ion.hasFlag(WorldFlag.CORE_REGION_WORLD)) {
+					sender.userError("You cannot jump to a beacon from a core world!")
+					return
 				}
 			} else {
 				// Sender was not jumping to a player, always fail and ask to add to route
