@@ -36,7 +36,11 @@ data class SchematicBehavior(
 	val schematicNames: WeightedRandomList<String>,
 	val callback: (LongOpenHashSet, World) -> Unit = { _, _ -> },
 ) {
+	private var spawned = false
+
 	fun generateSchematic(location: Location, cache: LoadingCache<File, Optional<Clipboard>>): Boolean {
+		if (spawned) return false
+
 		val schematicName = schematicNames.randomOrNull() ?: return false
 		val schematicFile: File = IonServer.dataFolder.resolve("signatures").resolve("$schematicName.schem")
 		val clipboard: Clipboard = cache[schematicFile].getOrNull() ?: return false
@@ -66,6 +70,8 @@ data class SchematicBehavior(
 		placeSchematicEfficiently(clipboard, location.world, vec3i, true) { placedBlocks ->
 			callback.invoke(placedBlocks, location.world)
 		}
+
+		spawned = true
 
 		return true
 	}

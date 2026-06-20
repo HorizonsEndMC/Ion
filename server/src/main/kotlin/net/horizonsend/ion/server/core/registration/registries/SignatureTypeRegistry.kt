@@ -73,8 +73,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 				onScan = { signature, starship ->
 					val pasteResult = signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
 					if (pasteResult == false) {
-						starship.serverError("Could not generate asteroid field; spawning a new asteroid field soon")
-						IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
+						starship.serverError("Could not generate asteroid field")
+						//IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
 						signature.destroyNextTick = true
 						return@ScannableBehavior
 					}
@@ -177,8 +177,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 				onScan = { signature, starship ->
 					val pasteResult = signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
 					if (pasteResult == false) {
-						starship.serverError("Could not generate wreck site; spawning a new wreck site soon")
-						IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
+						starship.serverError("Could not generate wreck site")
+						//IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
 						signature.destroyNextTick = true
 						return@ScannableBehavior
 					}
