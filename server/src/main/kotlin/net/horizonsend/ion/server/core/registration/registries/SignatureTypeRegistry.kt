@@ -62,7 +62,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			),
 			schematicBehavior = SchematicBehavior(
 				schematicNames = WeightedRandomList(
-					"scordite_field" to 50,
+					"scordite_field_1" to 25,
+					"scordite_field_2" to 25,
 					"vanadium_field" to 35,
 					"zircon_field" to 13,
 					"atavum_field" to 2,
