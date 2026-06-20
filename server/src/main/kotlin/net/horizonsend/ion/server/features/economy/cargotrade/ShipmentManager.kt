@@ -371,6 +371,10 @@ object ShipmentManager : IonServerComponent() {
 
 		player msg "&7&oThe items can only be picked up by you for one hour, " +
 			"or until you pick them up (and drop them again), so move them to your ship!"
+
+		log.info("${player.name} accepted a shipment for $costString to deliver $count Crates " +
+			"to ${shipment.to.displayName} on $planetName " +
+			"in exchange for a total revenue of $revenueString")
 	}
 
 	private fun makeShipmentAndItem(player: SLPlayerId, city: Oid<Territory>, shipment: UnclaimedShipment, count: Int): ItemStack {
@@ -478,6 +482,11 @@ object ShipmentManager : IonServerComponent() {
 						"from &1$originCityName " +
 						"&d${if (!isReturn) "to " else "meant for "}&1$destinationCityName " +
 						"&dearning &6$revenueString &dfor shipment with ID &3${delivery.id}"
+
+					log.info("${player.name} ${if (isReturn) "returned" else "delivered"} $amountImported ${crate.name} Crates " +
+						"from $originCityName " +
+						"${if (!isReturn) "to " else "meant for "}$destinationCityName " +
+						"earning $revenueString for shipment with ID ${delivery.id}")
 
 					if (!isReturn) {
 						val totalDelivered = delivery.newDeliveredCrates + delivery.oldDeliveredCrates
