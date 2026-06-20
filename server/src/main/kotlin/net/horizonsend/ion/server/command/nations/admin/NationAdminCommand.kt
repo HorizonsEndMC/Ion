@@ -447,4 +447,27 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 			sender.success("Unset world $worldName as Dominion territory")
 		}
 	}
+
+	@Subcommand("territory trustedfixer")
+	@CommandPermission("nations.admin")
+	fun territoryTrustedFixer(sender: Player) = asyncCommand(sender) {
+		for (territory in Territory.all()) {
+			if (Territory.findPropById(territory._id, Territory::trustedPlayers).isNullOrEmpty()) {
+				Territory.updateById(territory._id, org.litote.kmongo.setValue(Territory::trustedPlayers, mutableSetOf())
+				)
+			}
+
+			if (Territory.findPropById(territory._id, Territory::trustedSettlements).isNullOrEmpty()) {
+				Territory.updateById(territory._id, org.litote.kmongo.setValue(Territory::trustedSettlements, mutableSetOf())
+				)
+			}
+
+			if (Territory.findPropById(territory._id, Territory::trustedNations).isNullOrEmpty()) {
+				Territory.updateById(territory._id, org.litote.kmongo.setValue(Territory::trustedNations, mutableSetOf())
+				)
+			}
+		}
+
+		sender.information("Fix territories maybe?")
+	}
 }
