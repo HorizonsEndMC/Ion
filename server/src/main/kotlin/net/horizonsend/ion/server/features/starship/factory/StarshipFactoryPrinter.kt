@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.miscellaneous.registrations.CreditPrintBlackList
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
@@ -87,11 +88,20 @@ class StarshipFactoryPrinter(
 			return
 		}
 
-		if (!tryPrintBlock(data)) {
+		if (!tryPrintBlock(data) && !tryCreditPrintBlock(data)) {
 			return
 		}
 
 		queue[key] = data.nms
+	}
+
+	private fun tryCreditPrintBlock(data: BlockData): Boolean {
+		if (!ConfigurationFiles.featureFlags().economy) return false
+		if (CreditPrintBlackList.isInBlacklist(data)) return false
+		if (!CreditPrintBlackList.isInWhitelist(data)) return false
+
+		val price = ShipFactoryMaterialCosts.getPrice(data)
+		return tryCreditCost(price)
 	}
 
 	private fun tryPrintBlock(data: BlockData): Boolean {
@@ -104,8 +114,6 @@ class StarshipFactoryPrinter(
 			incrementMissing(item, amount)
 			return false
 		}
-
-		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data) && ConfigurationFiles.featureFlags().economy) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)
@@ -173,9 +181,6 @@ class StarshipFactoryPrinter(
 
 	private fun flushBlockQueue() {
 		for ((key, data) in queue) {
-			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
-			if (ConfigurationFiles.featureFlags().economy) tryCreditCost(price)
-
 			val blockX = blockKeyX(key)
 			val blockY = blockKeyY(key)
 			val blockZ = blockKeyZ(key)
