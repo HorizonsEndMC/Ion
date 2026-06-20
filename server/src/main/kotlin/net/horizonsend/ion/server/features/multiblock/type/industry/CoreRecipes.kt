@@ -31,7 +31,7 @@ object CoreRecipes {
 		URANIUM_CORE.getValue().constructItemStack() to 24,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 96,
 		VANADIUM_BLOCK.getValue().constructItemStack() to 48,
-		ZIRCON_BLOCK.getValue().constructItemStack() to 16
+		ZIRCON_BLOCK.getValue().constructItemStack() to 24
 	)
 	val largeReactorRecipe: Map<ItemStack, Int> = mapOf(
 		STEEL_ASSEMBLY.getValue().constructItemStack() to 48,
@@ -48,6 +48,6 @@ object CoreRecipes {
 		URANIUM_CORE.getValue().constructItemStack() to 24,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 96,
 		VANADIUM_BLOCK.getValue().constructItemStack() to 48,
-		ZIRCON_BLOCK.getValue().constructItemStack() to 16
+		ZIRCON_BLOCK.getValue().constructItemStack() to 24
 	)
 }
