@@ -202,9 +202,7 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				AdvancedProbeBalancing(
-					fireRestrictions = FireRestrictions(canFire = true)
-				)
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -235,9 +233,7 @@ data class NewStarshipBalancing(
 				)
 			),
 			weaponOverrides = listOf(
-				AdvancedProbeBalancing(
-					fireRestrictions = FireRestrictions(canFire = true)
-				)
+				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -568,7 +564,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ScramblerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
@@ -621,8 +617,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 0.0,
-			shieldPowerMultiplier = 0.33,
-			cruiseSpeedMultiplier = 1.1,
+			shieldPowerMultiplier = 0.01,
+			cruiseSpeedMultiplier = 0.01,
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
