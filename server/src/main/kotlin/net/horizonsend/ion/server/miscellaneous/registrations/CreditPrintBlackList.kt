@@ -67,6 +67,11 @@ object CreditPrintBlackList {
 		Material.REINFORCED_DEEPSLATE,
 		Material.BEACON,
 		Material.GOLD_BLOCK,
+		Material.WITHER_SKELETON_SKULL,
+		Material.VAULT,
+		Material.SPAWNER,
+		Material.DRAGON_EGG,
+		Material.DRAGON_HEAD,
 		Material.EMERALD_BLOCK
 
 	)

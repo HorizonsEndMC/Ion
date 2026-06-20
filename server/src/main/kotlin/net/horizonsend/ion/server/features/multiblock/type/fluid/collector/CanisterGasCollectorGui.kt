@@ -20,10 +20,9 @@ class CanisterGasCollectorGui(viewer: Player, val entity: CanisterGasCollectorMu
 	private val allGasses = IonRegistries.ATMOSPHERIC_GAS.getAll().filter { gas ->
 		val region = entity.world.ion.getSpaceRegion()
 		when (gas.identifier) {
-			"HYDROGEN" -> region == SpaceRegion.FRACTURE || region == SpaceRegion.MONOLITH
+			"HYDROGEN" -> region == SpaceRegion.MONOLITH
 			"METHANE" -> region == SpaceRegion.SPINE
-			"CHLORINE" -> region == SpaceRegion.SPINE
-			"NITROGEN" -> region == SpaceRegion.WARD || region == SpaceRegion.MONOLITH
+			"NITROGEN" -> region == SpaceRegion.FRACTURE
 			"XENON" -> false
 			else -> true // everything else has no restriction
 		}
