@@ -244,4 +244,14 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 			)
 		}
 	}
+
+	@Suppress
+	@Subcommand("powerfixer")
+	fun onPowerFixer(sender: CommandSender) = asyncCommand(sender) {
+		for (player in SLPlayer.all()) {
+			if (SLPlayer.getPower(player._id) == null) {
+				SLPlayer.setPower(player._id, 20)
+			}
+		}
+	}
 }
