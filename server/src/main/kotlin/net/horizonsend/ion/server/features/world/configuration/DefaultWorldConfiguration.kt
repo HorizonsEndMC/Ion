@@ -1134,7 +1134,7 @@ object DefaultWorldConfiguration {
 	)
 
 	val SIRIUS_HYPERSPACE = register(
-		"SIRIUS_hyperspace", WorldSettings(
+		"Sirius_hyperspace", WorldSettings(
 			flags = mutableSetOf(
 				WorldFlag.SPACE_WORLD,
 				WorldFlag.SPEEDERS_EXPLODE,
