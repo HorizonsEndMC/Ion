@@ -54,8 +54,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 		register(SignatureTypeKeys.ASTEROID_FIELD, SignatureType(
 			key = SignatureTypeKeys.ASTEROID_FIELD,
 			displayName = Component.text("Asteroid Field"),
-			minSpawnTime = Duration.ofHours(1L),
-			maxSpawnTime = Duration.ofHours(3L),
+			minSpawnTime = Duration.ofHours(2L),
+			maxSpawnTime = Duration.ofHours(4L),
 			persistentBehavior = PersistentBehavior(
 				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),
@@ -89,8 +89,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 		register(SignatureTypeKeys.WRECK_SITE, SignatureType(
 			key = SignatureTypeKeys.WRECK_SITE,
 			displayName = Component.text("Wreck Site"),
-			minSpawnTime = Duration.ofMinutes(30L),
-			maxSpawnTime = Duration.ofMinutes(90L),
+			minSpawnTime = Duration.ofMinutes(45L),
+			maxSpawnTime = Duration.ofMinutes(120L),
 			persistentBehavior = PersistentBehavior(
 				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),
