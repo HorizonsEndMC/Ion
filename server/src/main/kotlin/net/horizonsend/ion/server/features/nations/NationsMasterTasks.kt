@@ -85,7 +85,8 @@ object NationsMasterTasks : IonServerComponent() {
 		recalculateNationPower()
 
 		val hour = ZonedDateTime.now().hour
-		if (hour == 7) {
+		// 9 AM UTC
+		if (hour == 9) {
 			doTerritoryUpkeep()
 		}
 	}
