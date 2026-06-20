@@ -25,7 +25,9 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.litote.kmongo.setValue
 import java.util.concurrent.TimeUnit
@@ -112,6 +114,7 @@ object Power : IonServerComponent() {
 		}
 		val victim = event.player
 		val killer = event.entity.killer
+			?: (event.entity.lastDamageCause as? EntityDamageByEntityEvent)?.damager as? Player
 		if (killer == null) {
 			log.info("Player ${victim.name} has been killed by an unknown entity, no power gained.")
 			return // only player vs. player kills should modify power
