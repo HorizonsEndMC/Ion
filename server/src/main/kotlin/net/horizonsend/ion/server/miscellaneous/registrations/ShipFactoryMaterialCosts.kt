@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import org.bukkit.Material
 import org.bukkit.Material.SHORT_GRASS
 import org.bukkit.Material.ACACIA_PLANKS
 import org.bukkit.Material.AMETHYST_BLOCK
