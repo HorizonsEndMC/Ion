@@ -288,13 +288,13 @@ object WaypointManager : IonServerComponent() {
 			val vec = Vector(0.0,0.0,1.0).multiply(r)
 			vec.rotateAroundY(theta)
 			val pos = center.toVector().add(vec)
-            val spaceWorld = body.spaceWorld
-			if (spaceWorld != null && MassShadows.find(spaceWorld, pos.x, pos.z) != null) continue //dont add points inside gravity wells
+            val spaceWorld = body.spaceWorld ?: continue
+			if (MassShadows.find(spaceWorld, pos.x, pos.z) != null) continue //dont add points inside gravity wells
 			val formatedNum = String.format("%.2f",rMod)
 			val vertex = WaypointVertex(
 				name = "${name}_cage_${formatedNum}_${i}",
 				icon = SidebarIcon.ROUTE_SEGMENT_ICON.text.first(),
-				loc = pos.toLocation(body.spaceWorld!!),
+				loc = pos.toLocation(spaceWorld),
 				linkedWaypoint = null,
 				hidden = true
 			)
