@@ -38,7 +38,7 @@ class ProbeWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace
 ) : CannonWeaponSubsystem<ProbeBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(ProbeWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
-	override val length: Int = 4
+	override val length: Int = 2
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 

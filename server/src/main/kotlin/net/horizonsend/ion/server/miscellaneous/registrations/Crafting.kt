@@ -453,6 +453,12 @@ object Crafting : IonServerComponent() {
 			ItemStack.of(REDSTONE, 1)
 		)
 
+		shapeless("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(IRON_INGOT, 3),
+			ItemStack.of(REDSTONE, 2),
+			ItemStack.of(GOLD_INGOT, 1)
+		)
+
 		shapeless("Unloaded_Heavy_Missile", UNLOADED_HEAVY_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			TITANIUM_INGOT.getValue().constructItemStack(2),
 			ItemStack.of(REDSTONE, 1)
@@ -467,17 +473,6 @@ object Crafting : IonServerComponent() {
 			setIngredient('u', ItemStack.of(GOLD_BLOCK, 1))
 		}
 
-		shaped("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape("aba", "mum", "hlo")
-
-			setIngredient('a', ExactChoice(REACTIVE_HOUSING.getValue().constructItemStack()))
-			setIngredient('b', ExactChoice(STEEL_PLATE.getValue().constructItemStack()))
-			setIngredient('m', ExactChoice(CIRCUITRY.getValue().constructItemStack()))
-			setIngredient('u', ExactChoice(URANIUM_ROD.getValue().constructItemStack()))
-			setIngredient('h', ExactChoice(GAS_CANISTER_HYDROGEN.getValue().constructItemStack()))
-			setIngredient('l', LAPIS_BLOCK)
-			setIngredient('o', ExactChoice(GAS_CANISTER_OXYGEN.getValue().constructItemStack()))
-		}
 		shaped("blaster_barrel", GUN_BARREL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("tct", "ppp", "tct")
 
