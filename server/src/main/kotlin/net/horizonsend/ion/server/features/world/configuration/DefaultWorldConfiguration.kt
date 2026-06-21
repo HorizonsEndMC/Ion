@@ -222,13 +222,6 @@ object DefaultWorldConfiguration {
 					),
 				)
 			),
-			environments = WorldEnvironmentConfiguration(
-				atmosphericPressure = 0.0,
-				moduleConfiguration = listOf(
-					GravityModuleConfiguration(DEFAULT_GRAVITY),
-					VacuumEnvironmentConfiguration
-				)
-			),
 			flags = mutableSetOf(
 				WorldFlag.PLANET_WORLD,
 				WorldFlag.SAFE_WORLD,
