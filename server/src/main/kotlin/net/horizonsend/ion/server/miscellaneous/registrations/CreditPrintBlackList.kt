@@ -10,11 +10,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isDoor
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
+import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isGlazedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
 import net.horizonsend.ion.server.miscellaneous.utils.isLog
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
+import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
+import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isTintedGlass
@@ -264,6 +267,9 @@ object CreditPrintBlackList {
 		if (creditPrintWhiteList.contains(material)) return true
 
 		if (data.material.isGlass
+			|| data.material.isGlassPane
+			|| data.material.isStainedGlass
+			|| data.material.isStainedGlassPane
 			|| data.material.isConcrete
 			|| data.material.isSlab
 			|| data.material.isStairs

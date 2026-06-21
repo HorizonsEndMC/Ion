@@ -147,11 +147,7 @@ class ShipFactoryPrintTask(
 
 		val availableCredits = player.getMoneyBalance()
 
-		val creditPrintingEnabled = if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
-			entity.settings.creditPrinting
-		} else {
-			(entity.getBlockRelative(0, 0, 0).state as? Furnace)?.inventory?.contains(Material.GOLD_NUGGET) ?: false
-		}
+		val creditPrintingEnabled = entity.settings.creditPrinting
 
 		// Check if the player has any credits
 		checkAvailablecredits(availableCredits, 0.001)
