@@ -120,7 +120,7 @@ object AIConvoyRegistry {
 	}
 
 	val DEEP_SPACE_MINING = freeRoute("DEEP_SPACE_MINING", 2) { ctx ->
-		val route = RandomConvoyRoute.fromList(worldList = listOf("Trench", "AU-0821", "Horizon"), numDestinations = 10)
+		val route = RandomConvoyRoute.fromList(worldList = listOf("Trench", "Horizon"), numDestinations = 10)
 
 		CompositeFleetSpawner(
 			mechanics = makeMiningComponents(route = route, difficulty = fixedDifficulty(2), targetMode = fixedTargetMode(AITarget.TargetMode.MIXED)),
