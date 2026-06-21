@@ -70,17 +70,20 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			),
 			scannableBehavior = ScannableBehavior(
 				onScan = { signature, starship ->
+					if (signature.scanned) return@ScannableBehavior
 					val pasteResult = signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
 					if (pasteResult == false) {
 						starship.serverError("Could not generate asteroid field")
 						//IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
 						signature.destroyNextTick = true
+						signature.scanned = true
 						return@ScannableBehavior
 					}
 
 					starship.success("Discovered an asteroid field at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
 					IonServer.logger.info("Generated asteroid field for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
 					signature.destroyNextTick = true
+					signature.scanned = true
 				}
 			)
 		))
@@ -174,17 +177,20 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			),
 			scannableBehavior = ScannableBehavior(
 				onScan = { signature, starship ->
+					if (signature.scanned) return@ScannableBehavior
 					val pasteResult = signature.signatureType.schematicBehavior?.generateSchematic(signature.location, SignatureManager.schematicCache)
 					if (pasteResult == false) {
 						starship.serverError("Could not generate wreck site")
 						//IonRegistries.SIGNATURE_TYPE[signature.signatureType.key].nextSpawnTimeMillis = System.currentTimeMillis()
 						signature.destroyNextTick = true
+						signature.scanned = true
 						return@ScannableBehavior
 					}
 
 					starship.success("Discovered a wreck site at [${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ}] in ${signature.location.world.name}")
 					IonServer.logger.info("Generated wreck site for ${starship.playerPilot?.name} at ${signature.location.blockX}, ${signature.location.blockY}, ${signature.location.blockZ} in ${signature.location.world.name}")
 					signature.destroyNextTick = true
+					signature.scanned = true
 				}
 			)
 		))
