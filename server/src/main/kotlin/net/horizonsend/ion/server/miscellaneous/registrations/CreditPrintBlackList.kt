@@ -75,6 +75,17 @@ object CreditPrintBlackList {
 		Material.SPAWNER,
 		Material.DRAGON_EGG,
 		Material.DRAGON_HEAD,
+		Material.SUGAR_CANE,
+		Material.CARROT,
+		Material.POTATO,
+		Material.POTATOES,
+		Material.BEETROOT,
+		Material.BEETROOTS,
+		Material.MELON,
+		Material.SWEET_BERRY_BUSH,
+		Material.WHEAT,
+		Material.PUMPKIN,
+		Material.CARROTS,
 		Material.EMERALD_BLOCK
 
 	)
