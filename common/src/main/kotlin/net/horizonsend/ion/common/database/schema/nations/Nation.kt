@@ -136,7 +136,7 @@ data class Nation(
 			NationSpaceStation.col.updateMany(sess, NationSpaceStation::owner ne id, pull(NationSpaceStation::trustedNations, id))
 			SettlementSpaceStation.col.updateAll(sess, pull(SettlementSpaceStation::trustedNations, id))
 			PlayerSpaceStation.col.updateAll(sess, pull(PlayerSpaceStation::trustedNations, id))
-			Territory.col.updateMany(sess, pull(Territory::trustedNations, id))
+			Territory.col.updateAll(sess, pull(Territory::trustedNations, id))
 
 			Settlement.col.updateAll(sess, pull(Settlement::trustedNations, id))
 
