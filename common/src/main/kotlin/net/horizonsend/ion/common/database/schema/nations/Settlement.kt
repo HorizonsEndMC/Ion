@@ -165,7 +165,7 @@ data class Settlement(
 					SettlementZone::trustedSettlements ne null,
 					pull(SettlementZone::trustedSettlements, settlementId)
 				)
-				Territory.col.updateMany(sess, pull(Territory::trustedSettlements, settlementId))
+				Territory.col.updateAll(sess, pull(Territory::trustedSettlements, settlementId))
 
 				SettlementSpaceStation.col.deleteMany(sess,SettlementSpaceStation::owner eq settlementId)
 
