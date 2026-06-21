@@ -318,7 +318,7 @@ data class NeutralizerBalancing(
 @Serializable
 data class AdvancedProbeBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1000),
 	override var firePowerConsumption: Int = 3_000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = 1,
@@ -357,7 +357,7 @@ data class AdvancedProbeBalancing(
 @Serializable
 data class ProbeBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1000),
 	override var firePowerConsumption: Int = 3_000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = 1,
@@ -816,8 +816,8 @@ data class HeavyTurretBalancing(
 	data class HeavyTurretProjectileBalancing(
         override var range: Double = 400.0,
         override var speed: Double = 80.0,
-        override var explosionPower: Float = 3f,
-        override var starshipShieldDamageMultiplier: Double = 3.0,
+        override var explosionPower: Float = 3.5f,
+        override var starshipShieldDamageMultiplier: Double = 4.2,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
