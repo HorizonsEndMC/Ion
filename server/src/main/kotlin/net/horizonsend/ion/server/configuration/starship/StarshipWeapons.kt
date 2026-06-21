@@ -318,8 +318,8 @@ data class NeutralizerBalancing(
 @Serializable
 data class AdvancedProbeBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1000),
-	override var firePowerConsumption: Int = 3_000,
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override var firePowerConsumption: Int = 1_000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = 1,
 	override var applyCooldownToAll: Boolean = false,
@@ -357,8 +357,8 @@ data class AdvancedProbeBalancing(
 @Serializable
 data class ProbeBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1000),
-	override var firePowerConsumption: Int = 3_000,
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override var firePowerConsumption: Int = 1_000,
 	override var isForwardOnly: Boolean = false,
 	override var maxPerShot: Int? = 1,
 	override var applyCooldownToAll: Boolean = false,

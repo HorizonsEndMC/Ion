@@ -55,7 +55,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 			key = SignatureTypeKeys.ASTEROID_FIELD,
 			displayName = Component.text("Asteroid Field"),
 			minSpawnTime = Duration.ofHours(2L),
-			maxSpawnTime = Duration.ofHours(5L),
+			maxSpawnTime = Duration.ofHours(4L),
 			persistentBehavior = PersistentBehavior(
 				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),
