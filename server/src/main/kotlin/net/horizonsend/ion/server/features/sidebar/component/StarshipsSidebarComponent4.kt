@@ -42,7 +42,7 @@ class StarshipsSidebarComponent4(private val starship: ActiveControlledStarship,
                 StarshipsSidebar.activeModulesComponent(
                     StarshipsSidebar.weaponsetActiveComponent(weaponset),
                     StarshipsSidebar.interdictionActiveComponent(starship.isInterdicting),
-					StarshipsSidebar.interdictionActiveComponent(starship.isDisrupting)
+					StarshipsSidebar.interdictionActiveComponent(starship.disruptorTarget != null)
                 )
             )
         } else Component.empty()

@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit
 
 class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val currentVelocity = starship.cruiseData.velocity.length().roundToHundredth()
-	private val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
-	private val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+	private val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
+	private val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
 	/*
 	private val nationCruiseModifier = starship.playerPilot?.let { player ->
 		val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CRUISE_SPEED)

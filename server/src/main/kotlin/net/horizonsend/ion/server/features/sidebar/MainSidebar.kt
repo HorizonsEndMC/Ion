@@ -98,7 +98,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 			val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
 			val contacts = ContactsSidebar.getPlayerContacts(player)
 			val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
-			val isJammed = PilotedStarships[player]?.getActiveStatusEffectFromType(StarshipStatusEffectTypes.JAMMED)
+			val isJammed = PilotedStarships[player]?.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.JAMMED)
 			if (isJammed == null) {
 				for (contact in contacts) {
 					contactsComponents.add(ContactsSidebarComponent { contact })

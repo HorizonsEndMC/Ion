@@ -55,8 +55,8 @@ object StarshipCruising : IonServerComponent() {
 		var lastBlockCount = starship.initialBlockCount
 
 		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
-			val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
-			val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+			val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
+			val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
 			/*
 			val nationCruiseModifier = starship.playerPilot?.let { player ->
 				val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CRUISE_SPEED)
@@ -138,8 +138,8 @@ object StarshipCruising : IonServerComponent() {
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
-		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
-		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
+		val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
 		/*
 		val nationCruiseModifier = starship.playerPilot?.let { player ->
 			val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CRUISE_SPEED)

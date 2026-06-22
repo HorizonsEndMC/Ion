@@ -67,4 +67,12 @@ object StarshipStatusEffectTypes {
 		displayName = Component.text("Jammed", HE_LIGHT_BLUE),
 		description = Component.text("Obfuscates other starships' height and distance", HE_LIGHT_BLUE)
 	)
+
+	// Boolean effect; either the player has it or does not (might change to numerical if we're adding strength)
+	// Stackable effect; can be stacked with other effects of the same type
+	val WARP_DISRUPTED = StarshipStatusEffectType(
+		key = StarshipStatusEffectTypeKeys.WARP_DISRUPTED,
+		displayName = Component.text("Warp Disrupted", HE_LIGHT_BLUE),
+		description = Component.text("Prevents a starship from jumping to hyperspace", HE_LIGHT_BLUE)
+	)
 }

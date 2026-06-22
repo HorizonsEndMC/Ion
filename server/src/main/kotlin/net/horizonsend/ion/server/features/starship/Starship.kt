@@ -87,7 +87,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -541,9 +540,7 @@ class Starship(
 
 	var isInterdicting = false; private set
 	var isJumpBeaconOn = false; private set
-	var disruptorCount = mutableListOf<Player>()
-	var isDisrupting : Boolean = false; private set
-	var disruptorTarget: Player? = null
+	var disruptorTarget: Starship? = null
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -564,22 +561,18 @@ class Starship(
 		onlinePassengers.forEach { player -> player.success("Gravity well enabled") }
 	}
 
-	fun setIsDisrupting(value: Boolean, target: Player?) {
+	fun setIsDisrupting(otherStarship: Starship?) {
 		Tasks.checkMainThread()
-		isDisrupting = value
 
-		warpDisruptors
-			.filter { it.isIntact() }
-			.map { it.pos.toLocation(world).block.state }
-		if (!value) {
+		if (otherStarship == null) {
 			disruptorTarget = null
 			onlinePassengers.forEach { player -> player.success("Disruptor disabled") }
 
 			return
 		}
 
-		disruptorTarget = target
-		onlinePassengers.forEach { player -> player.success("Disruptor enabled") }
+		disruptorTarget = otherStarship
+		onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${disruptorTarget ?: "unknown starship; they hyperdrive is disabled as long as your starship is in range"}") }
 	}
 
 	fun enableJumpBeacon() {
@@ -823,7 +816,7 @@ class Starship(
 		)
 	}
 
-	fun addStatusEffect(newStatusEffect: StarshipStatusEffect) {
+	fun addStatusEffect(newStatusEffect: StarshipStatusEffect, stackable: Boolean = false) {
 		val type = newStatusEffect.type
 
 		if (statusEffects[type] == null) {
@@ -831,8 +824,8 @@ class Starship(
 		}
 
 		val sameStrengthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
-		// there is an effect with the same strength value as the new one. refresh the duration
-		if (sameStrengthEffect != null) {
+		// there is an effect with the same strength value as the new one, and the effect is not stackable. refresh the duration
+		if (!stackable && sameStrengthEffect != null) {
 			sameStrengthEffect.durationMillis = max(sameStrengthEffect.durationMillis, newStatusEffect.durationMillis)
 
 			/*
@@ -852,7 +845,7 @@ class Starship(
 			return
 		}
 
-		// this effect has no others with the same strength. add it to the list
+		// this effect has no others with the same strength, or is stackable. add it to the list
 		statusEffects[type]?.add(newStatusEffect)
 
 		this.playerPilot?.information("Gained status effect:")
@@ -868,8 +861,12 @@ class Starship(
 		))
 	}
 
-	fun getActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {
+	fun getStrongestActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {
 		return statusEffects[statusEffectType]?.filter { statusEffect -> statusEffect.type == statusEffectType }?.maxByOrNull { statusEffect -> statusEffect.strength }
+	}
+
+	fun getAllActiveStatusEffectsFromType(statusEffectType: StarshipStatusEffectType): List<StarshipStatusEffect>? {
+		return statusEffects[statusEffectType]
 	}
 
 	fun removeStatusEffectType(statusEffectType: StarshipStatusEffectType) {

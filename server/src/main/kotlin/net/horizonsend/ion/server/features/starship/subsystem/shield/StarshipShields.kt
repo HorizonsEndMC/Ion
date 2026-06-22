@@ -307,8 +307,8 @@ object StarshipShields : IonServerComponent() {
 			usage = (usage * 0.1f).toInt()
 		}
 
-		val resistanceFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_RESISTANCE)?.strength ?: 0.0
-		val weaknessFactor = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_WEAKNESS)?.strength ?: 0.0
+		val resistanceFactor = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_RESISTANCE)?.strength ?: 0.0
+		val weaknessFactor = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_WEAKNESS)?.strength ?: 0.0
 		/*
 		val nationResistanceFactor = starship.playerPilot?.let { player ->
 			val shieldResistanceBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.SHIELD_RESISTANCE)

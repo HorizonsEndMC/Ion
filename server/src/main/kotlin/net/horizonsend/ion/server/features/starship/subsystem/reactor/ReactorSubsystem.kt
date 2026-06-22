@@ -62,8 +62,8 @@ class ReactorSubsystem(
 				continue
 			}
 			val fraction = ((missing.toDouble() / totalMissing.toDouble()) * shieldPower).roundToInt()
-			val shieldBoostMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED)?.strength ?: 0.0
-			val shieldDrainMultiplier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW)?.strength ?: 0.0
+			val shieldBoostMultiplier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SPEED)?.strength ?: 0.0
+			val shieldDrainMultiplier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW)?.strength ?: 0.0
 			/*
 			val nationRegenMultiplier = starship.playerPilot?.let { player ->
 				val shieldRegenBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.SHIELD_REGENERATION)

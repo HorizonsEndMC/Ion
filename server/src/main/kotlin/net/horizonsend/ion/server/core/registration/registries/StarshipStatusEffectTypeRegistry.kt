@@ -19,5 +19,6 @@ class StarshipStatusEffectTypeRegistry : Registry<StarshipStatusEffectType>(Regi
 		register(StarshipStatusEffectTypeKeys.SHIELD_RESISTANCE, StarshipStatusEffectTypes.SHIELD_RESISTANCE)
 		register(StarshipStatusEffectTypeKeys.SHIELD_WEAKNESS, StarshipStatusEffectTypes.SHIELD_WEAKNESS)
 		register(StarshipStatusEffectTypeKeys.JAMMED, StarshipStatusEffectTypes.JAMMED)
+		register(StarshipStatusEffectTypeKeys.WARP_DISRUPTED, StarshipStatusEffectTypes.WARP_DISRUPTED)
 	}
 }

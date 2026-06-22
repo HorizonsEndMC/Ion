@@ -23,6 +23,8 @@ import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
@@ -56,6 +58,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
+import java.time.Duration
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -76,6 +79,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 		Tasks.syncRepeat(20L, 20L, this::updateStarshipStatusEffects)
 		Tasks.syncRepeat(5L, 5L, this::displayJumpBeaconEffect)
+		Tasks.syncRepeat(4L, 4L, this::refreshDisruptorStatusEffects)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
@@ -281,6 +285,34 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		jumpBeaconTick += 1
+	}
+
+	private fun refreshDisruptorStatusEffects() {
+		for (starship in ActiveStarships.all().filter { starship -> starship.disruptorTarget != null }) {
+			// disable disrupt if the target is no longer active
+			val disruptorTarget = starship.disruptorTarget
+			if (disruptorTarget == null || ActiveStarships.getByIdentifier(disruptorTarget.identifier) == null) {
+				starship.information("Your disrupted target is no longer active!")
+				starship.setIsDisrupting(null)
+				continue
+			}
+
+			// only refresh disrupt in the same world + in space (definitely not hyperspace)
+			if (starship.world != disruptorTarget.world) continue
+			if (!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) continue
+
+			// do not refresh if out of range
+			if (starship.centerOfMass.distanceSquared(disruptorTarget.centerOfMass)
+				> disruptorTarget.balancing.interdictionRange * disruptorTarget.balancing.interdictionRange) continue
+
+			disruptorTarget.addStatusEffect(
+				StarshipStatusEffect(
+					StarshipStatusEffectTypes.WARP_DISRUPTED,
+					1.0,
+					Duration.ofSeconds(5L).toMillis()
+				), stackable = true
+			)
+		}
 	}
 
 	@EventHandler

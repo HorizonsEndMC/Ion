@@ -12,4 +12,5 @@ object StarshipStatusEffectTypeKeys : KeyRegistry<StarshipStatusEffectType>(Regi
 	val SHIELD_RESISTANCE = registerTypedKey<StarshipStatusEffectType>("SHIELD_RESISTANCE")
 	val SHIELD_WEAKNESS = registerTypedKey<StarshipStatusEffectType>("SHIELD_WEAKNESS")
 	val JAMMED = registerTypedKey<StarshipStatusEffectType>("JAMMED")
+	val WARP_DISRUPTED = registerTypedKey<StarshipStatusEffectType>("WARP_DISRUPTED")
 }

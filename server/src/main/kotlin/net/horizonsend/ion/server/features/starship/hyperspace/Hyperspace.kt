@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.StarshipStatusEffectTypeKeys
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -25,6 +26,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveE
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
@@ -76,31 +78,14 @@ object Hyperspace : IonServerComponent() {
 		nullable: Boolean = false,
 		beaconTarget: Player? = null
 	) {
-		val massShadows = MassShadows.find(
-			starship.world,
-			starship.centerOfMass.x.toDouble(),
-			starship.centerOfMass.z.toDouble()
-		)
 		if (starship.isInvulnerable) {
 			starship.onlinePassengers.forEach {
 				it.userErrorAction("You cannot jump while invulnerable!")
 			}
 			return
 		}
-		if (massShadows != null || starship.disruptorCount.isNotEmpty()) {
-			var combinedWellStrength = 0.0
-			massShadows?.forEach { combinedWellStrength += it.wellStrength }
-			for (player in starship.disruptorCount) {
-				val enemyStarship = ActiveStarships.findByPilot(player) ?: continue
-				if (enemyStarship.centerOfMass.distanceSquared(starship.centerOfMass) < enemyStarship.balancing.interdictionRange) {
-					combinedWellStrength += 1
-				}
-			}
-			if (starship.balancing.jumpStrength <= combinedWellStrength) {
-				starship.userError("Ship is within a strong Gravity Well! Jump cancelled")
-				return
-			}
-		}
+
+		if (checkIsInterdicted(starship)) return
 
 		if (starship.type == StarshipType.PLATFORM) {
 			starship.onlinePassengers.forEach {
@@ -125,6 +110,36 @@ object Hyperspace : IonServerComponent() {
 
 		check(nullable) {"Hyperdrive does not exist (invalid null state)"}
 		jumpWarmup(starship = starship, hyperdrive = null, x = x, z = z, destinationWorld = destinationWorld, useFuel = useFuel, beaconTarget = beaconTarget)
+	}
+
+	fun checkIsInterdicted(starship: ActiveStarship): Boolean {
+		val massShadows = MassShadows.find(
+			starship.world,
+			starship.centerOfMass.x.toDouble(),
+			starship.centerOfMass.z.toDouble()
+		)
+
+		val warpDisruptStatusEffectList =
+			starship.getAllActiveStatusEffectsFromType(StarshipStatusEffectTypes.WARP_DISRUPTED)
+		if (massShadows != null || !warpDisruptStatusEffectList.isNullOrEmpty()) {
+			var combinedWellStrength = 0.0
+
+			// add well strength from gravity wells
+			massShadows?.forEach { combinedWellStrength += it.wellStrength }
+
+			// add well strength from disruptors
+			if (!warpDisruptStatusEffectList.isNullOrEmpty()) {
+				for (effect in warpDisruptStatusEffectList) {
+					combinedWellStrength += effect.strength
+				}
+			}
+
+			if (starship.balancing.jumpStrength <= combinedWellStrength) {
+				starship.userError("Ship is within a strong Gravity Well, or it is disrupted! Jump cancelled")
+				return true
+			}
+		}
+		return false
 	}
 
 	private fun jumpWarmup(

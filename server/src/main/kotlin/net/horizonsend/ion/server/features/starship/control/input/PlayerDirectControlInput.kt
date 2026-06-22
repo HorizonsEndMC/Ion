@@ -94,8 +94,8 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
 		val cooldown: Long = DirectControlHandler
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
-		val speedModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
-		val slowModifier = starship.getActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
 		/*
 		val nationDirectControlModifier = starship.playerPilot?.let { player ->
 			val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.DIRECT_CONTROL_SPEED)
