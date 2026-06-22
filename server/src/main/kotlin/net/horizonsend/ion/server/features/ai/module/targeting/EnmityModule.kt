@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.FleetMember
 import net.horizonsend.ion.server.features.starship.fleet.toFleetMember
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -146,9 +147,10 @@ open class EnmityModule(
 			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
 			if (!enmityFilter(starship, tempTarget.target, targetMode)) continue
 			val dist = getOpponentDistance(tempTarget.target)!! + 1e-4
+			val cutoff = if (!!world.hasFlag(WorldFlag.DOMINION_WORLD)) config.aggroRange else config.aggroRange * 0.5
 			val weight: Double
-			if (dist > config.aggroRange) {
-				weight = ((config.aggroRange / dist).pow(2)
+			if (dist > cutoff) {
+				weight = ((cutoff / dist).pow(2)
 					* config.distanceAggroWeight * difficulty.outOfRangeAggro)
 					.coerceAtMost(config.distanceAggroWeight)
 			} else {

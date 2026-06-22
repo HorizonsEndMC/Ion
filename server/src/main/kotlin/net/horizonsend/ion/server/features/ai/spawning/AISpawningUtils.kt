@@ -206,7 +206,7 @@ fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Doubl
 		return@Supplier null
 	}
 	if (!PilotedStarships.isPiloting(player)) {
-		if (!world.hasFlag(WorldFlag.NOT_SECURE) || Random.nextDouble() <= 0.5) return@Supplier null
+		if (!world.hasFlag(WorldFlag.NOT_SECURE) || Random.nextDouble() <= 0.1) return@Supplier null
 	}
 
 	var iterations = 0
