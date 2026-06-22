@@ -119,6 +119,7 @@ object CreditPrintBlackList {
 		Material.TRAPPED_CHEST,
 		Material.BARREL,
 		Material.LODESTONE,
+		Material.LECTERN,
 		Material.DAYLIGHT_DETECTOR,
 
 		Material.OAK_PLANKS,
