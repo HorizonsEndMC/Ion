@@ -116,7 +116,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 			val length = abs(firstPoint.z - secondPoint.z) + 1
 
 			val horizontalArea = width * length
-			sender msg "&7Horizontal area:&b $horizontalArea&7, width &8(&cx&8)&7:&c $width&7, height &8(&ay&8)&7:&a $height&7, length &8(&bz&8)&7:&b $length"
+			sender.information("Horizontal area:&b $horizontalArea&7, width &8(&cx&8)&7:&c $width&7, height &8(&ay&8)&7:&a $height&7, length &8(&bz&8)&7:&b $length")
 			sender action "&7&oHint: Use /szone show to visualize it like this after creation"
 
 			if (horizontalArea <= maxHorizontalArea) {
@@ -125,7 +125,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 		}
 
 		redis { set("nations.settlement_zone_command.selection.${sender.uniqueId}", Gson().toJson(selection)) }
-		sender msg "&aSet position ${if (second) 2 else 1} to $point"
+		sender.success("Set position ${if (second) 2 else 1} to $point")
 	}
 
 	const val VISUALIZATION_DURATION = 4000L
@@ -237,11 +237,11 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 
 		redis { del(getSelectionKey(sender)) }
 
-		sender msg "&aCreated settlement zone!"
-		sender msg "&7To put it for sale, use '/szone set price <price> while in it." +
+		sender.success("Created settlement zone!")
+		sender.information("To put it for sale, use '/szone set price <price> while in it." +
 			" To give it a recurring rent, use '/szone set rent <rent>'." +
 			" Note that rent can only be changed while it is unowned, so do that before someone buys it!" +
-			" &o(If you want to set it up to be settlement-wide, just set the price to 0, buy it yourself & adjust access)"
+			" &o(If you want to set it up to be settlement-wide, just set the price to 0, buy it yourself & adjust access)")
 	}
 
 	private fun validateSelection(
@@ -302,7 +302,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 
 		failIf(zones.isEmpty()) { "No zone at your current location" }
 
-		sender msg "&6Zone at your location:&e ${zones.joinToString { it.name }}"
+		sender.information("Zone at your location:&e ${zones.joinToString { it.name }}")
 	}
 
 	private val visualizationCooldown = PerPlayerCooldown(VISUALIZATION_DURATION)
@@ -325,11 +325,13 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 				text.append("&7Zone &b${zone.name}&7 from &c${zone.minPoint}&7 to &a${zone.maxPoint}&7")
 				zone.owner?.let { text.append(" &8(&7Owner: ${getPlayerName(it)}&8)") }
 
-				sender msg text.toString()
+				sender.success(
+					text.toString()
 			}
 
-			sender msg "&dListed and visualized &b$count&d zone(s)"
+			sender.information("Listed and visualized $count&d zone(s)")
 		}
+		)
 	}
 
 	@Subcommand("list")
@@ -401,7 +403,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 
 		SettlementZone.delete(zone.id)
 
-		sender msg "&aDeleted settlement zone ${zone.name}"
+		sender.success("Deleted settlement zone ${zone.name}")
 
 		if (owner != null) {
 			Notify.playerCrossServer(
@@ -432,14 +434,16 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 		failIf(oldPrice == newPrice) { "Price is already set to ${newPrice?.toCreditsString() ?: "none"}" }
 
 		SettlementZone.setPrice(zone.id, newPrice)
-		sender msg when {
-			newPrice == null -> "&aMade ${zone.name} not for sale"
-			oldPrice == null -> "&aPut zone ${zone.name} up for sale for ${newPrice.toCreditsString()}." +
-				" It can now be purchased using /splot buy while standing in it." +
-				" (To make it no longer for sale, use /szone set price ${zone.name} -1)"
+		sender.success(
+			when {
+			newPrice == null -> "Made ${zone.name} not for sale"
+			oldPrice == null -> "Put zone ${zone.name} up for sale for ${newPrice.toCreditsString()}." +
+				"It can now be purchased using /splot buy while standing in it." +
+				"To make it no longer for sale, use /szone set price ${zone.name} -1"
 
-			else -> "&aChanged price of ${zone.name} from ${oldPrice.toCreditsString()} to ${newPrice.toCreditsString()}"
+			else -> "Changed price of ${zone.name} from ${oldPrice.toCreditsString()} to ${newPrice.toCreditsString()}"
 		}
+			)
 	}
 
 	@Subcommand("set rent")
@@ -456,11 +460,13 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 		failIf(oldRent == newRent) { "Rent is already set to ${newRent?.toCreditsString() ?: "none"}" }
 
 		SettlementZone.setRent(zone.id, newRent)
-		sender msg when {
-			newRent == null -> "&aMade zone ${zone.name} have no rent"
-			oldRent == null -> "&aGave zone ${zone.name} a rent of ${newRent.toCreditsString()} a day"
-			else -> "&aChanged rent of ${zone.name} from ${oldRent.toCreditsString()} to ${newRent.toCreditsString()}"
+		sender.success(
+			when {
+			newRent == null -> "Made zone ${zone.name} have no rent"
+			oldRent == null -> "Gave zone ${zone.name} a rent of ${newRent.toCreditsString()} a day"
+			else -> "Changed rent of ${zone.name} from ${oldRent.toCreditsString()} to ${newRent.toCreditsString()}"
 		}
+			)
 	}
 
 	@Subcommand("reclaim")
@@ -471,7 +477,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 
 		SettlementZone.setOwner(zone.id, null)
 
-		sender msg "&aReclaimed region ${zone.name} from ${getPlayerName(owner)}"
+		sender.success("&aReclaimed region ${zone.name} from ${getPlayerName(owner)}")
 
 		val message = MiniMessage.miniMessage()
 			.deserialize("<gray>${sender.name} reclaimed your plot ${zone.name} in ${getSettlementName(settlement)}")
