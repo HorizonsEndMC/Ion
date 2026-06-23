@@ -10,25 +10,28 @@ import net.horizonsend.ion.server.features.world.environment.listener.WrappedLis
 import org.bukkit.GameMode
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent
 
 class NoGravityEnvironmentModule(manager: WorldEnvironmentManager, val ignoreIndoors: Boolean) : EnvironmentModule(manager) {
 	var interval = 0
 
 	override fun tickSync() {
 		interval++
+		// It's not time to tick yet
 		if (interval % 10 != 0) return
 
 		for (player in world.players) {
-			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
+			// the GOAT Codex made me realize that returns brick the entire function, not just every player
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) continue
 
 			// do not update fly speed if the player is piloting and is in direct control
-			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true && player.getSetting(PlayerSettings::floatWhileDc) == true) return
+			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true && player.getSetting(PlayerSettings::floatWhileDc) == true) continue
 
 			// only allow players to fly at full speed if ignoreIndoors is false and the player is inside
 			if (!ignoreIndoors && isInside(player.eyeLocation, 1)) {
 				removeEffects(player)
 
-				return
+				continue
 			}
 
 			player.allowFlight = true
@@ -69,6 +72,12 @@ class NoGravityEnvironmentModule(manager: WorldEnvironmentManager, val ignoreInd
 			if (event.to.y < event.player.world.minHeight && !isPositiveChange || event.to.y > event.player.world.maxHeight && isPositiveChange) {
 				event.isCancelled = true
 			}
+		},
+		WrappedListenerTypeKeys.ENTITY_DAMAGE_EVENT.getValue().createInstance { event ->
+			if (!event.entity.world.hasEnvironment()) return@createInstance
+			if (event.cause != EntityDamageEvent.DamageCause.FALL) return@createInstance
+
+			event.isCancelled = true
 		},
 		WrappedListenerTypeKeys.ENTITY_CHANGE_BLOCK.getValue().createInstance { event ->
 			val entity = event.entity
