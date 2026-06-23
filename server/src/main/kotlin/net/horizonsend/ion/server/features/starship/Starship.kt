@@ -64,6 +64,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementFor
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType.DisplayType
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
@@ -572,7 +573,7 @@ class Starship(
 		}
 
 		disruptorTarget = otherStarship
-		onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${disruptorTarget ?: "unknown starship; they hyperdrive is disabled as long as your starship is in range"}") }
+		onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${disruptorTarget?.identifier ?: "unknown starship; they hyperdrive is disabled as long as your starship is in range"}") }
 	}
 
 	fun enableJumpBeacon() {
@@ -816,7 +817,7 @@ class Starship(
 		)
 	}
 
-	fun addStatusEffect(newStatusEffect: StarshipStatusEffect, stackable: Boolean = false) {
+	fun addStatusEffect(newStatusEffect: StarshipStatusEffect) {
 		val type = newStatusEffect.type
 
 		if (statusEffects[type] == null) {
@@ -824,8 +825,11 @@ class Starship(
 		}
 
 		val sameStrengthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
-		// there is an effect with the same strength value as the new one, and the effect is not stackable. refresh the duration
-		if (!stackable && sameStrengthEffect != null) {
+		val alreadyAppliedEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.applier == newStatusEffect.applier }
+
+		if (!type.stackable && sameStrengthEffect != null) {
+			// there already exists an effect with the same strength value as the new one, and the effect is not stackable. refresh the duration
+			// refresh the effect duration
 			sameStrengthEffect.durationMillis = max(sameStrengthEffect.durationMillis, newStatusEffect.durationMillis)
 
 			/*
@@ -843,18 +847,30 @@ class Starship(
 			))
 			*/
 			return
+		} else if (type.stackable && type.oneApplicationPerStarship && alreadyAppliedEffect != null) {
+			// the effect is being applied by the same starship with an already existing effect, and only one application per starship is allowed
+			// refresh the effect duration
+			alreadyAppliedEffect.durationMillis = max(alreadyAppliedEffect.durationMillis, newStatusEffect.durationMillis)
+
+			return
 		}
 
-		// this effect has no others with the same strength, or is stackable. add it to the list
+		// this effect has no others with the same strength, or is stackable and can be applied multiple times by the same starship. add it to the list
 		statusEffects[type]?.add(newStatusEffect)
 
 		this.playerPilot?.information("Gained status effect:")
 		this.playerPilot?.sendMessage(ofChildren(
 			newStatusEffect.type.displayName,
 			Component.newline(),
-			text("Strength: ${(newStatusEffect.strength * 100).roundToInt()}%", HE_MEDIUM_GRAY),
+			if (type.displayType == DisplayType.PERCENT) {
+				text("Strength: ${(newStatusEffect.strength * 100).roundToInt()}%", HE_MEDIUM_GRAY)
+			} else {
+				text("Strength: ${(newStatusEffect.strength).roundToInt()}", HE_MEDIUM_GRAY)
+			},
 			Component.newline(),
 			text( "Duration: ${Duration.ofMillis(newStatusEffect.durationMillis).toSeconds()}", HE_MEDIUM_GRAY),
+			Component.newline(),
+			text( "Applied by: ${newStatusEffect.applier?.identifier ?: "unknown"}", HE_MEDIUM_GRAY),
 			Component.newline(),
 			text("[Effect]", HE_LIGHT_ORANGE)
 				.hoverEvent(newStatusEffect.type.description),

@@ -68,7 +68,8 @@ class WebifierProjectile(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
 					speedPenalty,
-					balancing.effectDurationMillis
+					balancing.effectDurationMillis,
+					shooter.starship,
 				)
 			)
 
@@ -76,7 +77,8 @@ class WebifierProjectile(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.CRUISE_SLOW,
 					speedPenalty,
-					balancing.effectDurationMillis
+					balancing.effectDurationMillis,
+					shooter.starship,
 				)
 			)
 

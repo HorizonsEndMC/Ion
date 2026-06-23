@@ -37,7 +37,8 @@ class HeavyLaserProjectile(
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
 			speedPenalty,
-			balancing.effectDurationMillis
+			balancing.effectDurationMillis,
+			shooter.starship
 		))
 
 		starship.userErrorAction("Direct Control speed slowed by ${(speedPenalty * 100).toInt()}%!")

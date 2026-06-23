@@ -437,7 +437,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("disrupt")
-	@CommandCompletion("@players @nothing")
+	@CommandCompletion("@autoTurretTargets")
 	@Description("Disrupt someone's hyperdrive")
 	fun onDisruptHyperDrive(sender: Player, @Optional identifier: String?) {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
@@ -459,9 +459,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		targetStarship.addStatusEffect(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.WARP_DISRUPTED,
-				1.0,
-				Duration.ofSeconds(5L).toMillis()
-			), stackable = true
+				starship.type.balancing.wellStrength,
+				Duration.ofSeconds(5L).toMillis(),
+				starship
+			)
 		)
 	}
 

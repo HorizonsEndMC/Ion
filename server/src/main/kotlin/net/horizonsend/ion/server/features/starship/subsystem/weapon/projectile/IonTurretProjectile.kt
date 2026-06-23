@@ -52,12 +52,14 @@ class IonTurretProjectile(
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
 			speedPenalty,
-			balancing.effectDurationMillis
+			balancing.effectDurationMillis,
+			shooter.starship,
 		))
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.CRUISE_SLOW,
 			speedPenalty,
-			balancing.effectDurationMillis
+			balancing.effectDurationMillis,
+			shooter.starship,
 		))
 	}
 

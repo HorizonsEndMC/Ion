@@ -38,7 +38,8 @@ class ShieldCommandBurstSubsystem(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.SHIELD_RESISTANCE,
 				balancing.effectStrength,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				starship,
 			)
 		)
 
@@ -52,7 +53,8 @@ class ShieldCommandBurstSubsystem(
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.SHIELD_RESISTANCE,
 				balancing.effectStrength,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				starship,
 			))
 		}
 	}

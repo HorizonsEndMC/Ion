@@ -202,7 +202,8 @@ class EMPMissileProjectile(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.SHIELD_WEAKNESS,
 				shieldPenalty,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				shooter.starship
 			)
 		)
 		starship.userErrorAction("Shields weakened by ${(shieldPenalty * 100).toInt()}%!")

@@ -14,6 +14,7 @@ class ContactsJammerModule(
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
 	private var ticks = 0
 	override fun tick() {
+		/*
 		ticks++
 
 		if (ticks % 5 == 0) {
@@ -23,10 +24,11 @@ class ContactsJammerModule(
 					starship.addStatusEffect(StarshipStatusEffect(
 						StarshipStatusEffectTypes.JAMMED,
 						1.0,
-						20L
+						20L,
 					))
 				}
 			}
 		}
+		 */
 	}
 }

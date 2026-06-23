@@ -59,7 +59,8 @@ class HeavyNeutralizerProjectile(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.SHIELD_REGENERATION_SLOW,
 					regenPenalty,
-					balancing.effectDurationMillis
+					balancing.effectDurationMillis,
+					shooter.starship,
 				)
 			)
 

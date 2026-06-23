@@ -39,7 +39,8 @@ class CapitalSkirmishCommandBurstSubsystem(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.CRUISE_SPEED,
 				balancing.effectStrength,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				starship,
 			)
 		)
 
@@ -47,7 +48,8 @@ class CapitalSkirmishCommandBurstSubsystem(
 			StarshipStatusEffect(
 				StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED,
 				balancing.effectStrength,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				starship,
 			)
 		)
 
@@ -61,13 +63,15 @@ class CapitalSkirmishCommandBurstSubsystem(
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.CRUISE_SPEED,
 				balancing.effectStrength,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				starship,
 			))
 
 			otherStarship.addStatusEffect(StarshipStatusEffect(
 				StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED,
 				balancing.effectStrength,
-				balancing.effectDurationMillis
+				balancing.effectDurationMillis,
+				starship,
 			))
 		}
 	}

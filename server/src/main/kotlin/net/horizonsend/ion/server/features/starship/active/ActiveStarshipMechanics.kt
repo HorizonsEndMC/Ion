@@ -18,12 +18,14 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
@@ -247,7 +249,11 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.forEach { statusEffect -> statusEffect.durationMillis -= TimeUnit.SECONDS.toMillis(1) } }
 			statusEffects.mapValues { (_, statusEffectList) -> statusEffectList.removeAll { statusEffect ->
 				if (statusEffect.durationMillis <= 0) {
-					starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${(statusEffect.strength * 100).roundToInt()} has worn off")
+					if (statusEffect.type.displayType == StarshipStatusEffectType.DisplayType.PERCENT) {
+						starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${(statusEffect.strength * 100).roundToInt()}% has worn off")
+					} else {
+						starship.information("Status effect ${statusEffect.type.displayName.plainText()} with strength ${(statusEffect.strength).roundToInt()} has worn off")
+					}
 				}
 				statusEffect.durationMillis <= 0
 			} }
@@ -308,10 +314,20 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			disruptorTarget.addStatusEffect(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.WARP_DISRUPTED,
-					1.0,
-					Duration.ofSeconds(5L).toMillis()
-				), stackable = true
+					starship.type.balancing.wellStrength,
+					Duration.ofSeconds(5L).toMillis(),
+					starship
+				)
 			)
+
+			val disruptingController = starship.controller
+			val disruptedController = disruptorTarget.controller
+
+			if (disruptingController is PlayerController && disruptedController is PlayerController) {
+				CombatTimer.evaluateSvs(disruptingController.damager, disruptorTarget)
+			} else if ((disruptingController is AIController && disruptedController is PlayerController) || (disruptingController is PlayerController && disruptedController is AIController)) {
+				CombatTimer.evaluateSvs(disruptingController.damager, disruptorTarget)
+			}
 		}
 	}
 
