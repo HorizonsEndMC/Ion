@@ -573,7 +573,7 @@ class Starship(
 		}
 
 		disruptorTarget = otherStarship
-		onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${disruptorTarget?.identifier ?: "unknown starship; they hyperdrive is disabled as long as your starship is in range"}") }
+		onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${disruptorTarget?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
 	}
 
 	fun enableJumpBeacon() {

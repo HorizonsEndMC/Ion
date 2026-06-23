@@ -309,7 +309,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 			// do not refresh if out of range
 			if (starship.centerOfMass.distanceSquared(disruptorTarget.centerOfMass)
-				> disruptorTarget.balancing.interdictionRange * disruptorTarget.balancing.interdictionRange) continue
+				> starship.balancing.interdictionRange * starship.balancing.interdictionRange) continue
 
 			disruptorTarget.addStatusEffect(
 				StarshipStatusEffect(

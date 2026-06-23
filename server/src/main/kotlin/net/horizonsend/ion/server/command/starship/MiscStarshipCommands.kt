@@ -455,15 +455,23 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		Interdiction.findDisruptor(starship) ?: fail { "Intact Disruptor not found!" }
 
+		// This sets the disruption target so that it continuously checks and applies, but does not actually
+		// disrupt unless the below conditions are met
 		starship.setIsDisrupting(targetStarship)
-		targetStarship.addStatusEffect(
-			StarshipStatusEffect(
-				StarshipStatusEffectTypes.WARP_DISRUPTED,
-				starship.type.balancing.wellStrength,
-				Duration.ofSeconds(5L).toMillis(),
-				starship
+
+		if (starship.world == targetStarship.world
+			&& starship.world.hasFlag(WorldFlag.SPACE_WORLD)
+			&& starship.centerOfMass.distanceSquared(targetStarship.centerOfMass)
+			<= starship.balancing.interdictionRange * starship.balancing.interdictionRange) {
+			targetStarship.addStatusEffect(
+				StarshipStatusEffect(
+					StarshipStatusEffectTypes.WARP_DISRUPTED,
+					starship.type.balancing.wellStrength,
+					Duration.ofSeconds(5L).toMillis(),
+					starship
+				)
 			)
-		)
+		}
 	}
 
 	private fun tryJump(
