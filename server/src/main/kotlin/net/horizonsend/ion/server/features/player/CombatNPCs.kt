@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait
 import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
@@ -72,6 +74,9 @@ object CombatNPCs : IonServerComponent(true) {
 
 			// if this permission is granted, do not spawn the npc
 			if (player.hasPermission("starlegacy.combatnpc.bypass")) return@listen
+
+			// don't spawn NPCs in safe worlds or tutorial worlds
+			if (player.world.hasFlag(WorldFlag.TUTORIAL_WORLD) || player.world.hasFlag(WorldFlag.SAFE_WORLD)) return@listen
 
 			val inventoryCopy: Array<ItemStack?> = player.inventory.contents
 				.map { item: ItemStack? -> item?.clone() }
