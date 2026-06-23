@@ -57,8 +57,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
+import net.horizonsend.ion.server.miscellaneous.utils.toBukkitColor
+import net.horizonsend.ion.server.miscellaneous.utils.toTextColor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -1081,7 +1082,7 @@ internal object NationCommand : SLCommand() {
 		val leaderRole = NationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let {
 			val leaderText = text(leaderRole.name)
-			leaderText.color(leaderRole.color.actualStyle.textColor)
+			leaderText.color(leaderRole.color.toTextColor())
 
 			leaderText
 		} ?: text()
@@ -1189,7 +1190,7 @@ internal object NationCommand : SLCommand() {
 	@Subcommand("broadcast")
 	fun onBroadcast(sender: Player, message: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
-		requireNationPermission(sender, nationId, NationRole.Permission.BRODCAST)
+		requireNationPermission(sender, nationId, NationRole.Permission.BROADCAST)
 		ServerInboxes.sendToNationMembers(nationId, message.miniMessage())
 	}
 

@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.cache
 
 import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.toTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -35,7 +35,9 @@ object PlayerCache : AbstractPlayerCache() {
 		if (nameColorPair?.first == null)
 			return null
 
-		return "${nameColorPair.second.actualStyle.wrappedColor}${nameColorPair.first}"
+		// Convert ColorDB (R,G,B) to hex color for text formatting
+		val textColor = nameColorPair.second.toTextColor()
+		return "<color:${textColor.asHexString()}>${nameColorPair.first}"
 	}
 
 	override fun onlinePlayerIds(): List<SLPlayerId> =

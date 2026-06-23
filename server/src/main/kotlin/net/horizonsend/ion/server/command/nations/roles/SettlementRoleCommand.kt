@@ -12,7 +12,6 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -36,11 +35,11 @@ internal object SettlementRoleCommand : RoleCommand<Settlement, SettlementRole.P
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("settlementPermissions") {
-			SettlementRole.Permission.values().map { it.toString() }
+			SettlementRole.Permission.entries.map { it.toString() }
 		}
 	}
 
-	override val allPermissions = SettlementRole.Permission.values()
+	override val allPermissions = SettlementRole.Permission.entries.toTypedArray()
 
 	override val roleCompanion = SettlementRole.Companion
 
@@ -73,10 +72,10 @@ internal object SettlementRoleCommand : RoleCommand<Settlement, SettlementRole.P
 	}
 
 	@Subcommand("create")
-	@CommandCompletion("@nothing @chatcolors @range:1000")
+	@CommandCompletion("@nothing @range:255 @range:255 @range:255 @range:1000")
 	@Description("Create a role")
-	override fun onCreate(sender: Player, name: String, color: SLTextStyle, weight: Int) {
-		super.onCreate(sender, name, color, weight)
+	override fun onCreate(sender: Player, name: String, red: Int, green: Int, blue: Int, weight: Int) {
+		super.onCreate(sender, name, red, green, blue, weight)
 	}
 
 	@Subcommand("edit")
@@ -122,10 +121,10 @@ internal object SettlementRoleCommand : RoleCommand<Settlement, SettlementRole.P
 	}
 
 	@Subcommand("edit color")
-	@CommandCompletion("@settlementRoles @chatcolors")
-	@Description("Edit a role's newColor")
-	override fun onEditColor(sender: Player, role: String, newColor: SLTextStyle) {
-		super.onEditColor(sender, role, newColor)
+	@CommandCompletion("@settlementRoles @range:255 @range:255 @range:255")
+	@Description("Edit a role's color (RGB values 0-255)")
+	override fun onEditColor(sender: Player, role: String, red: Int, green: Int, blue: Int) {
+		super.onEditColor(sender, role, red, green, blue)
 	}
 
 	@Subcommand("edit weight")

@@ -573,11 +573,7 @@ internal object SettlementCommand : SLCommand() {
 		val leaderRole = SettlementRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(
-				TextColor.color(
-					leader.color.actualStyle.wrappedColor.color.red,
-					leader.color.actualStyle.wrappedColor.color.green,
-					leader.color.actualStyle.wrappedColor.color.blue
-				)
+				leader.color.toTextColor()
 			)
 		} ?: text()
 		val leaderText = text("Leader: ")

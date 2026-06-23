@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -25,7 +24,6 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.*
 
-val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
 val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
