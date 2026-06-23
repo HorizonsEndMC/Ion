@@ -81,7 +81,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 		Tasks.syncRepeat(20L, 20L, this::updateStarshipStatusEffects)
 		Tasks.syncRepeat(5L, 5L, this::displayJumpBeaconEffect)
-		Tasks.syncRepeat(4L, 4L, this::refreshDisruptorStatusEffects)
+		Tasks.syncRepeat(20L, 20L, this::refreshDisruptorStatusEffects)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
