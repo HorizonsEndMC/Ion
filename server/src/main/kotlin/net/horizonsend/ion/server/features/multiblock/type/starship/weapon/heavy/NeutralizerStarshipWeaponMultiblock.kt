@@ -118,7 +118,7 @@ object NeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Ne
 		}
 		z(7) {
 			y(0) {
-				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+				x(0).grindstone()
 			}
 		}
 	}

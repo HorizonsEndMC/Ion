@@ -68,7 +68,7 @@ class AdvancedProbeWeaponSubsystem(
 		SCANNER
 	}
 	fun getRange(starship: ActiveStarship): Int {
-		return if (starship.type == StarshipType.RECON_STARFIGHTER) 7000
+		return if (starship.type == StarshipType.RECON_STARFIGHTER) 7500
 		else 5000
 	}
 

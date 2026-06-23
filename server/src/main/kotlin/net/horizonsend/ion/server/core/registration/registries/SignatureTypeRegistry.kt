@@ -91,8 +91,8 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 		register(SignatureTypeKeys.WRECK_SITE, SignatureType(
 			key = SignatureTypeKeys.WRECK_SITE,
 			displayName = Component.text("Wreck Site"),
-			minSpawnTime = Duration.ofMinutes(45L),
-			maxSpawnTime = Duration.ofMinutes(180L),
+			minSpawnTime = Duration.ofMinutes(30L),
+			maxSpawnTime = Duration.ofMinutes(120L),
 			persistentBehavior = PersistentBehavior(
 				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),

@@ -271,7 +271,7 @@ data class NewStarshipBalancing(
 		val blockadeRunner: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
-			warmupTime = 30,
+			warmupTime = 10,
 			interdictionRange = 1200,
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
@@ -579,7 +579,7 @@ data class NewStarshipBalancing(
 		val reconStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
-			warmupTime = 5,
+			warmupTime = 8,
 			interdictionRange = 350,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
