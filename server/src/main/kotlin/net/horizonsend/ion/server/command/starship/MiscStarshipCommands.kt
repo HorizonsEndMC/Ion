@@ -42,6 +42,7 @@ import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.da
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.dailyGateTaxResetTime
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -471,6 +472,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					starship
 				)
 			)
+
+			val disruptingController = starship.controller
+			val disruptedController = targetStarship.controller
+
+			if (disruptingController is PlayerController && disruptedController is PlayerController) {
+				CombatTimer.evaluateSvs(disruptingController.damager, targetStarship)
+			} else if ((disruptingController is AIController && disruptedController is PlayerController) || (disruptingController is PlayerController && disruptedController is AIController)) {
+				CombatTimer.evaluateSvs(disruptingController.damager, targetStarship)
+			}
 		}
 	}
 
