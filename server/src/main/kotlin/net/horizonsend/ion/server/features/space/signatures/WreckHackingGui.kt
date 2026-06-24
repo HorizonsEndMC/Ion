@@ -25,6 +25,7 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -245,6 +246,12 @@ class WreckHackingGui(
 			giveOrDropItems(CustomItemKeys.SUPERCONDUCTOR.getValue().constructItemStack(), Random.nextInt(3, 13), viewer)
 			giveOrDropItems(CustomItemKeys.SCORDITE.getValue().constructItemStack(), Random.nextInt(0, 18), viewer)
 			giveOrDropItems(CustomItemKeys.VANADIUM.getValue().constructItemStack(), Random.nextInt(0, 9), viewer)
+			if (ThreadLocalRandom.current().nextDouble(0.0, 1.0) < 0.25) {
+				giveOrDropItems(CustomItemKeys.ZIRCON.getValue().constructItemStack(), Random.nextInt(1, 4), viewer)
+			}
+			if (ThreadLocalRandom.current().nextDouble(0.0, 1.0) < 0.05) {
+				giveOrDropItems(CustomItemKeys.ZIRCON_BLOCK.getValue().constructItemStack(), Random.nextInt(1, 2), viewer)
+			}
 
 			viewer.world.playSound(Sound.sound(key("horizonsend:wrecks.hacking.completion"), Sound.Source.PLAYER, 5.0f, 1.0f), viewer)
 			viewer.success("Hacking successful! The chest has been unlocked.")
