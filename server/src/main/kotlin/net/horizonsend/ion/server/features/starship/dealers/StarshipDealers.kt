@@ -22,6 +22,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 object StarshipDealers : IonServerComponent(false) {
+	private const val DEALER_SHIP_AIR_GAP = 1
 	fun loadShip(player: Player, ship: DealerShip) {
 		Tasks.async {
 			// Type specific checks
@@ -45,9 +46,11 @@ object StarshipDealers : IonServerComponent(false) {
 	fun loadDealerShipUnchecked(player: Player, ship: DealerShip, silent: Boolean = false) {
 		val schematic = ship.getClipboard()
 
-		var target = player.location
-		target.y = 216.0
-		target = resolveTarget(schematic, target)
+		val target = resolveDealerTarget(schematic, player.location.apply { y = 216.0 })
+			?: run {
+				player.userError("Couldn't find a fully clear area nearby for that dealer ship.")
+				return
+			}
 
 		val world = player.world
 		val targetVec3i = Vec3i(target)
@@ -65,6 +68,76 @@ object StarshipDealers : IonServerComponent(false) {
 			if (!silent) player.success("Successfully bought a {0} (Cost: {1} Remaining Balance: {2})", ship.displayName, ship.price.toCreditComponent(), player.getMoneyBalance().toCreditComponent())
 			player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 		}
+	}
+
+
+	private fun resolveDealerTarget(schematic: Clipboard, destination: Location): Location? {
+		val origin = destination.clone()
+		val world = origin.world
+		val region = schematic.region
+		val minimum = region.minimumPoint
+		val maximum = region.maximumPoint
+
+		val minimumX = minimum.x() - DEALER_SHIP_AIR_GAP
+		val minimumY = minimum.y() - DEALER_SHIP_AIR_GAP
+		val minimumZ = minimum.z() - DEALER_SHIP_AIR_GAP
+		val maximumX = maximum.x() + DEALER_SHIP_AIR_GAP
+		val maximumY = maximum.y() + DEALER_SHIP_AIR_GAP
+		val maximumZ = maximum.z() + DEALER_SHIP_AIR_GAP
+
+		fun isClear(candidate: Location): Boolean {
+			val targetVec = Vec3i(candidate)
+			val dx = targetVec.x - schematic.origin.x()
+			val dy = targetVec.y - schematic.origin.y()
+			val dz = targetVec.z - schematic.origin.z()
+
+			for (x in minimumX..maximumX) {
+				for (y in minimumY..maximumY) {
+					for (z in minimumZ..maximumZ) {
+						val worldX = x + dx
+						val worldY = y + dy
+						val worldZ = z + dz
+
+						if (!world.worldBorder.isInside(Location(world, worldX.toDouble(), worldY.toDouble(), worldZ.toDouble()))) {
+							return false
+						}
+
+						if (!world.getBlockAt(worldX, worldY, worldZ).type.isAir) {
+							return false
+						}
+					}
+				}
+			}
+
+			return true
+		}
+
+		if (isClear(origin)) {
+			return origin
+		}
+
+		val xOffset = listOf(-25, 25).random()
+		val zOffset = listOf(-25, 25).random()
+
+		for (attempt in 1..5000) {
+			for (direction in intArrayOf(1, -1)) {
+				val candidate = origin.clone().add(
+					(xOffset * attempt * direction).toDouble(),
+					0.0,
+					(zOffset * attempt * direction).toDouble()
+				)
+
+				if (!world.worldBorder.isInside(candidate)) {
+					continue
+				}
+
+				if (isClear(candidate)) {
+					return candidate
+				}
+			}
+		}
+
+		return null
 	}
 
 	fun resolveTarget(schematic: Clipboard, destination: Location, forceEmpty : Boolean = false): Location {
