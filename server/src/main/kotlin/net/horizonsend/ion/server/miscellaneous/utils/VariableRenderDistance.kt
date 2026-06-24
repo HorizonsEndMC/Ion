@@ -24,15 +24,15 @@ object VariableRenderDistance: IonServerComponent() {
 				// When oped or in dutymode
 				(player.isOp || player.hasPermission("group.dutymode")) -> 32
 				// When on planet
-				player.world.hasFlag(WorldFlag.PLANET_WORLD) -> 10
+				player.world.hasFlag(WorldFlag.PLANET_WORLD) -> 6
 				// When in a creative server arena
 				player.world.hasFlag(WorldFlag.ARENA) -> 22
 				// When in combat but not piloting
-				isPvpCombatTagged(player) && !isPiloting(player) -> 10
+				isPvpCombatTagged(player) && !isPiloting(player) -> 8
 				//When in combat and piloting
 				(isPvpCombatTagged(player) || isNpcCombatTagged(player)) && isPiloting(player) -> 22
 				//Other cases, like when piloting but not in combat
-				else -> 10
+				else -> 8
 			}
 			val simulationDistance = when {
 				player.isDead -> 2

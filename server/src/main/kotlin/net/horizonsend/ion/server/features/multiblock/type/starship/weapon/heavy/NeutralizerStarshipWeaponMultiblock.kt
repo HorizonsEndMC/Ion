@@ -106,7 +106,7 @@ object NeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Ne
 		z(6) {
 			y(0) {
 				x(1).anyGlass()
-				x(0).machineFurnace()
+				x(0).furnace()
 				x(-1).anyGlass()
 			}
 			y(-1) {

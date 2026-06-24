@@ -832,7 +832,7 @@ data class HeavyTurretBalancing(
 @Serializable
 data class AutocannonBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
 	override var firePowerConsumption: Int = 1000,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
@@ -854,7 +854,7 @@ data class AutocannonBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override var particleThickness: Double = 0.3,
+		override var particleThickness: Double = 0.2,
 		var delayMillis: Int = 100,
 		) : StarshipParticleProjectileBalancing {
 		@Transient

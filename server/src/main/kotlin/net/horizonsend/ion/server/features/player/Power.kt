@@ -94,7 +94,12 @@ object Power : IonServerComponent() {
 		return Regions.getAllOf<RegionDominionTerritory>().count { it.nation == nation.id }
 	}
 
-	fun dominionTerritoryCost(count: Int): Int = 10 * (count * (count + 1) / 2)
+	fun dominionTerritoryCost(count: Int): Int =
+		if (count <= 5) {
+			10 * (count * (count + 1) / 2)
+		} else {
+			10 * count * (count + 1) - 150
+		}
 
 	fun dominionTerritoryCost(nation: NationCache.NationData): Int {
 		return dominionTerritoryCost(getDominionTerritoryCount(nation))
@@ -130,7 +135,7 @@ object Power : IonServerComponent() {
 			return
 		}}
 
-		SLXP.addPowerAsync(victim.uniqueId, -5)
+		SLXP.addPowerAsync(victim.uniqueId, -10)
 		SLXP.addPowerAsync(killer.uniqueId, 2)
 
 		val victimNationId = PlayerCache[victim].nationOid
