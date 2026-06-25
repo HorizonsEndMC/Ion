@@ -44,6 +44,7 @@ import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.SuicideCommand
+import net.horizonsend.ion.server.command.misc.TransponderCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
@@ -100,6 +101,7 @@ import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
 	GToggleCommand,
+	TransponderCommand,
 	PlayerInfoCommand,
 	DyeCommand,
 	GlobalGameRuleCommand,
