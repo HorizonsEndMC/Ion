@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userErrorAction
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.space.Space
@@ -425,15 +427,19 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
+	fun refreshDynmapVisibility(player: Player) {
+		updateDynmapVisibility(player, ActiveStarships.findByPilot(player))
+	}
+
 	private fun updateDynmapVisibility(player: Player, starship: ActiveControlledStarship?) {
 		if (!getPluginManager().isPluginEnabled("dynmap")) return
 
-		val poiCheck = isInPOI(player, starship)
+		val forcedVisible = isInPOI(player, starship) ||
+			isInSuperPOI(player, starship) ||
+			(starship?.isJumpBeaconOn ?: false)
+		val transponderEnabled = player.getSettingOrThrow(PlayerSettings::dynmapTransponderEnabled)
 
-		val shouldBeVisible = isInSuperPOI(player, starship)
-
-		val isInvisible = !poiCheck && !shouldBeVisible && !(starship?.isJumpBeaconOn ?: false)
-		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
+		DynmapPlugin.plugin.assertPlayerInvisibility(player, !forcedVisible && !transponderEnabled, IonServer)
 	}
 
 	/**
