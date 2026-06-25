@@ -45,7 +45,7 @@ data class PlayerSettings(
 	var advancedStarshipInfo: Boolean = true,
 	var rotateCompass: Boolean = false,
 	var combatTimerEnabled: Boolean = true,
-	var dynmapTransponderEnabled: Boolean = false,
+	var dynmapTransponderEnabled: Boolean = true,
 
 	var hudPlanetsImage: Boolean = true,
 	var hudPlanetsSelector: Boolean = true,
