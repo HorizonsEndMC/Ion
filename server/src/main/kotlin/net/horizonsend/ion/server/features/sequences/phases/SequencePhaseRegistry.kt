@@ -265,7 +265,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 ifPreviousPhase(
                     TUTORIAL_START, EffectTiming.START,
                     NEXT_PHASE_SOUND,
-                    SPAWN_PIRATES,
+                    //SPAWN_PIRATES,
                     emptyMessage(),
                     SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), null),
                     SendMessage(text("This is your captain speaking, we're under attack by pirates!", YELLOW, ITALIC), null),
