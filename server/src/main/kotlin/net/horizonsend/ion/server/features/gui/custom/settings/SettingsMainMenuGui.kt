@@ -114,6 +114,13 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Energy sword ambience Sounds"), "Enables the energy sword idle sound", GuiItem.SOUND, true, PlayerSettings::energySwordIdleSound),
 			),
 		createSettingsPage(player, "Other Settings",
+			DBCachedBooleanToggle(
+				text("Dynmap Transponder"),
+				"Makes you visible on Dynmap. Disabling it will not hide you when gameplay conditions require visibility.",
+				GuiItem.COMPASS_NEEDLE,
+				true,
+				PlayerSettings::dynmapTransponderEnabled
+			),
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, PlayerSettings::enableCombatTimerAlerts),
 			DBCachedBooleanToggle(text("Enable Protection Messages"), "", GuiItem.LIST, true, PlayerSettings::protectionMessagesEnabled),
 			DBCachedBooleanToggle(text("Shorten Chat Messages"), "", GuiItem.LIST, false, PlayerSettings::shortenChatChannels),
