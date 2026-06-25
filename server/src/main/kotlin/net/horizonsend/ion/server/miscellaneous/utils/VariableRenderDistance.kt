@@ -22,17 +22,19 @@ object VariableRenderDistance: IonServerComponent() {
 				// When dead
 				player.isDead -> 4
 				// When oped or in dutymode
-				(player.isOp || player.hasPermission("group.dutymode")) -> 32
+				(player.isOp || player.hasPermission("group.dutymode")) -> 20
 				// When on planet
 				player.world.hasFlag(WorldFlag.PLANET_WORLD) -> 6
 				// When in a creative server arena
-				player.world.hasFlag(WorldFlag.ARENA) -> 22
+				player.world.hasFlag(WorldFlag.ARENA) -> 20
 				// When in combat but not piloting
-				isPvpCombatTagged(player) && !isPiloting(player) -> 8
+				isPvpCombatTagged(player) && !isPiloting(player) -> 7
 				//When in combat and piloting
-				(isPvpCombatTagged(player) || isNpcCombatTagged(player)) && isPiloting(player) -> 22
+				(isPvpCombatTagged(player)) && isPiloting(player) -> 20
+				//NPC combat tag set to old render, should help with lag pretty massively
+				(isNpcCombatTagged(player)) && isPiloting(player) -> 12
 				//Other cases, like when piloting but not in combat
-				else -> 8
+				else -> 7
 			}
 			val simulationDistance = when {
 				player.isDead -> 2

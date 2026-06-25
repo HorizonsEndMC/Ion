@@ -848,8 +848,8 @@ data class AutocannonBalancing(
 	data class AutocannonProjectileBalancing(
 		override var range: Double = 200.0,
 		override var speed: Double = 450.0,
-		override var explosionPower: Float = 4.0f,
-		override var starshipShieldDamageMultiplier: Double = 1.2,
+		override var explosionPower: Float = 3.5f,
+		override var starshipShieldDamageMultiplier: Double = 1.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),

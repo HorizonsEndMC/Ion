@@ -26,7 +26,7 @@ object CoreRecipes {
 		VANADIUM_BLOCK.getValue().constructItemStack() to 24
 	)
 	val mediumReactorRecipe: Map<ItemStack, Int> = mapOf(
-		STEEL_MODULE.getValue().constructItemStack() to 32,
+		STEEL_MODULE.getValue().constructItemStack() to 48,
 		REACTIVE_PLATING.getValue().constructItemStack() to 64,
 		URANIUM_CORE.getValue().constructItemStack() to 24,
 		SCORDITE_BLOCK.getValue().constructItemStack() to 96,
