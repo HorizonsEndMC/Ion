@@ -261,8 +261,9 @@ object StarshipShields : IonServerComponent() {
 		var damagedPercent = blocks.size.toFloat() / size.toFloat()
 
 
-		if (starship.playerPilot?.hasProtection() == true){
-			if (handleNewProt(starship)){
+		if (starship.playerPilot?.hasProtection() == true) {
+			// The attacked starship has a player pilot with protection; check for noob prot
+			if (handleNewProt(starship)) {
 				damagedPercent = 0.0f
 			}
 		}
@@ -399,13 +400,25 @@ object StarshipShields : IonServerComponent() {
 		else                -> Material.BLUE_STAINED_GLASS
 	}
 
-	private fun handleNewProt(starship: ActiveStarship) : Boolean{
-		val player = (starship.controller as PlayerController).player
-		if (player.world.hasFlag(WorldFlag.NOT_SECURE)) return false
+	private fun handleNewProt(starship: ActiveStarship) : Boolean {
+		// New player protection only applies to ships controlled by a player.
+		// Non-player controlled ships should take normal shield damage.
+		val player = (starship.controller as? PlayerController)?.player ?: return false
+
+		// In NOT_SECURE or ARENA worlds, new player protection does not prevent ship damage.
+		if (player.world.hasFlag(WorldFlag.NOT_SECURE) || player.world.hasFlag(WorldFlag.ARENA)) return false
+
+		// If this ship has been damaged by another ship, check whether that other ship
+		// was also damaged by this protected player. That means the protected player
+		// has participated in ship combat, so their protection should not suppress
+		// shield damage from this explosion.
 		for (damager in starship.damagers.keys) {
 			val otherDamagers = damager.starship?.damagers?.keys ?: continue
-			if (otherDamagers.any { it.starship?.playerPilot == player }) {return false}
+			if (otherDamagers.any { it.starship?.playerPilot == player }) return false
 		}
+
+		// The pilot is protected and has not reciprocated ship combat, so callers can
+		// treat the hit as protected and avoid charging shield power for it.
 		return true
 	}
 }

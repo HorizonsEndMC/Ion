@@ -190,10 +190,26 @@ object NewPlayerProtection : SLCommand(), Listener {
 	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player || event.damager !is Player) return
 
-		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) event.damager.alertAction(
-			"The player you are attacking has new player protection!\n" +
-				"Attacking them for any reason other than self defense is against the rules"
-		)
+		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
+			event.damager.alertAction(
+				"The player you are attacking has new player protection! " +
+						"Attacking them for any reason other than self defense is against the rules"
+			)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onNoobHurtPlayer(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player || event.damager !is Player) return
+
+		if ((event.damager as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
+			event.damager.alertAction(
+				"You have new player protection and cannot attack other players! " +
+						"Use /removeprotection to remove your protection and enable attacking"
+			)
+			event.isCancelled = true
+		}
 	}
 
 	@EventHandler
