@@ -194,6 +194,9 @@ class LocusScheduler(
 		val minZ = border.center.z - borderRadius + radius
 		val maxZ = border.center.z + borderRadius - radius
 
+		// prevents crashes; perhaps the radius is too small for the world it is trying to spawn in
+		if (minX >= maxX || minZ >= maxZ) return null
+
 		var newLoc: Location? = null
 
 		while (newLoc == null) {
