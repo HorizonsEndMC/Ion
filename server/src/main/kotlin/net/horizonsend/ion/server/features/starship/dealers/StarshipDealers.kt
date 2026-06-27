@@ -13,16 +13,25 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.concurrent.TimeUnit
 
 object StarshipDealers : IonServerComponent(false) {
 	private const val DEALER_SHIP_AIR_GAP = 1
+	private val buyShipCooldown = PerPlayerCooldown.callbackCooldown(1, TimeUnit.MINUTES) {
+		Tasks.sync {
+			Bukkit.getPlayer(it)?.userError("You're doing that too often! Wait for your ship to load.")
+		}
+	}
+
 	fun loadShip(player: Player, ship: DealerShip) {
 		Tasks.async {
 			// Type specific checks
@@ -39,7 +48,9 @@ object StarshipDealers : IonServerComponent(false) {
 				return@async
 			}
 
-			loadDealerShipUnchecked(player, ship)
+			buyShipCooldown.tryExec(player) {
+				loadDealerShipUnchecked(player, ship)
+			}
 		}
 	}
 
