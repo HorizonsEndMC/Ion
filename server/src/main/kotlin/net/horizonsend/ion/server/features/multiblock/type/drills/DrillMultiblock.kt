@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -197,6 +198,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 				},
 				canBuild = {
 					val testEvent = BlockBreakEvent(it, player)
+					CustomBlockListeners.noDropEvents.add(testEvent)
 					testEvent.isDropItems = false
 
 					return@breakBlocks testEvent.callEvent()
