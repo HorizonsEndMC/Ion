@@ -37,7 +37,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.or
 
-@CommandAlias("starships|myships")
+@CommandAlias("starships|mystarships")
 object StarshipsCommand : SLCommand() {
 	@Description("List all of your starships")
 	@Suppress("Unused")
