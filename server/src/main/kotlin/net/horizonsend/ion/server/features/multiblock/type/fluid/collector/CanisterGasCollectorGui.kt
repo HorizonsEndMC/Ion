@@ -18,6 +18,8 @@ import xyz.xenondevs.invui.window.Window
 class CanisterGasCollectorGui(viewer: Player, val entity: CanisterGasCollectorMultiblock.CanisterGasCollectorEntity) : InvUIWindowWrapper(viewer, async = true) {
 
 	private val allGasses = IonRegistries.ATMOSPHERIC_GAS.getAll().filter { gas ->
+		if (entity.world.name == "Ilius_horizonsend_eden" && gas.identifier == "METHANE") return@filter true
+
 		val region = entity.world.ion.getSpaceRegion()
 		when (gas.identifier) {
 			"HYDROGEN" -> region == SpaceRegion.MONOLITH
