@@ -104,8 +104,6 @@ class SettlementZone(
 				updateById(
 					zoneId,
 					org.litote.kmongo.setValue(SettlementZone::owner, null),
-					org.litote.kmongo.setValue(SettlementZone::price, null),
-					org.litote.kmongo.setValue(SettlementZone::rent, null),
 					org.litote.kmongo.setValue(SettlementZone::motd, null),
 					org.litote.kmongo.setValue(SettlementZone::trustedPlayers, null),
 					org.litote.kmongo.setValue(SettlementZone::trustedNations, null),
@@ -115,11 +113,10 @@ class SettlementZone(
 					org.litote.kmongo.setValue(SettlementZone::interactableBlocks, setOf())
 				)
 			} else {
-				// someone bought it -> set owner, unset price (not rent, as the rent must stay for them to be charged)
+				// someone bought it -> set owner
 				updateById(
 					zoneId,
-					org.litote.kmongo.setValue(SettlementZone::owner, owner),
-					org.litote.kmongo.setValue(SettlementZone::price, null)
+					org.litote.kmongo.setValue(SettlementZone::owner, owner)
 				)
 			}
 		}

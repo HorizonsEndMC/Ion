@@ -87,8 +87,6 @@ class StationZone(
 				updateById(
 					zoneId,
                     setValue(StationZone::owner, null),
-                    setValue(StationZone::price, null),
-                    setValue(StationZone::rent, null),
                     setValue(StationZone::motd, null),
                     setValue(StationZone::trustedPlayers, null),
                     setValue(StationZone::trustedNations, null),
@@ -98,11 +96,10 @@ class StationZone(
                     setValue(StationZone::interactableBlocks, setOf())
 				)
 			} else {
-				// someone bought it -> set owner, unset price (not rent, as the rent must stay for them to be charged)
+				// someone bought it -> set owner
 				updateById(
 					zoneId,
-                    setValue(StationZone::owner, owner),
-                    setValue(StationZone::price, null)
+                    setValue(StationZone::owner, owner)
 				)
 			}
 		}
