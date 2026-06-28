@@ -495,7 +495,7 @@ open class EnmityModule(
 					if (targetController is PlayerController) {
 						val player = targetController.player
 						val isSameFleet = fleet?.isMember(player.toFleetMember()) == true
-						val hasHighBounty = PlayerCache[targetController.player].bounty > 100000
+						val hasHighBounty = PlayerCache.getIfOnline(targetController.player)?.bounty?.let { it > 100000 } ?: false
 						if (isSameFleet || !hasHighBounty) return@FleetAwareTargetFilter false
 						if (player.hasProtection() && !starship.world.ion.hasFlag(WorldFlag.NOT_SECURE) ) return@FleetAwareTargetFilter false //ignore prot in unsafe areas
 					}

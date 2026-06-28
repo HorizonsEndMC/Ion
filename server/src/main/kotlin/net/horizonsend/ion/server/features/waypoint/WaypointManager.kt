@@ -63,7 +63,7 @@ object WaypointManager : IonServerComponent() {
 
         // update all player graphs every five seconds if they have a destination saved
         // JGraphT is not thread safe; this cannot be async
-        Tasks.syncRepeat(0L, 100L) {
+        Tasks.syncRepeat(0L, 200L) {
             Bukkit.getOnlinePlayers().forEach { player ->
                 updatePlayerGraph(player)
                 if (playerDestinations.isNotEmpty()) {

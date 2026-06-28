@@ -391,47 +391,42 @@ object Crafting : IonServerComponent() {
 			setIngredient('n', IRON_NUGGET)
 			setIngredient('i', IRON_INGOT)
 		}
-		shaped("Unloaded_Shell", UNLOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape(" y ", " z ")
-
-			setIngredient('y', LAPIS_LAZULI)
-			setIngredient('z', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
-		}
-		shaped("Uncharged_Shell", UNCHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
-			shape(" y ", " z ")
-
-			setIngredient('y', PRISMARINE_CRYSTALS)
-			setIngredient('z', COPPER_INGOT)
-		}
-		shapeless("Scanner_Probe", SCANNER_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC, IRON_NUGGET, GOLD_NUGGET)
-
-		shapeless("Combat_Probe", COMBAT_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC, ItemStack.of(IRON_NUGGET, 1),ALUMINUM_INGOT.getValue().constructItemStack(1))
-
+		shapeless("Unloaded_Shell", UNLOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(LAPIS_LAZULI, 1),
+			TITANIUM_INGOT.getValue().constructItemStack(1)
+		)
+		shapeless("Uncharged_Shell", UNCHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(PRISMARINE_CRYSTALS, 1),
+			ItemStack.of(COPPER_INGOT, 1)
+		)
+		shapeless("Scanner_Probe", SCANNER_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			IRON_NUGGET,
+			GOLD_NUGGET
+		)
+		shapeless("Combat_Probe", COMBAT_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(IRON_NUGGET, 1),
+			ALUMINUM_INGOT.getValue().constructItemStack(1)
+		)
 		shapeless("Breacher_Shell_Unloaded", UNLOADED_BREACHER_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ItemStack.of(IRON_INGOT, 1),
 			ItemStack.of(LAPIS_LAZULI, 1)
 		)
-
 		shapeless("Stasis_Charge_Unloaded", UNLOADED_STASIS_CHARGE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ItemStack.of(DIAMOND, 1),
 			ItemStack.of(REDSTONE, 1)
 		)
-
 		shapeless("Entropic_Charge_Unloaded", UNLOADED_ENTROPIC_CHARGE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ItemStack.of(GOLD_INGOT, 1),
 			ItemStack.of(REDSTONE, 1)
 		)
-
 		shapeless("Helix_Shell_Unloaded", UNLOADED_HELIX_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ALUMINUM_INGOT.getValue().constructItemStack(2),
 			ItemStack.of(LAPIS_LAZULI, 1)
 		)
-
 		shapeless("Siege_Shell_Unloaded", UNLOADED_SIEGE_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			TITANIUM_INGOT.getValue().constructItemStack(2),
 			ItemStack.of(LAPIS_LAZULI, 1)
 		)
-
 		shaped("Stellar_Prism_Unloaded", UNLOADED_STELLAR_PRISM.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("gpg", "sus", "gdg")
 
@@ -441,29 +436,24 @@ object Crafting : IonServerComponent() {
 			setIngredient('u', ItemStack.of(DIAMOND_BLOCK, 1))
 			setIngredient('d', ExactChoice(SCORDITE.getValue().constructItemStack()))
 		}
-
 		shapeless("Unloaded_EMP_Missile", UNLOADED_EMP_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ItemStack.of(REDSTONE, 3),
 			ItemStack.of(DIAMOND, 2),
 			ItemStack.of(IRON_INGOT, 2)
 		)
-
 		shapeless("Unloaded_Light_Missile", UNLOADED_LIGHT_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ALUMINUM_INGOT.getValue().constructItemStack(2),
 			ItemStack.of(REDSTONE, 1)
 		)
-
 		shapeless("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			ItemStack.of(IRON_INGOT, 3),
 			ItemStack.of(REDSTONE, 2),
 			ItemStack.of(GOLD_INGOT, 1)
 		)
-
 		shapeless("Unloaded_Heavy_Missile", UNLOADED_HEAVY_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
 			TITANIUM_INGOT.getValue().constructItemStack(2),
 			ItemStack.of(REDSTONE, 1)
 		)
-
 		shaped("Unloaded_Thermonuclear_Missile", UNLOADED_THERMONUCLEAR_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("gpg", "sus", "gpg")
 
