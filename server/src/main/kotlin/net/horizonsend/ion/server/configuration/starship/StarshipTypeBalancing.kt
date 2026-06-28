@@ -689,7 +689,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
-			cruiseSpeedMultiplier = 0.9,
+			cruiseSpeedMultiplier = 0.80,
 			shieldPowerMultiplier = 1.18,
 			shieldRegenMultiplier = 0.6,
 			requiredMultiblocks = listOf(
@@ -844,7 +844,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.65,
+			shieldPowerMultiplier = 0.72,
 			shieldRegenMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -895,7 +895,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			warmupTime = 10,
 			wellStrength = 1.0,
-			cruiseSpeedMultiplier = 0.75,
+			cruiseSpeedMultiplier = 0.80,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 1.20,
 			shieldRegenMultiplier = 0.8,
@@ -982,7 +982,7 @@ data class NewStarshipBalancing(
 				),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				LightLogisticsCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3)
+				LightLogisticsCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2)
 			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1062,7 +1062,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.25,
-			cruiseSpeedMultiplier = 0.85,
+			cruiseSpeedMultiplier = 0.80,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1109,7 +1109,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.20,
+			shieldPowerMultiplier = 0.35,
 			shieldRegenMultiplier = 0.8,
 			cruiseSpeedMultiplier = 1.40,
 			requiredMultiblocks = listOf(
@@ -1126,6 +1126,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
+				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
 			forbiddenMultiblocks = listOf(
@@ -1255,7 +1256,7 @@ data class NewStarshipBalancing(
 			warmupTime = 15,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
-			cruiseSpeedMultiplier = 0.85,
+			cruiseSpeedMultiplier = 0.80,
 			hyperspaceRangeMultiplier = 1.9,
 			shieldPowerMultiplier = 1.25,
 			requiredMultiblocks = listOf(
@@ -1336,8 +1337,8 @@ data class NewStarshipBalancing(
 			jumpStrength = 3.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
-			cruiseSpeedMultiplier = 0.90,
-			shieldPowerMultiplier = 0.95,
+			cruiseSpeedMultiplier = 0.80,
+			shieldPowerMultiplier = 0.85,
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),

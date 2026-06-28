@@ -54,18 +54,18 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
 		register(SignatureTypeKeys.ASTEROID_FIELD, SignatureType(
 			key = SignatureTypeKeys.ASTEROID_FIELD,
 			displayName = Component.text("Asteroid Field"),
-			minSpawnTime = Duration.ofHours(2L),
-			maxSpawnTime = Duration.ofHours(4L),
+			minSpawnTime = Duration.ofMinutes(90L),
+			maxSpawnTime = Duration.ofMinutes(240L),
 			persistentBehavior = PersistentBehavior(
 				maximumPerServer = 7,
 				despawnTime = Duration.ofMinutes(480L),
 			),
 			schematicBehavior = SchematicBehavior(
 				schematicNames = WeightedRandomList(
-					"scordite_field" to 50,
-					"vanadium_field" to 38,
-					"zircon_field" to 10,
-					"atavum_field" to 2,
+					"scordite_field" to 45,
+					"vanadium_field" to 35,
+					"zircon_field" to 15,
+					"atavum_field" to 5,
 				),
 			),
 			scannableBehavior = ScannableBehavior(

@@ -186,8 +186,8 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 			val toDestroy = getBlocksToDestroy()
 
-			// set to 1 block broken per furnace tick in space
-			val maxBroken = if (!inSpace) 10 else 1
+			// set to 5 block broken per furnace tick in space, halving so cobble gens can exist in space,still worse than ML by far.
+			val maxBroken = if (!inSpace) 10 else 5
 
 			val broken = breakBlocks(
 				maxBroken = maxBroken,
@@ -267,7 +267,8 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 		private val blacklist = EnumSet.of(
 			Material.BARRIER,
 			Material.BEDROCK,
-			Material.VOID_AIR
+			Material.VOID_AIR,
+			Material.REINFORCED_DEEPSLATE
 		)
 
 		fun isBlacklisted(block: Block): Boolean {

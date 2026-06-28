@@ -815,9 +815,9 @@ data class HeavyTurretBalancing(
 	@Serializable
 	data class HeavyTurretProjectileBalancing(
         override var range: Double = 400.0,
-        override var speed: Double = 80.0,
+        override var speed: Double = 70.0,
         override var explosionPower: Float = 3.5f,
-        override var starshipShieldDamageMultiplier: Double = 4.2,
+        override var starshipShieldDamageMultiplier: Double = 3.25,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
