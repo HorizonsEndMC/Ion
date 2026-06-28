@@ -302,13 +302,22 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 
 	private fun getPreviewButton(icon: GuiItem, seconds: Int) = FeedbackItem.builder(icon.makeItem(text("Preview ${seconds}s"))) { _, player ->
 			val ticks = seconds * 20L
-			val preview = entity.getPreview(player, ticks) ?: return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", RED)))
+
+			val result = FutureInputResult()
 
 			Tasks.async {
+				val preview = entity.getPreview(player, ticks)
+
+				if (preview == null) {
+					result.complete(InputResult.FailureReason(listOf(text("Blueprint not found!", RED))))
+					return@async
+				}
+
 				preview.preview()
+				result.complete(InputResult.InputSuccess)
 			}
 
-			InputResult.InputSuccess
+			result
 		}
 		.build()
 

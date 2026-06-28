@@ -29,8 +29,8 @@ abstract class FeedbackItem(
 	abstract fun onFailure(event: InventoryClickEvent, player: Player)
 
 	companion object {
-		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> PotentiallyFutureResult): Builder = Builder({ itemStack }, resultProvier)
-		fun builder(itemStack: ItemProvider, resultProvier: (InventoryClickEvent, Player) -> PotentiallyFutureResult): Builder = Builder(itemStack, resultProvier)
+		fun builder(itemStack: ItemStack, resultProvider: (InventoryClickEvent, Player) -> PotentiallyFutureResult): Builder = Builder({ itemStack }, resultProvider)
+		fun builder(itemStack: ItemProvider, resultProvider: (InventoryClickEvent, Player) -> PotentiallyFutureResult): Builder = Builder(itemStack, resultProvider)
 	}
 
 	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> PotentiallyFutureResult) {
