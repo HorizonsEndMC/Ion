@@ -14,6 +14,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.state.BlockBehaviour
 import org.bukkit.Bukkit
@@ -24,12 +26,15 @@ import org.bukkit.damage.DamageSource
 import org.bukkit.damage.DamageType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.world.PortalCreateEvent
 
 object GameplayTweaks : IonServerComponent() {
@@ -93,6 +98,16 @@ object GameplayTweaks : IonServerComponent() {
 	@EventHandler
 	fun onFireworkBoost(event: PlayerElytraBoostEvent) {
 		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onPlaceEyeOfEnderInEndPortal(event: PlayerInteractEvent) {
+		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+		if (event.clickedBlock?.type != Material.END_PORTAL_FRAME) return
+		if (event.item?.type != Material.ENDER_EYE) return
+
+		event.isCancelled = true
+		event.player.kick(Component.text("You thought you'd be sent to the End, but you got sent to the lobby!", NamedTextColor.RED), PlayerKickEvent.Cause.SPAM)
 	}
 
 	private var physicsDisabled = false
