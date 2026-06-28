@@ -803,7 +803,7 @@ internal object SettlementCommand : SLCommand() {
 
 
 	@Subcommand("trusted remove settlement")
-	@Description("Give a settlement build access to the settlement")
+	@Description("Revoke a settlement build access to the settlement")
 	@CommandCompletion("@settlements")
     fun onTrustedRemoveSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
@@ -827,7 +827,7 @@ internal object SettlementCommand : SLCommand() {
 	}
 
 	@Subcommand("trusted remove nation")
-	@Description("Give a nation build access to the settlement")
+	@Description("Revoke a nation build access to the settlement")
 	@CommandCompletion("@nations")
     fun onTrustedRemoveNation(sender: Player, nation: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
