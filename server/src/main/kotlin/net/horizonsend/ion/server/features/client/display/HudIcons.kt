@@ -63,7 +63,7 @@ import kotlin.math.min
 
 object HudIcons : IonServerComponent() {
     // How often the planet display entities should update in ticks
-    private const val UPDATE_RATE = 2L
+    private const val UPDATE_RATE = 5L
 
     // The threshold for "hovering" over a planet, in radians
     private const val SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI

@@ -27,7 +27,7 @@ object Sidebar : IonServerComponent() {
 	}
 
 	override fun onEnable() {
-		Tasks.syncRepeat(0L, 2L) {
+		Tasks.syncRepeat(0L, 20L) {
 			Bukkit.getOnlinePlayers().forEach {
 				playerSidebars[it.uniqueId]?.tick()
 			}
