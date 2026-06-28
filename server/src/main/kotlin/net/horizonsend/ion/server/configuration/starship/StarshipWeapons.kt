@@ -253,7 +253,7 @@ data class HeavyNeutralizerBalancing(
 	@Serializable
 	data class HeavyNeutralizerProjectileBalancing(
 		override var range: Double = 250.0,
-		override var speed: Double = 80.0,
+		override var speed: Double = 40.0,
 		override var explosionPower: Float = 12f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 2.0,
