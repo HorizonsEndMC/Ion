@@ -34,6 +34,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.PI
 import kotlin.math.ceil
 import kotlin.math.sqrt
@@ -43,10 +44,10 @@ object WaypointManager : IonServerComponent() {
     val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
 
     // playerGraphs hold copies of mainGraph, with additional vertices per player (for shortest path calculation)
-    val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
-    val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
-    val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
-    val playerNumJumps: MutableMap<UUID, Int> = mutableMapOf()
+    val playerGraphs: ConcurrentHashMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = ConcurrentHashMap()
+    val playerDestinations: ConcurrentHashMap<UUID, MutableList<WaypointVertex>> = ConcurrentHashMap()
+    val playerPaths: ConcurrentHashMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = ConcurrentHashMap()
+    val playerNumJumps: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
 
     const val MAX_DESTINATIONS = 5
     private const val WAYPOINT_REACHED_DISTANCE = 500
@@ -333,20 +334,22 @@ object WaypointManager : IonServerComponent() {
      * playerGraph-specific functions
      */
     fun updatePlayerGraph(player: Player) {
-        if (playerGraphs[player.uniqueId] != null) {
-            // player already has a graph; update
-            playerGraphs[player.uniqueId]?.let { playerGraph ->
+        Tasks.async {
+            if (playerGraphs[player.uniqueId] != null) {
+                // player already has a graph; update
+                playerGraphs[player.uniqueId]?.let { playerGraph ->
+                    clonePlayerGraphFromMain(playerGraph)
+                    updatePlayerPositionVertex(playerGraph, player)
+                    populatePlayerBookmarkVertex(playerGraph, player)
+                }
+            } else {
+                // add player's graph to the map
+                val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
                 clonePlayerGraphFromMain(playerGraph)
                 updatePlayerPositionVertex(playerGraph, player)
                 populatePlayerBookmarkVertex(playerGraph, player)
+                playerGraphs[player.uniqueId] = playerGraph
             }
-        } else {
-            // add player's graph to the map
-            val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
-            clonePlayerGraphFromMain(playerGraph)
-            updatePlayerPositionVertex(playerGraph, player)
-            populatePlayerBookmarkVertex(playerGraph, player)
-            playerGraphs[player.uniqueId] = playerGraph
         }
     }
 
