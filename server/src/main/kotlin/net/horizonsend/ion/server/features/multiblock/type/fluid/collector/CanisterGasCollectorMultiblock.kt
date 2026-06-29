@@ -133,7 +133,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 
 			// Check if selected gas is still valid for this region
 			val region = world.ion.getSpaceRegion()
-			val validForRegion = when (gas.identifier) {
+			val validForRegion = if (world.name == "Ilius_horizonsend_eden" && gas.identifier == "METHANE") true else when (gas.identifier) {
 				"HYDROGEN" -> region == SpaceRegion.MONOLITH
 				"METHANE" -> region == SpaceRegion.SPINE
 				"NITROGEN" -> region == SpaceRegion.FRACTURE
