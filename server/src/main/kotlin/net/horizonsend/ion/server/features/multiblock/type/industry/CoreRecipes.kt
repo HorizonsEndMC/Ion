@@ -40,7 +40,7 @@ object CoreRecipes {
 		SCORDITE_BLOCK.getValue().constructItemStack() to 256,
 		VANADIUM_BLOCK.getValue().constructItemStack() to 160,
 		ZIRCON_BLOCK.getValue().constructItemStack() to 48,
-		ATAVUM_BLOCK.getValue().constructItemStack() to 24
+		ATAVUM_BLOCK.getValue().constructItemStack() to 16
 	)
 	val tier1ReactorRecipe: Map<ItemStack, Int> = mapOf(
 		STEEL_MODULE.getValue().constructItemStack() to 48,
