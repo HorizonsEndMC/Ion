@@ -74,8 +74,18 @@ import java.util.UUID
 object PilotedStarships : IonServerComponent() {
 	internal val map = mutableMapOf<Controller, ActiveControlledStarship>()
 
+	private const val RELEASE_VERIFICATION_TIMEOUT_MILLIS = 5_000L
+	private val releaseVerifications = mutableMapOf<UUID, PendingReleaseVerification>()
+
+	private data class PendingReleaseVerification(
+		val starship: ActiveControlledStarship,
+		val expiresAt: Long
+	)
+
 	override fun onEnable() {
 		listen<PlayerQuitEvent> { event ->
+			releaseVerifications.remove(event.player.uniqueId)
+
 			val loc = Vec3i(event.player.location)
 			val controller = ActiveStarships.findByPilot(event.player)?.controller ?: return@listen
 
@@ -516,15 +526,27 @@ object PilotedStarships : IonServerComponent() {
 		// Keep pilot for info even after unpilot
 		val oldController = starship.controller
 
-		unpilot(starship)
-
-		// Combat tag check
-		if (!bypassCombatTag && oldController is PlayerController &&
-			(CombatTimer.isNpcCombatTagged(oldController.player) || CombatTimer.isPvpCombatTagged(oldController.player))) {
+		// Preserve the existing combat result: unpilot, but do not release.
+		if (!bypassCombatTag && oldController is PlayerController && isCombatTagged(oldController.player)) {
+			releaseVerifications.remove(oldController.player.uniqueId)
+			unpilot(starship)
 			oldController.alert("Your starship is in combat! It will be unpiloted instead!")
 
 			return false
 		}
+
+		if (
+			oldController is PlayerController &&
+			starship.isTouchingExternalBlock() &&
+			!hasConfirmedRelease(oldController.player, starship)
+		) {
+			oldController.player.userError(
+				"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
+			)
+			return false
+		}
+
+		unpilot(starship)
 
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
@@ -536,6 +558,55 @@ object PilotedStarships : IonServerComponent() {
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true
+	}
+
+	private fun isCombatTagged(player: Player): Boolean {
+		return CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player)
+	}
+
+	private fun hasConfirmedRelease(player: Player, starship: ActiveControlledStarship): Boolean {
+		val now = System.currentTimeMillis()
+		val pending = releaseVerifications[player.uniqueId]
+
+		if (pending?.starship === starship && now <= pending.expiresAt) {
+			releaseVerifications.remove(player.uniqueId)
+			return true
+		}
+
+		releaseVerifications[player.uniqueId] = PendingReleaseVerification(
+			starship = starship,
+			expiresAt = now + RELEASE_VERIFICATION_TIMEOUT_MILLIS
+		)
+		return false
+	}
+
+	private fun ActiveControlledStarship.isTouchingExternalBlock(): Boolean {
+		for (key in blocks) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
+
+						val nearbyX = x + offsetX
+						val nearbyY = y + offsetY
+						val nearbyZ = z + offsetZ
+
+						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
+						if (contains(nearbyX, nearbyY, nearbyZ)) continue
+
+						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+							return true
+						}
+					}
+				}
+			}
+		}
+
+		return false
 	}
 
 	/**
