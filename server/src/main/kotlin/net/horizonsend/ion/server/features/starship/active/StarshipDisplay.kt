@@ -63,7 +63,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		val controller = starship.controller
 		if (controller is PlayerController) {
 			if (!DynmapPlugin.plugin.getPlayerVisbility(controller.player)) {
-				starshipsIcons.remove(starship.charIdentifier)
+				removeMarkersInSet(starship.charIdentifier, starshipsIcons.get(starship.charIdentifier), starshipMarkers)
 				return
 			}
 		}
@@ -90,7 +90,7 @@ object StarshipDisplay : IonServerComponent(true) {
 			val movement = Hyperspace.getHyperspaceMovement(starship)!!
 
 			if (movement.originWorld != movement.dest.world) {
-				starshipsIcons.remove(charIdentifier)
+				removeMarkersInSet(charIdentifier, null,starshipMarkers)
 				return
 			}
 
@@ -181,15 +181,19 @@ object StarshipDisplay : IonServerComponent(true) {
 
 			if (ActiveStarships.getByCharIdentifier(identifier) != null) continue
 
-			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
-			gravityWellCircleMarker?.deleteMarker()
-
-			markerSet.findMarker(identifier)?.deleteMarker()
-			for (circle in icon.circles) {
-				markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
-			}
+			removeMarkersInSet(identifier, icon, markerSet)
 
 			iterator.remove()
+		}
+	}
+
+	private fun removeMarkersInSet(identifier: String, icon: StarshipIcon?, markerSet: MarkerSet) {
+		markerSet.findMarker(identifier)?.deleteMarker()
+		markerSet.findCircleMarker("${identifier}_gravity_well")?.deleteMarker()
+
+		icon ?: return
+		for (circle in icon.circles) {
+			markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
 		}
 	}
 
