@@ -52,14 +52,12 @@ object CrateRestrictions : IonServerComponent() {
 	fun onPlace(event: BlockPlaceEvent) {
 		if (!event.canBuild()) return
 
+		CargoCrates[event.itemInHand] ?: return
 		val block: Block = event.block
-		val state: ShulkerBox = block.state as? ShulkerBox ?: return
 
 		// Override cancelling from other plugins. It will only not be cancelled if the below conditions are met.
 		// If it is not cancelled here, it should bypass protection.
 		event.isCancelled = true
-
-		CargoCrates[state] ?: return // don't need to store it, just check if is a crate
 
 		val against = event.blockAgainst
 		val direction = against.getFace(block)
@@ -90,7 +88,7 @@ object CrateRestrictions : IonServerComponent() {
 		}
 
 		event.isCancelled = false
-		event.player.sendActionBar("${RESET}Placed ${state.customName}".replace("$RESET", "$GREEN"))
+		event.player.sendActionBar("${RESET}Placed ${event.itemInHand.itemMeta.displayName()}".replace("$RESET", "$GREEN"))
 	}
 
 	//region Piston State Change Crate Popping
