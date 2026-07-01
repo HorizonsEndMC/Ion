@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
@@ -463,7 +464,11 @@ class Starship(
 	var directControlCooldown = initialDirectControlCooldown
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		when(controller) {
+		if (enabled && StarshipCruising.isCruising(this)) {
+			this.userErrorAction("Direct Control cannot be enabled while cruising")
+			return
+		}
+		when (controller) {
 			is ActivePlayerController -> {
 				val controller = controller as ActivePlayerController
 				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
