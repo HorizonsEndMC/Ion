@@ -902,10 +902,10 @@ object DefaultWorldConfiguration {
 			aiDifficulty = WeightedIntegerAmount(
 				setOf(
 					Pair(0, 0.0),
-					Pair(1, 0.0),
-					Pair(2, 0.0),
-					Pair(3, 0.0),
-					Pair(4, 0.0),
+					Pair(1, 0.1),
+					Pair(2, 0.55),
+					Pair(3, 0.25),
+					Pair(4, 0.1),
 				)
 			),
 			flags = mutableSetOf(
