@@ -535,8 +535,7 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		if (
-			oldController is PlayerController &&
+		if (oldController is PlayerController &&
 			starship.isTouchingExternalBlock() &&
 			!hasConfirmedRelease(oldController.player, starship)
 		) {
@@ -577,35 +576,6 @@ object PilotedStarships : IonServerComponent() {
 			starship = starship,
 			expiresAt = now + RELEASE_VERIFICATION_TIMEOUT_MILLIS
 		)
-		return false
-	}
-
-	private fun ActiveControlledStarship.isTouchingExternalBlock(): Boolean {
-		for (key in blocks) {
-			val x = blockKeyX(key)
-			val y = blockKeyY(key)
-			val z = blockKeyZ(key)
-
-			for (offsetX in -1..1) {
-				for (offsetY in -1..1) {
-					for (offsetZ in -1..1) {
-						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
-
-						val nearbyX = x + offsetX
-						val nearbyY = y + offsetY
-						val nearbyZ = z + offsetZ
-
-						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
-						if (contains(nearbyX, nearbyY, nearbyZ)) continue
-
-						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
-							return true
-						}
-					}
-				}
-			}
-		}
-
 		return false
 	}
 
