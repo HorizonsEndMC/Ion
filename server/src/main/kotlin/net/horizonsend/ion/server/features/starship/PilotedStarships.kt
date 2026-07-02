@@ -536,6 +536,7 @@ object PilotedStarships : IonServerComponent() {
 		}
 
 		if (oldController is PlayerController &&
+			starship.initialBlockCount <= StarshipType.LANCER_BATTLECRUISER.maxSize &&
 			starship.isTouchingExternalBlock() &&
 			!hasConfirmedRelease(oldController.player, starship)
 		) {
