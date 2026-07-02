@@ -179,7 +179,13 @@ object StarshipDisplay : IonServerComponent(true) {
 		while (iterator.hasNext()) {
 			val (identifier, icon) = iterator.next()
 
-			if (ActiveStarships.getByCharIdentifier(identifier) != null) continue
+			val starship = ActiveStarships.getByCharIdentifier(identifier)
+			val playerPilot = starship?.playerPilot
+			// the starship is still actively piloted, AND
+			// (the starship is not controlled by a player, OR
+			// the starship is controlled by a player and the player is visible on Dynmap):
+			// Do not remove the marker from the set
+			if (starship != null && (starship.controller !is PlayerController || (playerPilot != null && DynmapPlugin.plugin.getPlayerVisbility(playerPilot)))) continue
 
 			removeMarkersInSet(identifier, icon, markerSet)
 
