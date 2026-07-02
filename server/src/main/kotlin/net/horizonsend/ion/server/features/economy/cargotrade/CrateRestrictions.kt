@@ -10,9 +10,9 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
-import org.bukkit.ChatColor.GREEN
-import org.bukkit.ChatColor.RED
-import org.bukkit.ChatColor.RESET
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
@@ -65,13 +65,13 @@ object CrateRestrictions : IonServerComponent() {
 		val direction = against.getFace(block)
 
 		if (against.type != CRATE_HOLDER || (against.state.blockData as Directional).facing != direction) {
-			event.player.sendActionBar("${RED}You can only place cargo crates against retracted sticky piston heads!")
+			event.player.sendActionBar(text("You can only place cargo crates against retracted sticky piston heads!", RED))
 			return
 		}
 
 		for (i in 1..MIN_FREE_SPACE) {
 			if (block.getRelative(direction, i).type != Material.AIR) {
-				event.player.sendActionBar("${RED}Must be at least $MIN_FREE_SPACE block(s) of space beyond the crate!")
+				event.player.sendActionBar(text("Must be at least $MIN_FREE_SPACE block(s) of space beyond the crate!", RED))
 				return
 			}
 		}
@@ -82,7 +82,7 @@ object CrateRestrictions : IonServerComponent() {
 					val relative = block.getRelative(x, y, z)
 					if (relative == block) continue
 					if (relative.state is ShulkerBox) {
-						event.player.sendActionBar("${RED}Cargo crates cannot be placed adjacently!")
+						event.player.sendActionBar(text("Cargo crates cannot be placed adjacently!", RED))
 						return
 					}
 				}
