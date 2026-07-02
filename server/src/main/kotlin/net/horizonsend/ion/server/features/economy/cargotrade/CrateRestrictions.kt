@@ -42,6 +42,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import java.time.Instant
 import java.util.Date
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
 object CrateRestrictions : IonServerComponent() {
 	private val CRATE_HOLDER = Material.STICKY_PISTON
@@ -88,7 +90,7 @@ object CrateRestrictions : IonServerComponent() {
 		}
 
 		event.isCancelled = false
-		event.player.sendActionBar("${RESET}Placed ${event.itemInHand.itemMeta.displayName()}".replace("$RESET", "$GREEN"))
+		event.player.sendActionBar(Component.text("Placed ", NamedTextColor.GREEN).append(event.itemInHand.itemMeta.displayName()))
 	}
 
 	//region Piston State Change Crate Popping
