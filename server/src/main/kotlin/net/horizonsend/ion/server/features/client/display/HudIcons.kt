@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.client.display
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.cache.BookmarkCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.BARGE_ICON
 import net.horizonsend.ion.common.utils.text.BATTLECRUISER_ICON
@@ -803,10 +804,15 @@ object HudIcons : IonServerComponent() {
 				starshipIcon.toString()
 			}
 
-			val otherNation = starship.playerPilot?.let { PlayerCache[it].nationOid }
-            val color = if (otherNation != null && otherNation == PlayerCache[player].nationOid) NamedTextColor.GREEN
-            else if (otherNation != null && otherNation != PlayerCache[player].nationOid) NamedTextColor.RED
-            else NamedTextColor.GRAY
+			val otherPlayer = starship.playerPilot
+			val viewerNation = PlayerCache[player].nationOid
+			val otherNation = otherPlayer?.let { PlayerCache[it].nationOid }
+
+			val color = when {
+				otherPlayer != null && Fleets.findByMember(player)?.contains(otherPlayer) == true -> NamedTextColor.BLUE
+				viewerNation != null && otherNation != null -> RelationCache[viewerNation, otherNation].color
+				else -> NamedTextColor.GRAY
+			}
 
                 player.sendText(
                     location = finalPosition,
