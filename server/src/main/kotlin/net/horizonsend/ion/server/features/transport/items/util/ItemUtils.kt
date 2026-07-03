@@ -6,6 +6,10 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
+import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.inventory.AbstractFurnaceMenu
@@ -94,8 +98,25 @@ fun addToInventory(inventory: CraftInventory, itemStack: ItemStack): Int {
 	return inventory.addItem(itemStack).entries.firstOrNull()?.value?.amount ?: 0
 }
 
+fun getSpecialFurnaceInputSlot(destination: FurnaceInventory, itemStack: ItemStack): Int? {
+	val entity = destination.holder?.location?.block?.let(MultiblockEntities::getMultiblockEntity) ?: return null
+
+	return when (entity) {
+		is PlanterMultiblock.PlanterEntity ->
+			if (Crop.findBySeed(itemStack.type) != null) AbstractFurnaceMenu.FUEL_SLOT else null
+
+		is GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity -> when ((itemStack.customItem as? GasCanister)?.gas) {
+			is GasFuel -> AbstractFurnaceMenu.INGREDIENT_SLOT
+			is GasOxidizer -> AbstractFurnaceMenu.FUEL_SLOT
+			else -> null
+		}
+
+		else -> null
+	}
+}
+
 fun addToFurnace(destination: FurnaceInventory, itemStack: ItemStack): Int {
-	val toSlot = when {
+	val toSlot = getSpecialFurnaceInputSlot(destination, itemStack) ?: when {
 		destination.smelting?.type == Material.PRISMARINE_CRYSTALS -> 1 // Smelting has crystals, put it in fuel
 		destination.fuel?.type == Material.PRISMARINE_CRYSTALS -> 0 // Fuel has crystals, put it in smelting
 		itemStack.type.isFuel || GeneratorFuel.getFuel(itemStack) != null -> 1 // slot 1 - fuel
