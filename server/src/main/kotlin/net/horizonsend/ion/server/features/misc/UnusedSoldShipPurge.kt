@@ -138,7 +138,7 @@ object UnusedSoldShipPurge : IonServerComponent() {
 		return toLoad
 	}
 
-	private class GarbageCollectorController(starship: ActiveStarship): NoOpController(starship, null) {
+	class GarbageCollectorController(starship: ActiveStarship): NoOpController(starship, null) {
 		override fun tick() {
 			StarshipDestruction.vanish(starship)
 		}

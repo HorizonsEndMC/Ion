@@ -8,11 +8,13 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 
@@ -51,6 +53,35 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 					sender.sendMessage(ofChildren("Removed ".toComponent(), name))
 				}
 
+				visited.add(ship._id)
+			}
+		}
+
+		sender.information("Removed ${visited.size} ships.")
+	}
+
+	@Suppress("unused")
+	@CommandAlias("real")
+	fun onDeleteRealShips(sender: Player) = asyncCommand(sender) {
+		val selection = requireSelection(sender)
+
+		val visited = mutableSetOf<Oid<out StarshipData>>()
+
+		for (pos in selection) {
+			val x = pos.x()
+			val y = pos.y()
+			val z = pos.z()
+
+			val ship = DeactivatedPlayerStarships.getContaining(sender.world, x, y, z) ?: continue
+
+			if (visited.contains(ship._id)) continue
+
+			Tasks.getSyncBlocking {
+				PilotedStarships.activateWithoutPilot(
+					feedbackDestination = debugAudience,
+					data = ship,
+					createController = { UnusedSoldShipPurge.GarbageCollectorController(it) }
+				)
 				visited.add(ship._id)
 			}
 		}
