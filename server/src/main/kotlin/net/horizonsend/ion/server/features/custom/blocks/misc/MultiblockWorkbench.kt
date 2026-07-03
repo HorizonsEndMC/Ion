@@ -237,6 +237,8 @@ object MultiblockWorkbench : CustomBlock(
 		}
 
 		private fun openSearchMenu() {
+			// Search replaces this transient inventory, so return its contents first.
+			addOrDropItems(location)
 			isSearching = true
 
 			viewer.openSearchMenu(
