@@ -6,8 +6,10 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -19,10 +21,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 
 @CommandPermission("ion.removeghostship")
-@CommandAlias("removeghostship")
+@CommandAlias("removeships")
 object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
-	@Default
 	@Suppress("unused")
+	@CommandAlias("ghost")
 	fun onDeleteGhostShip(sender: Player) = asyncCommand(sender) {
 		val selection = requireSelection(sender)
 
@@ -80,12 +82,18 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 				val event = BlockBreakEvent(sender.world.getBlockAt(x, y, z), sender).callEvent()
 				if (!event) return@getSyncBlocking
 
-				PilotedStarships.activateWithoutPilot(
-					feedbackDestination = debugAudience,
-					data = ship,
-					createController = { UnusedSoldShipPurge.GarbageCollectorController(it) }
-				)
-				visited.add(ship._id)
+				try {
+					val name = PilotedStarships.getDisplayName(ship)
+					sender.sendMessage(ofChildren("Removing ".toComponent(), name))
+					PilotedStarships.activateWithoutPilot(
+						feedbackDestination = debugAudience,
+						data = ship,
+						createController = { UnusedSoldShipPurge.GarbageCollectorController(it) }
+					)
+					visited.add(ship._id)
+				} catch (e: SpawningException) {
+					sender.serverError("Could not delete starship block at ($x, $y, $z), use /removeghostships afterwards")
+				}
 			}
 		}
 
