@@ -269,13 +269,13 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 
 			// plays hitmarker sound if the shot did shield damage (if player setting is enabled)
 			if (player != null && player.getSettingOrThrow(PlayerSettings::hitmarkerOnShield)) {
-				player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
+				player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.UI, 20f, 1.0f))
 			}
 
 			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
 			if (explosionOccurred) {
 				if (player != null && player.getSettingOrThrow(PlayerSettings::hitmarkerOnHull)) {
-					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.UI, 20f, 0.5f))
 				}
 			}
 
