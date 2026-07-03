@@ -66,7 +66,9 @@ object WaypointManager : IonServerComponent() {
         // JGraphT is not thread safe; this cannot be async
         Tasks.syncRepeat(0L, 200L) {
             Bukkit.getOnlinePlayers().forEach { player ->
-                updatePlayerGraph(player)
+                Tasks.async {
+                    updatePlayerGraph(player)
+                }
                 if (playerDestinations.isNotEmpty()) {
                     checkWaypointReached(player)
                     updatePlayerPaths(player)
@@ -334,22 +336,20 @@ object WaypointManager : IonServerComponent() {
      * playerGraph-specific functions
      */
     fun updatePlayerGraph(player: Player) {
-        Tasks.async {
-            if (playerGraphs[player.uniqueId] != null) {
-                // player already has a graph; update
-                playerGraphs[player.uniqueId]?.let { playerGraph ->
-                    clonePlayerGraphFromMain(playerGraph)
-                    updatePlayerPositionVertex(playerGraph, player)
-                    populatePlayerBookmarkVertex(playerGraph, player)
-                }
-            } else {
-                // add player's graph to the map
-                val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+        if (playerGraphs[player.uniqueId] != null) {
+            // player already has a graph; update
+            playerGraphs[player.uniqueId]?.let { playerGraph ->
                 clonePlayerGraphFromMain(playerGraph)
                 updatePlayerPositionVertex(playerGraph, player)
                 populatePlayerBookmarkVertex(playerGraph, player)
-                playerGraphs[player.uniqueId] = playerGraph
             }
+        } else {
+            // add player's graph to the map
+            val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+            clonePlayerGraphFromMain(playerGraph)
+            updatePlayerPositionVertex(playerGraph, player)
+            populatePlayerBookmarkVertex(playerGraph, player)
+            playerGraphs[player.uniqueId] = playerGraph
         }
     }
 
