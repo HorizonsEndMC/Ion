@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.WaypointVertex
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -36,7 +37,7 @@ object WaypointCommand : SLCommand() {
     // add vertex as destination
     @Suppress("unused")
     @CommandAlias("add")
-    @CommandCompletion("@planets|@hyperspaceGates|@bookmarks|@nationMembers")
+    @CommandCompletion("@planets|@hyperspaceGates|@bookmarks|@jumpPlayerDestinations")
     @Description("Add a waypoint to the route navigation")
     fun onSetWaypoint(
         sender: Player,
@@ -49,8 +50,15 @@ object WaypointCommand : SLCommand() {
         }
         val vertex = WaypointManager.getVertex(playerGraph, option)
         val otherPlayer = Bukkit.getPlayer(option)
-        // If another player (in the same nation) is found, just create a static temp waypoint to them
-        if (otherPlayer != null && PlayerCache[otherPlayer].nationOid == PlayerCache[sender].nationOid) {
+        val senderFleet = Fleets.findByMember(sender)
+        val otherFleet = if (otherPlayer != null) Fleets.findByMember(otherPlayer) else null
+        val senderNation = PlayerCache[sender].nationOid
+        val isAccessiblePlayerDestination = otherPlayer != null &&
+            ((senderFleet != null && otherFleet == senderFleet) ||
+                (senderNation != null && PlayerCache[otherPlayer].nationOid == senderNation))
+
+        // If another accessible player is found, just create a static temp waypoint to them
+        if (otherPlayer != null && isAccessiblePlayerDestination) {
             onSetWaypoint(sender, otherPlayer.location.world.name, otherPlayer.location.x.toInt().toString(), otherPlayer.location.z.toInt().toString())
             return
         }
@@ -68,7 +76,7 @@ object WaypointCommand : SLCommand() {
 
     @Suppress("unused")
     @CommandAlias("add")
-    @CommandCompletion("world|x|z")
+    @CommandCompletion("@spaceWorlds x z")
     @Description("Add a waypoint to the route navigation")
     fun onSetWaypoint(
         sender: Player,
