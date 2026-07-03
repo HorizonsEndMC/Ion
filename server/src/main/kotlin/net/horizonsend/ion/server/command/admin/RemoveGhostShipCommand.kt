@@ -77,6 +77,9 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (visited.contains(ship._id)) continue
 
 			Tasks.getSyncBlocking {
+				val event = BlockBreakEvent(sender.world.getBlockAt(x, y, z), sender).callEvent()
+				if (!event) return@getSyncBlocking
+
 				PilotedStarships.activateWithoutPilot(
 					feedbackDestination = debugAudience,
 					data = ship,
