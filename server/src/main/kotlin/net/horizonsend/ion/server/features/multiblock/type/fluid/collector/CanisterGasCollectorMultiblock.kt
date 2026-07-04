@@ -136,7 +136,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			val validForRegion = if (world.name == "Ilius_horizonsend_eden" && gas.identifier == "METHANE") true else when (gas.identifier) {
 				"HYDROGEN" -> region == SpaceRegion.MONOLITH
 				"METHANE" -> region == SpaceRegion.SPINE
-				"NITROGEN" -> region == SpaceRegion.FRACTURE
+				"NITROGEN" -> region == SpaceRegion.FRACTURE || region == SpaceRegion.WARD
 				"XENON" -> false
 				else -> true
 			}
