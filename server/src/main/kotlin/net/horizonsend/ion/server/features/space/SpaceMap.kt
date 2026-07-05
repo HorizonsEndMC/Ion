@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Color
@@ -15,7 +14,7 @@ import org.dynmap.markers.MarkerSet
 import kotlin.random.Random
 
 object SpaceMap : IonServerComponent(true) {
-	private lateinit var markerSet: MarkerSet
+	lateinit var spaceMarkerSet: MarkerSet
 	private lateinit var gravityWellMarkerSet: MarkerSet
 	// TODO: REMOVE THIS; FOR DEBUG USES ONLY
 	//private lateinit var debugWaypointMarkerSet: MarkerSet
@@ -35,7 +34,7 @@ object SpaceMap : IonServerComponent(true) {
 		val markerAPI = DynmapPlugin.plugin.markerAPI
 
 		markerAPI.getMarkerSet("space")?.deleteMarkerSet()
-		markerSet = markerAPI.createMarkerSet("space", "Space", null, false)
+		spaceMarkerSet = markerAPI.createMarkerSet("space", "Space", null, false)
 		markerAPI.getMarkerSet("gravity_well")?.deleteMarkerSet()
 		gravityWellMarkerSet = markerAPI.createMarkerSet("gravity_well", "Gravity Wells", null, false)
 		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
@@ -45,7 +44,7 @@ object SpaceMap : IonServerComponent(true) {
 		for (star in Space.getStars()) {
 			if (star.name == "EdenHack") continue
 
-			markerSet.createMarker(
+			spaceMarkerSet.createMarker(
 				star.id,
 				star.name,
 				star.spaceWorldName,
@@ -80,7 +79,7 @@ object SpaceMap : IonServerComponent(true) {
 			val planetDescription = "${planet.name} \n \n ${planet.description}"
 
 			// planet icon
-			val planetMarker = markerSet.createMarker(
+			val planetMarker = spaceMarkerSet.createMarker(
 				planet.id, // Marker ID
 				wrapStyle(createHtmlLink(planet.name, link, "#FFFFFF"), "h3", "font-size:30"), // Markup icon name
 				true, // use HTML markup
@@ -98,7 +97,7 @@ object SpaceMap : IonServerComponent(true) {
 				val parent = planet.getParentLocation()
 
 				// planet ring
-				markerSet.createCircleMarker(
+				spaceMarkerSet.createCircleMarker(
 					"${planet.id}_orbit",
 					"${planet.name}'s orbit path",
 					false, // Allow html markup in icon labels
@@ -141,7 +140,7 @@ object SpaceMap : IonServerComponent(true) {
 			// Create a marker to escape the planet view
 			val escapeLink = "https://$serverName.horizonsend.net/?worldname=${planet.spaceWorldName}"
 
-			markerSet.createMarker(
+			spaceMarkerSet.createMarker(
 				"${planet.id}_escape",
 				wrapStyle(createHtmlLink("View Space", escapeLink, "#FFFFFF"), "h3", "font-size:50"),
 				true,
