@@ -1470,7 +1470,7 @@ data class NewStarshipBalancing(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				RapidHeavyMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true)),
-				LightMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				LightMissileLauncherBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				ThermonuclearMissileBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
