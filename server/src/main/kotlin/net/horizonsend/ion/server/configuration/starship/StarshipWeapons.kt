@@ -132,8 +132,8 @@ data class AntiAirProjectileBalancing (
 	override var starshipShieldDamageMultiplier: Double = 4.0,
 	override var areaShieldDamageMultiplier: Double = 0.1,
 	override val entityDamage: EntityDamage = RegularDamage(15.0),
-	override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-	override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+	override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+	override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 	) : StarshipProjectileBalancing, StarshipParticleProjectileBalancing {
 	@Transient
 	override val clazz: KClass<out Projectile> = AntiAirCannonProjectile::class
@@ -171,8 +171,8 @@ data class TorpedoBalancing(
         override var starshipShieldDamageMultiplier: Double = 2.0,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(15.0),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 1.0,
         override var maxDegrees: Double = 45.0
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -215,8 +215,8 @@ data class HeavyLaserBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 1.0,
 		override var maxDegrees: Double = 25.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.15,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L)
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
@@ -260,8 +260,8 @@ data class HeavyNeutralizerBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 1.0,
 		override var maxDegrees: Double = 25.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.85,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(30L)
 
@@ -304,8 +304,8 @@ data class NeutralizerBalancing(
 		override var areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 4.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.70,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L),
 		override val maxDegrees: Double = 45.0
@@ -346,8 +346,8 @@ data class AdvancedProbeBalancing(
 		override var areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 4.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.far", volume = 1f, source = Sound.Source.AMBIENT)
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
 	) : StarshipParticleProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = ProbeProjectile::class
@@ -385,8 +385,8 @@ data class ProbeBalancing(
 		override var areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 4.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.far", volume = 1f, source = Sound.Source.AMBIENT)
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.probe_scan.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
 	) : StarshipParticleProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = ProbeProjectile::class
@@ -429,8 +429,8 @@ data class PhaserBalancing(
 		override var starshipShieldDamageMultiplier: Double = 55.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 	) : StarshipProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = PhaserProjectile::class
@@ -469,8 +469,8 @@ data class WebifierBalancing(
 		override var starshipShieldDamageMultiplier: Double = 7.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 2.0,
 		override var effectStrength: Double = 0.45,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(5L),
@@ -505,8 +505,8 @@ data class ArsenalRocketBalancing(
 		override var starshipShieldDamageMultiplier: Double = 7.5,
 		override var areaShieldDamageMultiplier: Double = 100.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override var maxDegrees: Double = 180.0 ,
 		override var particleThickness: Double = 0.1,
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -539,8 +539,8 @@ data class EMPMissileBalancing(
 		override var starshipShieldDamageMultiplier: Double = 5.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override var maxDegrees: Double = 180.0,
 		override var particleThickness: Double = 0.1,
 		override var effectStrength: Double = 0.20,
@@ -576,8 +576,8 @@ data class ThermonuclearMissileBalancing(
 		override var starshipShieldDamageMultiplier: Double = 15.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.thermonuclear_missile.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.thermonuclear_missile.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.thermonuclear_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.thermonuclear_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var maxDegrees: Double = 180.0 ,
 		override var particleThickness: Double = 0.1,
 		//override var proximityRange: Double = 75.0,
@@ -617,8 +617,8 @@ data class SwarmMissileBalancing(
 		override var explosionPower: Float = 2.0f,
 		override var starshipShieldDamageMultiplier: Double = 5.8,
 		override var areaShieldDamageMultiplier: Double = 4.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var separationDistance: Double = 8.0,
 		override var separationFactor: Double = 0.20,
@@ -667,8 +667,8 @@ data class LightMissileLauncherBalancing(
 		override var explosionPower: Float = 5.50f,
 		override var starshipShieldDamageMultiplier: Double = 7.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var maxDegrees: Double = 90.0,
 		override var particleThickness: Double = 2.0,
@@ -713,8 +713,8 @@ data class RapidHeavyMissileLauncherBalancing(
 		override var explosionPower: Float = 7.0f,
 		override var starshipShieldDamageMultiplier: Double = 10.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var maxDegrees: Double = 90.0,
 		override var particleThickness: Double = 2.0,
@@ -750,8 +750,8 @@ data class TriTurretBalancing(
         override var starshipShieldDamageMultiplier: Double = 3.0,
         override var areaShieldDamageMultiplier: Double = 3.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.8
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -788,8 +788,8 @@ data class LightTurretBalancing(
         override var starshipShieldDamageMultiplier: Double = 1.0,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(7.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.3
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -820,8 +820,8 @@ data class HeavyTurretBalancing(
         override var starshipShieldDamageMultiplier: Double = 3.25,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.3
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -852,8 +852,8 @@ data class AutocannonBalancing(
 		override var starshipShieldDamageMultiplier: Double = 1.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.autocannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 0.2,
 		var delayMillis: Int = 100,
 		) : StarshipParticleProjectileBalancing {
@@ -885,8 +885,8 @@ data class AssaultTurretBalancing(
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.assault_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.assault_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.assault_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.assault_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 0.4
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -917,8 +917,8 @@ data class GaussCannonBalancing(
 		override var starshipShieldDamageMultiplier: Double = 4.5,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.gauss_cannon.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.gauss_cannon.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.gauss_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.gauss_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 0.3
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -949,8 +949,8 @@ data class QuadTurretBalancing(
         override var starshipShieldDamageMultiplier: Double = 6.9,
         override var areaShieldDamageMultiplier: Double = 10.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.6
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -981,8 +981,8 @@ data class ACAPTurretBalancing(
 		override var starshipShieldDamageMultiplier: Double = 9.5,
 		override var areaShieldDamageMultiplier: Double = 6.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.acap_turret.shoot", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.acap_turret.shoot", volume = 0f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.acap_turret.shoot", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.acap_turret.shoot", volume = 0f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 0.6
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1013,8 +1013,8 @@ data class IonTurretBalancing(
 		override var starshipShieldDamageMultiplier: Double = 3.7,
 		override var areaShieldDamageMultiplier: Double = 100.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 0.6,
 		override var effectStrength: Double = 0.65,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(7L),
@@ -1047,8 +1047,8 @@ data class PointDefenseBalancing(
         override var starshipShieldDamageMultiplier: Double = 0.0,
         override var areaShieldDamageMultiplier: Double = 0.0,
         override val entityDamage: EntityDamage = RegularDamage(30.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.35
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1083,8 +1083,8 @@ data class PulseCannonBalancing(
         override var starshipShieldDamageMultiplier: Double = 1.8,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.4
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1119,8 +1119,8 @@ data class ScramblerBalancing(
 		override var starshipShieldDamageMultiplier: Double = 3.2,
 		override var areaShieldDamageMultiplier: Double = 10.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.scrambler.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.scrambler.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.scrambler.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.scrambler.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 2.0,
 		override var effectStrength: Double = 0.9,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L)
@@ -1157,8 +1157,8 @@ data class PlasmaCannonBalancing(
         override var starshipShieldDamageMultiplier: Double = 2.0,
         override var areaShieldDamageMultiplier: Double = 3.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.5
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1193,8 +1193,8 @@ data class ArtilleryBalancing(
 		override var starshipShieldDamageMultiplier: Double = 16.7,
 		override var areaShieldDamageMultiplier: Double = 3.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.artillery.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.artillery.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.artillery.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.artillery.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 0.5
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1229,8 +1229,8 @@ data class LaserCannonBalancing(
         override var starshipShieldDamageMultiplier: Double = 0.2,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.44
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1265,8 +1265,8 @@ data class InterceptorCannonBalancing(
         override var starshipShieldDamageMultiplier: Double = 1.0,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.44
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1303,8 +1303,8 @@ data class DoomsdayDeviceBalancing(
         override var starshipShieldDamageMultiplier: Double = 150.0,
         override var areaShieldDamageMultiplier: Double = 2500.0,
         override val entityDamage: EntityDamage = RegularDamage(100.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.doomsday_device.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 5.0
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1372,8 +1372,8 @@ data class LogisticsTurretBalancing(
         override var starshipShieldDamageMultiplier: Double = 0.0,
         override var areaShieldDamageMultiplier: Double = 0.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 1.0,
         override var shieldBoostFactor: Int = 50000
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
@@ -1408,8 +1408,8 @@ data class LightLogisticsCannonBalancing(
 		override var starshipShieldDamageMultiplier: Double = 0.0,
 		override var areaShieldDamageMultiplier: Double = 0.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 1.5,
 		override var shieldBoostFactor: Int = 52500
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
@@ -1444,8 +1444,8 @@ data class HeavyLogisticsCannonBalancing(
 		override var starshipShieldDamageMultiplier: Double = 0.0,
 		override var areaShieldDamageMultiplier: Double = 0.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.logistics_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var particleThickness: Double = 2.5,
 		override var shieldBoostFactor: Int = 900000
 	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
@@ -1480,8 +1480,8 @@ data class DisintegratorBeamBalancing(
         override var starshipShieldDamageMultiplier: Double = 1.0,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.5,
 	) : StarshipParticleProjectileBalancing {
 		@Transient
@@ -1512,8 +1512,8 @@ data class CycleTurretBalancing(
         override var starshipShieldDamageMultiplier: Double = 0.75,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.25,
         var delayMillis: Int = 250,
 	) : StarshipParticleProjectileBalancing {
@@ -1789,8 +1789,8 @@ data class CthulhuBeamBalancing(
         override var starshipShieldDamageMultiplier: Double = 1.0,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.AMBIENT),
-		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.AMBIENT),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 	) : StarshipProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = FlamingSkullProjectile::class
