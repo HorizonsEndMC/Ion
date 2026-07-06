@@ -86,6 +86,7 @@ data class NewStarshipBalancing(
 			InterceptorCannonBalancing(),
 			AdvancedProbeBalancing(),
 			ProbeBalancing(),
+			ThermonuclearMissileBalancing(),
 
 			// Event weapons
 			DoomsdayDeviceBalancing(),
