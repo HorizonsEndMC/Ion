@@ -94,6 +94,7 @@ object HudIcons : IonServerComponent() {
         Tasks.syncRepeat(0L, UPDATE_RATE) {
             Bukkit.getOnlinePlayers().forEach { player ->
                 renderEntities(player)
+                renderShipIconEntities(player)
             }
         }
     }
@@ -514,14 +515,11 @@ object HudIcons : IonServerComponent() {
 
         val planetList = Space.getAllPlanets().filter { it.spaceWorld == player.world }
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
-		val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
 
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
         val hudSelectorEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsSelector)
-        val hudIconSize = (player.getSettingOrThrow(PlayerSettings::hudIconSize) / 5.0)
-        val hudStarshipsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStarships)
         val hudPlanetsEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsImage)
         val hudStarsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStars)
         val hudBeaconsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBeacons)
@@ -726,7 +724,13 @@ object HudIcons : IonServerComponent() {
             deleteSelectorEntity(player)
             deleteSelectorTextEntity(player)
         }
+    }
 
+    private fun renderShipIconEntities(player: Player) {
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val hudIconSize = (player.getSettingOrThrow(PlayerSettings::hudIconSize) / 5.0)
+
+        val hudStarshipsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStarships)
         if (hudStarshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             val starshipList = ActiveStarships.getInWorld(player.world)
                 .filter { starship -> starship.playerPilot != player && !starship.onlinePassengers.contains(player) }
@@ -741,78 +745,80 @@ object HudIcons : IonServerComponent() {
                 ?.subtract(playerPosition)?.normalize()
                 ?.angle(player.location.direction)
 
-        for (starship in starshipList) {
-            if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
-            val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
-            if (distance > 1000) continue
-			if (distance > 700 && (starship.type == StarshipType.BLACK_OPS_FRIGATE || starship.type == StarshipType.BLOCKADE_RUNNER)) continue
-			if (distance > 500 && starship.type == StarshipType.RECON_STARFIGHTER) continue
-            val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
+            for (starship in starshipList) {
+                if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
+                val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
+                if (distance > 1000) continue
+                if (distance > 700 && (starship.type == StarshipType.BLACK_OPS_FRIGATE || starship.type == StarshipType.BLOCKADE_RUNNER)) continue
+                if (distance > 500 && starship.type == StarshipType.RECON_STARFIGHTER) continue
+                val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
 
-            // calculate position and offset
-            val offset = direction.clone().normalize().multiply(min(distance, 32.0))
-            val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
-            val starshipIcon = when (starship.type) {
-                StarshipType.STARFIGHTER -> STARFIGHTER_ICON
-				StarshipType.RECON_STARFIGHTER -> STARFIGHTER_ICON
-				StarshipType.SCRAMBLER_STARFIGHTER -> STARFIGHTER_ICON
-				StarshipType.GUNSHIP -> GUNSHIP_ICON
-				StarshipType.ASSAULT_GUNSHIP -> GUNSHIP_ICON
-				StarshipType.INTERDICTOR_GUNSHIP -> GUNSHIP_ICON
-				StarshipType.CORVETTE -> CORVETTE_ICON
-				StarshipType.STASIS_CORVETTE -> CORVETTE_ICON
-				StarshipType.INTERDICTOR_CORVETTE -> CORVETTE_ICON
-				StarshipType.ASSAULT_CORVETTE -> CORVETTE_ICON
-				StarshipType.LOGISTICS_CORVETTE -> CORVETTE_ICON
-				StarshipType.FRIGATE -> FRIGATE_ICON
-				StarshipType.ASSAULT_FRIGATE -> FRIGATE_ICON
-				StarshipType.MISSILE_FRIGATE -> FRIGATE_ICON
-				StarshipType.BLACK_OPS_FRIGATE -> FRIGATE_ICON
-				StarshipType.DESTROYER -> DESTROYER_ICON
-				StarshipType.INTERDICTOR_DESTROYER -> DESTROYER_ICON
-				StarshipType.ASSAULT_DESTROYER -> DESTROYER_ICON
-				StarshipType.CRUISER -> CRUISER_ICON
-				StarshipType.MISSILE_CRUISER -> CRUISER_ICON
-				StarshipType.LOGISTICS_CRUISER -> CRUISER_ICON
-				StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
-				StarshipType.LANCER_BATTLECRUISER -> BATTLECRUISER_ICON
-				StarshipType.SHUTTLE -> SHUTTLE_ICON
-                StarshipType.TRANSPORT -> TRANSPORT_ICON
-                StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
-                StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
-                StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
-                StarshipType.BARGE -> BARGE_ICON
-                StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
-                StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
-                StarshipType.AI_CORVETTE -> CORVETTE_ICON
-                StarshipType.AI_FRIGATE -> FRIGATE_ICON
-                StarshipType.AI_DESTROYER -> DESTROYER_ICON
-                StarshipType.AI_CRUISER -> CRUISER_ICON
-                StarshipType.AI_BATTLECRUISER -> BATTLECRUISER_ICON
-                StarshipType.AI_SHUTTLE -> SHUTTLE_ICON
-                StarshipType.AI_TRANSPORT -> TRANSPORT_ICON
-                StarshipType.AI_LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
-                StarshipType.AI_MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
-                StarshipType.AI_HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
-                StarshipType.AI_BARGE -> BARGE_ICON
-                else -> STARFIGHTER_ICON
-            }
-			val fleet = Fleets.findByMember(player)
-			val displayIcon = if (fleet?.lastBroadcast?.contains(starship.identifier.take(maxLength)) == true) {
-				"<< $starshipIcon >>"
-			} else{
-				starshipIcon.toString()
-			}
+                // calculate position and offset
+                val offset = direction.clone().normalize().multiply(min(distance, 32.0))
+                val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
+                val starshipIcon = when (starship.type) {
+                    StarshipType.STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.RECON_STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.SCRAMBLER_STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.ASSAULT_GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.INTERDICTOR_GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.CORVETTE -> CORVETTE_ICON
+                    StarshipType.STASIS_CORVETTE -> CORVETTE_ICON
+                    StarshipType.INTERDICTOR_CORVETTE -> CORVETTE_ICON
+                    StarshipType.ASSAULT_CORVETTE -> CORVETTE_ICON
+                    StarshipType.LOGISTICS_CORVETTE -> CORVETTE_ICON
+                    StarshipType.FRIGATE -> FRIGATE_ICON
+                    StarshipType.ASSAULT_FRIGATE -> FRIGATE_ICON
+                    StarshipType.MISSILE_FRIGATE -> FRIGATE_ICON
+                    StarshipType.BLACK_OPS_FRIGATE -> FRIGATE_ICON
+                    StarshipType.DESTROYER -> DESTROYER_ICON
+                    StarshipType.INTERDICTOR_DESTROYER -> DESTROYER_ICON
+                    StarshipType.ASSAULT_DESTROYER -> DESTROYER_ICON
+                    StarshipType.CRUISER -> CRUISER_ICON
+                    StarshipType.MISSILE_CRUISER -> CRUISER_ICON
+                    StarshipType.LOGISTICS_CRUISER -> CRUISER_ICON
+                    StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
+                    StarshipType.LANCER_BATTLECRUISER -> BATTLECRUISER_ICON
+                    StarshipType.SHUTTLE -> SHUTTLE_ICON
+                    StarshipType.TRANSPORT -> TRANSPORT_ICON
+                    StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+                    StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
+                    StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
+                    StarshipType.BARGE -> BARGE_ICON
+                    StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.AI_CORVETTE -> CORVETTE_ICON
+                    StarshipType.AI_FRIGATE -> FRIGATE_ICON
+                    StarshipType.AI_DESTROYER -> DESTROYER_ICON
+                    StarshipType.AI_CRUISER -> CRUISER_ICON
+                    StarshipType.AI_BATTLECRUISER -> BATTLECRUISER_ICON
+                    StarshipType.AI_SHUTTLE -> SHUTTLE_ICON
+                    StarshipType.AI_TRANSPORT -> TRANSPORT_ICON
+                    StarshipType.AI_LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+                    StarshipType.AI_MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
+                    StarshipType.AI_HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
+                    StarshipType.AI_BARGE -> BARGE_ICON
+                    else -> STARFIGHTER_ICON
+                }
+                val fleet = Fleets.findByMember(player)
+                val displayIcon = if (fleet?.lastBroadcast?.contains(starship.identifier.take(maxLength)) == true) {
+                    "<< $starshipIcon >>"
+                } else {
+                    starshipIcon.toString()
+                }
 
-			val otherPlayer = starship.playerPilot
-			val viewerNation = PlayerCache[player].nationOid
-			val otherNation = otherPlayer?.let { PlayerCache[it].nationOid }
+                val otherPlayer = starship.playerPilot
+                val viewerNation = PlayerCache[player].nationOid
+                val otherNation = otherPlayer?.let { PlayerCache[it].nationOid }
 
-			val color = when {
-				otherPlayer != null && Fleets.findByMember(player)?.contains(otherPlayer) == true -> NamedTextColor.BLUE
-				viewerNation != null && otherNation != null -> RelationCache[viewerNation, otherNation].color
-				else -> NamedTextColor.GRAY
-			}
+                val color = when {
+                    otherPlayer != null && Fleets.findByMember(player)
+                        ?.contains(otherPlayer) == true -> NamedTextColor.BLUE
+
+                    viewerNation != null && otherNation != null -> RelationCache[viewerNation, otherNation].color
+                    else -> NamedTextColor.GRAY
+                }
 
                 player.sendText(
                     location = finalPosition,
@@ -877,6 +883,7 @@ object HudIcons : IonServerComponent() {
     private fun onPlayerTeleport(event: PlayerTeleportEvent) {
         Tasks.sync {
             renderEntities(event.player)
+            renderShipIconEntities(event.player)
         }
     }
 
