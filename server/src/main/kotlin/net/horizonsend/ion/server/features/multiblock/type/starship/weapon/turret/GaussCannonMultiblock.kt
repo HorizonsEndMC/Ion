@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -68,11 +67,11 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(2).ironBlock()
 			}
 			y(getSign() * 4) {
-				x(-2).type(IRON_TRAPDOOR)
+				x(-2).anyTrapdoor()
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(2).type(IRON_TRAPDOOR)
+				x(2).anyTrapdoor()
 			}
 			y(getSign() * 2) {
 				x(-1).sponge()
@@ -88,9 +87,9 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(getSign() * 4) {
-				x(-1).type(IRON_TRAPDOOR)
+				x(-1).anyTrapdoor()
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).type(IRON_TRAPDOOR)
+				x(1).anyTrapdoor()
 			}
 			y(getSign() * 2) {
 				x(0).sponge()
