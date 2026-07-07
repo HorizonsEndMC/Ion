@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -158,7 +157,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 				)
 			}
 			y(getSign() * 4) {
-				x(-2).type(IRON_TRAPDOOR)
+				x(-2).anyTrapdoor()
 				x(-1).grindstone(
 					PrepackagedPreset.simpleDirectional(
 						RelativeFace.BACKWARD,
@@ -178,7 +177,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 						example = Material.GRINDSTONE.createBlockData()
 					)
 				)
-				x(2).type(IRON_TRAPDOOR)
+				x(2).anyTrapdoor()
 			}
 			y(getSign() * 2) {
 				x(0).sponge()
@@ -225,7 +224,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 						example = Material.END_ROD.createBlockData()
 					)
 				)
-				x(0).type(IRON_TRAPDOOR)
+				x(0).anyTrapdoor()
 				x(1).endRod(
 					PrepackagedPreset.simpleDirectional(
 						RelativeFace.BACKWARD,
