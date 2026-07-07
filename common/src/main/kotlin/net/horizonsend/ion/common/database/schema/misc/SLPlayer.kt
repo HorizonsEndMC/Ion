@@ -54,6 +54,10 @@ data class SLPlayer(
 	val level: Int = 1,
 	var power: Int = 20,
 
+	var chetheritePurchases: Int = 0,
+	var chetheritePurchasesToday: Int = 0,
+	var chetheritePurchaseDate: String = "",
+
 	var settlement: Oid<Settlement>? = null,
 	var nation: Oid<Nation>? = null,
 
@@ -132,6 +136,12 @@ data class SLPlayer(
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	var wasKilledOn: Set<String> = setOf()
 ) : DbObject {
+	enum class ChetheritePurchaseResult {
+		SUCCESS,
+		DAILY_LIMIT_REACHED,
+		LIFETIME_LIMIT_REACHED
+	}
+
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {
 			ensureIndex(SLPlayer::lastKnownName, indexOptions = IndexOptions().textVersion(3))
@@ -141,6 +151,9 @@ data class SLPlayer(
 			ensureIndex(SLPlayer::activityRewardLevel)
 		}
 	) {
+		const val MAX_DAILY_CHETHERITE_PURCHASES = 4
+		const val MAX_LIFETIME_CHETHERITE_PURCHASES = 28
+
 		operator fun get(uuid: UUID): SLPlayer? = col.findOneById(uuid.slPlayerId.toString())
 
 		operator fun get(id: SLPlayerId): SLPlayer? = col.findOneById(id.toString())
@@ -172,6 +185,91 @@ data class SLPlayer(
 		fun getLevel(id: SLPlayerId): Int? = findPropById(id, SLPlayer::level)
 
 		fun getPower(id: SLPlayerId): Int? = findPropById(id, SLPlayer::power)
+
+		private fun ensureChetheritePurchaseFields(id: SLPlayerId) {
+			col.updateOne(
+				Filters.and(
+					Filters.eq("_id", id),
+					Filters.exists("chetheritePurchases", false)
+				),
+				combine(
+					org.litote.kmongo.setValue(SLPlayer::chetheritePurchases, 0),
+					org.litote.kmongo.setValue(SLPlayer::chetheritePurchasesToday, 0),
+					org.litote.kmongo.setValue(SLPlayer::chetheritePurchaseDate, "")
+				)
+			)
+		}
+
+		/**
+		 * Atomically reserves one chetherite purchase.
+		 * The day is an ISO-8601 UTC date, so daily limits survive restarts and are not timezone-dependent.
+		 */
+		fun attemptChetheritePurchase(id: SLPlayerId, day: String): ChetheritePurchaseResult {
+			ensureChetheritePurchaseFields(id)
+
+			val baseFilter = Filters.and(
+				Filters.eq("_id", id),
+				Filters.lt("chetheritePurchases", MAX_LIFETIME_CHETHERITE_PURCHASES)
+			)
+
+			val sameDayResult = col.updateOne(
+				Filters.and(
+					baseFilter,
+					Filters.eq("chetheritePurchaseDate", day),
+					Filters.lt("chetheritePurchasesToday", MAX_DAILY_CHETHERITE_PURCHASES)
+				),
+				combine(
+					inc(SLPlayer::chetheritePurchases, 1),
+					inc(SLPlayer::chetheritePurchasesToday, 1)
+				)
+			)
+
+			if (sameDayResult.modifiedCount == 1L) return ChetheritePurchaseResult.SUCCESS
+
+			val newDayResult = col.updateOne(
+				Filters.and(
+					baseFilter,
+					Filters.ne("chetheritePurchaseDate", day)
+				),
+				combine(
+					inc(SLPlayer::chetheritePurchases, 1),
+					org.litote.kmongo.setValue(SLPlayer::chetheritePurchasesToday, 1),
+					org.litote.kmongo.setValue(SLPlayer::chetheritePurchaseDate, day)
+				)
+			)
+
+			if (newDayResult.modifiedCount == 1L) return ChetheritePurchaseResult.SUCCESS
+
+			val player = get(id) ?: error("Expected player $id to exist")
+
+			return if (player.chetheritePurchases >= MAX_LIFETIME_CHETHERITE_PURCHASES) {
+				ChetheritePurchaseResult.LIFETIME_LIMIT_REACHED
+			} else {
+				ChetheritePurchaseResult.DAILY_LIMIT_REACHED
+			}
+		}
+
+		/**
+		 * Releases a purchase reservation when charging the player fails.
+		 * This is only called before any chetherite is delivered.
+		 */
+		fun releaseChetheritePurchase(id: SLPlayerId, day: String): Boolean {
+			val result = col.updateOne(
+				Filters.and(
+					Filters.eq("_id", id),
+					Filters.eq("chetheritePurchaseDate", day),
+					Filters.gt("chetheritePurchases", 0),
+					Filters.gt("chetheritePurchasesToday", 0)
+				),
+				combine(
+					inc(SLPlayer::chetheritePurchases, -1),
+					inc(SLPlayer::chetheritePurchasesToday, -1)
+				)
+			)
+
+			return result.modifiedCount == 1L
+		}
+
 
 		fun getXPAndLevel(id: SLPlayerId): Pair<Int, Int>? {
 			val results: ProjectedResults = findPropsById(
