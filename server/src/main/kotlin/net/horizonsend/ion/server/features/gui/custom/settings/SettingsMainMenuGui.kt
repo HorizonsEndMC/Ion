@@ -116,6 +116,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Other Settings",
 			DBCachedBooleanToggle(text("Dynmap Transponder"),"Makes you visible on Dynmap. Disabling it will not hide you when gameplay conditions require visibility.",GuiItem.COMPASS_NEEDLE,true,PlayerSettings::dynmapTransponderEnabled),
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, PlayerSettings::enableCombatTimerAlerts),
+			DBCachedBooleanToggle(text("Release Touch Confirmation"), "Warn before releasing a ship touching nearby blocks.", GuiItem.LIST, true, PlayerSettings::releaseTouchVerification),
 			DBCachedBooleanToggle(text("Enable Protection Messages"), "", GuiItem.LIST, true, PlayerSettings::protectionMessagesEnabled),
 			DBCachedBooleanToggle(text("Shorten Chat Messages"), "", GuiItem.LIST, false, PlayerSettings::shortenChatChannels),
 			DBCachedBooleanToggle(text("Remove User Prefixes"), "Removes prefixes, like Helper and Mod, from non-global chats", GuiItem.LIST, false, PlayerSettings::hideUserPrefixes),

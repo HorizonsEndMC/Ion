@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
@@ -20,6 +21,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -536,6 +538,7 @@ object PilotedStarships : IonServerComponent() {
 		}
 
 		if (oldController is PlayerController &&
+			oldController.player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
 			starship.initialBlockCount <= StarshipType.LANCER_BATTLECRUISER.maxSize &&
 			starship.isTouchingExternalBlock() &&
 			!hasConfirmedRelease(oldController.player, starship)
@@ -544,6 +547,10 @@ object PilotedStarships : IonServerComponent() {
 				"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
 			)
 			return false
+		}
+
+		if (oldController is PlayerController) {
+			releaseVerifications.remove(oldController.player.uniqueId)
 		}
 
 		unpilot(starship)
