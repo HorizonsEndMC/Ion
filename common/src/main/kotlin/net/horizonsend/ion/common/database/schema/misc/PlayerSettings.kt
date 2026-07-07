@@ -61,6 +61,7 @@ data class PlayerSettings(
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
+	var releaseTouchVerification: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
 	var hitmarkerOnShield: Boolean = true,
 	var flareTime: Int = 5,
