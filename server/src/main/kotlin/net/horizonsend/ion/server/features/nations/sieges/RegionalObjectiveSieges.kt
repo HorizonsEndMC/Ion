@@ -55,9 +55,9 @@ object RegionalObjectiveSieges : IonServerComponent() {
 
 	private val siegeDurationMillis get() = TimeUnit.MINUTES.toMillis(45)
 	const val MIN_SHIP_SIZE = 8000
-	const val COOLDOWN_HOURS = 24L
-	const val XENON_REWARD = 10
-	const val MIN_DOMINION_TERRITORIES = 2
+	const val COOLDOWN_HOURS = 8L
+	const val XENON_REWARD = 4
+	const val MIN_DOMINION_TERRITORIES = 1
 
 	// Points awarded per tick for presence
 	private const val PRESENCE_POINTS = 2

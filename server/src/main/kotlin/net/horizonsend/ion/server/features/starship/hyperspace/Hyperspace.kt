@@ -155,7 +155,7 @@ object Hyperspace : IonServerComponent() {
 
 		var warmup = starship.balancing.warmupTime
 
-		if (beaconTarget != null) warmup = (warmup * 0.5).toInt()
+		if (beaconTarget != null) warmup = (warmup * 0.25).toInt()
 
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel, beaconTarget)
 

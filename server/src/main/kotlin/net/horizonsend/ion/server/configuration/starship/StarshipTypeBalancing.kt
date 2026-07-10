@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.command_burst.Capi
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalSkirmishCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.SkirmishCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
@@ -166,6 +167,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -196,6 +201,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -229,6 +238,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -255,6 +268,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -301,6 +318,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -326,6 +347,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
 				),
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
@@ -370,6 +395,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -420,6 +449,10 @@ data class NewStarshipBalancing(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				),
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
+				),
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -465,6 +498,10 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Only Warships can use Disruptors!"
 				),
 			),
 			requiredMultiblocks = listOf(
@@ -949,7 +986,7 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.60,
+			shieldPowerMultiplier = 0.65,
 			shieldRegenMultiplier = 1.25,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
