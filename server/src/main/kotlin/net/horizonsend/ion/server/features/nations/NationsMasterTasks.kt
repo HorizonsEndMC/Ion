@@ -67,6 +67,7 @@ object NationsMasterTasks : IonServerComponent() {
 		if (ConfigurationFiles.legacySettings().master) {
 			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
 			Tasks.asyncRepeat(20 * 60, 20 * 60 * 60, ::executeAll)
+			Tasks.asyncAtHour(0, ::doTerritoryUpkeep)
 		}
 	}
 
@@ -83,12 +84,6 @@ object NationsMasterTasks : IonServerComponent() {
 		checkPurges()
 		executeMoneyTasks()
 		recalculateNationPower()
-
-		val hour = ZonedDateTime.now().hour
-		// 9 AM UTC
-		if (hour == 9) {
-			doTerritoryUpkeep()
-		}
 	}
 
 	fun checkPurges() {
