@@ -91,7 +91,7 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 						createController = { UnusedSoldShipPurge.GarbageCollectorController(it) }
 					)
 				} catch (e: SpawningException) {
-					sender.serverError("Could not delete starship block at ($x, $y, $z), use /removeghostships afterwards")
+					sender.serverError("Could not delete starship block at ($x, $y, $z), use \"/removeships ghost\" afterwards")
 				}
 				visited.add(ship._id)
 			}
