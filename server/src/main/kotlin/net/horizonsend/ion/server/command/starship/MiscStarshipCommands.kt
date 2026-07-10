@@ -426,8 +426,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		failIf(starship.isDirectControlEnabled || starship.isMoving || StarshipCruising.isCruising(starship)) { "You cannot use a jump beacon while moving!" }
 
-		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "You cannot activate a jump beacon in a trade world!" }
-
 		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) { "You can only activate jump beacons in space!" }
 
 		failIf(starship.world.hasFlag(WorldFlag.CORE_REGION_WORLD)) { "You cannot activate a jump beacon in a core world!" }
