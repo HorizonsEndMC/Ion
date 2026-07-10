@@ -425,7 +425,7 @@ object NationsMap : IonServerComponent(true) {
 		removeRegionalObjective(objective)
 
 		val type = when (objective.type) {
-			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
 			else -> "Tax Beacon"
 		}
 
@@ -444,7 +444,7 @@ object NationsMap : IonServerComponent(true) {
 	fun removeRegionalObjective(objective: RegionRegionalObjective) = syncOnly {
 		if (!dynmapLoaded) return@syncOnly
 		val type = when (objective.type) {
-			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
 			else -> "Tax Beacon"
 		}
 
@@ -455,7 +455,7 @@ object NationsMap : IonServerComponent(true) {
 		if (!dynmapLoaded) return@syncOnly
 
 		val type = when (objective.type) {
-			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
 			else -> "Tax Beacon"
 		}
 
