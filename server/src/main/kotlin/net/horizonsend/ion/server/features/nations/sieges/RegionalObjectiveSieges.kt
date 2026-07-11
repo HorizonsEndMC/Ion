@@ -96,19 +96,17 @@ object RegionalObjectiveSieges : IonServerComponent() {
 				continue
 			}
 
-			val playersInZone = world.players.filter { player ->
-				region.contains(player.location) &&
-					PilotedStarships.isPiloting(player) &&
-					(ActiveStarships.findByPilot(player)?.initialBlockCount ?: 0) >= MIN_SHIP_SIZE
-			}
+			val playersInZone = world.players.filter { player -> region.contains(player.location) && PilotedStarships.isPiloting(player) }
 
 			for (player in playersInZone) {
-				val nationId = PlayerCache[player].nationOid ?: continue
-				siege.points.merge(nationId, PRESENCE_POINTS, Int::plus)
 				CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_SIEGE_STATION)
-
 				val remaining = TimeUnit.MILLISECONDS.toSeconds(siegeDurationMillis - elapsed) / 60.0
 				player.informationAction("${String.format("%.2f", remaining)} minutes remaining in ${region.name} siege")
+
+				if ((ActiveStarships.findByPilot(player)?.initialBlockCount ?: 0) >= MIN_SHIP_SIZE) {
+					val nationId = PlayerCache[player].nationOid ?: continue
+					siege.points.merge(nationId, PRESENCE_POINTS, Int::plus)
+				}
 			}
 		}
 	}
