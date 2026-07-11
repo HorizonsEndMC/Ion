@@ -16,9 +16,11 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
@@ -227,6 +229,7 @@ object RegionalObjectiveSieges : IonServerComponent() {
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
 			"<gold>${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 45 minutes!"
 		))
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 45 minutes!")
 	}
 
 	private fun endSiege(siege: ActiveSiege) = asyncLocked {
@@ -240,6 +243,7 @@ object RegionalObjectiveSieges : IonServerComponent() {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
 				"<gold>The siege on ${siege.type.name.replace('_', ' ')} $regionName has ended with no participants!"
 			))
+			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The siege on ${siege.type.name.replace('_', ' ')} $regionName has ended with no participants!")
 			return@asyncLocked
 		}
 
@@ -252,6 +256,9 @@ object RegionalObjectiveSieges : IonServerComponent() {
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
 			"<gold>${siege.type.name.replace('_', ' ')} $regionName has been captured by $winnerName!"
 		))
+
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "${siege.type.name.replace('_', ' ')} $regionName has been captured by $winnerName!")
+
 
 		// Type-specific rewards
 		when (siege.type) {
