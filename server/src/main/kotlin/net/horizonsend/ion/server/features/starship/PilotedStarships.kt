@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
@@ -20,6 +21,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -44,6 +46,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShi
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -535,15 +538,28 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		if (
-			oldController is PlayerController &&
-			starship.isTouchingExternalBlock() &&
-			!hasConfirmedRelease(oldController.player, starship)
-		) {
-			oldController.player.userError(
-				"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
-			)
-			return false
+		if (oldController is PlayerController) {
+			val player = oldController.player
+
+			if (
+				player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
+				starship.isTouchingExternalBlock()
+			) {
+				if (ProtectionListener.isProtectedCity(player.location)) {
+					releaseVerifications.remove(player.uniqueId)
+					player.userError("You can't release here your ship is touching something nearby")
+					return false
+				}
+
+				if (!hasConfirmedRelease(player, starship)) {
+					player.userError(
+						"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
+					)
+					return false
+				}
+			}
+
+			releaseVerifications.remove(player.uniqueId)
 		}
 
 		unpilot(starship)
