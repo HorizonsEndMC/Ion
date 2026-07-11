@@ -46,6 +46,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShi
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -537,20 +538,28 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		if (oldController is PlayerController &&
-			oldController.player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
-			starship.initialBlockCount <= StarshipType.LANCER_BATTLECRUISER.maxSize &&
-			starship.isTouchingExternalBlock() &&
-			!hasConfirmedRelease(oldController.player, starship)
-		) {
-			oldController.player.userError(
-				"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
-			)
-			return false
-		}
-
 		if (oldController is PlayerController) {
-			releaseVerifications.remove(oldController.player.uniqueId)
+			val player = oldController.player
+
+			if (
+				player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
+				starship.isTouchingExternalBlock()
+			) {
+				if (ProtectionListener.isProtectedCity(player.location)) {
+					releaseVerifications.remove(player.uniqueId)
+					player.userError("You can't release here your ship is touching something nearby")
+					return false
+				}
+
+				if (!hasConfirmedRelease(player, starship)) {
+					player.userError(
+						"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
+					)
+					return false
+				}
+			}
+
+			releaseVerifications.remove(player.uniqueId)
 		}
 
 		unpilot(starship)
@@ -584,6 +593,35 @@ object PilotedStarships : IonServerComponent() {
 			starship = starship,
 			expiresAt = now + RELEASE_VERIFICATION_TIMEOUT_MILLIS
 		)
+		return false
+	}
+
+	private fun ActiveControlledStarship.isTouchingExternalBlock(): Boolean {
+		for (key in blocks) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
+
+						val nearbyX = x + offsetX
+						val nearbyY = y + offsetY
+						val nearbyZ = z + offsetZ
+
+						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
+						if (contains(nearbyX, nearbyY, nearbyZ)) continue
+
+						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+							return true
+						}
+					}
+				}
+			}
+		}
+
 		return false
 	}
 
