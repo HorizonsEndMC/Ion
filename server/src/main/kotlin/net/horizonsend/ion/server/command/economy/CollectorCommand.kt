@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 
 @CommandAlias("collector")
 @CommandPermission("trade.collector")
@@ -21,8 +22,8 @@ object CollectorCommand : SLCommand() {
 	@Throws(ConditionFailedException::class)
 	private fun getEcoStation(location: Location): EcoStation = EcoStations.getAll()
 		.filter { it.world == location.world.name }
-		.filter { it.distance(location.x, location.y, location.z) < 200 }
-		.minByOrNull { it.distance(location.x, location.y, location.z) }
+		.filter { location.toVector().distanceSquared(Vector(it.x, 192, it.z)) < (200 * 200) }
+		.minByOrNull { location.toVector().distanceSquared(Vector(it.x, 192, it.z)) }
 		?: throw ConditionFailedException("You're not within 200 blocks of any eco station!")
 
 	@Subcommand("create")
