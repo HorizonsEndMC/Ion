@@ -70,6 +70,7 @@ fun playDirectionalStarshipSound(
         )
     }
 
+	/*
     val farPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::farWeaponSounds) ?: return) {
         AudioRange.ON -> 1.0f
         AudioRange.REDUCED -> 0.25f
@@ -89,4 +90,5 @@ fun playDirectionalStarshipSound(
             soundLoc.z,
         )
     }
+	 */
 }

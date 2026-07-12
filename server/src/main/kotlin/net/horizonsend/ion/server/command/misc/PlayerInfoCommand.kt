@@ -51,6 +51,8 @@ object PlayerInfoCommand : SLCommand() {
 
 		sendBountyInfo(sender, target)
 
+		sendPowerInfo(sender, target)
+
 		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(target)}")
 	}
 
@@ -106,6 +108,10 @@ object PlayerInfoCommand : SLCommand() {
 		if (player.bounty > 0.0) {
 			sender.sendRichMessage("<gold>Bounty: <red>${player.bounty}")
 		}
+	}
+
+	private fun sendPowerInfo(sender: CommandSender, player: SLPlayer) {
+		sender.sendRichMessage("<aqua>Power: <blue>${player.power}")
 	}
 
 	private fun getInactiveTimeText(player: SLPlayer): String {

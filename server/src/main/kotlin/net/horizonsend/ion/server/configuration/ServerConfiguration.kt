@@ -23,12 +23,11 @@ data class ServerConfiguration(
 	val crossServerDeathMessages: Boolean = false,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
-	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<SerializableDealerShipInformation> = listOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
-	val getPosMaxRange: Double = 600.0,
-	val nearMaxRange: Double = 1200.0,
+	val getPosMaxRange: Double = 300.0,
+	val nearMaxRange: Double = 500.0,
 	val restartHour: Int = 8,
 	val globalCustomSpawns: List<WorldSettings.SpawnedMob> = listOf(),
 	val worldResetSettings: AutoWorldReset = AutoWorldReset(),
@@ -204,7 +203,8 @@ data class ServerConfiguration(
 		val destination: Pos,
 		val destinationName: String? = null,
 		val exits: ArrayList<Pos>? = null,
-		val prompt: String? = null
+		val prompt: String? = null,
+		val proximityReveal: Boolean? = false
 	) : NavigationObject
 
 	@Serializable

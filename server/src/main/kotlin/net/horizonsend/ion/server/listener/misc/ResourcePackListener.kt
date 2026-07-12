@@ -66,7 +66,7 @@ class ResourcePackListener : SLEventListener() {
 
 		event.player.sendMessage(ofChildren(
 			text("You can load in instantly by downloading the texture pack yourself at ", HE_LIGHT_BLUE),
-			formatLink("this link!", "https://github.com/HorizonsEndMC/ResourcePack")
+			formatLink("this link!", "https://github.com/WitherV/HE_ResourcePack")
 		))
 	}
 

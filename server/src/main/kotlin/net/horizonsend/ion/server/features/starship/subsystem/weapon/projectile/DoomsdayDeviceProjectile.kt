@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DoomsdayDeviceWeaponMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -20,6 +22,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
+import kotlin.math.roundToInt
 
 class DoomsdayDeviceProjectile(
 	source: ProjectileSource,
@@ -28,21 +31,20 @@ class DoomsdayDeviceProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : ParticleProjectile<DoomsdayDeviceBalancing.DoomsdayDeviceProjectileBalancing>(source, name, loc, dir, shooter, DoomsdayDeviceWeaponMultiblock.damageType) {
-    private val greenParticleData = Particle.DustTransition(
-        Color.fromARGB(255, 182, 255, 0),
+    private val outerParticleData = Particle.DustTransition(
+        shooter.color,
         Color.BLACK,
         balancing.particleThickness.toFloat()
     )
 
-    private val yellowParticleData = Particle.DustTransition(
-        Color.YELLOW,
-        Color.BLACK,
+    private val innerParticleData = Particle.DustTransition(
+        shooter.color.mixColors(Color.WHITE),
+        shooter.color,
         balancing.particleThickness.toFloat()
     )
 
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-
-
+		// Outer core
         Location(location.world, x, y, z).spherePoints(3.0, 20).forEach {
             it.world.spawnParticle(
                 Particle.DUST_COLOR_TRANSITION,
@@ -54,28 +56,27 @@ class DoomsdayDeviceProjectile(
                 0.5,
                 0.5,
                 2.0,
-                greenParticleData,
+                outerParticleData,
                 force
             )
         }
 
-        Tasks.syncDelay(5) {
-            Location(location.world, x, y, z).spherePoints(1.5, 5).forEach {
-                it.world.spawnParticle(
-                    Particle.DUST_COLOR_TRANSITION,
-                    it.x,
-                    it.y,
-                    it.z,
-                    1,
-                    0.25,
-                    0.25,
-                    0.25,
-                    2.0,
-                    yellowParticleData,
-                    force
-                )
-            }
-        }
+		// Inner core
+		Location(location.world, x, y, z).spherePoints(1.5, 5).forEach {
+			it.world.spawnParticle(
+				Particle.DUST_COLOR_TRANSITION,
+				it.x,
+				it.y,
+				it.z,
+				1,
+				0.25,
+				0.25,
+				0.25,
+				2.0,
+				innerParticleData,
+				force
+			)
+		}
     }
 
     // overriding the entire tick() function just to change the raySize :weary:
@@ -126,7 +127,7 @@ class DoomsdayDeviceProjectile(
     override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
         super.impact(newLoc, block, entity)
 
-        newLoc.world.spawnParticle(
+		newLoc.world.spawnParticle(
             Particle.LAVA,
             newLoc.x,
             newLoc.y,
@@ -180,7 +181,7 @@ class DoomsdayDeviceProjectile(
                     0.5,
                     0.5,
                     2.0,
-                    greenParticleData,
+                    outerParticleData,
                     true
                 )
             }
@@ -198,10 +199,35 @@ class DoomsdayDeviceProjectile(
                     0.5,
                     0.5,
                     2.0,
-                    yellowParticleData,
+                    innerParticleData,
                     true
                 )
             }
         }
     }
+
+	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+		super.onImpactStarship(starship, impactLocation)
+
+		val explosionSize = 25.0f
+		val offsetDirection = direction.clone().multiply(5.0)
+		val explosionLocation = impactLocation.clone().add(offsetDirection)
+
+		Tasks.syncDelay(10L) {
+			explosionLocation.createExplosion(explosionSize)
+
+			// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
+			addToDamagers(
+				explosionLocation.world,
+				explosionLocation.block,
+				shooter,
+				explosionSize.roundToInt(),
+				explosionOccurred = false,
+				runStarshipImpactEvent = false
+			)
+
+		}
+	}
+
+	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
 }

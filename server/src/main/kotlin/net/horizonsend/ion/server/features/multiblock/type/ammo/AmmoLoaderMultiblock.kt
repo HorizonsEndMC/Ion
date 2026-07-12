@@ -144,10 +144,8 @@ object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultibloc
 	class AmmoLoaderMultiblockEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
-		x: Int,
-		y: Int,
-		z: Int,
+		x: Int, y: Int, z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 300_000)
+	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 100_000)
 }

@@ -22,11 +22,14 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.pull
+import org.litote.kmongo.updateMany
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
+import java.util.Date
 
 /**
  * Referenced on:
@@ -49,13 +52,14 @@ import org.litote.kmongo.util.KMongoUtil.idFilterQuery
  * @property invites The settlements the nation has invited
  */
 data class Nation(
-    override val _id: Oid<Nation> = objId(),
-    var name: String,
-    var capital: Oid<Settlement>,
-    var color: Int,
-    override var balance: Int = 0,
-    val invites: MutableSet<Oid<Settlement>> = mutableSetOf()
-) : DbObject, MoneyHolder {
+	override val _id: Oid<Nation> = objId(),
+	var name: String,
+	var capital: Oid<Settlement>,
+	var color: Int,
+	override var balance: Int = 0,
+	val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
+	override var siegeable: Boolean? = false,
+) : DbObject, MoneyHolder, Siegeable {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(Nation::capital)
@@ -132,6 +136,7 @@ data class Nation(
 			NationSpaceStation.col.updateMany(sess, NationSpaceStation::owner ne id, pull(NationSpaceStation::trustedNations, id))
 			SettlementSpaceStation.col.updateAll(sess, pull(SettlementSpaceStation::trustedNations, id))
 			PlayerSpaceStation.col.updateAll(sess, pull(PlayerSpaceStation::trustedNations, id))
+			Territory.col.updateAll(sess, pull(Territory::trustedNations, id))
 
 			Settlement.col.updateAll(sess, pull(Settlement::trustedNations, id))
 
@@ -140,6 +145,14 @@ data class Nation(
 			Blueprint.col.updateMany(sess, Blueprint::trustedNations contains id, pull(Blueprint::trustedNations, id))
 
 			SolarSiegeData.col.deleteMany(sess, or(SolarSiegeData::attacker eq id, SolarSiegeData::defender eq id))
+
+			DominionTerritory.col.updateMany(sess, DominionTerritory::nation eq id, org.litote.kmongo.setValue(DominionTerritory::nation, null))
+
+			DominionTerritorySiegeData.col.deleteMany(sess, or(DominionTerritorySiegeData::attacker eq id, DominionTerritorySiegeData::defender eq id))
+
+			RegionalObjective.col.deleteMany(sess, RegionalObjective::nation eq id)
+
+			RegionalObjectiveSiegeData.col.deleteMany(sess, RegionalObjectiveSiegeData::winner eq id)
 
 			// Remove the nation itself
 			col.deleteOne(sess, idFilterQuery(id))
@@ -165,6 +178,14 @@ data class Nation(
 			return SLPlayer.findProp(SLPlayer::nation eq nationId, SLPlayer::_id)
 		}
 
+		fun getTotalPower(nationId: Oid<Nation>, activeAfter: Date? = null): Int = SLPlayer
+			.findProp(
+				if (activeAfter != null) and(SLPlayer::nation eq nationId, SLPlayer::lastSeen gte activeAfter)
+				else SLPlayer::nation eq nationId,
+				SLPlayer::power
+			)
+			.sum()
+
 		fun isInvited(nationId: Oid<Nation>, settlementId: Oid<Settlement>): Boolean {
 			return matches(nationId, Nation::invites contains settlementId)
 		}
@@ -184,6 +205,14 @@ data class Nation(
 			require(none(sess, and(Nation::_id ne nationId, nameQuery(newName)))) { "A different nation with that name already exists" }
 
 			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::name, newName))
+		}
+
+		fun isSiegeable(nationId: Oid<Nation>): Boolean {
+			return matches(nationId, Nation::siegeable eq true)
+		}
+
+		fun setSiegeable(nationId: Oid<Nation>, siegable: Boolean) {
+			updateById(nationId, org.litote.kmongo.setValue(Nation::siegeable, siegable))
 		}
 
 		fun setColor(nationId: Oid<Nation>, rgb: Int) {

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.core.registration.registries
+﻿package net.horizonsend.ion.server.core.registration.registries
 
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+//import net.horizonsend.ion.server.features.custom.items.type.NationBuffCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -53,7 +54,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -76,6 +76,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerEnergySwords()
 		registerPlanetIcons()
 		registerFood()
+		//registerNationBuffs()
 
 		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
 		unStackable(CustomItemKeys.DEBUG_LINE_GREEN, displayName = Component.text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
@@ -268,6 +269,22 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerOreBlock(CustomItemKeys.URANIUM_ORE, name = "uranium", block = CustomBlockKeys.URANIUM_ORE)
 		registerIngotBlock(CustomItemKeys.URANIUM_BLOCK, name = "uranium", block = CustomBlockKeys.URANIUM_BLOCK)
 		registerRawBlock(CustomItemKeys.RAW_URANIUM_BLOCK, name = "uranium", block = CustomBlockKeys.RAW_URANIUM_BLOCK)
+
+		registerOreIngot(CustomItemKeys.SCORDITE, name = "scordite", false)
+		registerOreBlock(CustomItemKeys.SCORDITE_ORE, name = "scordite", block = CustomBlockKeys.SCORDITE_ORE)
+		registerIngotBlock(CustomItemKeys.SCORDITE_BLOCK, name = "scordite", block = CustomBlockKeys.SCORDITE_BLOCK)
+
+		registerOreIngot(CustomItemKeys.VANADIUM, name = "vanadium", false)
+		registerOreBlock(CustomItemKeys.VANADIUM_ORE, name = "vanadium", block = CustomBlockKeys.VANADIUM_ORE)
+		registerIngotBlock(CustomItemKeys.VANADIUM_BLOCK, name = "vanadium", block = CustomBlockKeys.VANADIUM_BLOCK)
+
+		registerOreIngot(CustomItemKeys.ZIRCON, name = "zircon", false)
+		registerOreBlock(CustomItemKeys.ZIRCON_ORE, name = "zircon", block = CustomBlockKeys.ZIRCON_ORE)
+		registerIngotBlock(CustomItemKeys.ZIRCON_BLOCK, name = "zircon", block = CustomBlockKeys.ZIRCON_BLOCK)
+
+		registerOreIngot(CustomItemKeys.ATAVUM, name = "atavum", false)
+		registerOreBlock(CustomItemKeys.ATAVUM_ORE, name = "atavum", block = CustomBlockKeys.ATAVUM_ORE)
+		registerIngotBlock(CustomItemKeys.ATAVUM_BLOCK, name = "atavum", block = CustomBlockKeys.ATAVUM_BLOCK)
 	}
 
 	private fun registerIndustry() {
@@ -279,25 +296,27 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			displayName = Component.text("Enriched Uranium Block"),
 			customBlock = CustomBlockKeys.ENRICHED_URANIUM_BLOCK
 		)
-		unStackable(key = CustomItemKeys.URANIUM_CORE, model = "industry/uranium_core", displayName = Component.text("Uranium Core"))
-		unStackable(key = CustomItemKeys.URANIUM_ROD, model = "industry/uranium_rod", displayName = Component.text("Uranium Rod"))
-		unStackable(key = CustomItemKeys.FUEL_ROD_CORE, model = "industry/fuel_rod_core", displayName = Component.text("Fuel Rod Core"))
-		unStackable(key = CustomItemKeys.FUEL_CELL, model = "industry/fuel_cell", displayName = Component.text("Fuel Cell"))
-		unStackable(key = CustomItemKeys.FUEL_CONTROL, model = "industry/fuel_control", displayName = Component.text("Fuel Control"))
+		stackable(key = CustomItemKeys.URANIUM_CORE, model = "industry/uranium_core", displayName = Component.text("Uranium Core"))
+		stackable(key = CustomItemKeys.URANIUM_ROD, model = "industry/uranium_rod", displayName = Component.text("Uranium Rod"))
+		stackable(key = CustomItemKeys.FUEL_ROD_CORE, model = "industry/fuel_rod_core", displayName = Component.text("Fuel Rod Core"))
+		stackable(key = CustomItemKeys.FUEL_CELL, model = "industry/fuel_cell", displayName = Component.text("Fuel Cell"))
+		stackable(key = CustomItemKeys.FUEL_CONTROL, model = "industry/fuel_control", displayName = Component.text("Fuel Control"))
+		stackable(key = CustomItemKeys.DATA_CHIP, Component.text("Data Chip"), "industry/data_chip")
+		stackable(key = CustomItemKeys.GUIDANCE_SYSTEM, Component.text("Guidance System"), "industry/guidance_system")
 
-		unStackable(key = CustomItemKeys.REACTIVE_COMPONENT, model = "industry/reactive_component", displayName = Component.text("Reactive Component"))
-		unStackable(key = CustomItemKeys.REACTIVE_HOUSING, model = "industry/reactive_housing", displayName = Component.text("Reactive Housing"))
-		unStackable(key = CustomItemKeys.REACTIVE_PLATING, model = "industry/reactive_plating", displayName = Component.text("Reactive Plating"))
-		unStackable(key = CustomItemKeys.REACTIVE_CHASSIS, model = "industry/reactive_chassis", displayName = Component.text("Reactive Chassis"))
-		unStackable(key = CustomItemKeys.REACTIVE_MEMBRANE, model = "industry/reactive_membrane", displayName = Component.text("Reactive Membrane"))
-		unStackable(key = CustomItemKeys.REACTIVE_ASSEMBLY, model = "industry/reactive_assembly", displayName = Component.text("Reactive Assembly"))
-		unStackable(key = CustomItemKeys.FABRICATED_ASSEMBLY, model = "industry/fabricated_assembly", displayName = Component.text("Fabricated Assembly"))
+		stackable(key = CustomItemKeys.REACTIVE_COMPONENT, model = "industry/reactive_component", displayName = Component.text("Reactive Component"))
+		stackable(key = CustomItemKeys.REACTIVE_HOUSING, model = "industry/reactive_housing", displayName = Component.text("Reactive Housing"))
+		stackable(key = CustomItemKeys.REACTIVE_PLATING, model = "industry/reactive_plating", displayName = Component.text("Reactive Plating"))
+		stackable(key = CustomItemKeys.REACTIVE_CHASSIS, model = "industry/reactive_chassis", displayName = Component.text("Reactive Chassis"))
+		stackable(key = CustomItemKeys.REACTIVE_MEMBRANE, model = "industry/reactive_membrane", displayName = Component.text("Reactive Membrane"))
+		stackable(key = CustomItemKeys.REACTIVE_ASSEMBLY, model = "industry/reactive_assembly", displayName = Component.text("Reactive Assembly"))
+		stackable(key = CustomItemKeys.FABRICATED_ASSEMBLY, model = "industry/fabricated_assembly", displayName = Component.text("Fabricated Assembly"))
 
-		unStackable(key = CustomItemKeys.CIRCUIT_BOARD, model = "industry/circuit_board", displayName = Component.text("Circuit Board"))
-		unStackable(key = CustomItemKeys.MOTHERBOARD, model = "industry/motherboard", displayName = Component.text("Motherboard"))
-		unStackable(key = CustomItemKeys.REACTOR_CONTROL, model = "industry/reactor_control", displayName = Component.text("Reactor Control", NamedTextColor.YELLOW))
+		stackable(key = CustomItemKeys.CIRCUIT_BOARD, model = "industry/circuit_board", displayName = Component.text("Circuit Board"))
+		stackable(key = CustomItemKeys.MOTHERBOARD, model = "industry/motherboard", displayName = Component.text("Motherboard"))
+		stackable(key = CustomItemKeys.REACTOR_CONTROL, model = "industry/reactor_control", displayName = Component.text("Reactor Control", NamedTextColor.YELLOW))
 
-		unStackable(key = CustomItemKeys.SUPERCONDUCTOR, model = "industry/superconductor", displayName = Component.text("Superconductor"))
+		stackable(key = CustomItemKeys.SUPERCONDUCTOR, model = "industry/superconductor", displayName = Component.text("Superconductor"))
 		customBlockItem(
 			key = CustomItemKeys.SUPERCONDUCTOR_BLOCK,
 			model = "industry/superconductor_block",
@@ -308,21 +327,44 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 		stackable(key = CustomItemKeys.STEEL_INGOT, Component.text("Steel Ingot"), "industry/steel_ingot")
 		customBlockItem(key = CustomItemKeys.STEEL_BLOCK, model = "industry/steel_block", displayName = Component.text("Steel Block"), customBlock = CustomBlockKeys.STEEL_BLOCK)
-		unStackable(key = CustomItemKeys.STEEL_PLATE, model = "industry/steel_plate", displayName = Component.text("Steel Plate"))
-		unStackable(key = CustomItemKeys.STEEL_CHASSIS, model = "industry/steel_chassis", displayName = Component.text("Steel Chassis"))
-		unStackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
-		unStackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
-		unStackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
-		unStackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
+		stackable(key = CustomItemKeys.STEEL_PLATE, model = "industry/steel_plate", displayName = Component.text("Steel Plate"))
+		stackable(key = CustomItemKeys.STEEL_CHASSIS, model = "industry/steel_chassis", displayName = Component.text("Steel Chassis"))
+		stackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
+		stackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
+		stackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
+		stackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
 
-		unStackable(key = CustomItemKeys.UNLOADED_SHELL, model = "industry/unloaded_shell", displayName = Component.text("Unloaded Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_SHELL, model = "industry/unloaded_shell", displayName = Component.text("Unloaded Shell"))
 		stackable(key = CustomItemKeys.LOADED_SHELL, model = "industry/loaded_shell", displayName = Component.text("Loaded Shell"))
-		unStackable(key = CustomItemKeys.UNCHARGED_SHELL, model = "industry/uncharged_shell", displayName = Component.text("Uncharged Shell"))
+		stackable(key = CustomItemKeys.UNCHARGED_SHELL, model = "industry/uncharged_shell", displayName = Component.text("Uncharged Shell"))
 		stackable(key = CustomItemKeys.CHARGED_SHELL, model = "industry/charged_shell", displayName = Component.text("Charged Shell"))
 
+		stackable(key = CustomItemKeys.UNLOADED_BREACHER_SHELL, model = "industry/unloaded_breacher_shell", displayName = Component.text("Unloaded Breacher Shell"))
+		stackable(key = CustomItemKeys.LOADED_BREACHER_SHELL, model = "industry/loaded_breacher_shell", displayName = Component.text("Breacher Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_STASIS_CHARGE, model = "industry/unloaded_stasis_charge", displayName = Component.text("Uncharged Stasis Charge"))
+		stackable(key = CustomItemKeys.LOADED_STASIS_CHARGE, model = "industry/loaded_stasis_charge", displayName = Component.text("Stasis Charge"))
+		stackable(key = CustomItemKeys.UNLOADED_ENTROPIC_CHARGE, model = "industry/unloaded_entropic_charge", displayName = Component.text("Uncharged Entropic Charge"))
+		stackable(key = CustomItemKeys.LOADED_ENTROPIC_CHARGE, model = "industry/loaded_entropic_charge", displayName = Component.text("Entropic Charge"))
+		stackable(key = CustomItemKeys.UNLOADED_HELIX_SHELL, model = "industry/unloaded_helix_shell", displayName = Component.text("Unloaded Helix Shell"))
+		stackable(key = CustomItemKeys.LOADED_HELIX_SHELL, model = "industry/loaded_helix_shell", displayName = Component.text("Helix Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_SIEGE_SHELL, model = "industry/unloaded_siege_shell", displayName = Component.text("Unloaded Siege Shell"))
+		stackable(key = CustomItemKeys.LOADED_SIEGE_SHELL, model = "industry/loaded_siege_shell", displayName = Component.text("Siege Shell"))
+		stackable(key = CustomItemKeys.UNLOADED_STELLAR_PRISM, model = "industry/unloaded_stellar_prism", displayName = Component.text("Uncharged Stellar Prism"))
+		stackable(key = CustomItemKeys.LOADED_STELLAR_PRISM, model = "industry/loaded_stellar_prism", displayName = Component.text("Stellar Prism"))
+
 		stackable(key = CustomItemKeys.ARSENAL_MISSILE, model = "projectile/arsenal_missile", displayName = Component.text("Arsenal Missile"))
-		unStackable(key = CustomItemKeys.UNLOADED_ARSENAL_MISSILE, model = "projectile/unloaded_arsenal_missile", displayName = Component.text("Unloaded Arsenal Missile"))
-		unStackable(key = CustomItemKeys.ACTIVATED_ARSENAL_MISSILE, model = "projectile/activated_arsenal_missile", displayName = Component.text("Activated Arsenal Missile", NamedTextColor.RED))
+		stackable(key = CustomItemKeys.EMP_MISSILE, model = "projectile/emp_missile", displayName = Component.text("EMP Missile"))
+		stackable(key = CustomItemKeys.LIGHT_MISSILE, model = "projectile/light_missile", displayName = Component.text("Light Missile"))
+		stackable(key = CustomItemKeys.HEAVY_MISSILE, model = "projectile/heavy_missile", displayName = Component.text("Heavy Missile"))
+		stackable(key = CustomItemKeys.THERMONUCLEAR_MISSILE, model = "projectile/thermonuclear_missile", displayName = Component.text("Thermonuclear Missile"))
+		stackable(key = CustomItemKeys.SCANNER_PROBE, model = "projectile/scanner_probe", displayName = Component.text("Scanner Probe"))
+		stackable(key = CustomItemKeys.COMBAT_PROBE, model = "projectile/scanner_probe", displayName = Component.text("Combat Probe"))
+		stackable(key = CustomItemKeys.UNLOADED_LIGHT_MISSILE, model = "projectile/unloaded_light_missile", displayName = Component.text("Unloaded Light Missile"))
+		stackable(key = CustomItemKeys.UNLOADED_HEAVY_MISSILE, model = "projectile/unloaded_heavy_missile", displayName = Component.text("Unloaded Heavy Missile"))
+		stackable(key = CustomItemKeys.UNLOADED_THERMONUCLEAR_MISSILE, model = "projectile/unloaded_thermonuclear_missile", displayName = Component.text("Unloaded Thermonuclear Missile"))
+		stackable(key = CustomItemKeys.UNLOADED_EMP_MISSILE, model = "projectile/unloaded_emp_missile", displayName = Component.text("Unloaded EMP Missile"))
+		stackable(key = CustomItemKeys.UNLOADED_ARSENAL_MISSILE, model = "projectile/unloaded_arsenal_missile", displayName = Component.text("Unloaded Arsenal Missile"))
+		stackable(key = CustomItemKeys.ACTIVATED_ARSENAL_MISSILE, model = "projectile/activated_arsenal_missile", displayName = Component.text("Activated Arsenal Missile", NamedTextColor.RED))
 
 		register(CustomItemKeys.PROGRESS_HOLDER, ProgressHolder)
 	}
@@ -339,6 +381,31 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             NamedTextColor.WHITE,
             TextDecoration.BOLD
         ), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.MINI_REACTOR_CORE, model = "starship/mini_reactor_core", displayName = Component.text(
+			"Mini Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.MINI_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.SMALL_REACTOR_CORE, model = "starship/small_reactor_core", displayName = Component.text(
+			"Small Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.SMALL_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.MEDIUM_REACTOR_CORE, model = "starship/medium_reactor_core", displayName = Component.text(
+			"Medium Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.MEDIUM_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.LARGE_REACTOR_CORE, model = "starship/large_reactor_core", displayName = Component.text(
+			"Large Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.LARGE_REACTOR_CORE)
+		customBlockItem(CustomItemKeys.ASSEMBLY_CORE, model = "starship/assembly_core", displayName = Component.text(
+			"Assembly Core",
+			NamedTextColor.GOLD,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.ASSEMBLY_CORE)
 	}
 
 	fun registerPipes() {
@@ -358,6 +425,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             CustomItemKeys.GAS_CANISTER_HYDROGEN,
             GasCanister(CustomItemKeys.GAS_CANISTER_HYDROGEN, "gas/gas_canister_hydrogen", canisterName(Component.text("Hydrogen", NamedTextColor.RED)), AtmosphericGasKeys.HYDROGEN)
         )
+		register(
+		CustomItemKeys.GAS_CANISTER_XENON,
+		GasCanister(CustomItemKeys.GAS_CANISTER_XENON, "gas/gas_canister_xenon", canisterName(Component.text("Xenon", NamedTextColor.GOLD)), AtmosphericGasKeys.XENON)
+		)
 		register(
             CustomItemKeys.GAS_CANISTER_NITROGEN,
             GasCanister(CustomItemKeys.GAS_CANISTER_NITROGEN, "gas/gas_canister_nitrogen", canisterName(Component.text("Nitrogen", NamedTextColor.RED)), AtmosphericGasKeys.NITROGEN)
@@ -1007,12 +1078,81 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 4,
 				saturation = 6.4f,
 				lore = Component.text("A liquid dish formed primarily from pureed tomato. Warm, creamy and savory, this " +
-							"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, ITALIC).wrap(200),
+							"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
             }
 		)
 	}
+
+	/*
+	private fun registerNationBuffs() {
+		register(
+			CustomItemKeys.SHIELD_RESISTANCE_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.SHIELD_RESISTANCE_BUFF,
+				displayName = text("Shield Resistance Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.SHIELD_RESISTANCE,
+			)
+		)
+		register(
+			CustomItemKeys.TURRET_DAMAGE_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.TURRET_DAMAGE_BUFF,
+				displayName = text("Turret Damage Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.TURRET_DAMAGE,
+			)
+		)
+		register(
+			CustomItemKeys.SHIELD_REGENERATION_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.SHIELD_REGENERATION_BUFF,
+				displayName = text("Shield Regeneration Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.SHIELD_REGENERATION,
+			)
+		)
+		register(
+			CustomItemKeys.CRUISE_SPEED_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.CRUISE_SPEED_BUFF,
+				displayName = text("Cruise Speed Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.CRUISE_SPEED,
+			)
+		)
+		register(
+			CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.DIRECT_CONTROL_SPEED_BUFF,
+				displayName = text("Direct Control Speed Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.DIRECT_CONTROL_SPEED,
+			)
+		)
+		register(
+			CustomItemKeys.ACCELERATION_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.ACCELERATION_BUFF,
+				displayName = text("Acceleration Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.ACCELERATION,
+			)
+		)
+		register(
+			CustomItemKeys.JUMP_WARMUP_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.JUMP_WARMUP_BUFF,
+				displayName = text("Jump Warmup Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.JUMP_WARMUP,
+			)
+		)
+		register(
+			CustomItemKeys.CONTACT_RANGE_BUFF, NationBuffCustomItem(
+				key = CustomItemKeys.CONTACT_RANGE_BUFF,
+				displayName = text("Contact Range Buff", RED, BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.builder().setMaterial(Material.WARPED_FUNGUS_ON_A_STICK).setCustomModel("consumable/syringe").build(),
+				nationBuff = NationBuffTypes.CONTACT_RANGE,
+			)
+		)
+	}
+	 */
 
 	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
 		register(key, CustomItem(key, displayName, factory))

@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -185,8 +186,8 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 			val toDestroy = getBlocksToDestroy()
 
-			// set to 1 block broken per furnace tick in space
-			val maxBroken = if (!inSpace) 10 else 1
+			// set to 5 block broken per furnace tick in space, halving so cobble gens can exist in space,still worse than ML by far.
+			val maxBroken = if (!inSpace) 10 else 5
 
 			val broken = breakBlocks(
 				maxBroken = maxBroken,
@@ -197,6 +198,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 				},
 				canBuild = {
 					val testEvent = BlockBreakEvent(it, player)
+					CustomBlockListeners.noDropEvents.add(testEvent)
 					testEvent.isDropItems = false
 
 					return@breakBlocks testEvent.callEvent()
@@ -265,7 +267,8 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 		private val blacklist = EnumSet.of(
 			Material.BARRIER,
 			Material.BEDROCK,
-			Material.VOID_AIR
+			Material.VOID_AIR,
+			Material.REINFORCED_DEEPSLATE
 		)
 
 		fun isBlacklisted(block: Block): Boolean {

@@ -13,11 +13,14 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
@@ -36,13 +39,22 @@ import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
+import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.player.Power.canAffordAnotherTerritory
+import net.horizonsend.ion.server.features.player.Power.dominionTerritoryCost
+import net.horizonsend.ion.server.features.player.Power.getDominionTerritoryCount
+import net.horizonsend.ion.server.features.progression.MAX_POWER
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
@@ -58,14 +70,18 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
+import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import org.litote.kmongo.setValue
 import java.util.Date
+import kotlin.Boolean
 import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
@@ -87,7 +103,9 @@ internal object NationCommand : SLCommand() {
 		registerAsyncCompletion(manager, "outposts") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val nation = PlayerCache[player].nationOid
-			Regions.getAllOf<RegionTerritory>().filter { it.nation == nation }.map { it.name }
+			val territories = Regions.getAllOf<RegionTerritory>().filter { it.nation == nation }.map { it.name }
+			val dominions = Regions.getAllOf<RegionDominionTerritory>().filter { it.nation == nation }.map { it.world }
+			territories + dominions
 		}
 	}
 
@@ -384,12 +402,56 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("claim")
-	@Description("Claim a planetary territory (one per planet)")
+	@Description("Claim a planetary territory or space region")
 	fun onClaim(sender: Player, @Optional cost: Int?) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
 		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+
+		// Check for dominion world first, then fall back to regular territory
+		val dominionTerritory = Regions.findFirstOf<RegionDominionTerritory>(sender.location)
+		if (dominionTerritory != null) {
+
+			failIf(DominionTerritorySieges.isOnCooldown(dominionTerritory.id)) {
+				"This territory was recently sieged and cannot be claimed until 1 hour has passed!"
+			}
+
+			val dominionTerritoryCost = 250000
+
+			val activeMembers = SLPlayer.count(
+				and(SLPlayer::nation eq nationId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
+			)
+			failIf(activeMembers < 3) {
+				"You need ${3} active members to claim a dominion territory! You currently have $activeMembers."
+			}
+
+			failIf(sender.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "This territory is an NPC trade city and cannot be claimed!" }
+
+			val nationData = NationCache[nationId]
+			val currentPower = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
+
+			failIf(!canAffordAnotherTerritory(nationData, currentPower)) {
+				val nextCount = getDominionTerritoryCount(nationData) + 1
+				"Your nation needs ${dominionTerritoryCost(nextCount)} power to claim another dominion territory! You currently have $currentPower power."
+			}
+
+			requireDominionUnclaimed(dominionTerritory)
+
+			requireMoney(nationId, dominionTerritoryCost, "claim ${dominionTerritory.name}")
+			Nation.withdraw(nationId, dominionTerritoryCost)
+
+			DominionTerritory.setNation(dominionTerritory.id, nationId)
+
+			val nationName = getNationName(nationId)
+			Notify.chatAndEvents(nationImportantMessageFormat(
+				"{0} claimed the dominion world {1} for their nation {2}!",
+				sender.name,
+				dominionTerritory.world,
+				nationName
+			))
+			return@asyncCommand
+		}
 
 		val territory = requireTerritoryIn(sender)
 		requireTerritoryUnclaimed(territory)
@@ -423,19 +485,37 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("unclaim")
-	@Description("Unclaim a planetary territory")
+	@Description("Unclaim a planetary territory or space region")
 	@CommandCompletion("@outposts")
 	fun onUnclaim(sender: Player, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
+		// Check dominion first
+		val dominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.world.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (dominionTerritory != null) {
+			failIf(dominionTerritory.nation != nationId) { "${dominionTerritory.world} is not claimed by your nation" }
+
+			DominionTerritory.setNation(dominionTerritory.id, null)
+
+			val nationName = getNationName(nationId)
+			Notify.chatAndEvents(nationImportantMessageFormat(
+				"{0} unclaimed the dominion world {1} from their nation {2}!",
+				sender.name,
+				dominionTerritory.world,
+				nationName
+			))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
 		val regionTerritory = Regions.getAllOf<RegionTerritory>()
 			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
 			?: fail { "Territory $territory not found" }
-		val territoryName = regionTerritory.name
-		val territoryWorld = regionTerritory.world
 
-		failIf(regionTerritory.nation != nationId) { "$territoryName is not claimed by your nation" }
+		failIf(regionTerritory.nation != nationId) { "${regionTerritory.name} is not claimed by your nation" }
 
 		Territory.setNation(regionTerritory.id, null)
 
@@ -443,8 +523,8 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationImportantMessageFormat(
 			"{0} unclaimed the territory {1} on {2} from their nation {3}!",
 			sender.name,
-			territoryName,
-			territoryWorld,
+			regionTerritory.name,
+			regionTerritory.world,
 			nationName
 		))
 	}
@@ -473,6 +553,295 @@ internal object NationCommand : SLCommand() {
 			territoryWorld,
 			alias
 		))
+	}
+
+	@Subcommand("outpost trusted list")
+	@Description("List trusted players, settlements, and nations for an outpost")
+	@CommandCompletion("@outposts")
+	fun onOutpostTrustedList(sender: Player, territory: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			val trustedPlayers: String = regionDominionTerritory.trustedPlayers.map(::getPlayerName).sorted().joinToString()
+			sender.sendRichMessage("<Gold>Trusted players in $territory: <aqua>$trustedPlayers")
+
+			val trustedSettlements: String = regionDominionTerritory.trustedSettlements.map(::getSettlementName).sorted().joinToString()
+			sender.sendRichMessage("<Gold>Trusted settlements in $territory: <aqua>$trustedSettlements")
+
+			val trustedNations: String = regionDominionTerritory.trustedNations.map(::getNationName).sorted().joinToString()
+			sender.sendRichMessage("<Gold>Trusted nations in $territory: <aqua>$trustedNations")
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		val trustedPlayers: String = regionTerritory.trustedPlayers.map(::getPlayerName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted players in $territory: <aqua>$trustedPlayers")
+
+		val trustedSettlements: String = regionTerritory.trustedSettlements.map(::getSettlementName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted settlements in $territory: <aqua>$trustedSettlements")
+
+		val trustedNations: String = regionTerritory.trustedNations.map(::getNationName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted nations in $territory: <aqua>$trustedNations")
+	}
+
+	@Subcommand("trusted add player")
+	@Description("Give a player build access to the territory")
+	@CommandCompletion("@outposts @players")
+    fun onOutpostTrustedAddPlayer(sender: Player, territory: String, player: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
+		val playerName: String = getPlayerName(playerId)
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			failIf(regionDominionTerritory.trustedPlayers.contains(playerId)) {
+				"$playerName is already trusted in $territory"
+			}
+
+			DominionTerritory.trustPlayer(regionDominionTerritory.id, playerId)
+
+			sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$territory")
+			Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were trusted to territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		failIf(regionTerritory.trustedPlayers.contains(playerId)) {
+			"$playerName is already trusted in $territory"
+		}
+
+		Territory.trustPlayer(regionTerritory.id, playerId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$territory")
+		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were trusted to territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted add settlement")
+	@Description("Give a settlement build access to the territory")
+	@CommandCompletion("@outposts @settlements")
+    fun onOutpostTrustedAddSettlement(sender: Player, territory: String, settlement: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val settlementId: Oid<Settlement> = SettlementCache.getByName(settlement) ?: fail {
+			"Settlement $settlement not found"
+		}
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			failIf(regionDominionTerritory.trustedSettlements.contains(settlementId)) {
+				"$settlement is already trusted in $territory"
+			}
+
+			DominionTerritory.trustSettlement(regionDominionTerritory.id, settlementId)
+
+			sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$territory")
+			Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		failIf(regionTerritory.trustedSettlements.contains(settlementId)) {
+			"$settlement is already trusted in $territory"
+		}
+
+		Territory.trustSettlement(regionTerritory.id, settlementId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$territory")
+		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted add nation")
+	@Description("Give a nation build access to the territory")
+	@CommandCompletion("@outposts @nations")
+    fun onOutpostTrustedAddNation(sender: Player, territory: String, nation: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val otherNationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
+			"Nation $nation not found"
+		}
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			failIf(regionDominionTerritory.trustedNations.contains(otherNationId)) {
+				"$nation is already trusted in $territory"
+			}
+
+			DominionTerritory.trustNation(regionDominionTerritory.id, otherNationId)
+
+			sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$territory")
+			Notify.nationCrossServer(otherNationId, MiniMessage.miniMessage().deserialize("<gray>Your nation was trusted to territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		failIf(regionTerritory.trustedNations.contains(otherNationId)) {
+			"$nation is already trusted in $territory"
+		}
+
+		Territory.trustNation(regionTerritory.id, otherNationId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$territory")
+		Notify.nationCrossServer(otherNationId, MiniMessage.miniMessage().deserialize("<gray>Your nation was trusted to territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted remove player")
+	@Description("Revoke a player's build access to the territory")
+	@CommandCompletion("@outposts @players")
+    fun onOutpostTrustedRemovePlayer(sender: Player, territory: String, player: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
+		val playerName: String = getPlayerName(playerId)
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			failIf(!regionDominionTerritory.trustedPlayers.contains(playerId)) {
+				"$player isn't trusted in $territory"
+			}
+
+			DominionTerritory.unTrustPlayer(regionDominionTerritory.id, playerId)
+
+			sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$territory")
+			Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		failIf(!regionTerritory.trustedPlayers.contains(playerId)) {
+			"$player isn't trusted in $territory"
+		}
+
+		Territory.unTrustPlayer(regionTerritory.id, playerId)
+
+		sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$territory")
+		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+	}
+
+
+	@Subcommand("trusted remove settlement")
+	@Description("Remove a settlement's build access to the territory")
+	@CommandCompletion("@outposts @settlements")
+    fun onOutpostTrustedRemoveSettlement(sender: Player, territory: String, settlement: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val settlementId: Oid<Settlement> = SettlementCache.getByName(settlement) ?: fail {
+			"Settlement $settlement not found"
+		}
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			failIf(!regionDominionTerritory.trustedSettlements.contains(settlementId)) {
+				"$settlement isn't trusted in $territory"
+			}
+
+			DominionTerritory.unTrustSettlement(regionDominionTerritory.id, settlementId)
+
+			sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$territory")
+			Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement's trust was removed from territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		failIf(!regionTerritory.trustedSettlements.contains(settlementId)) {
+			"$settlement isn't trusted in $territory"
+		}
+
+		Territory.unTrustSettlement(regionTerritory.id, settlementId)
+
+		sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$territory")
+		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement's trust was removed from territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted remove nation")
+	@Description("Remove a nation's build access to the territory")
+	@CommandCompletion("@outposts @nations")
+    fun onOutpostTrustedRemoveNation(sender: Player, territory: String, nation: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val otherNationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
+			"Nation $nation not found"
+		}
+
+		// Check dominion first
+		val regionDominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+
+		if (regionDominionTerritory != null) {
+			failIf(!regionDominionTerritory.trustedNations.contains(otherNationId)) {
+				"$nation isn't trusted in $territory"
+			}
+
+			DominionTerritory.unTrustNation(regionDominionTerritory.id, otherNationId)
+
+			sender.sendRichMessage("<gray> Removed <aqua>$nation<gray> from <aqua>$territory")
+			Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your nation's trust was removed from territory <aqua>$territory<gray> by <aqua>${sender.name}"))
+			return@asyncCommand
+		}
+
+		// Fall back to regular territory
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.replace("\n", "").equals(territory.replace("\n", ""), ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+
+		failIf(!regionTerritory.trustedNations.contains(otherNationId)) {
+			"$nation isn't trusted in $territory"
+		}
+
+		Territory.unTrustNation(regionTerritory.id, otherNationId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$territory")
+		Notify.nationCrossServer(otherNationId, MiniMessage.miniMessage().deserialize("<gray>Your nation's trust was removed from settlement <aqua>$territory<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("top|list")
@@ -795,6 +1164,19 @@ internal object NationCommand : SLCommand() {
 		}
 
 		message.append(namesList)
+
+		val currentPower = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
+		val totalPossiblePower = active * MAX_POWER
+
+		val powerBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
+			.append(text("Power: "))
+			.append(text(currentPower).color(WHITE))
+			.append(text("/").color(WHITE))
+			.append(text(totalPossiblePower).color(WHITE))
+			.append(text(")"))
+
+		message.append(newline())
+		message.append(powerBuilder)
 		message.append(newline())
 		message.append(lineBreak)
 
@@ -809,5 +1191,34 @@ internal object NationCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.BRODCAST)
 		ServerInboxes.sendToNationMembers(nationId, message.miniMessage())
+	}
+
+	@Subcommand("power")
+	fun onGetPower(sender: CommandSender, @Optional nation: String?) = asyncCommand(sender) {
+		val nationId: Oid<Nation> = when (sender) {
+			is Player -> {
+				when (nation) {
+					null -> PlayerCache[sender].nationOid ?: fail { "You need to specify a nation. /n info <nation>" }
+					else -> resolveNation(nation)
+				}
+			}
+
+			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
+		}
+
+		val nationName = getNationName(nationId)
+
+		val currentPower = Nation.getTotalPower(nationId, ACTIVE_AFTER_TIME)
+
+		val members: List<Triple<SLPlayerId, String, Date>> = SLPlayer
+			.findProps(SLPlayer::nation eq nationId, SLPlayer::lastKnownName, SLPlayer::lastSeen)
+			.map { Triple(it[SLPlayer::_id], it[SLPlayer::lastKnownName], it[SLPlayer::lastSeen]) }
+			.sortedByDescending { it.third }
+
+		val activeMembers = members.count { isActive(it.third) }
+
+		val totalPossiblePower = activeMembers * MAX_POWER
+
+		sender.information("Power for $nationName: $currentPower/$totalPossiblePower")
 	}
 }

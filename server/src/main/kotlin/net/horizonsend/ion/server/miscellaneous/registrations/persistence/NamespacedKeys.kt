@@ -29,6 +29,10 @@ object NamespacedKeys {
 	// Encounters PDC
 	val ENCOUNTER = key("encounter")
 
+	// Signatures PDC
+	val WRECK_CHEST = key("wreck_chest")
+	val WRECK_CHEST_LOCKED = key("wreck_chest_locked")
+
 	// Encounter Chests PDC
 	val SECONDARY_CHEST = key("secondary_chest")
 	val SECONDARY_CHEST_MONEY = key("secondary_chest_money")
@@ -86,6 +90,10 @@ object NamespacedKeys {
 
 	val POWER = key("power")
 	val GAS = key("Gas")
+	val ENERGY_BLOCK_AMOUNT = key("energy_sword_block")
+	val TIME_LAST_USED = key("time_last_used")
+	val SCOPE_ZOOM = key("scope_zoom")
+
 
 	val SERIALIZATION_TYPE = key("serialization_type")
 	val META_DATA = key("meta_data")
@@ -135,6 +143,13 @@ object NamespacedKeys {
 
 	val SEQUENCES = key("sequences")
 	val CONTENT = key("content")
+
+	val ION_FEATURE_STARTS = key("ion_feature_starts")
+	val ION_FEATURE_REFERENCES = key("ion_feature_references")
+
+	val FEATURE_KEY = key("feature_key")
+	val FEATURE_META_DATA = key("feature_meta_data")
+	val SIZE = key("size")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 

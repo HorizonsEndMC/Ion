@@ -7,9 +7,16 @@ import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegist
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
 import net.horizonsend.ion.server.core.registration.registries.FluidPropertyTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
+//import net.horizonsend.ion.server.core.registration.registries.NationBuffTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
+import net.horizonsend.ion.server.core.registration.registries.StarshipStatusEffectTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
+import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegistry
+import net.horizonsend.ion.server.core.registration.registries.WorldGenerationFeatureRegistry
+import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
+import net.horizonsend.ion.server.core.registration.registries.WreckStructureRegistry
+import net.horizonsend.ion.server.core.registration.registries.SignatureTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.sequences.SequenceRegistry
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
@@ -41,6 +48,13 @@ object IonRegistries : IonComponent() {
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
 	val TRANSPORT_NETWORK_NODE_TYPE = register(TransportNetworkNodeTypeRegistry())
 	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
+	val WRAPPED_LISTENER_TYPE = register(WrappedListenerRegistry())
+	val WEATHER_TYPE = register(WeatherTypeRegistry())
+	val WORLD_GENERATION_FEATURES = register(WorldGenerationFeatureRegistry())
+	val WRECK_STRUCTURES = register(WreckStructureRegistry())
+	val STARSHIP_STATUS_EFFECT = register(StarshipStatusEffectTypeRegistry())
+	//val NATION_BUFF_TYPE = register(NationBuffTypeRegistry())
+    val SIGNATURE_TYPE = register(SignatureTypeRegistry())
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
 	val SEQUENCE = register(SequenceRegistry())

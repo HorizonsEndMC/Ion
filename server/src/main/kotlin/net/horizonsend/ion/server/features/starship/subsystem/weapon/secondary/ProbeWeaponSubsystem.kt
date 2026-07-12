@@ -1,0 +1,130 @@
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
+
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.configuration.starship.ProbeBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.space.signatures.SignatureManager
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ProbeProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import org.bukkit.Location
+import org.bukkit.block.BlockFace
+import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
+
+class ProbeWeaponSubsystem(
+    starship: ActiveStarship,
+    pos: Vec3i,
+    face: BlockFace
+) : CannonWeaponSubsystem<ProbeBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(ProbeWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+	override val length: Int = 2
+
+	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
+
+	fun getRange(starship: ActiveStarship): Int {
+		return if (starship.type == StarshipType.RECON_STARFIGHTER) 7000
+		else 5000
+	}
+
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+		fireScannerProbe(loc, dir, shooter, target, getRange(starship))
+	}
+
+	private fun fireScannerProbe(loc: Location, dir: Vector, shooter: Damager, target: Vector, range: Int) {
+		ProbeProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
+		Tasks.syncDelay(60L) {
+			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN START]", HE_LIGHT_ORANGE)))
+			val signatures = SignatureManager.activeSignatures.keys.filter {
+				it.location.world == starship.world && it.location.distance(loc) < range
+			}
+
+			for (signature in signatures) {
+				val location = signature.location
+				val name = signature.signatureType.displayName
+				val distance = location.distance(loc)
+				val distanceColor = when {
+					distance < 500 -> RED
+					distance < 1500 -> YELLOW
+					distance < 2500 -> GREEN
+					else -> DARK_GREEN
+				}
+
+				signature.signatureType.scannableBehavior?.onScan(signature, starship)
+
+				val line = template(
+					"{0} detected at {1} {2}m away",
+					color = HE_LIGHT_GRAY,
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = true,
+					name,
+					bracketed(text("${location.x.toInt()}, ${location.z.toInt()}", distanceColor)),
+					text(distance, distanceColor),
+				)
+				shooter.sendMessage(line)
+			}
+
+			val aiSignatures = AISpawners.tickedAISpawners
+				.filterIsInstance<LocusScheduler>()
+				.filter { it.active && it.center != null }
+				.filter { it.center!!.world == starship.world }
+				.filter { it.center!!.distance(loc) < 10000.0 }
+
+			for (locus in aiSignatures) {
+				val location = locus.center!!
+				val name = locus.getTickInfo()
+				val distance = location.distance(loc)
+				val distanceColor = when {
+					distance < 500 -> RED
+					distance < 1500 -> YELLOW
+					distance < 2500 -> GREEN
+					else -> DARK_GREEN
+				}
+				val line = template(
+					"{0} detected at {1} {2}m away",
+					color = HE_LIGHT_GRAY,
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = true,
+					name,
+					bracketed(text(location.toString(), distanceColor)),
+					text(distance.toInt(), distanceColor)
+				)
+				shooter.sendMessage(line)
+			}
+			shooter.sendMessage(lineBreak(47))
+			shooter.sendMessage(lineBreakWithCenterText(text("[SCANNER PROBE SCAN END]", HE_DARK_GRAY)))
+		}
+	}
+
+	override fun getName(): Component {
+		return text("Probe")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireCustomItem(item, CustomItemKeys.SCANNER_PROBE.getValue(), 1)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 1)
+	}
+}

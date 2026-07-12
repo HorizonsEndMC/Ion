@@ -34,6 +34,6 @@ sealed class ShieldMultiblockClass08(private val sideX: Int) : SphereShieldMulti
 	}
 }
 
-object ShieldMultiblockClass08Right : ShieldMultiblockClass08(1)
+object  ShieldMultiblockClass08Right : ShieldMultiblockClass08(1)
 
 object ShieldMultiblockClass08Left : ShieldMultiblockClass08(-1)

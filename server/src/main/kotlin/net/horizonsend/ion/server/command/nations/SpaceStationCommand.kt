@@ -323,6 +323,11 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		failIf(!sender.world.ion.hasFlag(WorldFlag.ALLOW_SPACE_STATIONS)) { "You can't create space stations in this world!" }
 
+		failIf(
+			sender.world.ion.hasFlag(WorldFlag.DOMINION_WORLD) ||
+			sender.world.ion.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)
+		) { "You can't create space stations in dominion worlds!" }
+
 		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
 		validateName(name)

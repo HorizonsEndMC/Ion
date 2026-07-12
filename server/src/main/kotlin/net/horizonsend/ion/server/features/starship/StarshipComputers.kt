@@ -146,10 +146,14 @@ object StarshipComputers : IonServerComponent() {
 
 	private fun createComputer(player: Player, block: Block) {
 		// Allow computers within an NPC space station that is not protected to be detected
+		// guh maybe gutin was right, i'd rather deal with the player reports of people stealing ships over
+		// noobs getting messed up after server crashes and their ship gets undetected
+		/*
 		if (Regions.find(block.location).none { it is RegionNPCSpaceStation && !it.isProtected }
 			&& isRegionDenied(player, block.location)) {
 			return player.userError("You can only detect computers in territories you can access.")
 		}
+		 */
 
 		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
 			player.successActionMessage("Registered starship computer!")
@@ -199,9 +203,9 @@ object StarshipComputers : IonServerComponent() {
 			|| isSettlementOwner(player, data)
 			|| (isMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))   // passing this implies the player is a member of the settlement
 			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP)) // passing this implies the player is part of the nation
-			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true)) // passing this implies the player has access to a station
+			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true) // passing this implies the player has access to a station
 			|| (isInsideUnprotectedNpcStation(data)) // Starship data is inside an NPC space station
-			|| (isNearbyHyperspaceBeacon(data)) // Starship data is nearby a beacon
+			|| (isNearbyHyperspaceBeacon(data))) // Starship data is nearby a beacon
 	}
 
 	fun takeOwnership(player: Player, data: PlayerStarshipData) {
@@ -260,6 +264,8 @@ object StarshipComputers : IonServerComponent() {
 	private fun isNationMemberOfTerritory(player: Player, data: PlayerStarshipData): Boolean {
 		val territory = getComputerTerritory(data) ?: return false
 		val nationId = territory.nation ?: return false
+		// settlements and nations should probably not share territories, but this stops it if this does happen
+		if (territory.settlement != null) return false
 
 		return isMemberOfNation(player.slPlayerId, nationId)
 	}

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.data.migrator
+﻿package net.horizonsend.ion.server.data.migrator
 
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -441,7 +441,7 @@ object DataMigrators : IonServerComponent() {
 				"SUPERCONDUCTOR_CORE", "STEEL_INGOT", "STEEL_BLOCK", "STEEL_PLATE", "STEEL_CHASSIS", "STEEL_MODULE", "STEEL_ASSEMBLY",
 				"REINFORCED_FRAME", "REACTOR_FRAME", "PROGRESS_HOLDER", "BATTLECRUISER_REACTOR_CORE", "BARGE_REACTOR_CORE", "CRUISER_REACTOR_CORE", "UNLOADED_SHELL",
 				"LOADED_SHELL", "UNCHARGED_SHELL", "CHARGED_SHELL", "ARSENAL_MISSILE", "PUMPKIN_GRENADE", "UNLOADED_ARSENAL_MISSILE", "ACTIVATED_ARSENAL_MISSILE",
-				"GAS_CANISTER_EMPTY",
+				"GAS_CANISTER_EMPTY","MINI_REACTOR_CORE", "SMALL_REACTOR_CORE", "MEDIUM_REACTOR_CORE", "LARGE_REACTOR_CORE",
 			))
 			.addMigrator(AspectMigrator
 				.builder(CustomItemKeys.BLASTER_RIFLE)
@@ -562,6 +562,30 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemKeys.CRUISER_REACTOR_CORE)
 				.pullModel(CustomItemKeys.CRUISER_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.MINI_REACTOR_CORE)
+				.pullModel(CustomItemKeys.MINI_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.SMALL_REACTOR_CORE)
+				.pullModel(CustomItemKeys.SMALL_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.MEDIUM_REACTOR_CORE)
+				.pullModel(CustomItemKeys.MEDIUM_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.LARGE_REACTOR_CORE)
+				.pullModel(CustomItemKeys.LARGE_REACTOR_CORE)
 				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
@@ -899,6 +923,41 @@ object DataMigrators : IonServerComponent() {
 				}
 				.build()
 			)
+			.build()
+		)
+
+		registerDataVersion(DataVersion
+			.builder(7)
+			.addMigrator(ReplacementMigrator(
+				CustomItemKeys.SUPERCONDUCTOR,
+				CustomItemKeys.URANIUM_ROD,
+				CustomItemKeys.FUEL_ROD_CORE,
+				CustomItemKeys.FUEL_CELL,
+				CustomItemKeys.FUEL_CONTROL,
+				CustomItemKeys.REACTIVE_HOUSING,
+				CustomItemKeys.REACTIVE_MEMBRANE,
+				CustomItemKeys.REACTIVE_ASSEMBLY,
+				CustomItemKeys.FABRICATED_ASSEMBLY,
+				CustomItemKeys.CIRCUIT_BOARD,
+				CustomItemKeys.MOTHERBOARD,
+				CustomItemKeys.REACTOR_CONTROL,
+				CustomItemKeys.STEEL_PLATE,
+				CustomItemKeys.STEEL_CHASSIS,
+				CustomItemKeys.REINFORCED_FRAME,
+				CustomItemKeys.REACTOR_FRAME,
+				CustomItemKeys.UNLOADED_SHELL,
+				CustomItemKeys.UNCHARGED_SHELL,
+				CustomItemKeys.UNLOADED_BREACHER_SHELL,
+				CustomItemKeys.UNLOADED_STASIS_CHARGE,
+				CustomItemKeys.UNLOADED_ENTROPIC_CHARGE,
+				CustomItemKeys.UNLOADED_HELIX_SHELL,
+				CustomItemKeys.UNLOADED_SIEGE_SHELL,
+				CustomItemKeys.UNLOADED_STELLAR_PRISM,
+				CustomItemKeys.GAS_CANISTER_NITROGEN,
+				CustomItemKeys.GAS_CANISTER_METHANE,
+				CustomItemKeys.GAS_CANISTER_CHLORINE,
+				CustomItemKeys.GAS_CANISTER_FLUORINE,
+			))
 			.build()
 		)
 	}

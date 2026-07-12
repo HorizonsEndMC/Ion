@@ -48,6 +48,7 @@ data class CargoCrate(
 		BLUE(ChatColor.BLUE, "BLUE_SHULKER_BOX"),
 		BROWN(ChatColor.GOLD, "BROWN_SHULKER_BOX"),
 		GREEN(ChatColor.DARK_GREEN, "GREEN_SHULKER_BOX"),
+		RED(ChatColor.RED, "RED_SHULKER_BOX"),
 		BLACK(ChatColor.BLACK, "BLACK_SHULKER_BOX")
 	}
 

@@ -7,9 +7,14 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.StationZone
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -19,6 +24,10 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
+import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -28,6 +37,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -51,12 +61,14 @@ object StationPlotCommand : SLCommand() {
         requireEconomyEnabled()
 
         val station = Regions.findFirstOf<RegionSpaceStation<*, *>>(sender.location) ?: fail { "You are not standing in a station" }
-        val zone = StationZoneCommand.getZones(SpaceStationCache[station.name]!!).firstOrNull() { zone ->
+		val cachedStation = SpaceStationCache[station.name]!!
+        val zone = StationZoneCommand.getZones(cachedStation).firstOrNull() { zone ->
             zone.contains(sender.location)
         }
         failIf(zone == null) { "No zone at your current location" }
 
         val realPrice = zone!!.cachedPrice ?: fail { "Zone ${zone.name} is not for sale" }
+		if(zone.owner != null) fail { "Zone ${zone.name} is not for sale" }
 
         requireMoney(sender, realPrice, "purchase zone ${zone.name}")
 
@@ -70,6 +82,13 @@ object StationPlotCommand : SLCommand() {
         StationZone.setOwner(zone.id, sender.slPlayerId)
 
         VAULT_ECO.withdrawPlayer(sender, realPrice.toDouble())
+
+		when(cachedStation) {
+			is CachedPlayerSpaceStation -> VAULT_ECO.depositPlayer(Bukkit.getOfflinePlayer(cachedStation.owner.uuid), realPrice.toDouble())
+			is CachedSettlementSpaceStation -> Settlement.deposit(cachedStation.owner, realPrice)
+			is CachedNationSpaceStation -> Nation.deposit(cachedStation.owner, realPrice);
+		}
+
         sender.success("Purchased zone ${zone.name} for ${realPrice.toCreditsString()}")
     }
 

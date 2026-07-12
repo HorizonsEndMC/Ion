@@ -15,4 +15,6 @@ data class WorldSettings(
 	val templates: List<AITemplate.SpawningInformationHolder>
 ) {
 	fun getWorld(): World? = Bukkit.getWorld(worldName)
+
+	fun forWorlds(vararg worldNames: String): List<WorldSettings> = worldNames.map { copy(worldName = it) }
 }

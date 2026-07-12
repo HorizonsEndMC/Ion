@@ -58,6 +58,7 @@ import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffectType
 import java.util.Optional
 import java.util.function.Predicate
 
@@ -130,7 +131,7 @@ class CancelListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPotionSplashEvent(event: PotionSplashEvent) {
-		event.isCancelled = true
+		event.isCancelled = event.potion.effects.none { it.type == PotionEffectType.INSTANT_HEALTH }
 	}
 
 	@EventHandler
@@ -199,14 +200,14 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler
 	fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
-		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
+		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK || it.type == Material.RED_MUSHROOM_BLOCK}) {
 			event.isCancelled = true
 		}
 	}
 
 	@EventHandler
 	fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
-		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
+		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK || it.type == Material.RED_MUSHROOM_BLOCK}) {
 			event.isCancelled = true
 		}
 	}
@@ -220,12 +221,26 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: EntityExplodeEvent) {
-		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE }
+		event.blockList().removeAll {
+			it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MINI_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.SMALL_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MEDIUM_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.LARGE_REACTOR_CORE
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
-		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE}
+		event.blockList().removeAll {
+			it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MINI_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.SMALL_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.MEDIUM_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.LARGE_REACTOR_CORE
+		}
 	}
 
 	@EventHandler

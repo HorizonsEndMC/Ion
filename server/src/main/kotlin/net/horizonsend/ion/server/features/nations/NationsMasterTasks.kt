@@ -8,28 +8,34 @@ import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.utils.ACTIVE_AFTER_TIME
 import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
+import net.horizonsend.ion.server.features.player.Power
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
@@ -48,19 +54,36 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 import java.lang.Integer.min
+import java.time.ZonedDateTime
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {
+		Tasks.async {
+			for (nation in Nation.all()) {
+				if (nation.siegeable == null) nation.siegeable = false
+			}
+		}
+
 		if (ConfigurationFiles.legacySettings().master) {
 			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
 			Tasks.asyncRepeat(20 * 60, 20 * 60 * 60, ::executeAll)
+			Tasks.asyncAtHour(0, ::doTerritoryUpkeep)
 		}
 	}
 
+	data class TerritoryEntry(
+		val name: String,
+		val isDominion: Boolean,
+		val dominionId: Oid<DominionTerritory>? = null,
+		val normalId: Oid<Territory>? = null
+	)
+
+	const val UPKEEP_COST = 2000
+
 	private fun executeAll() {
 		checkPurges()
-
 		executeMoneyTasks()
+		recalculateNationPower()
 	}
 
 	fun checkPurges() {
@@ -133,6 +156,7 @@ object NationsMasterTasks : IonServerComponent() {
 			val nation: NationCache.NationData = NationCache[nationId]
 
 			// Give the nation its station income if it has stations
+			/*
 			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
 			val stationIncome = if (stationCount > 2) stationCount * 75 else stationCount * 50
 
@@ -146,7 +170,9 @@ object NationsMasterTasks : IonServerComponent() {
 					)
 				)
 			}
+			 */
 
+			/*
 			val solarSiegeCount = SolarSiegeZone.count(SolarSiegeZone::nation eq nationId).toInt()
 			val solarSiegeIncome = solarSiegeCount * 100
 
@@ -157,6 +183,7 @@ object NationsMasterTasks : IonServerComponent() {
 					template(Component.text("Your nation received {0} credits of hourly income for owning {1} solar siege zones.", HE_MEDIUM_GRAY), solarSiegeIncome.toCreditComponent(), stationCount)
 				)
 			}
+			 */
 
 			val activeCount = SLPlayer.count(
 				and(SLPlayer::lastSeen gte ACTIVE_AFTER_TIME, SLPlayer::nation eq nationId)
@@ -172,6 +199,24 @@ object NationsMasterTasks : IonServerComponent() {
 							"for activity credits from <yellow>$activeCount<dark_green> active members"
 					)
 				)
+			}
+		}
+
+		// Regional objective passive generation
+		val xenon = CustomItemKeys.GAS_CANISTER_XENON.getValue()
+		val canister = xenon.createWithFill(xenon.maximumFill)
+		val itemString = GlobalCompletions.toItemString(canister)
+
+		for (nationId in Nation.allIds()) {
+			// Gas depot passive xenon
+			val ownedDepots = Regions.getAllOf<RegionRegionalObjective>()
+				.filter { it.nation == nationId && it.type == RegionalObjectiveType.GAS_DEPOT }
+			for (depot in ownedDepots) {
+				val rewardMap = mutableMapOf(itemString to 4)
+				RegionalObjectiveSiegeData.create(depot.id, nationId, rewardMap, passive = true)
+				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
+					"<gold>Your nation received 4 Xenon Canisters from Gas Depot ${depot.name}!"
+				))
 			}
 		}
 
@@ -364,6 +409,63 @@ object NationsMasterTasks : IonServerComponent() {
 			}
 
 			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize("Paid ${rent.toCreditsString()} rent for zone ${zone.id}"))
+		}
+	}
+
+	private fun doTerritoryUpkeep() {
+		for (nationId in Nation.allIds()) {
+			val dominionTerritories = Regions.getAllOf<RegionDominionTerritory>()
+				.filter { it.nation == nationId }
+
+			val normalTerritories = Territory.find(
+				and(Territory::nation eq nationId, Territory::settlement eq null)
+			).toList()
+
+			val pool = dominionTerritories.map { TerritoryEntry(it.name, true, it.id) } +
+				normalTerritories.map { TerritoryEntry(it.name, false, normalId = it._id) }
+
+			val totalCount = pool.size
+			if (totalCount == 0) continue
+
+			val totalCost = totalCount * UPKEEP_COST
+			val balance = Nation.findPropById(nationId, Nation::balance) ?: continue
+			val nationName = NationCache[nationId].name
+
+			if (balance >= totalCost) {
+				Nation.withdraw(nationId, totalCost)
+				Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize(
+					"<gold>Your nation paid <yellow>${totalCost.toCreditsString()}<gold> in territory upkeep for <dark_aqua>$totalCount<gold> territories."
+				))
+			} else {
+				Nation.withdraw(nationId, balance)
+
+				val chosen = pool.random()
+				val name = chosen.name
+
+				if (chosen.isDominion) {
+					DominionTerritory.setNation(chosen.dominionId!!, null)
+				} else {
+					Territory.setNation(chosen.normalId!!, null)
+				}
+
+				Notify.chatAndEvents(MiniMessage.miniMessage().deserialize(
+					"<red>$nationName's territory $name has been unclaimed due to an inability to pay upkeep!"
+				))
+
+				ServerInboxes.sendServerMessages(
+					recipients = Nation.getMembers(nationId),
+					subject = Component.text("Nation Territory Unclaimed.", NamedTextColor.RED),
+					content = template(Component.text("Your nation's territory, {0}, was purged as your nation could not afford the territory upkeep cost of <yellow>${totalCost.toCreditsString()}.", NamedTextColor.RED), name)
+
+				)
+			}
+		}
+	}
+
+
+	fun recalculateNationPower() {
+		for (id: Oid<Nation> in Nation.allIds()) {
+			Power.recalculateNationPower(id)
 		}
 	}
 }

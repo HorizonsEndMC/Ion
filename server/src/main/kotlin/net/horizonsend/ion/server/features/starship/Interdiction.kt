@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -22,9 +23,9 @@ import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
 	fun toggleGravityWell(starship: ActiveStarship) {
-		if (StarshipCruising.isCruising(starship)) {
+		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 5000) {
 			starship.setIsInterdicting(false)
-			starship.userError("Cannot activate gravity well while cruising")
+			starship.userError("Ships smaller than 5000 blocks cannot activate gravity wells while cruising")
 			return
 		}
 
@@ -119,10 +120,12 @@ object Interdiction : IonServerComponent() {
 		.filter { it.isIntact() }
 		.lastOrNull()
 
+	fun findDisruptor(starship: ActiveStarship): DisruptorSubsystem? = starship.warpDisruptors.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
+
 	fun starshipInterdictionRangeEquation(starship: Starship): Double {
-		if (starship.initialBlockCount < CombatTimer.MINIMUM_WELL_PROXIMITY_BLOCK_COUNT ||
-			starship.type == StarshipType.PLATFORM) return 1.0
-		return if (starship.type.typeCategory == TypeCategory.WAR_SHIP) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
-		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
+		if (starship.type == StarshipType.PLATFORM) return 1.0
+		return starship.type.balancing.interdictionRange.toDouble()
 	}
 }

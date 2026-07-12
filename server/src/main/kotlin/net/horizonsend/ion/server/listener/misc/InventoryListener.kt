@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.features.transport.items.util.addToFurnace
+import net.horizonsend.ion.server.features.transport.items.util.getSpecialFurnaceInputSlot
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import org.bukkit.Material
@@ -12,6 +14,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.math.min
 
@@ -28,6 +31,22 @@ object InventoryListener : SLEventListener() {
 		if (LegacyItemUtils.isContraband(event.item)) {
 			event.isCancelled = true
 		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	fun routeSpecialFurnaceInput(event: InventoryMoveItemEvent) {
+		val destination = event.destination as? FurnaceInventory ?: return
+		if (getSpecialFurnaceInputSlot(destination, event.item) == null) return
+
+		event.isCancelled = true
+
+		val movedItem = event.item.clone()
+		val remaining = addToFurnace(destination, movedItem)
+		val movedAmount = movedItem.amount - remaining
+		if (movedAmount <= 0) return
+
+		movedItem.amount = movedAmount
+		event.source.removeItem(movedItem)
 	}
 
 	// Decorated pots can be extracted from and have items moved into chests.

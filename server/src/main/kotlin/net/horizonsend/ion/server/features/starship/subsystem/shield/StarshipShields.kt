@@ -3,15 +3,21 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.command.admin.debugRed
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -23,7 +29,6 @@ import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.boss.BarColor
-import org.bukkit.boss.BossBar
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -56,6 +61,8 @@ object StarshipShields : IonServerComponent() {
 		val worldID = starship.world.uid
 
 		for (shield in starship.shields) {
+			if (shield.isIntact()) shield.destroyed
+			else !shield.destroyed
 			val shieldPos = ShieldPos(worldID, shield.pos)
 			shield.power = shields.remove(shieldPos) ?: continue
 		}
@@ -251,7 +258,15 @@ object StarshipShields : IonServerComponent() {
 			return
 		}
 
-		val damagedPercent = blocks.size.toFloat() / size.toFloat()
+		var damagedPercent = blocks.size.toFloat() / size.toFloat()
+
+
+		if (starship.playerPilot?.hasProtection() == true) {
+			// The attacked starship has a player pilot with protection; check for noob prot
+			if (handleNewProt(starship)) {
+				damagedPercent = 0.0f
+			}
+		}
 
 		shieldLoop@
 		for (shield: ShieldSubsystem in starship.shields) {
@@ -285,6 +300,13 @@ object StarshipShields : IonServerComponent() {
 			return false
 		}
 
+		//If this is the first time the multiblock has been destroyed then play a sound
+		if (!shield.isIntact() && !shield.destroyed) {
+			starship.world.playSound(shield.pos.toLocation(starship.world), "horizonsend:starship.shield.destroy", 8.0f, 0.5f)
+			shield.destroyed = true
+			return false
+		}
+
 		if (!shield.isIntact()) {
 			return false
 		}
@@ -296,6 +318,17 @@ object StarshipShields : IonServerComponent() {
 		if (shield.isReinforcementActive()) {
 			usage = (usage * 0.1f).toInt()
 		}
+
+		val resistanceFactor = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_RESISTANCE)?.strength ?: 0.0
+		val weaknessFactor = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.SHIELD_WEAKNESS)?.strength ?: 0.0
+		/*
+		val nationResistanceFactor = starship.playerPilot?.let { player ->
+			val shieldResistanceBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.SHIELD_RESISTANCE)
+			if (shieldResistanceBuffActive) NationBuffTypes.SHIELD_RESISTANCE.value else 0.0
+		} ?: 0.0
+		 */
+
+		usage = (usage * (1 - resistanceFactor) * (1 + weaknessFactor)/* * (1 - nationResistanceFactor)*/).toInt()
 
 		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power -= usage
@@ -365,5 +398,27 @@ object StarshipShields : IonServerComponent() {
 		percent <= 0.70     -> Material.LIGHT_BLUE_STAINED_GLASS // close to CYAN tier
 		percent <= 0.85     -> Material.LIGHT_BLUE_STAINED_GLASS
 		else                -> Material.BLUE_STAINED_GLASS
+	}
+
+	private fun handleNewProt(starship: ActiveStarship) : Boolean {
+		// New player protection only applies to ships controlled by a player.
+		// Non-player controlled ships should take normal shield damage.
+		val player = (starship.controller as? PlayerController)?.player ?: return false
+
+		// In NOT_SECURE or ARENA worlds, new player protection does not prevent ship damage.
+		if (player.world.hasFlag(WorldFlag.NOT_SECURE) || player.world.hasFlag(WorldFlag.ARENA)) return false
+
+		// If this ship has been damaged by another ship, check whether that other ship
+		// was also damaged by this protected player. That means the protected player
+		// has participated in ship combat, so their protection should not suppress
+		// shield damage from this explosion.
+		for (damager in starship.damagers.keys) {
+			val otherDamagers = damager.starship?.damagers?.keys ?: continue
+			if (otherDamagers.any { it.starship?.playerPilot == player }) return false
+		}
+
+		// The pilot is protected and has not reciprocated ship combat, so callers can
+		// treat the hit as protected and avoid charging shield power for it.
+		return true
 	}
 }

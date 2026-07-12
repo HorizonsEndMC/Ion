@@ -92,7 +92,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		sinkPositions = newArray
 
 		SinkAnimation(starship, starship.initialBlockCount, starship.world, starship.centerOfMass).schedule()
-		tryReactorParticles()
+		//tryReactorParticles()
 		playSinkSound()
 	}
 
@@ -505,12 +505,10 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			return chunkMap
 		}
 	}
-
-
 }
 
 /**
  * Map of a chunk key to a map of a section key to a map of a block key to its index in the block list
  **/
-private typealias SinkChunkMap = Map<Long, Map<Int, Map<BlockKey, Int>>>
+typealias SinkChunkMap = Map<Long, Map<Int, Map<BlockKey, Int>>>
 

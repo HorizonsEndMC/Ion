@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.client.display
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.cache.BookmarkCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.BARGE_ICON
 import net.horizonsend.ion.common.utils.text.BATTLECRUISER_ICON
@@ -22,6 +23,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
@@ -36,6 +38,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -61,7 +64,7 @@ import kotlin.math.min
 
 object HudIcons : IonServerComponent() {
     // How often the planet display entities should update in ticks
-    private const val UPDATE_RATE = 2L
+    private const val UPDATE_RATE = 5L
 
     // The threshold for "hovering" over a planet, in radians
     private const val SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
@@ -91,6 +94,7 @@ object HudIcons : IonServerComponent() {
         Tasks.syncRepeat(0L, UPDATE_RATE) {
             Bukkit.getOnlinePlayers().forEach { player ->
                 renderEntities(player)
+                renderShipIconEntities(player)
             }
         }
     }
@@ -455,6 +459,15 @@ object HudIcons : IonServerComponent() {
         }
 
         else if (name.contains(STAR_PREFIX)) {
+            // lazy fix until i can add real star textures to the rp
+            if (!name.contains("asteri_2")
+                && !name.contains("regulus_2")
+                && !name.contains("sirius_2")
+                && !name.contains("ilios_2")
+                && !name.contains("horizon_2")) {
+                return CachedStar.DEFAULT_ITEM_FACTORY.construct()
+            }
+
             return Space.getStar(name.replace(STAR_PREFIX, ""))?.starIconFactory?.construct()
                 ?: CachedStar.DEFAULT_ITEM_FACTORY.construct()
         }
@@ -507,8 +520,6 @@ object HudIcons : IonServerComponent() {
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
         val hudSelectorEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsSelector)
-        val hudIconSize = (player.getSettingOrThrow(PlayerSettings::hudIconSize) / 5.0)
-        val hudStarshipsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStarships)
         val hudPlanetsEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsImage)
         val hudStarsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStars)
         val hudBeaconsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBeacons)
@@ -713,7 +724,13 @@ object HudIcons : IonServerComponent() {
             deleteSelectorEntity(player)
             deleteSelectorTextEntity(player)
         }
+    }
 
+    private fun renderShipIconEntities(player: Player) {
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val hudIconSize = (player.getSettingOrThrow(PlayerSettings::hudIconSize) / 5.0)
+
+        val hudStarshipsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStarships)
         if (hudStarshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             val starshipList = ActiveStarships.getInWorld(player.world)
                 .filter { starship -> starship.playerPilot != player && !starship.onlinePassengers.contains(player) }
@@ -732,6 +749,8 @@ object HudIcons : IonServerComponent() {
                 if (starship.playerPilot == player || starship.onlinePassengers.contains(player)) continue
                 val distance = starship.centerOfMass.toCenterVector().distance(playerPosition)
                 if (distance > 1000) continue
+                if (distance > 700 && (starship.type == StarshipType.BLACK_OPS_FRIGATE || starship.type == StarshipType.BLOCKADE_RUNNER)) continue
+                if (distance > 500 && starship.type == StarshipType.RECON_STARFIGHTER) continue
                 val direction = starship.centerOfMass.toCenterVector().subtract(playerPosition).normalize()
 
                 // calculate position and offset
@@ -739,12 +758,28 @@ object HudIcons : IonServerComponent() {
                 val finalPosition = playerPosition.clone().add(offset).toLocation(player.world)
                 val starshipIcon = when (starship.type) {
                     StarshipType.STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.RECON_STARFIGHTER -> STARFIGHTER_ICON
+                    StarshipType.SCRAMBLER_STARFIGHTER -> STARFIGHTER_ICON
                     StarshipType.GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.ASSAULT_GUNSHIP -> GUNSHIP_ICON
+                    StarshipType.INTERDICTOR_GUNSHIP -> GUNSHIP_ICON
                     StarshipType.CORVETTE -> CORVETTE_ICON
+                    StarshipType.STASIS_CORVETTE -> CORVETTE_ICON
+                    StarshipType.INTERDICTOR_CORVETTE -> CORVETTE_ICON
+                    StarshipType.ASSAULT_CORVETTE -> CORVETTE_ICON
+                    StarshipType.LOGISTICS_CORVETTE -> CORVETTE_ICON
                     StarshipType.FRIGATE -> FRIGATE_ICON
+                    StarshipType.ASSAULT_FRIGATE -> FRIGATE_ICON
+                    StarshipType.MISSILE_FRIGATE -> FRIGATE_ICON
+                    StarshipType.BLACK_OPS_FRIGATE -> FRIGATE_ICON
                     StarshipType.DESTROYER -> DESTROYER_ICON
+                    StarshipType.INTERDICTOR_DESTROYER -> DESTROYER_ICON
+                    StarshipType.ASSAULT_DESTROYER -> DESTROYER_ICON
                     StarshipType.CRUISER -> CRUISER_ICON
+                    StarshipType.MISSILE_CRUISER -> CRUISER_ICON
+                    StarshipType.LOGISTICS_CRUISER -> CRUISER_ICON
                     StarshipType.BATTLECRUISER -> BATTLECRUISER_ICON
+                    StarshipType.LANCER_BATTLECRUISER -> BATTLECRUISER_ICON
                     StarshipType.SHUTTLE -> SHUTTLE_ICON
                     StarshipType.TRANSPORT -> TRANSPORT_ICON
                     StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
@@ -766,11 +801,28 @@ object HudIcons : IonServerComponent() {
                     StarshipType.AI_BARGE -> BARGE_ICON
                     else -> STARFIGHTER_ICON
                 }
-                val color = ContactsSidebar.playerRelationColor(player, starship.controller, false)
+                val fleet = Fleets.findByMember(player)
+                val displayIcon = if (fleet?.lastBroadcast?.contains(starship.identifier.take(maxLength)) == true) {
+                    "<< $starshipIcon >>"
+                } else {
+                    starshipIcon.toString()
+                }
+
+                val otherPlayer = starship.playerPilot
+                val viewerNation = PlayerCache[player].nationOid
+                val otherNation = otherPlayer?.let { PlayerCache[it].nationOid }
+
+                val color = when {
+                    otherPlayer != null && Fleets.findByMember(player)
+                        ?.contains(otherPlayer) == true -> NamedTextColor.BLUE
+
+                    viewerNation != null && otherNation != null -> RelationCache[viewerNation, otherNation].color
+                    else -> NamedTextColor.GRAY
+                }
 
                 player.sendText(
                     location = finalPosition,
-                    text = ofChildren(leftShift(5), text(starshipIcon, color).font(SPECIAL_FONT_KEY)),
+                    text = ofChildren(leftShift(5), text(displayIcon, color).font(SPECIAL_FONT_KEY)),
                     durationTicks = UPDATE_RATE + 1,
                     scale = (5f * hudIconSize).toFloat(),
                     backgroundColor = Color.fromARGB(0x00000000),
@@ -831,6 +883,7 @@ object HudIcons : IonServerComponent() {
     private fun onPlayerTeleport(event: PlayerTeleportEvent) {
         Tasks.sync {
             renderEntities(event.player)
+            renderShipIconEntities(event.player)
         }
     }
 

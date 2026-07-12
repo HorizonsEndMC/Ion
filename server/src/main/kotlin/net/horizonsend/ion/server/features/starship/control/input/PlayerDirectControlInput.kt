@@ -6,10 +6,12 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.keybind
 import net.kyori.adventure.text.Component.text
@@ -92,10 +94,20 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
 		val cooldown: Long = DirectControlHandler
 			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
-		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets *
-				starship.directControlSpeedModifierFromHeavyLasers * oversizeModifier * (1000.0f / cooldown)).roundToInt() / 10.0f
+		val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		/*
+		val nationDirectControlModifier = starship.playerPilot?.let { player ->
+			val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.DIRECT_CONTROL_SPEED)
+			if (cruiseBuffActive) {
+				NationBuffTypes.DIRECT_CONTROL_SPEED.value
+			} else 0.0
+		} ?: 0.0
 
-		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
+		 */
+		val speed = ((10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * (1000.0f / cooldown)).roundToInt() / 10.0f) * oversizeModifier /*+ nationDirectControlModifier*/.toFloat()
+
+		player.sendActionBar(text("Speed: ${speed}", NamedTextColor.AQUA))
 	}
 
 	@Suppress("UnstableApiUsage")

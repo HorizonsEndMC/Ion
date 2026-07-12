@@ -34,6 +34,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.PI
 import kotlin.math.ceil
 import kotlin.math.sqrt
@@ -43,10 +44,10 @@ object WaypointManager : IonServerComponent() {
     val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
 
     // playerGraphs hold copies of mainGraph, with additional vertices per player (for shortest path calculation)
-    val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
-    val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
-    val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
-    val playerNumJumps: MutableMap<UUID, Int> = mutableMapOf()
+    val playerGraphs: ConcurrentHashMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = ConcurrentHashMap()
+    val playerDestinations: ConcurrentHashMap<UUID, MutableList<WaypointVertex>> = ConcurrentHashMap()
+    val playerPaths: ConcurrentHashMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = ConcurrentHashMap()
+    val playerNumJumps: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
 
     const val MAX_DESTINATIONS = 5
     private const val WAYPOINT_REACHED_DISTANCE = 500
@@ -63,9 +64,11 @@ object WaypointManager : IonServerComponent() {
 
         // update all player graphs every five seconds if they have a destination saved
         // JGraphT is not thread safe; this cannot be async
-        Tasks.syncRepeat(0L, 100L) {
+        Tasks.syncRepeat(0L, 200L) {
             Bukkit.getOnlinePlayers().forEach { player ->
-                updatePlayerGraph(player)
+                Tasks.async {
+                    updatePlayerGraph(player)
+                }
                 if (playerDestinations.isNotEmpty()) {
                     checkWaypointReached(player)
                     updatePlayerPaths(player)
@@ -288,12 +291,13 @@ object WaypointManager : IonServerComponent() {
 			val vec = Vector(0.0,0.0,1.0).multiply(r)
 			vec.rotateAroundY(theta)
 			val pos = center.toVector().add(vec)
-			if (MassShadows.find(body.spaceWorld!!, pos.x, pos.z) != null ) continue //dont add points inside gravity wells
+            val spaceWorld = body.spaceWorld ?: continue
+			if (MassShadows.find(spaceWorld, pos.x, pos.z) != null) continue //dont add points inside gravity wells
 			val formatedNum = String.format("%.2f",rMod)
 			val vertex = WaypointVertex(
 				name = "${name}_cage_${formatedNum}_${i}",
 				icon = SidebarIcon.ROUTE_SEGMENT_ICON.text.first(),
-				loc = pos.toLocation(body.spaceWorld!!),
+				loc = pos.toLocation(spaceWorld),
 				linkedWaypoint = null,
 				hidden = true
 			)

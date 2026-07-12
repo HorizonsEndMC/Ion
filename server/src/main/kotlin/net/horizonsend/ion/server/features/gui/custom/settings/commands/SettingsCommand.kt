@@ -394,6 +394,12 @@ object SettingsCommand : SLCommand() {
         handleEnumCycleSetting(sender, PlayerSettings::farWeaponSounds, value, AudioRange::class.java)
     }
 
+	@CommandAlias("sound energyswordidlesound")
+	@CommandCompletion("true|false")
+	fun onSettingsSoundEnergySwordIdleSound(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
+		handleBooleanToggleSetting(sender, PlayerSettings::energySwordIdleSound, enabled)
+	}
+
     @CommandAlias("other enablecombattimeralerts")
     @CommandCompletion("true|false")
     fun onSettingsOtherEnableCombatTimerAlerts(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {

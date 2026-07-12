@@ -11,6 +11,10 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.SpaceRegion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
@@ -55,6 +59,25 @@ class BazaarCitySelectionMenu(viewer: Player) : BazaarPurchaseMenuParent<TradeCi
 	override fun generateEntries(): List<TradeCityData> = CityNPCs.BAZAAR_CITY_TERRITORIES
 		.map { Regions.get<RegionTerritory>(it) }
 		.mapNotNull(TradeCities::getIfCity)
+		.filter { city ->
+			val cityWorld = Regions.get<RegionTerritory>(city.territoryId).bukkitWorld ?: return@filter false
+			val buyerWorld = viewer.world
+
+			val buyerInDeepSpace = buyerWorld.hasFlag(WorldFlag.DOMINION_WORLD)
+			val buyerInCore = buyerWorld.hasFlag(WorldFlag.CORE_REGION_WORLD)
+			val cityIsTradeWorld = cityWorld.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)
+			val cityInCore = cityWorld.hasFlag(WorldFlag.CORE_REGION_WORLD)
+
+			when {
+				buyerInDeepSpace && cityInCore -> false
+				buyerInCore && cityIsTradeWorld -> false
+				else -> {
+					val buyerRegion = buyerWorld.ion.getSpaceRegion()
+					val cityRegion = cityWorld.ion.getSpaceRegion()
+					buyerRegion == cityRegion || buyerRegion == SpaceRegion.NONE || cityRegion == SpaceRegion.NONE
+				}
+			}
+		}
 
 	override fun createItem(entry: TradeCityData): Item = AsyncItem(
 		resultProvider = { entry.planetIcon.updateDisplayName(text(entry.displayName)).updateLore(getCityLore(entry)) },

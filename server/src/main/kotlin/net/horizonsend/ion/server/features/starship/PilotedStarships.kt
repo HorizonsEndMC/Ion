@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
@@ -20,6 +21,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -74,8 +76,18 @@ import java.util.UUID
 object PilotedStarships : IonServerComponent() {
 	internal val map = mutableMapOf<Controller, ActiveControlledStarship>()
 
+	private const val RELEASE_VERIFICATION_TIMEOUT_MILLIS = 5_000L
+	private val releaseVerifications = mutableMapOf<UUID, PendingReleaseVerification>()
+
+	private data class PendingReleaseVerification(
+		val starship: ActiveControlledStarship,
+		val expiresAt: Long
+	)
+
 	override fun onEnable() {
 		listen<PlayerQuitEvent> { event ->
+			releaseVerifications.remove(event.player.uniqueId)
+
 			val loc = Vec3i(event.player.location)
 			val controller = ActiveStarships.findByPilot(event.player)?.controller ?: return@listen
 
@@ -424,11 +436,30 @@ object PilotedStarships : IonServerComponent() {
 						return@activateAsync
 					}
 				}
+
+				// Check forbidden subsystems
+				for (forbiddenSubsystem in activePlayerStarship.balancing.forbiddenMultiblocks) {
+					if (!forbiddenSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Forbidden subsystem detected! ${forbiddenSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
 			}
 
 			for (subsystem in activePlayerStarship.weapons) {
 				if (subsystem !is BalancedWeaponSubsystem<*>) continue
 				for (incompatibleSubsystem in subsystem.balancing.fireRestrictions.incompatibleMultiblocks) {
+					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
+			}
+
+			for (subsystem in activePlayerStarship.commandBursts) {
+				for (incompatibleSubsystem in subsystem.balancing.activateRestrictions.incompatibleMultiblocks) {
 					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
 						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
 						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
@@ -497,15 +528,32 @@ object PilotedStarships : IonServerComponent() {
 		// Keep pilot for info even after unpilot
 		val oldController = starship.controller
 
-		unpilot(starship)
-
-		// Combat tag check
-		if (!bypassCombatTag && oldController is PlayerController &&
-			(CombatTimer.isNpcCombatTagged(oldController.player) || CombatTimer.isPvpCombatTagged(oldController.player))) {
+		// Preserve the existing combat result: unpilot, but do not release.
+		if (!bypassCombatTag && oldController is PlayerController && isCombatTagged(oldController.player)) {
+			releaseVerifications.remove(oldController.player.uniqueId)
+			unpilot(starship)
 			oldController.alert("Your starship is in combat! It will be unpiloted instead!")
 
 			return false
 		}
+
+		if (oldController is PlayerController &&
+			oldController.player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
+			starship.initialBlockCount <= StarshipType.LANCER_BATTLECRUISER.maxSize &&
+			starship.isTouchingExternalBlock() &&
+			!hasConfirmedRelease(oldController.player, starship)
+		) {
+			oldController.player.userError(
+				"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
+			)
+			return false
+		}
+
+		if (oldController is PlayerController) {
+			releaseVerifications.remove(oldController.player.uniqueId)
+		}
+
+		unpilot(starship)
 
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
@@ -517,6 +565,26 @@ object PilotedStarships : IonServerComponent() {
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true
+	}
+
+	private fun isCombatTagged(player: Player): Boolean {
+		return CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player)
+	}
+
+	private fun hasConfirmedRelease(player: Player, starship: ActiveControlledStarship): Boolean {
+		val now = System.currentTimeMillis()
+		val pending = releaseVerifications[player.uniqueId]
+
+		if (pending?.starship === starship && now <= pending.expiresAt) {
+			releaseVerifications.remove(player.uniqueId)
+			return true
+		}
+
+		releaseVerifications[player.uniqueId] = PendingReleaseVerification(
+			starship = starship,
+			expiresAt = now + RELEASE_VERIFICATION_TIMEOUT_MILLIS
+		)
+		return false
 	}
 
 	/**

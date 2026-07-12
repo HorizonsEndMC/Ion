@@ -20,7 +20,10 @@ data class ShipFactorySettings(
 	var placeBlocksUnderwater: Boolean,
 	// Item
 	var leaveItemRemaining: Boolean,
-	var grabFromNetworkedPipes: Boolean
+	var grabFromNetworkedPipes: Boolean,
+	var creditPrinting: Boolean,
+	// Blueprint
+	var useSharedBlueprints: Boolean,
 ) {
 	companion object {
 		val COMPLETE_OBSTRUCTIONS = key("complete_obstructions")
@@ -28,6 +31,8 @@ data class ShipFactorySettings(
 		val PLACE_UNDERWATER = key("place_underwater")
 		val LEAVE_ITEM_REMAINING = key("leave_item_remaining")
 		val GRAB_NETWORKED_INVENTORIES = key("grab_networked_inventories")
+		val CREDIT_PRINTING = key("credit_printing")
+		val SHARED_BLUEPRINTS = key("shared_blueprints")
 
 		fun load(data: PersistentMultiblockData): ShipFactorySettings {
 			val shipFactorySettings = ShipFactorySettings(
@@ -40,6 +45,8 @@ data class ShipFactorySettings(
 				placeBlocksUnderwater = data.getAdditionalDataOrDefault(PLACE_UNDERWATER, BOOLEAN, false),
 				leaveItemRemaining = data.getAdditionalDataOrDefault(LEAVE_ITEM_REMAINING, BOOLEAN, false),
 				grabFromNetworkedPipes = data.getAdditionalDataOrDefault(GRAB_NETWORKED_INVENTORIES, BOOLEAN, false),
+				creditPrinting = data.getAdditionalDataOrDefault(CREDIT_PRINTING, BOOLEAN, false),
+				useSharedBlueprints = data.getAdditionalDataOrDefault(SHARED_BLUEPRINTS, BOOLEAN, false),
 			)
 
 			return shipFactorySettings
@@ -56,6 +63,8 @@ data class ShipFactorySettings(
 		store.addAdditionalData(OVERRIDE_REPLACEABLE, BOOLEAN, overrideReplaceableBlocks)
 		store.addAdditionalData(LEAVE_ITEM_REMAINING, BOOLEAN, leaveItemRemaining)
 		store.addAdditionalData(GRAB_NETWORKED_INVENTORIES, BOOLEAN, grabFromNetworkedPipes)
+		store.addAdditionalData(CREDIT_PRINTING, BOOLEAN, creditPrinting)
+		store.addAdditionalData(SHARED_BLUEPRINTS, BOOLEAN, useSharedBlueprints)
 	}
 }
 

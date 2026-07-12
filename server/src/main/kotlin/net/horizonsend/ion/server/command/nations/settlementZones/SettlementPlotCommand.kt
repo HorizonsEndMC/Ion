@@ -7,9 +7,11 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.deserializeComponent
@@ -25,9 +27,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.util.UUID
 
 @CommandAlias("settlementplot|splot")
 internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -51,6 +55,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 			?: fail { "You're not standing in a settlement zone." }
 
 		val realPrice = zone.cachedPrice ?: fail { "Zone ${zone.name} is not for sale" }
+		if(zone.owner != null) fail {"Zone ${zone.name} is not for sale"}
 
 		requireMoney(sender, realPrice, "purchase zone ${zone.name}")
 
@@ -64,6 +69,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		SettlementZone.setOwner(zone.id, sender.slPlayerId)
 
 		VAULT_ECO.withdrawPlayer(sender, realPrice.toDouble())
+		Settlement.deposit(zone.settlement, realPrice);
 		sender msg "&aPurchased zone ${zone.name} for ${realPrice.toCreditsString()}"
 	}
 

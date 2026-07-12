@@ -17,17 +17,27 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShi
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.IndustrialInvulnerabilityUnitMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.FauxReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.FauxReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.DisruptorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpBeaconMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ShieldCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -35,9 +45,18 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.Battlecr
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityUnitSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
@@ -191,6 +210,14 @@ object SubsystemDetector {
 				starship.subsystems += EventShieldSubsystem(starship, sign)
 			}
 
+			is JumpFieldGeneratorMultiblock -> {
+				starship.subsystems += JumpFieldGeneratorSubsystem(starship,sign, multiblock)
+			}
+
+			is JumpBeaconMultiblock -> {
+				starship.subsystems += JumpBeaconSubsystem(starship, sign, multiblock)
+			}
+
 			is BoxShieldMultiblock -> {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
 			}
@@ -205,6 +232,22 @@ object SubsystemDetector {
 
 			is CruiserReactorMultiblock -> {
 				starship.subsystems += CruiserReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is MiniReactorMultiblock -> {
+				starship.subsystems += MiniReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is SmallReactorMultiblock -> {
+				starship.subsystems += SmallReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is MediumReactorMultiblock -> {
+				starship.subsystems += MediumReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is LargeReactorMultiblock -> {
+				starship.subsystems += LargeReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is BargeReactorMultiBlock -> {
@@ -241,8 +284,24 @@ object SubsystemDetector {
 				starship.subsystems += CryopodSubsystem(starship, sign, multiblock, cryo)
 			}
 
+			is DisruptorMultiblock -> {
+				starship.subsystems += DisruptorSubsystem(starship, sign, multiblock)
+			}
+
 			is GravityWellMultiblock -> {
 				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
+			}
+
+			is IndustrialInvulnerabilityUnitMultiblock -> {
+				starship.subsystems += IndustrialInvulnerabilityUnitSubsystem(starship, sign, multiblock)
+			}
+
+			is ShieldCommandBurstMultiblock -> {
+				starship.subsystems += ShieldCommandBurstSubsystem(starship, sign, multiblock)
+			}
+
+			is AbstractCommandBurstMultiblock -> {
+				detectCommandBurst(starship, sign, multiblock)
 			}
 		}
 	}
@@ -290,6 +349,15 @@ object SubsystemDetector {
 
 			starship.subsystems += subsystem
 		}
+	}
+
+	private fun detectCommandBurst(starship: ActiveStarship, sign: Sign, multiblock: AbstractCommandBurstMultiblock) {
+		val subsystem = multiblock.createSubsystem(starship, sign, multiblock)
+
+		if (isDuplicate(starship, subsystem)) return
+		if (!subsystem.canCreateSubsystem()) return
+
+		starship.subsystems += subsystem
 	}
 
 	private fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {
@@ -356,8 +424,13 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.thrusters)
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
+		starship.subsystems.filterIsInstanceTo(starship.industrialInvulnerabilityUnits)
+		starship.subsystems.filterIsInstanceTo(starship.warpDisruptors)
+		starship.subsystems.filterIsInstanceTo(starship.jumpBeacons)
+		starship.subsystems.filterIsInstanceTo(starship.jumpFieldGenerators)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 		starship.subsystems.filterIsInstanceTo(starship.customTurrets)
+		starship.subsystems.filterIsInstanceTo(starship.commandBursts)
 	}
 }

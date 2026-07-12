@@ -14,6 +14,8 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCon
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.rightClickTimes
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
@@ -75,11 +77,14 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 			rightClickTimes.remove(damager)
 		}
 
+		if (event.player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD)) return
+
 		if (event.clickedBlock?.type?.isSign == true) return
 
 		player.debug("Didn't click sign, trying to fire")
 
 		manualFire(player, starship, firingLightWeapons, player.inventory.itemInMainHand)
+		activateCommandBursts(player, starship, firingLightWeapons)
 
 		player.debugBanner("END")
 	}
@@ -197,5 +202,14 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 			target,
 			weaponSet
 		)
+	}
+
+	fun activateCommandBursts(
+		player: Player,
+		starship: ActiveStarship,
+		lightWeapons: Boolean,
+	) {
+		val shooter = player.damager()
+		StarshipWeaponry.activateCommandBursts(shooter, starship, lightWeapons)
 	}
 }

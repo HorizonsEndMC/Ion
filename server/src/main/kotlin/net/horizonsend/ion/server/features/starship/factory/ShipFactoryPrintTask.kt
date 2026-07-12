@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.starship.factory.integration.ShipFact
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.miscellaneous.registrations.CreditPrintBlackList
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -41,7 +42,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
-import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component
@@ -55,6 +55,7 @@ import net.starlegacy.javautil.BannerUtils.BannerData
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.Material
 import org.bukkit.block.Banner
+import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
@@ -133,6 +134,7 @@ class ShipFactoryPrintTask(
 	private fun runTick() {
 		if (!queueLoaded) return
 		missingMaterials.clear()
+		var tickCredits = 0.0
 
 		// Blocks that are gonna be printed
 		val toPrint = mutableListOf<BlockKey>()
@@ -144,6 +146,8 @@ class ShipFactoryPrintTask(
 		val availableItems = getAvailableItems(inventories, settings)
 
 		val availableCredits = player.getMoneyBalance()
+
+		val creditPrintingEnabled = entity.settings.creditPrinting
 
 		// Check if the player has any credits
 		checkAvailablecredits(availableCredits, 0.001)
@@ -181,7 +185,12 @@ class ShipFactoryPrintTask(
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
 			// Check if the position is obstructed, if it is, skip the block and try the next.
-			if (!checkObstruction(printItem = printItem, worldBlockData = worldBlockData, requiredAmount = requiredAmount)) {
+			if (!checkObstruction(
+					printItem = printItem,
+					worldBlockData = worldBlockData,
+					requiredAmount = requiredAmount
+				)
+			) {
 				skippedBlocks++
 				continue
 			}
@@ -190,17 +199,32 @@ class ShipFactoryPrintTask(
 			if (!checkPowerConsumption(consumedPower)) break
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
-			if (!checkAvailablecredits(availableCredits, price)) break
 
+			//Check if the current block can be credit printed
+			val isNotCreditPrintable = CreditPrintBlackList.isInBlacklist(blockData) || !CreditPrintBlackList.isInWhitelist(blockData)
+
+			// Try material print first regardless of credit printability
 			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount)
 			if (success) {
 				toPrint.add(printPosition)
 				printedBlocks++
-
-				consumedCredits += price
-				consumedPower += 10
+				consumedPower += 50
+				continue
 			}
-			if (isDisabled) break
+
+			// If no items available and block is credit printable, try credit print
+			if (!isNotCreditPrintable && creditPrintingEnabled) {
+				if (availableCredits - tickCredits < price) {
+					markItemMissing(printItem, requiredAmount)
+					continue
+				}
+				toPrint.add(printPosition)
+				printedBlocks++
+				tickCredits += price
+				consumedCredits += price
+				consumedPower += 50
+				continue
+			}
 		}
 
 		// If the block map is empty, printing has finished
@@ -225,7 +249,7 @@ class ShipFactoryPrintTask(
 		val consumptionFailures = integration.flatMapTo(mutableSetOf()) { it.commitTransaction(this) }
 
 		Tasks.sync {
-			printBlocks(toPrint.minus(consumptionFailures))
+			printBlocks(toPrint.minus(consumptionFailures), tickCredits)
 		}
 
 		if (hasFinished) {
@@ -295,10 +319,9 @@ class ShipFactoryPrintTask(
 		return false
 	}
 
-	private fun printBlocks(blocks: List<BlockKey>) {
-		var consumedMoney = 0.0
-
+	private fun printBlocks(blocks: List<BlockKey>, tickCredits: Double) {
 		var placements = 0
+
 		for (entry in blocks) {
 			blockQueue.remove(entry)
 			val blockData = blockMap.remove(entry) ?: continue
@@ -317,15 +340,8 @@ class ShipFactoryPrintTask(
 				EquipmentSlot.HAND
 			)
 
-			if (!event.callEvent()) {
-				continue
-			}
+			if (!event.callEvent()) continue
 
-			val price = ShipFactoryMaterialCosts.getPrice(blockData)
-			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
-			consumedMoney += price
-
-			// If all good, place the block
 			placements++
 			placeBlock(entry, blockData, signData, bannerData)
 		}
@@ -334,7 +350,7 @@ class ShipFactoryPrintTask(
 			entity.powerStorage.removePower(placements * 10)
 		}
 
-		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(consumedMoney)
+		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(tickCredits)
 	}
 
 	private fun placeBlock(printPosition: BlockKey, data: BlockData, signData: SignData?, bannerData: BannerData?) {

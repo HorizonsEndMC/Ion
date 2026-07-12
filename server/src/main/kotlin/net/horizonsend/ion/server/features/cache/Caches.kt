@@ -22,7 +22,7 @@ object Caches : IonServerComponent() {
 		EcoStations,
 		SpaceStationCache,
 		BookmarkCache,
-		ChestShopCache
+		ChestShopCache,
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)

@@ -5,15 +5,19 @@ import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.space.GalacticMap
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Color
@@ -23,7 +27,9 @@ import org.dynmap.markers.CircleMarker
 import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 import org.litote.kmongo.eq
+import java.awt.Polygon
 import java.io.Closeable
+import kotlin.let
 
 @Suppress("MemberVisibilityCanBePrivate")
 object NationsMap : IonServerComponent(true) {
@@ -36,18 +42,18 @@ object NationsMap : IonServerComponent(true) {
 
 	private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 
-	private val markerSet
+	val nationsMarkerSet
 		get() = markerAPI.getMarkerSet("nations")
-			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, & Stations", null, false)
+			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, Koths & Stations", null, false)
 
-	private lateinit var updates: Closeable
+	private lateinit var nationUpdates: Closeable
 
 	override fun onEnable() {
 		if (!dynmapLoaded) {
 			log.warn("Dynmap not loaded!")
 		}
 
-		updates = Nation.watchUpdates { change ->
+		nationUpdates = Nation.watchUpdates { change ->
 			change[Nation::name]?.let {
 				updateOwners()
 			}
@@ -61,7 +67,7 @@ object NationsMap : IonServerComponent(true) {
 	}
 
 	override fun onDisable() {
-		updates.close()
+		nationUpdates.close()
 	}
 
 	fun reloadDynmap() = syncOnly {
@@ -69,10 +75,10 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.layerPriority = 100
+		nationsMarkerSet.layerPriority = 100
 
-		markerSet.areaMarkers.forEach(AreaMarker::deleteMarker)
-		markerSet.markers.forEach(Marker::deleteMarker)
+		nationsMarkerSet.areaMarkers.forEach(AreaMarker::deleteMarker)
+		nationsMarkerSet.markers.forEach(Marker::deleteMarker)
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
@@ -81,6 +87,9 @@ object NationsMap : IonServerComponent(true) {
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
+			Regions.getAllOf<RegionRegionalObjective>().forEach(::addRegionalObjective)
+			Regions.getAllOf<RegionDominionTerritory>().forEach(::addDominionTerritory)
+			GalacticMap.addGalacticIcons()
 		}
 	}
 
@@ -92,6 +101,9 @@ object NationsMap : IonServerComponent(true) {
 		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
+		Regions.getAllOf<RegionRegionalObjective>().forEach(NationsMap::updateRegionalObjective)
+		Regions.getAllOf<RegionDominionTerritory>().forEach(NationsMap::updateDominionTerritory)
+		GalacticMap.updateGalacticIcons()
 	}
 
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -108,7 +120,7 @@ object NationsMap : IonServerComponent(true) {
 			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
 			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
 
-			markerSet.createAreaMarker(
+			nationsMarkerSet.createAreaMarker(
 				territory.id.toString(), // Id
 				territory.name, // Label
 				true, // Markup label
@@ -125,7 +137,7 @@ object NationsMap : IonServerComponent(true) {
 	}
 
 	private fun removeTerritory(territory: RegionTerritory): Unit = syncOnly {
-		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+		nationsMarkerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
 	}
 
 	fun updateTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -133,7 +145,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+		val marker: AreaMarker? = nationsMarkerSet.findAreaMarker(territory.id.toString())
 
 		if (marker == null) {
 			log.warn("No area marker for territory with ID ${territory.id}")
@@ -263,7 +275,7 @@ object NationsMap : IonServerComponent(true) {
 		val z = station.z.toDouble()
 		val radius = NATIONS_BALANCE.capturableStation.radius.toDouble()
 
-		markerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
+		nationsMarkerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
 
 		updateCapturableStation(station)
 	}
@@ -273,7 +285,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findAreaMarker(station.name)?.deleteMarker()
+		nationsMarkerSet.findAreaMarker(station.name)?.deleteMarker()
 	}
 
 	fun updateCapturableStation(station: RegionCapturableStation): Unit = syncOnly {
@@ -281,7 +293,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker(station.name)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker(station.name)
 			?: return@syncOnly addCapturableStation(station)
 
 		val nation = station.nation?.let(NationCache::get)
@@ -316,7 +328,7 @@ object NationsMap : IonServerComponent(true) {
 		val z = station.z.toDouble()
 		val radius = NATIONS_BALANCE.capturableStation.radius.toDouble()
 
-		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
+		nationsMarkerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
 
 		updateSolarSiege(station)
 	}
@@ -326,7 +338,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findAreaMarker("${station.name} Solar Siege Zone")?.deleteMarker()
+		nationsMarkerSet.findAreaMarker("${station.name} Solar Siege Zone")?.deleteMarker()
 	}
 
 	fun updateSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
@@ -334,7 +346,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker("${station.name} Solar Siege Zone") ?: return@syncOnly addSolarSiege(station)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker("${station.name} Solar Siege Zone") ?: return@syncOnly addSolarSiege(station)
 
 		val nation = station.nation?.let(NationCache::get)
 
@@ -375,9 +387,9 @@ object NationsMap : IonServerComponent(true) {
 		val zRadius = station.radius.toDouble()
 		val persistent = false
 
-		markerSet.findCircleMarker(id)?.deleteMarker()
-		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
-		val marker: CircleMarker = markerSet.findCircleMarker(id)
+		nationsMarkerSet.findCircleMarker(id)?.deleteMarker()
+		nationsMarkerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker(id)
 
 		val rgb = station.color
 		val borderRgb = station.borderColor
@@ -397,7 +409,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findCircleMarker(getMarkerID(station))?.deleteMarker()
+		nationsMarkerSet.findCircleMarker(getMarkerID(station))?.deleteMarker()
 	}
 
 	fun updateSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
@@ -407,6 +419,63 @@ object NationsMap : IonServerComponent(true) {
 
 		removeSpaceStation(station)
 		addSpaceStation(station)
+	}
+
+	fun addRegionalObjective(objective: RegionRegionalObjective): Unit = syncOnly {
+		removeRegionalObjective(objective)
+
+		val type = when (objective.type) {
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
+			else -> "Tax Beacon"
+		}
+
+		val name = "${objective.name} $type"
+		val world = objective.world
+		val x = objective.x.toDouble()
+		val y = 128.0
+		val z = objective.z.toDouble()
+		val radius = RegionRegionalObjective.RADIUS.toDouble()
+
+		nationsMarkerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
+
+		updateRegionalObjective(objective)
+	}
+
+	fun removeRegionalObjective(objective: RegionRegionalObjective) = syncOnly {
+		if (!dynmapLoaded) return@syncOnly
+		val type = when (objective.type) {
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
+			else -> "Tax Beacon"
+		}
+
+		nationsMarkerSet.findCircleMarker("${objective.name} $type")?.deleteMarker()
+	}
+
+	fun updateRegionalObjective(objective: RegionRegionalObjective): Unit = syncOnly {
+		if (!dynmapLoaded) return@syncOnly
+
+		val type = when (objective.type) {
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
+			else -> "Tax Beacon"
+		}
+
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker("${objective.name} $type")
+			?: return@syncOnly addRegionalObjective(objective)
+
+		val nation = objective.nation?.let(NationCache::get)
+
+		val rgb = nation?.color ?: Color.WHITE.asRGB()
+		marker.setFillStyle(0.2, rgb)
+		marker.setLineStyle(5, 0.8, rgb)
+
+		marker.description = """
+        <p><h2>${objective.name} $type</h2></p>
+        ${if (nation == null) {
+			"<p>This $type is unclaimed.</p>"
+		} else {
+			"<h3>Owned by ${nation.name}</h3>"
+		}}
+    """.trimIndent()
 	}
 
 	fun addNpcSpaceStation(station: RegionNPCSpaceStation): Unit = syncOnly {
@@ -425,9 +494,9 @@ object NationsMap : IonServerComponent(true) {
 		val zRadius = station.radius.toDouble()
 		val persistent = false
 
-		markerSet.findCircleMarker(id)?.deleteMarker()
-		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
-		val marker: CircleMarker = markerSet.findCircleMarker(id)
+		nationsMarkerSet.findCircleMarker(id)?.deleteMarker()
+		nationsMarkerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker(id)
 
 		val rgb = station.color
 
@@ -447,7 +516,7 @@ object NationsMap : IonServerComponent(true) {
 		}
 
 		val id = "npc-station-${station.id}"
-		markerSet.findCircleMarker(id)?.deleteMarker()
+		nationsMarkerSet.findCircleMarker(id)?.deleteMarker()
 	}
 
 	fun updateNpcSpaceStation(station: RegionNPCSpaceStation): Unit = syncOnly {
@@ -462,4 +531,105 @@ object NationsMap : IonServerComponent(true) {
 	private fun getMarkerID(station: RegionSpaceStation<*, *>) =
 		"nation-station-" + station.id.toString()
 
+
+	fun addDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		try {
+			removeDominionTerritory(territory)
+
+			val world = territory.bukkitWorld ?: return@syncOnly
+			val worldBorder = world.worldBorder
+			val polygon = Polygon(
+					intArrayOf(
+						0,
+						0,
+						worldBorder.size.toInt(),
+						worldBorder.size.toInt(),
+					),
+					intArrayOf(
+						0,
+						worldBorder.size.toInt(),
+						worldBorder.size.toInt(),
+						0,
+					),
+					4
+				)
+
+			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
+			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
+
+			nationsMarkerSet.createAreaMarker(
+				territory.id.toString(), // Id
+				territory.name, // Label
+				true, // Markup label
+				world.name, // World
+				xPoints.map { it.toDouble() }.toDoubleArray(),
+				yPoints.map { it.toDouble() }.toDoubleArray(),
+				false // Persistent
+			)
+
+			updateDominionTerritory(territory)
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
+	}
+
+	private fun removeDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
+		nationsMarkerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+	}
+
+	fun updateDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: AreaMarker? = nationsMarkerSet.findAreaMarker(territory.id.toString())
+
+		if (marker == null) {
+			log.warn("No area marker for territory with ID ${territory.id}")
+			addDominionTerritory(territory)
+			return@syncOnly
+		}
+
+		var fillOpacity = 0.2
+		var fillRGB = Integer.parseInt("333333", 16)
+		var lineThickness = 3
+		var lineOpacity = 0.75
+		var lineRGB = Integer.parseInt("ffffff", 16)
+
+		val nation: Nation? = territory.nation?.let(Nation.Companion::findById) ?: territory.nation?.let(Nation.Companion::findById)
+
+		if (nation != null) {
+			val alias = territory.alias
+			var name = territory.name
+			if (alias != null) {
+				name = alias + " (${territory.name})"
+			}
+
+			val rgb = nation.color
+			fillOpacity = 0.2
+			fillRGB = rgb
+			lineOpacity = 0.5
+			lineRGB = rgb
+
+			marker.setLabel(
+				"<h3 style=\"text-align: center;\">${name}</h3>" +
+					"\n<h3 style=\"text-align: center;\">Owner: ${nation.name}</h3>" +
+					"\n<p style=\"padding-top: 0;\">${territory.name} is a space territory of the nation ${nation.name}</p>",
+				true
+			)
+		} else {
+			marker.setLabel(
+				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
+					"\n<p style=\"padding-top: 0;\">This territory is unclaimed. It can be claimed for: 250000C</p>",
+				true
+			)
+		}
+
+		marker.setFillStyle(fillOpacity, fillRGB)
+		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
+	}
 }

@@ -51,7 +51,7 @@ abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
 
 	protected fun getFireVec() = getFirePos().toCenterVector()
 
-	protected fun getFirePos(): Vec3i {
+	fun getFirePos(): Vec3i {
 		val distance = length + extraDistance
 		return Vec3i(pos.x + face.modX * distance, pos.y + face.modY * distance, pos.z + face.modZ * distance)
 	}

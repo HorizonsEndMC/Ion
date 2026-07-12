@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
+import net.horizonsend.ion.server.features.explosions.GameObjectsTicker
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.misc.AutoRestart
@@ -44,6 +45,8 @@ import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.sieges.DominionTerritorySieges
+import net.horizonsend.ion.server.features.nations.sieges.RegionalObjectiveSieges
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.NPCDisplay
@@ -55,6 +58,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
+import net.horizonsend.ion.server.features.player.Power
 import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.features.player.WaypointVisibility
 import net.horizonsend.ion.server.features.progression.Bounties
@@ -64,10 +68,11 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sidebar.Sidebar
-import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
+import net.horizonsend.ion.server.features.space.GalacticMap
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
+import net.horizonsend.ion.server.features.space.signatures.SignatureManager
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.Interdiction
@@ -96,13 +101,18 @@ import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
+import net.horizonsend.ion.server.features.world.environment.Environments
+import net.horizonsend.ion.server.features.world.generation.feature.nms.NMSStructureIntegration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.listener.packets.PacketListeners
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VariableRenderDistance
 
 val components: List<IonComponent> = listOf(
 	GameplayTweaks,
+	NMSStructureIntegration,
 	WaypointVisibility,
 	DBManager,
 	RedisActions,
@@ -113,8 +123,12 @@ val components: List<IonComponent> = listOf(
 	DataFixers,
 	Shuttles,
 	ProxyMessaging,
+	AsteroidConfigurations,
 	IonWorld,
 	PacketListeners,
+	VariableRenderDistance,
+	//ActivityRewards,
+	GameObjectsTicker,
 
 	PlayerXPLevelCache,
 	Levels,
@@ -136,6 +150,8 @@ val components: List<IonComponent> = listOf(
 
 	StationSieges,
 	SolarSieges,
+	DominionTerritorySieges,
+	RegionalObjectiveSieges,
 
 	MultiblockRegistration,
 	MultiblockAccess,
@@ -199,6 +215,7 @@ val components: List<IonComponent> = listOf(
 	SpaceMap,
 	NationsMap,
 	HyperspaceBeacons,
+	GalacticMap,
 	Collectors,
 	CityNPCs,
 	AreaShields,
@@ -219,7 +236,6 @@ val components: List<IonComponent> = listOf(
 	HudIcons,
 	Fleets,
 	AIKillStreak,
-	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
 	DisplayHandlers,
@@ -230,4 +246,7 @@ val components: List<IonComponent> = listOf(
 	ServerMutesHook,
 	ChestShops,
     SequenceManager,
+	Environments,
+	Power,
+	SignatureManager,
 )

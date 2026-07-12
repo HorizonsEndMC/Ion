@@ -4,7 +4,9 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.StarshipStatusEffectTypeKeys
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -24,7 +26,10 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveE
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -33,6 +38,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import kotlin.math.log10
 import kotlin.math.sqrt
@@ -50,11 +56,11 @@ object Hyperspace : IonServerComponent() {
 	fun getHyperMatterAmount(starship: Starship): Int {
 		val playerPilot = starship.playerPilot ?: return DEFAULT_HYPERMATTER_AMOUNT
 
-		return if (SolarSieges.checkZoneBenefits(playerPilot)) 1 else DEFAULT_HYPERMATTER_AMOUNT
+		return /*if (SolarSieges.checkZoneBenefits(playerPilot)) 1 else */DEFAULT_HYPERMATTER_AMOUNT
 	}
 
 	private const val DEFAULT_HYPERMATTER_AMOUNT = 2
-	const val INTER_SYSTEM_DISTANCE = 60000
+	const val INTER_SYSTEM_DISTANCE = 30000
 
 	override fun onDisable() {
 		movementTasks.forEach { (_, hyperspaceMovement) ->
@@ -69,21 +75,17 @@ object Hyperspace : IonServerComponent() {
 		z: Int,
 		destinationWorld: World,
 		useFuel: Boolean,
-		nullable: Boolean = false
+		nullable: Boolean = false,
+		beaconTarget: Player? = null
 	) {
-		val massShadows = MassShadows.find(
-			starship.world,
-			starship.centerOfMass.x.toDouble(),
-			starship.centerOfMass.z.toDouble()
-		)
-		if (massShadows != null) {
-			var combinedWellStrength = 0.0
-			massShadows.forEach { combinedWellStrength += it.wellStrength }
-			if (starship.balancing.jumpStrength <= combinedWellStrength) {
-				starship.userError("Ship is within a strong Gravity Well! Jump cancelled")
-				return
+		if (starship.isInvulnerable) {
+			starship.onlinePassengers.forEach {
+				it.userErrorAction("You cannot jump while invulnerable!")
 			}
+			return
 		}
+
+		if (checkIsInterdicted(starship)) return
 
 		if (starship.type == StarshipType.PLATFORM) {
 			starship.onlinePassengers.forEach {
@@ -92,21 +94,52 @@ object Hyperspace : IonServerComponent() {
 			return
 		}
 
+
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
 		val spaceWorld = starship.world
-		check(spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) { "${spaceWorld.name} is not a space world" }
+		check(spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD )) { "${spaceWorld.name} is not a space world" }
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }
 
 		if (hyperdrive != null) {
 			check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
-			jumpWarmup(starship,hyperdrive,x,z,destinationWorld,useFuel)
+			jumpWarmup(starship, hyperdrive, x, z, destinationWorld, useFuel, beaconTarget)
 			return
 		}
 
 		check(nullable) {"Hyperdrive does not exist (invalid null state)"}
-		jumpWarmup(starship = starship, hyperdrive = null, x = x, z = z, destinationWorld = destinationWorld, useFuel = useFuel)
+		jumpWarmup(starship = starship, hyperdrive = null, x = x, z = z, destinationWorld = destinationWorld, useFuel = useFuel, beaconTarget = beaconTarget)
+	}
+
+	fun checkIsInterdicted(starship: ActiveStarship): Boolean {
+		val massShadows = MassShadows.find(
+			starship.world,
+			starship.centerOfMass.x.toDouble(),
+			starship.centerOfMass.z.toDouble()
+		)
+
+		val warpDisruptStatusEffectList =
+			starship.getAllActiveStatusEffectsFromType(StarshipStatusEffectTypes.WARP_DISRUPTED)
+		if (massShadows != null || !warpDisruptStatusEffectList.isNullOrEmpty()) {
+			var combinedWellStrength = 0.0
+
+			// add well strength from gravity wells
+			massShadows?.forEach { combinedWellStrength += it.wellStrength }
+
+			// add well strength from disruptors
+			if (!warpDisruptStatusEffectList.isNullOrEmpty()) {
+				for (effect in warpDisruptStatusEffectList) {
+					combinedWellStrength += effect.strength
+				}
+			}
+
+			if (starship.balancing.jumpStrength <= combinedWellStrength) {
+				starship.userError("Ship is within a strong Gravity Well, or it is disrupted! Jump cancelled")
+				return true
+			}
+		}
+		return false
 	}
 
 	private fun jumpWarmup(
@@ -115,15 +148,16 @@ object Hyperspace : IonServerComponent() {
 		x: Int,
 		z: Int,
 		destinationWorld: World,
-		useFuel: Boolean
+		useFuel: Boolean,
+		beaconTarget: Player? = null
 	) {
 		val dest = Location(destinationWorld, x.toDouble(), starship.centerOfMass.y.toDouble(), z.toDouble())
-		val mass = starship.mass
-		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
-			else calculateSpeed(3, mass)
-		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 
-		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
+		var warmup = starship.balancing.warmupTime
+
+		if (beaconTarget != null) warmup = (warmup * 0.25).toInt()
+
+		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel, beaconTarget)
 
 		(starship.controller as? PlayerController)?.player?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
@@ -244,6 +278,14 @@ object Hyperspace : IonServerComponent() {
 		.sortedBy { it.multiblock.baseRange }
 		.lastOrNull()
 
+	fun findJumpFieldGen(starship: ActiveStarship): JumpFieldGeneratorSubsystem? = starship.jumpFieldGenerators.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
+
+	fun findJumpBeacon(starship: ActiveStarship): JumpBeaconSubsystem? = starship.jumpBeacons.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
+
 	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_hyperspace", ignoreCase = true)
 
 	fun getHyperspaceWorld(world: World): World? =
@@ -287,6 +329,7 @@ object Hyperspace : IonServerComponent() {
 		if (!isHyperspaceWorld(event.starship.world)) {
 			return
 		}
+
 
 		if (event.movement.newWorld != null) {
 			return

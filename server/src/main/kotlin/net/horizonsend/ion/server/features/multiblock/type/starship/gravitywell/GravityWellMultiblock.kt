@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.starship.Interdiction
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.front
@@ -29,7 +30,12 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 		val starship = ActiveStarships.findByPassenger(player) ?: return player.userError("You're not riding the starship")
 		if (!starship.contains(sign.x, sign.y, sign.z)) return
 
-		if (StarshipCruising.isCruising(starship)) return player.userError("Cannot activate while cruising")
+		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 4800) {
+			return player.userError("This cannot be activated while cruising on ships smaller than 4800 blocks!")
+		}
+		if (starship.type != StarshipType.INTERDICTOR_GUNSHIP && starship.type != StarshipType.INTERDICTOR_CORVETTE && starship.type != StarshipType.INTERDICTOR_DESTROYER) {
+			return player.userError("Only interdictors can use gravity wells!")
+		}
 
 		when (event.action) {
 			Action.RIGHT_CLICK_BLOCK -> {
@@ -37,7 +43,7 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 			}
 
 			Action.LEFT_CLICK_BLOCK -> {
-				Interdiction.pulseGravityWell(player, starship, sign)
+				//Interdiction.pulseGravityWell(player, starship, sign)
 			}
 
 			else -> return

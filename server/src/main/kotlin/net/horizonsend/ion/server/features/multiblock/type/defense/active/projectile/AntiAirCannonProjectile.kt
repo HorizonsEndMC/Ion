@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.active.proje
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.configuration.starship.AntiAirProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.damager.damager
@@ -20,8 +21,9 @@ class AntiAirCannonProjectile(
 	source: ProjectileSource,
 	location: Location,
 	direction: Vector,
-	private val playerShooter: Player
-): ParticleProjectile<StarshipParticleProjectileBalancing>(
+	private val playerShooter: Player,
+	override val balancing: AntiAirProjectileBalancing,
+	): ParticleProjectile<StarshipParticleProjectileBalancing>(
 	source,
 	Component.text("Anti Air Cannon"),
 	location,

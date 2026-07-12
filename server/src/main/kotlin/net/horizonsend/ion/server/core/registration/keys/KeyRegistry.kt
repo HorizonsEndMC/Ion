@@ -23,7 +23,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	protected inline fun <reified Z : T> registerTypedKey(key: String): IonRegistryKey<T, Z> {
 		val registryKey = registry.createKey(key, Z::class)
 		keys[key] = registryKey
-		namespaced[registryKey.ionNapespacedKey] = registryKey
+		namespaced[registryKey.ionNamespacedKey] = registryKey
 		allKeys.add(registryKey)
 		return registryKey
 	}
@@ -31,7 +31,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	protected fun registerKey(key: String): IonRegistryKey<T, T> {
 		val registryKey = registry.createKey(key, type)
 		keys[key] = registryKey
-		namespaced[registryKey.ionNapespacedKey] = registryKey
+		namespaced[registryKey.ionNamespacedKey] = registryKey
 		allKeys.add(registryKey)
 		return registryKey
 	}
@@ -40,6 +40,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	operator fun get(namespacedKey: NamespacedKey): IonRegistryKey<T, out T>? = namespaced[namespacedKey]
 
 	fun getOrTrow(string: String): IonRegistryKey<T, out T> = keys[string] ?: throw IllegalArgumentException("Key $string not found for registry ${registryId.key}")
+	fun getOrDefault(string: String, default: IonRegistryKey<T, out T>): IonRegistryKey<T, out T> = keys[string] ?: default
 
 	fun allStrings() = keys.keys
 	fun allKeys() = allKeys
