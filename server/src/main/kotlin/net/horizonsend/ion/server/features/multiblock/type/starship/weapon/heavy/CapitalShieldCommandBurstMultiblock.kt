@@ -120,7 +120,7 @@ object CapitalShieldCommandBurstMultiblock : AbstractCommandBurstMultiblock(Mate
 				x(0).anyGlass()
 				x(-1).anyGlass()
 				x(-2).sponge()
-				x(-3).anyGlass()
+				x(-3).titaniumBlock()
 			}
 			y(1) {
 				x(3).titaniumBlock()
@@ -218,7 +218,7 @@ object CapitalShieldCommandBurstMultiblock : AbstractCommandBurstMultiblock(Mate
 				x(0).anyGlass()
 				x(-1).anyGlass()
 				x(-2).sponge()
-				x(-3).anyGlass()
+				x(3).titaniumBlock()
 			}
 			y(1) {
 				x(3).titaniumBlock()
