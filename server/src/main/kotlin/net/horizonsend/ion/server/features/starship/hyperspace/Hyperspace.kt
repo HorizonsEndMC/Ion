@@ -4,10 +4,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registration.keys.StarshipStatusEffectTypeKeys
-import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
@@ -40,8 +38,8 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import kotlin.collections.set
 import kotlin.math.log10
-import kotlin.math.sqrt
 
 object Hyperspace : IonServerComponent() {
 	private val warmupTasks = mutableMapOf<ActiveStarship, HyperspaceWarmup>()
@@ -203,6 +201,7 @@ object Hyperspace : IonServerComponent() {
 			// Happens after the teleport finishes
 			Tasks.syncDelay(2L) {
 				StarshipEnterHyperspaceEvent(starship, movement).callEvent()
+				DominionTerritoryBuffTypes.doDominionTerritoryBeaconTax(starship, movement)
 			}
 		}
 	}
