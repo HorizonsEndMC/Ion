@@ -179,6 +179,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_B
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.LOG_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MUSHROOM_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SAPLING_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -344,7 +345,7 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_BLOCK)
-			setIngredient('o', OAK_LOG)
+			setIngredient('o', MaterialChoice(LOG_TYPES.toList()))
 			setIngredient('s', STICK)
 		}
 		// Wool -> String
