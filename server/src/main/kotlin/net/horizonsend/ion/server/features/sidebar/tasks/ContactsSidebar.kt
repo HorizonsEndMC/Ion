@@ -77,22 +77,27 @@ import kotlin.math.abs
 
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
-		val settingValue = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsDistance)
-		/*
-		val nationContactRangeBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CONTACT_RANGE)
-		val nationContactRangeModifier = if (nationContactRangeBuffActive) {
-			NationBuffTypes.CONTACT_RANGE.value
-		} else 0.0
-		 */
-		val dominionContactRangeModifier = if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE))
-			DominionTerritoryBuffTypes.CONTACT_RANGE.value else 0.0
-		return if (player.world.hasFlag(WorldFlag.DOMINION_WORLD)) {
-			(settingValue?.plus(/*nationContactRangeModifier + */dominionContactRangeModifier)?.times(0.5))?.squared()?.toInt()
-				?: 0
-		} else {
-			settingValue?.plus(/*nationContactRangeModifier + */dominionContactRangeModifier)?.squared()?.toInt()
-				?: 0
-		}
+        val settingValue = player
+            .takeIf { it.isOnline }
+            ?.getSettingOrThrow(PlayerSettings::contactsDistance)
+            // Needed clamping as part off a legacy db bug fix also changed the calculation re ordering because the divisor needs to go before the dominion bonus.
+            ?.coerceIn(0, PlayerSettings.MAX_CONTACTS_DISTANCE)
+            ?: return 0
+
+        val dominionContactRangeModifier =
+            if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE)) {
+                DominionTerritoryBuffTypes.CONTACT_RANGE.value
+            } else {
+                0.0
+            }
+
+        val effectiveDistance = if (player.world.hasFlag(WorldFlag.DOMINION_WORLD)) {
+            settingValue * 0.5 + dominionContactRangeModifier
+        } else {
+            settingValue + dominionContactRangeModifier
+        }
+
+        return effectiveDistance.squared().toInt()
     }
 
     private fun priorityColorChange(): Boolean {

@@ -11,7 +11,7 @@ import org.litote.kmongo.id.StringId
 data class PlayerSettings(
 	override val _id: StringId<PlayerSettings>,
 
-	var contactsDistance: Int = 2500,
+	var contactsDistance: Int = MAX_CONTACTS_DISTANCE,
 	var contactsMaxNameLength: Int = 64,
 	var contactsSort: Int = 0,
 	var contactsColoring: Int = 0,
@@ -101,6 +101,8 @@ data class PlayerSettings(
 	var hudIconSize: Int = 5,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
+		const val MAX_CONTACTS_DISTANCE = 2500
+
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->
 			require(col.none(session, PlayerSettings::_id eq id))
 

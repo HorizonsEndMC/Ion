@@ -39,7 +39,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 	companion object {
 		const val MIN_LENGTH = 0
 		const val WAYPOINT_MAX_LENGTH = 30
-		const val CONTACTS_RANGE = 2500
+		const val CONTACTS_RANGE = PlayerSettings.MAX_CONTACTS_DISTANCE
 		const val MAX_NAME_LENGTH = 64
 		//const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
 	}
