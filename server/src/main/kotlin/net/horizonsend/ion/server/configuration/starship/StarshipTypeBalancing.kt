@@ -305,7 +305,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Blockade Runners require fuel to pilot!"
+					"Blockade Runners require a fuel tank to pilot!"
 				)
 			),
 			forbiddenMultiblocks = listOf(
@@ -405,12 +405,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					BargeReactorSubsystem::class.java,
 					1,
-					"Barges require a reactor to pilot!"
+					"Barges require a barge reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Barges require fuel to pilot!"
+					"Barges require a fuel tank to pilot!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -463,7 +463,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Jump Freighters require fuel to pilot!"
+					"Jump Freighters require a fuel tank to pilot!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -508,12 +508,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					1,
-					"Jump Freighters require a large reactor to pilot!"
+					"Industrial Command Ships require a large reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Jump Freighters require fuel to pilot!"
+					"Industrial Command Ships require a fuel tank to pilot!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -583,7 +583,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MiniReactorSubsystem::class.java,
 					1,
-					"Tech 2 starfighters require a mini reactor to pilot!"
+					"Scramblers require a mini reactor to pilot!"
 				)),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -626,7 +626,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MiniReactorSubsystem::class.java,
 					1,
-					"Tech 2 starfighters require a mini reactor to pilot!"
+					"Recon Fighters require a mini reactor to pilot!"
 				)),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -734,7 +734,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MiniReactorSubsystem::class.java,
 					1,
-					"Tech 2 gunships require a mini reactor to pilot!"
+					"Assault Gunships require a mini reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -778,7 +778,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MiniReactorSubsystem::class.java,
 					1,
-					"Tech 2 gunships require a mini reactor to pilot!"
+					"Interdictor Gunships require a mini reactor to pilot!"
 				)),
 			weaponOverrides = listOf(
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
@@ -854,12 +854,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
 					1,
-					"Tech 2 corvettes require a small reactor to pilot!"
+					"Interdictor Corvettes require a small reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Interdictor Corvettes require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -888,12 +888,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
 					1,
-					"Tech 2 corvettes require a small reactor to pilot!"
+					"Stasis Corvettes require a small reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Stasis Corvettes require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -941,12 +941,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
 					1,
-					"Tech 2 corvettes require a small reactor to pilot!"
+					"Assault Corvettes require a small reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Assault Corvettes require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -992,12 +992,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
 					1,
-					"Tech 2 corvettes require a small reactor to pilot!"
+					"Logistics Corvettes require a small reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Logistics Corvettes require a fuel tank to pilot!"
 				)),
 			commandBurstOverrides = listOf(
 				SkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
@@ -1105,12 +1105,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 frigates require a medium reactor to pilot!"
+					"Assault Frigates require a medium reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Assault Frigates require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -1154,12 +1154,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 frigates require a medium reactor to pilot!"
+					"Black Ops Frigates require a medium reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Black Ops Frigates require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
@@ -1201,12 +1201,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 frigates require a medium reactor to pilot!"
+					"Missile Frigates require a medium reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Missile Frigates require a fuel tank to pilot!"
 				)),
 			weaponOverrides = listOf(
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 28500),
@@ -1301,12 +1301,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 destroyers require a medium reactor to pilot!"
+					"Assault Destroyers require a medium reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Assault Destroyers require a fuel tank to pilot!"
 				)),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
@@ -1349,12 +1349,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
 					1,
-					"Tech 2 destroyers require a medium reactor to pilot!"
+					"Interdictor Destroyers require a medium reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"tech 2 ships require a fuel tank to pilot!"
+					"Interdictor Destroyers require a fuel tank to pilot!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -1407,7 +1407,7 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					CruiserReactorSubsystem::class.java,
 					1,
-					"Cruisers require a reactor to pilot!"
+					"Cruisers require a cruiser reactor to pilot!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1455,12 +1455,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Cruisers require a fuel tank to pilot!"
+					"Logistics Cruisers require a fuel tank to pilot!"
 				),
 				RequiredSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					1,
-					"Tech 2 cruisers require a large reactor to pilot!"
+					"Logistics Cruisers require a large reactor to pilot!"
 				)
 			),
 			forbiddenMultiblocks = listOf(
@@ -1515,12 +1515,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Cruisers require a fuel tank to pilot!"
+					"Missile Cruisers require a fuel tank to pilot!"
 				),
 				RequiredSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					1,
-					"Tech 2 cruisers require a large reactor to pilot!"
+					"Missile Cruisers require a large reactor to pilot!"
 				)
 			),
 			forbiddenMultiblocks = listOf(
@@ -1588,12 +1588,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					BattlecruiserReactorSubsystem::class.java,
 					1,
-					"Battlecruisers require a reactor to pilot!"
+					"Battlecruisers require a battlecruiser reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Battlecruisers require fuel to pilot!"
+					"Battlecruisers require a fuel tank to pilot!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1630,12 +1630,12 @@ data class NewStarshipBalancing(
 				RequiredSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					1,
-					"Tech 2 battlecruisers require a large reactor to pilot!"
+					"Lancers require a large reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,
 					1,
-					"Battlecruisers require fuel to pilot!"
+					"Lancers require a fuel tank to pilot!"
 				)
 			),
 			forbiddenMultiblocks = listOf(
