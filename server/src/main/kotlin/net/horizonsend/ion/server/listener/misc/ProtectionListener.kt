@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
@@ -81,6 +83,8 @@ object ProtectionListener : SLEventListener() {
 
 	/** Allows exceptions to the onBlockEdit check **/
 	private fun shouldNotBeChecked(player: Player, clickedBlock: Block): Boolean {
+		if (clickedBlock.customBlock is InteractableCustomBlock) return false
+
 		// It is much easier to decide what should be the exception than to make exceptions
 		// If something ends up getting checked that shouldn't
 		// (e.g. clicking the glass in your cockpit), it could break firing weapons.

@@ -110,7 +110,7 @@ object CustomBlockListeners : SLEventListener() {
 		customBlock.removeCallback(block)
     }
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onPlayerInteract(event: PlayerInteractEvent) {
 		val clickedBlock = event.clickedBlock ?: return
 		val customBlock = clickedBlock.customBlock ?: return
