@@ -251,7 +251,7 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0),
 					budget = VariableIntegerAmount(10, 20),
-					groupMessage = text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
+					groupMessage = text("An unusually strong alien signature has been detected in {5}", WATCHER_ACCENT),
 					individualSpawnMessage = null,
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
@@ -310,7 +310,7 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0),
 					budget = VariableIntegerAmount(15, 30),
-					groupMessage = text("An unusually strong alien signature has been detected in {3} at {0}, {2}", 吃饭人_STANDARD),
+					groupMessage = text("An unusually strong alien signature has been detected in {5}", 吃饭人_STANDARD),
 					individualSpawnMessage = null,
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
@@ -473,7 +473,7 @@ object AISpawners : IonServerComponent(true) {
 					pointChance = 0.5,
 					pointThreshold = 20 * 60 * 7,
 				),
-				spawnMessage = "<${吃饭人_STANDARD}>An unknown starship signature is being broadcast in {4} at {1}, {3}".miniMessage(),
+				spawnMessage = "<${吃饭人_STANDARD}>An unknown starship signature is being broadcast in {5}".miniMessage(),
 				worlds = listOf(
 					WorldSettings(
 						worldName = "Trench",
@@ -510,7 +510,7 @@ object AISpawners : IonServerComponent(true) {
 					pointChance = 0.5,
 					pointThreshold = 10000
 				),
-				spawnMessage = "<${HE_MEDIUM_GRAY}>A pirate {0} has been identified in the area of {1}, {3}, in {4}. <$PIRATE_SATURATED_RED>Please avoid the sector until the threat has been cleared.".miniMessage(),
+				spawnMessage = "<${HE_MEDIUM_GRAY}>A pirate {0} has been identified in the region of {5}. <$PIRATE_SATURATED_RED>Please avoid the sector until the threat has been cleared.".miniMessage(),
 				worlds = listOf(
 					WorldSettings(
 						worldName = "Asteri",
@@ -733,7 +733,7 @@ object AISpawners : IonServerComponent(true) {
 					pointChance = 0.75,
 					pointThreshold = 20 * 60 * 10
 				),
-				spawnMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage(),
+				spawnMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned in the {5} region".miniMessage(),
 				worlds = listOf(
 					explorerWorld("Asteri", 0.2),
 					explorerWorld("Sirius", 0.11),
