@@ -120,7 +120,7 @@ object SettingsCommand : SLCommand() {
     }
 
     @CommandAlias("sidebar contacts changecontactsrange")
-    @CommandCompletion("0|6000")
+    @CommandCompletion("0|2500")
     fun onSettingsSidebarContactsChangeContactsRange(sender: Player, value: Int) = asyncCommand(sender) {
         handleIntegerInputSetting(sender, PlayerSettings::contactsDistance, value, 0, MainSidebar.CONTACTS_RANGE)
     }

@@ -26,6 +26,7 @@ import org.bukkit.entity.Player
 
 class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
     private val contactsDistance = player.getSettingOrThrow(PlayerSettings::contactsDistance)
+        .coerceIn(0, PlayerSettings.MAX_CONTACTS_DISTANCE)
     private val starshipsEnabled = player.getSettingOrThrow(PlayerSettings::contactsStarships)
     private val lastStarshipEnabled = player.getSettingOrThrow(PlayerSettings::lastStarshipEnabled)
 	private val planetsEnabled = player.getSettingOrThrow(PlayerSettings::planetsEnabled)
