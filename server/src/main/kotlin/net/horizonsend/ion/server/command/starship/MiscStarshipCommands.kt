@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
-import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -19,7 +18,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
-import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
@@ -36,19 +34,12 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
-import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.GATE_TAX_AMOUNT
-import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.GATE_TAX_DAILY_CAP
-import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.dailyGateTaxCollected
-import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes.dailyGateTaxResetTime
-import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction
-import net.horizonsend.ion.server.features.starship.Interdiction.pulseGravityWell
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
@@ -78,11 +69,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
-import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.parseData
 import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
@@ -93,7 +82,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -425,8 +413,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		failIf(starship.isDirectControlEnabled || starship.isMoving || StarshipCruising.isCruising(starship)) { "You cannot use a jump beacon while moving!" }
-
-		failIf(starship.world.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)) { "You cannot activate a jump beacon in a trade world!" }
 
 		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) { "You can only activate jump beacons in space!" }
 
@@ -866,46 +852,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		if (beacon != null) {
 			val other = beacon.exits?.randomOrNull() ?: beacon.destination
-			val destinationWorld = other.bukkitWorld()
-
-			// Gate tax check
-			if (destinationWorld.hasFlag(WorldFlag.DOMINION_WORLD)) {
-				val tradeWorldTerritory = Regions.getAllOf<RegionDominionTerritory>()
-					.firstOrNull { it.world == destinationWorld.name }
-				val ownerNationId = tradeWorldTerritory?.nation
-
-				if (ownerNationId != null) {
-					val ownerTerritoryCount = Regions.getAllOf<RegionDominionTerritory>()
-						.count { it.nation == ownerNationId }
-
-					if (ownerTerritoryCount >= 5) {
-						if (!VAULT_ECO.has(sender, GATE_TAX_AMOUNT)) {
-							sender.userError("You cannot afford the ${GATE_TAX_AMOUNT.toCreditsString()} gate tax to enter ${destinationWorld.name}!")
-							return
-						}
-
-						// Reset daily cap if 24 hours have passed
-						val lastReset = dailyGateTaxResetTime[ownerNationId] ?: 0L
-						if (System.currentTimeMillis() - lastReset > TimeUnit.DAYS.toMillis(1)) {
-							dailyGateTaxCollected[ownerNationId] = 0.0
-							dailyGateTaxResetTime[ownerNationId] = System.currentTimeMillis()
-						}
-
-						val currentCollected = dailyGateTaxCollected[ownerNationId] ?: 0.0
-
-						if (currentCollected < GATE_TAX_DAILY_CAP) {
-							val actualTax = minOf(GATE_TAX_AMOUNT, GATE_TAX_DAILY_CAP - currentCollected)
-							VAULT_ECO.withdrawPlayer(sender, actualTax)
-							Nation.deposit(ownerNationId, actualTax.toInt())
-							dailyGateTaxCollected[ownerNationId] = currentCollected + actualTax
-							sender.information("Paid ${actualTax.toCreditsString()} gate tax to enter ${destinationWorld.name}.")
-						} else {
-							// Cap reached, no tax but still allow jump
-							sender.information("Gate tax cap reached for ${destinationWorld.name}, no tax charged.")
-						}
-					}
-				}
-			}
 
 			tryJump(ship, other.x, other.z, other.bukkitWorld(), Int.MAX_VALUE, sender, null)
 			ship.beacon = null

@@ -117,10 +117,25 @@ object UnusedSoldShipPurge : IonServerComponent() {
 
 		true
 	} catch (e: StarshipDetection.DetectionFailedException) {
-		log.warn("Could not delete abandoned sold ship! $data")
+		log.warn("Could not delete abandoned sold ship as it could not detect! $data")
+		log.warn("Attempting to pilot anyways!")
+
+		try {
+			Tasks.sync {
+				PilotedStarships.activateWithoutPilot(
+					debugAudience,
+					data,
+					createController = {
+						GarbageCollectorController(it)
+					}
+				)
+			}
+		} catch (e: SpawningException) {
+			log.warn("Could not delete abandoned sold ship even after attempting to pilot! $data")
+		}
 		false
 	} catch (e: SpawningException) {
-		log.warn("Could not delete abandoned sold ship! $data")
+		log.warn("Could not delete abandoned sold ship as it could not pilot! $data")
 		false
 	}
 
@@ -138,7 +153,7 @@ object UnusedSoldShipPurge : IonServerComponent() {
 		return toLoad
 	}
 
-	private class GarbageCollectorController(starship: ActiveStarship): NoOpController(starship, null) {
+	class GarbageCollectorController(starship: ActiveStarship): NoOpController(starship, null) {
 		override fun tick() {
 			StarshipDestruction.vanish(starship)
 		}

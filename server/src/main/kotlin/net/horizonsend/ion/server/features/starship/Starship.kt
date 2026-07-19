@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
@@ -32,6 +33,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -463,7 +465,11 @@ class Starship(
 	var directControlCooldown = initialDirectControlCooldown
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		when(controller) {
+		if (enabled && StarshipCruising.isCruising(this)) {
+			this.userErrorAction("Direct Control cannot be enabled while cruising")
+			return
+		}
+		when (controller) {
 			is ActivePlayerController -> {
 				val controller = controller as ActivePlayerController
 				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
@@ -888,5 +894,34 @@ class Starship(
 	fun removeStatusEffectType(statusEffectType: StarshipStatusEffectType) {
 		statusEffects[statusEffectType]?.clear()
 		this.information("All status effects of ${statusEffectType.displayName.plainText()} were removed")
+	}
+
+	fun isTouchingExternalBlock(): Boolean {
+		for (key in blocks.iterator()) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
+
+						val nearbyX = x + offsetX
+						val nearbyY = y + offsetY
+						val nearbyZ = z + offsetZ
+
+						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
+						if (contains(nearbyX, nearbyY, nearbyZ)) continue
+
+						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+							return true
+						}
+					}
+				}
+			}
+		}
+
+		return false
 	}
 }

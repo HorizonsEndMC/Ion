@@ -146,10 +146,14 @@ object StarshipComputers : IonServerComponent() {
 
 	private fun createComputer(player: Player, block: Block) {
 		// Allow computers within an NPC space station that is not protected to be detected
+		// guh maybe gutin was right, i'd rather deal with the player reports of people stealing ships over
+		// noobs getting messed up after server crashes and their ship gets undetected
+		/*
 		if (Regions.find(block.location).none { it is RegionNPCSpaceStation && !it.isProtected }
 			&& isRegionDenied(player, block.location)) {
 			return player.userError("You can only detect computers in territories you can access.")
 		}
+		 */
 
 		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
 			player.successActionMessage("Registered starship computer!")

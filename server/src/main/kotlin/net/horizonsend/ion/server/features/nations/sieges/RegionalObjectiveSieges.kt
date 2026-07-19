@@ -16,9 +16,11 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
@@ -55,9 +57,9 @@ object RegionalObjectiveSieges : IonServerComponent() {
 
 	private val siegeDurationMillis get() = TimeUnit.MINUTES.toMillis(45)
 	const val MIN_SHIP_SIZE = 8000
-	const val COOLDOWN_HOURS = 24L
-	const val XENON_REWARD = 10
-	const val MIN_DOMINION_TERRITORIES = 2
+	const val COOLDOWN_HOURS = 8L
+	const val XENON_REWARD = 4
+	const val MIN_DOMINION_TERRITORIES = 1
 
 	// Points awarded per tick for presence
 	private const val PRESENCE_POINTS = 2
@@ -96,19 +98,17 @@ object RegionalObjectiveSieges : IonServerComponent() {
 				continue
 			}
 
-			val playersInZone = world.players.filter { player ->
-				region.contains(player.location) &&
-					PilotedStarships.isPiloting(player) &&
-					(ActiveStarships.findByPilot(player)?.initialBlockCount ?: 0) >= MIN_SHIP_SIZE
-			}
+			val playersInZone = world.players.filter { player -> region.contains(player.location) && PilotedStarships.isPiloting(player) }
 
 			for (player in playersInZone) {
-				val nationId = PlayerCache[player].nationOid ?: continue
-				siege.points.merge(nationId, PRESENCE_POINTS, Int::plus)
 				CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_SIEGE_STATION)
-
 				val remaining = TimeUnit.MILLISECONDS.toSeconds(siegeDurationMillis - elapsed) / 60.0
 				player.informationAction("${String.format("%.2f", remaining)} minutes remaining in ${region.name} siege")
+
+				if ((ActiveStarships.findByPilot(player)?.initialBlockCount ?: 0) >= MIN_SHIP_SIZE) {
+					val nationId = PlayerCache[player].nationOid ?: continue
+					siege.points.merge(nationId, PRESENCE_POINTS, Int::plus)
+				}
 			}
 		}
 	}
@@ -229,6 +229,7 @@ object RegionalObjectiveSieges : IonServerComponent() {
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
 			"<gold>${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 45 minutes!"
 		))
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 45 minutes!")
 	}
 
 	private fun endSiege(siege: ActiveSiege) = asyncLocked {
@@ -242,6 +243,7 @@ object RegionalObjectiveSieges : IonServerComponent() {
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
 				"<gold>The siege on ${siege.type.name.replace('_', ' ')} $regionName has ended with no participants!"
 			))
+			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The siege on ${siege.type.name.replace('_', ' ')} $regionName has ended with no participants!")
 			return@asyncLocked
 		}
 
@@ -254,6 +256,9 @@ object RegionalObjectiveSieges : IonServerComponent() {
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
 			"<gold>${siege.type.name.replace('_', ' ')} $regionName has been captured by $winnerName!"
 		))
+
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "${siege.type.name.replace('_', ' ')} $regionName has been captured by $winnerName!")
+
 
 		// Type-specific rewards
 		when (siege.type) {

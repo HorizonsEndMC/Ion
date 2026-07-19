@@ -63,7 +63,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		val controller = starship.controller
 		if (controller is PlayerController) {
 			if (!DynmapPlugin.plugin.getPlayerVisbility(controller.player)) {
-				starshipsIcons.remove(starship.charIdentifier)
+				removeMarkersInSet(starship.charIdentifier, starshipsIcons.get(starship.charIdentifier), starshipMarkers)
 				return
 			}
 		}
@@ -90,7 +90,7 @@ object StarshipDisplay : IonServerComponent(true) {
 			val movement = Hyperspace.getHyperspaceMovement(starship)!!
 
 			if (movement.originWorld != movement.dest.world) {
-				starshipsIcons.remove(charIdentifier)
+				removeMarkersInSet(charIdentifier, null,starshipMarkers)
 				return
 			}
 
@@ -179,17 +179,27 @@ object StarshipDisplay : IonServerComponent(true) {
 		while (iterator.hasNext()) {
 			val (identifier, icon) = iterator.next()
 
-			if (ActiveStarships.getByCharIdentifier(identifier) != null) continue
+			val starship = ActiveStarships.getByCharIdentifier(identifier)
+			val playerPilot = starship?.playerPilot
+			// the starship is still actively piloted, AND
+			// (the starship is not controlled by a player, OR
+			// the starship is controlled by a player and the player is visible on Dynmap):
+			// Do not remove the marker from the set
+			if (starship != null && (starship.controller !is PlayerController || (playerPilot != null && DynmapPlugin.plugin.getPlayerVisbility(playerPilot)))) continue
 
-			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
-			gravityWellCircleMarker?.deleteMarker()
-
-			markerSet.findMarker(identifier)?.deleteMarker()
-			for (circle in icon.circles) {
-				markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
-			}
+			removeMarkersInSet(identifier, icon, markerSet)
 
 			iterator.remove()
+		}
+	}
+
+	private fun removeMarkersInSet(identifier: String, icon: StarshipIcon?, markerSet: MarkerSet) {
+		markerSet.findMarker(identifier)?.deleteMarker()
+		markerSet.findCircleMarker("${identifier}_gravity_well")?.deleteMarker()
+
+		icon ?: return
+		for (circle in icon.circles) {
+			markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
 		}
 	}
 

@@ -15,6 +15,8 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.NationsMap
+import net.horizonsend.ion.server.features.space.GalacticMap
 import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 
@@ -49,6 +51,9 @@ class RegionDominionTerritory(territory: DominionTerritory) :
 		delta[DominionTerritory::trustedPlayers]?.let { bson ->
 			trustedPlayers = bson.array().mappedSet { it.slPlayerId() }
 		}
+
+		NationsMap.updateDominionTerritory(this)
+		GalacticMap.updateGalacticIconByName(name)
 	}
 
 	val isUnclaimed get() = nation == null

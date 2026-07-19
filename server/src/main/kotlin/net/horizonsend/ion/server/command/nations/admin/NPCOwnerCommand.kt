@@ -76,21 +76,27 @@ internal object NPCOwnerCommand : SLCommand() {
 	}
 
 	@Subcommand("territory create tradecity")
-    fun onCreateTerritoryTC(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
-		val territory = requireTerritoryIn(sender)
-		validateTerritoryName(name)
-		val color = validateColor(red, green, blue)
-		NPCTerritoryOwner.create(territory.id, name, color, true)
-		sender.success("Created npc trade city $name")
+    fun onCreateTerritoryTC(sender: Player, name: String, red: Int, green: Int, blue: Int) {
+		val territoryId = requireTerritoryIn(sender).id
+
+		asyncCommand(sender) {
+			validateTerritoryName(name)
+			val color = validateColor(red, green, blue)
+			NPCTerritoryOwner.create(territoryId, name, color, true)
+			sender.success("Created npc trade city $name")
+		}
 	}
 
 	@Subcommand("territory create")
-    fun onCreateTerritory(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
-		val territory = requireTerritoryIn(sender)
-		validateTerritoryName(name)
-		val color = validateColor(red, green, blue)
-		NPCTerritoryOwner.create(territory.id, name, color, false)
-		sender.success("Created npc territory $name")
+    fun onCreateTerritory(sender: Player, name: String, red: Int, green: Int, blue: Int) {
+		val territoryId = requireTerritoryIn(sender).id
+
+		asyncCommand(sender) {
+			validateTerritoryName(name)
+			val color = validateColor(red, green, blue)
+			NPCTerritoryOwner.create(territoryId, name, color, false)
+			sender.success("Created npc territory $name")
+		}
 	}
 
 	@Subcommand("territory delete")

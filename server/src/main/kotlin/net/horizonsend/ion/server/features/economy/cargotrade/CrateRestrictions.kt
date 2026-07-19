@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.economy.cargotrade
 
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.common.extensions.successAction
+import net.horizonsend.ion.common.utils.text.deserializeComponent
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager.getShipmentItemId
@@ -9,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
@@ -52,14 +56,12 @@ object CrateRestrictions : IonServerComponent() {
 	fun onPlace(event: BlockPlaceEvent) {
 		if (!event.canBuild()) return
 
+		CargoCrates[event.itemInHand] ?: return
 		val block: Block = event.block
-		val state: ShulkerBox = block.state as? ShulkerBox ?: return
 
 		// Override cancelling from other plugins. It will only not be cancelled if the below conditions are met.
 		// If it is not cancelled here, it should bypass protection.
 		event.isCancelled = true
-
-		CargoCrates[state] ?: return // don't need to store it, just check if is a crate
 
 		val against = event.blockAgainst
 		val direction = against.getFace(block)
@@ -90,7 +92,7 @@ object CrateRestrictions : IonServerComponent() {
 		}
 
 		event.isCancelled = false
-		event.player.sendActionBar("${RESET}Placed ${state.customName}".replace("$RESET", "$GREEN"))
+		event.player.successAction("Placed ${deserializeComponent(event.itemInHand.displayName().plainText(), LegacyComponentSerializer.legacySection()).plainText()}")
 	}
 
 	//region Piston State Change Crate Popping

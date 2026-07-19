@@ -90,29 +90,6 @@ object FixExtractorsCommand : SLCommand() {
 		sender.success("Fixed $count inverted daylight detectors")
 	}
 
-	@CommandAlias("removestarships")
-	@Suppress("unused")
-	fun onRemoveStarships(sender: Player) {
-		val selection = getSelection(sender, 200000) ?: return
-
-		if (sender.world.name != selection.world?.name) return
-
-		var count = 0
-
-		for (blockPosition in selection) {
-			val x = blockPosition.x()
-			val y = blockPosition.y()
-			val z = blockPosition.z()
-
-			val starshipData = DeactivatedPlayerStarships[sender.world, x, y, z] ?: continue
-
-			DeactivatedPlayerStarships.destroyAsync(starshipData)
-			count++
-		}
-
-		sender.success("Destroyed $count starship computers")
-	}
-
 	private fun getSelection(sender: Player, maxSelectionVolume: Int): Region? {
 		val selection = sender.getSelection() ?: return null
 		if (selection.volume > maxSelectionVolume && !sender.hasPermission("group.dutymode")) {

@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
 import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.entity.Player
 
@@ -40,6 +41,7 @@ class RegionRegionalObjective(objective: RegionalObjective) :
 		delta[RegionalObjective::x]?.let { x = it.int() }
 		delta[RegionalObjective::z]?.let { z = it.int() }
 		delta[RegionalObjective::nation]?.let { nation = it.nullable()?.oid() }
+		NationsMap.updateRegionalObjective(this)
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? = null

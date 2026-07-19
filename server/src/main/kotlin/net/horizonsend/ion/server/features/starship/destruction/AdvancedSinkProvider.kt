@@ -92,7 +92,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		sinkPositions = newArray
 
 		SinkAnimation(starship, starship.initialBlockCount, starship.world, starship.centerOfMass).schedule()
-		tryReactorParticles()
+		//tryReactorParticles()
 		playSinkSound()
 	}
 

@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.packTerritoryPolygon
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
@@ -18,6 +17,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceSt
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.space.GalacticMap
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Color
@@ -42,7 +42,7 @@ object NationsMap : IonServerComponent(true) {
 
 	private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 
-	private val markerSet
+	val nationsMarkerSet
 		get() = markerAPI.getMarkerSet("nations")
 			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, Koths & Stations", null, false)
 
@@ -75,10 +75,10 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.layerPriority = 100
+		nationsMarkerSet.layerPriority = 100
 
-		markerSet.areaMarkers.forEach(AreaMarker::deleteMarker)
-		markerSet.markers.forEach(Marker::deleteMarker)
+		nationsMarkerSet.areaMarkers.forEach(AreaMarker::deleteMarker)
+		nationsMarkerSet.markers.forEach(Marker::deleteMarker)
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
@@ -89,6 +89,7 @@ object NationsMap : IonServerComponent(true) {
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
 			Regions.getAllOf<RegionRegionalObjective>().forEach(::addRegionalObjective)
 			Regions.getAllOf<RegionDominionTerritory>().forEach(::addDominionTerritory)
+			GalacticMap.addGalacticIcons()
 		}
 	}
 
@@ -102,6 +103,7 @@ object NationsMap : IonServerComponent(true) {
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 		Regions.getAllOf<RegionRegionalObjective>().forEach(NationsMap::updateRegionalObjective)
 		Regions.getAllOf<RegionDominionTerritory>().forEach(NationsMap::updateDominionTerritory)
+		GalacticMap.updateGalacticIcons()
 	}
 
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -118,7 +120,7 @@ object NationsMap : IonServerComponent(true) {
 			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
 			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
 
-			markerSet.createAreaMarker(
+			nationsMarkerSet.createAreaMarker(
 				territory.id.toString(), // Id
 				territory.name, // Label
 				true, // Markup label
@@ -135,7 +137,7 @@ object NationsMap : IonServerComponent(true) {
 	}
 
 	private fun removeTerritory(territory: RegionTerritory): Unit = syncOnly {
-		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+		nationsMarkerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
 	}
 
 	fun updateTerritory(territory: RegionTerritory): Unit = syncOnly {
@@ -143,7 +145,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+		val marker: AreaMarker? = nationsMarkerSet.findAreaMarker(territory.id.toString())
 
 		if (marker == null) {
 			log.warn("No area marker for territory with ID ${territory.id}")
@@ -273,7 +275,7 @@ object NationsMap : IonServerComponent(true) {
 		val z = station.z.toDouble()
 		val radius = NATIONS_BALANCE.capturableStation.radius.toDouble()
 
-		markerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
+		nationsMarkerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
 
 		updateCapturableStation(station)
 	}
@@ -283,7 +285,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findAreaMarker(station.name)?.deleteMarker()
+		nationsMarkerSet.findAreaMarker(station.name)?.deleteMarker()
 	}
 
 	fun updateCapturableStation(station: RegionCapturableStation): Unit = syncOnly {
@@ -291,7 +293,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker(station.name)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker(station.name)
 			?: return@syncOnly addCapturableStation(station)
 
 		val nation = station.nation?.let(NationCache::get)
@@ -326,7 +328,7 @@ object NationsMap : IonServerComponent(true) {
 		val z = station.z.toDouble()
 		val radius = NATIONS_BALANCE.capturableStation.radius.toDouble()
 
-		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
+		nationsMarkerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
 
 		updateSolarSiege(station)
 	}
@@ -336,7 +338,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findAreaMarker("${station.name} Solar Siege Zone")?.deleteMarker()
+		nationsMarkerSet.findAreaMarker("${station.name} Solar Siege Zone")?.deleteMarker()
 	}
 
 	fun updateSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
@@ -344,7 +346,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker("${station.name} Solar Siege Zone") ?: return@syncOnly addSolarSiege(station)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker("${station.name} Solar Siege Zone") ?: return@syncOnly addSolarSiege(station)
 
 		val nation = station.nation?.let(NationCache::get)
 
@@ -385,9 +387,9 @@ object NationsMap : IonServerComponent(true) {
 		val zRadius = station.radius.toDouble()
 		val persistent = false
 
-		markerSet.findCircleMarker(id)?.deleteMarker()
-		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
-		val marker: CircleMarker = markerSet.findCircleMarker(id)
+		nationsMarkerSet.findCircleMarker(id)?.deleteMarker()
+		nationsMarkerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker(id)
 
 		val rgb = station.color
 		val borderRgb = station.borderColor
@@ -407,7 +409,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findCircleMarker(getMarkerID(station))?.deleteMarker()
+		nationsMarkerSet.findCircleMarker(getMarkerID(station))?.deleteMarker()
 	}
 
 	fun updateSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
@@ -423,7 +425,7 @@ object NationsMap : IonServerComponent(true) {
 		removeRegionalObjective(objective)
 
 		val type = when (objective.type) {
-			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
 			else -> "Tax Beacon"
 		}
 
@@ -434,7 +436,7 @@ object NationsMap : IonServerComponent(true) {
 		val z = objective.z.toDouble()
 		val radius = RegionRegionalObjective.RADIUS.toDouble()
 
-		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
+		nationsMarkerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
 
 		updateRegionalObjective(objective)
 	}
@@ -442,22 +444,22 @@ object NationsMap : IonServerComponent(true) {
 	fun removeRegionalObjective(objective: RegionRegionalObjective) = syncOnly {
 		if (!dynmapLoaded) return@syncOnly
 		val type = when (objective.type) {
-			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
 			else -> "Tax Beacon"
 		}
 
-		markerSet.findCircleMarker("${objective.name} $type")?.deleteMarker()
+		nationsMarkerSet.findCircleMarker("${objective.name} $type")?.deleteMarker()
 	}
 
 	fun updateRegionalObjective(objective: RegionRegionalObjective): Unit = syncOnly {
 		if (!dynmapLoaded) return@syncOnly
 
 		val type = when (objective.type) {
-			RegionalObjectiveType.TAX_BEACON -> "Gas Depot"
+			RegionalObjectiveType.GAS_DEPOT -> "Gas Depot"
 			else -> "Tax Beacon"
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker("${objective.name} $type")
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker("${objective.name} $type")
 			?: return@syncOnly addRegionalObjective(objective)
 
 		val nation = objective.nation?.let(NationCache::get)
@@ -492,9 +494,9 @@ object NationsMap : IonServerComponent(true) {
 		val zRadius = station.radius.toDouble()
 		val persistent = false
 
-		markerSet.findCircleMarker(id)?.deleteMarker()
-		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
-		val marker: CircleMarker = markerSet.findCircleMarker(id)
+		nationsMarkerSet.findCircleMarker(id)?.deleteMarker()
+		nationsMarkerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
+		val marker: CircleMarker = nationsMarkerSet.findCircleMarker(id)
 
 		val rgb = station.color
 
@@ -514,7 +516,7 @@ object NationsMap : IonServerComponent(true) {
 		}
 
 		val id = "npc-station-${station.id}"
-		markerSet.findCircleMarker(id)?.deleteMarker()
+		nationsMarkerSet.findCircleMarker(id)?.deleteMarker()
 	}
 
 	fun updateNpcSpaceStation(station: RegionNPCSpaceStation): Unit = syncOnly {
@@ -559,7 +561,7 @@ object NationsMap : IonServerComponent(true) {
 			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
 			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
 
-			markerSet.createAreaMarker(
+			nationsMarkerSet.createAreaMarker(
 				territory.id.toString(), // Id
 				territory.name, // Label
 				true, // Markup label
@@ -576,7 +578,7 @@ object NationsMap : IonServerComponent(true) {
 	}
 
 	private fun removeDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
-		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+		nationsMarkerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
 	}
 
 	fun updateDominionTerritory(territory: RegionDominionTerritory): Unit = syncOnly {
@@ -584,7 +586,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+		val marker: AreaMarker? = nationsMarkerSet.findAreaMarker(territory.id.toString())
 
 		if (marker == null) {
 			log.warn("No area marker for territory with ID ${territory.id}")

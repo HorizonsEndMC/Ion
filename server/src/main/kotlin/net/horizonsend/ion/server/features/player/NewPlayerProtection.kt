@@ -189,6 +189,7 @@ object NewPlayerProtection : SLCommand(), Listener {
 	@EventHandler
 	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player || event.damager !is Player) return
+		if (event.entity.world.hasFlag(WorldFlag.NOT_SECURE)) return
 
 		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
 			event.damager.alertAction(
@@ -202,6 +203,7 @@ object NewPlayerProtection : SLCommand(), Listener {
 	@EventHandler
 	fun onNoobHurtPlayer(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player || event.damager !is Player) return
+		if (event.entity.world.hasFlag(WorldFlag.NOT_SECURE)) return
 
 		if ((event.damager as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
 			event.damager.alertAction(

@@ -64,6 +64,7 @@ import net.horizonsend.ion.server.command.nations.stationZones.StationPlotComman
 import net.horizonsend.ion.server.command.nations.stationZones.StationZoneCommand
 import net.horizonsend.ion.server.command.progression.AdvanceAdminCommand
 import net.horizonsend.ion.server.command.progression.BuyXPCommand
+import net.horizonsend.ion.server.command.economy.BuyChetheriteCommand
 import net.horizonsend.ion.server.command.progression.XPCommand
 import net.horizonsend.ion.server.command.qol.BlockStatsCommand
 import net.horizonsend.ion.server.command.qol.CalcExpCommand
@@ -111,6 +112,7 @@ val commands: List<SLCommand> = listOf(
 	TransportDebugCommand,
 	ShuttleCommand,
 	BuyXPCommand,
+	BuyChetheriteCommand,
 	RainbowProjectileCommand,
 
 	SettlementCommand,

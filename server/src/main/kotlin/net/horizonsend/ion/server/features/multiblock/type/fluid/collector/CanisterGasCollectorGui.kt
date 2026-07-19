@@ -24,7 +24,7 @@ class CanisterGasCollectorGui(viewer: Player, val entity: CanisterGasCollectorMu
 		when (gas.identifier) {
 			"HYDROGEN" -> region == SpaceRegion.MONOLITH
 			"METHANE" -> region == SpaceRegion.SPINE
-			"NITROGEN" -> region == SpaceRegion.FRACTURE
+			"NITROGEN" -> region == SpaceRegion.FRACTURE || region == SpaceRegion.WARD
 			"XENON" -> false
 			else -> true // everything else has no restriction
 		}

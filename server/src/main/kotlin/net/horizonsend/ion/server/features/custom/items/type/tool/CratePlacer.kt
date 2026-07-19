@@ -82,7 +82,6 @@ object CratePlacer : CustomItem(
 			//attempt to place the crate
 			//I copied gutins code and prayed that it worked
 			//fake block place event
-			val paperItem = itemState.inventory.filterNotNull().first()
 			val replacedState = target.state
 
 			val data = item.type.createBlockData() as Directional
@@ -106,8 +105,8 @@ object CratePlacer : CustomItem(
 
 			val placedBox = target.state as ShulkerBox
 			placedBox.customName(item.itemMeta.displayName())
-			placedBox.inventory.clear()
-			placedBox.inventory.addItem(paperItem.clone())
+			placedBox.snapshotInventory.contents = itemState.inventory.contents.map { it?.clone() }.toTypedArray()
+			itemState.persistentDataContainer.copyTo(placedBox.persistentDataContainer, true)
 			placedBox.update(true, false)
 
 			val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)

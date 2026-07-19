@@ -20,7 +20,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Color
 import org.bukkit.Material
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -85,13 +84,13 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(4).terracottaOrDoubleSlab()
 			}
 			y(getSign() * 4) {
-				x(-3).type(IRON_TRAPDOOR)
+				x(-3).anyTrapdoor()
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(3).type(IRON_TRAPDOOR)
+				x(3).anyTrapdoor()
 			}
 			y(getSign() * 2) {
 				x(-1).sponge()
@@ -111,13 +110,13 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(getSign() * 4) {
-				x(-3).type(IRON_TRAPDOOR)
+				x(-3).anyTrapdoor()
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(3).type(IRON_TRAPDOOR)
+				x(3).anyTrapdoor()
 			}
 			y(getSign() * 2) {
 				x(0).sponge()
@@ -153,9 +152,9 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 			}
 			y(getSign() * 4) {
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(-1).type(IRON_TRAPDOOR)
+				x(-1).anyTrapdoor()
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).type(IRON_TRAPDOOR)
+				x(1).anyTrapdoor()
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 		}
@@ -182,9 +181,9 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).ironBlock()
 			}
 			y(getSign() * 4) {
-				x(-1).type(IRON_TRAPDOOR)
+				x(-1).anyTrapdoor()
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).type(IRON_TRAPDOOR)
+				x(1).anyTrapdoor()
 			}
 		}
 		z(-4) {

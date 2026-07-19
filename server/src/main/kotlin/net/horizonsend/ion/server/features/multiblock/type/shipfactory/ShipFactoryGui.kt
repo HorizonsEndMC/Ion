@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import com.google.common.collect.Maps
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
@@ -52,7 +53,9 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.ShadowColor
 import org.bukkit.entity.Player
+import org.litote.kmongo.contains
 import org.litote.kmongo.eq
+import org.litote.kmongo.or
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
@@ -69,7 +72,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 				". . . . C c . . .",
 				"X Y Z . . . . . .",
 				"B A M R . P . e .",
-				"m 1 3 6 . I . . ."
+				"m 1 3 6 b I . . ."
 			)
 			.addIngredient('s', searchMenuBotton)
 			.addIngredient('i', blueprintMenuBotton)
@@ -141,6 +144,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			.addIngredient('d', disableButton)
 			.addIngredient('e', enableButton)
 			.addIngredient('m', getMergeIndicator())
+			.addIngredient('b', blueprintMenu)
 			.build()
 
 		if (!isValid()) return null
@@ -241,7 +245,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		.build()
 
 	private val blueprintMenuBotton = GuiItems.createButton(GuiItem.MAGNIFYING_GLASS.makeItem(text("Open Blueprint Menu"))) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
+		BlueprintMenu(player, shared = entity.settings.useSharedBlueprints) { blueprint, _ ->
 			entity.setBlueprint(blueprint)
 			entity.ensureBlueprintLoaded(player)
 			entity.openMenu(player)
@@ -249,7 +253,14 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 	}
 
 	private val searchMenuBotton = GuiItems.createButton(GuiItem.EMPTY.makeItem(text("Search for Blueprint"))) { _, player, _ ->
-		val playerBlueprints = Blueprint.find(Blueprint::owner eq player.slPlayerId).toList()
+		val playerBlueprints = if (entity.settings.useSharedBlueprints) {
+			Blueprint.find(or(
+				Blueprint::trustedPlayers contains player.slPlayerId,
+				Blueprint::trustedNations contains SLPlayer[player.slPlayerId]?.nation
+			)).toList()
+		} else {
+			Blueprint.find(Blueprint::owner eq player.slPlayerId).toList()
+		}
 
 		player.openSearchMenu(
 			entries = playerBlueprints,
@@ -421,6 +432,23 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			GuiItem.COLLECT_CREDITS,
 			false
 		),
+	).apply { setParent(this@ShipFactoryGui) }
+
+	private val blueprintMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(text("Blueprint Settings"))) { _, _, _ ->
+		blueprintSettings.openGui()
+	}
+
+	private val blueprintSettings = createSettingsPage(
+		viewer,
+		"Blueprint Settings",
+		BooleanSupplierConsumerButton(
+			entity.settings::useSharedBlueprints,
+			{ entity.settings.useSharedBlueprints = it },
+			text("Shared Blueprints"),
+			"Toggle between checking for personal or shared blueprints when searching for blueprints.",
+			GuiItem.GEAR,
+			false
+		)
 	).apply { setParent(this@ShipFactoryGui) }
 
 	private fun getMergeIndicator(): Item {
