@@ -445,7 +445,7 @@ object HudIcons : IonServerComponent() {
      * @param player the affected player
      */
     private fun getTextOffset(scale: Float, player: Player) =
-        0.48 * scale * (min(player.clientViewDistance.toDouble(), Bukkit.getWorlds()[0].viewDistance.toDouble()) / 10.0)
+        0.48 * scale * (min(player.clientViewDistance.toDouble(), player.viewDistance.toDouble()) / 10.0)
 
     /**
      * Gets the associated custom item from the planet's name.
