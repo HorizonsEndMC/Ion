@@ -199,11 +199,13 @@ class LocusScheduler(
 
 		var newLoc: Location? = null
 
+		var planetCheckAttempts = 0
 		while (newLoc == null) {
 			val newX = Random.nextDouble(minX, maxX)
 			val newZ = Random.nextDouble(minZ, maxZ)
 
-			if (planets.any { it.location.distance(Vec3i(newX.toInt(), it.location.y, newZ.toInt())) < 1000.0 }) continue
+			planetCheckAttempts += 1
+			if (planetCheckAttempts <= 10 && planets.any { it.location.distance(Vec3i(newX.toInt(), it.location.y, newZ.toInt())) < 1000.0 }) continue
 
 			newLoc = Location(world, newX, LOCUS_Y, newZ)
 		}
