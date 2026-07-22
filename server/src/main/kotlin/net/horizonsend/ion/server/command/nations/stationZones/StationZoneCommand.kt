@@ -453,6 +453,13 @@ object StationZoneCommand : SLCommand() {
 
     private fun getZoneData(zone: RegionStationZone): StationZone = StationZone.findById(zone.id) ?: error("Zone ${zone.name} only exists in cache!")
 
+    @Subcommand("set gravity")
+    fun onSetGravity(sender: Player, zone: RegionStationZone, enabled: Boolean) = asyncCommand(sender) {
+        requireStationWithPermissionAndZone(sender, zone)
+        StationZone.setArtificialGravity(zone.id, enabled)
+        sender.success("${if (enabled) "Enabled" else "Disabled"} artificial gravity in station zone ${zone.name}")
+    }
+
     @Subcommand("set price")
     @Description("Set the price of the specified zone. Must be unowned. Use -1 for not for sale")
     @CommandCompletion("@stationZones -1|0|1000")

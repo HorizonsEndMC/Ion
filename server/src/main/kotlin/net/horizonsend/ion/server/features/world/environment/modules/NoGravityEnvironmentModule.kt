@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.world.environment.modules
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.core.registration.keys.WrappedListenerTypeKeys
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.environment.WorldEnvironmentManager
 import net.horizonsend.ion.server.features.world.environment.isInside
@@ -23,6 +25,12 @@ class NoGravityEnvironmentModule(manager: WorldEnvironmentManager, val ignoreInd
 		for (player in world.players) {
 			// the GOAT Codex made me realize that returns brick the entire function, not just every player
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) continue
+
+			if (Regions.getAllOf<RegionStationZone>().any { it.artificialGravity && it.contains(player.location) }) {
+				player.isFlying = false
+				player.allowFlight = false
+				continue
+			}
 
 			// do not update fly speed if the player is piloting and is in direct control
 			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true && player.getSetting(PlayerSettings::floatWhileDc) == true) continue
@@ -58,6 +66,8 @@ class NoGravityEnvironmentModule(manager: WorldEnvironmentManager, val ignoreInd
 			val entity = event.entity
 
 			if (!entity.world.hasEnvironment()) return@createInstance
+
+			if (Regions.getAllOf<RegionStationZone>().any { it.artificialGravity && it.contains(entity.location) }) return@createInstance
 
 			entity.setGravity(false)
 			entity.velocity = entity.velocity.multiply(0.05)
