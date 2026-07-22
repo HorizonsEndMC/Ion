@@ -84,7 +84,6 @@ object EventLogger : IonServerComponent() {
 			)
 		}
 
-		/*
 		listen<BazaarDepositItemToSellOrderEvent> { event ->
 			val player = event.player
 			val itemString = event.itemString
@@ -162,7 +161,6 @@ object EventLogger : IonServerComponent() {
 				"**sold to a buy order on bazaar**: $amount of $item at $city (rev: $subtotal; tax: $tax; total: $total)"
 			)
 		}
-		 */
 
 		listen<BazaarCollectItemFromBuyOrderEvent> { event ->
 			val player = event.player
