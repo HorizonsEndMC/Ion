@@ -85,14 +85,22 @@ object CombatTimer : IonServerComponent() {
 			val npcKeysToRemove = npcTimer.filter { it.value <= System.currentTimeMillis() }.keys
 			for (uuid in npcKeysToRemove) {
 				npcTimer.remove(uuid)
-				Bukkit.getPlayer(uuid)?.success("You are no longer in combat (NPC)")
+				val player = Bukkit.getPlayer(uuid)
+				if (player != null) {
+					player.success("You are no longer in combat (NPC) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
+				}
+				log.info("${Bukkit.getPlayer(uuid)?.name ?: "Player UUID $uuid"} left NPC combat for reason: Expired")
 				if (!pvpTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
 			val pvpKeysToRemove = pvpTimer.filter { it.value <= System.currentTimeMillis() }.keys
 			for (uuid in pvpKeysToRemove) {
 				pvpTimer.remove(uuid)
-				Bukkit.getPlayer(uuid)?.success("You are no longer in combat (PvP)")
+				val player = Bukkit.getPlayer(uuid)
+				if (player != null) {
+					player.success("You are no longer in combat (PVP) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
+				}
+				log.info("${Bukkit.getPlayer(uuid)?.name ?: "Player UUID $uuid"} left PVP combat for reason: Expired")
 				if (!npcTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
@@ -168,13 +176,15 @@ object CombatTimer : IonServerComponent() {
 		// Remove all combat tags on death
 		listen<PlayerDeathEvent> { event ->
 			if (npcTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (NPC)")
+				event.player.success("You are no longer in combat (NPC) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left NPC combat for reason: Died at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				npcTimer.remove(event.player.uniqueId)
 				if (!pvpTimer.contains(event.player.uniqueId)
 					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 			if (pvpTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (PVP)")
+				event.player.success("You are no longer in combat (PVP) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left PvP combat for reason: Died at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				pvpTimer.remove(event.player.uniqueId)
 				if (!npcTimer.contains(event.player.uniqueId)
 					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
@@ -183,13 +193,15 @@ object CombatTimer : IonServerComponent() {
 
 		listen<PlayerPostRespawnEvent> { event ->
 			if (npcTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (NPC)")
+				event.player.success("You are no longer in combat (NPC) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left NPC combat for reason: Respawned at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				npcTimer.remove(event.player.uniqueId)
 				if (!pvpTimer.contains(event.player.uniqueId)
 					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 			if (pvpTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (PVP)")
+				event.player.success("You are no longer in combat (PVP) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left PvP combat for reason: Respawned at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				pvpTimer.remove(event.player.uniqueId)
 				if (!npcTimer.contains(event.player.uniqueId)
 					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
@@ -217,11 +229,15 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 
 		if (!isNpcCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
-			player.alert("You are now in combat (NPC)")
+			player.alert("You are now in combat (NPC) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
 			player.sendMessage(npcTimerAlertComponent(reason))
 			if (player.hasProtection() && !player.world.hasFlag(WorldFlag.NOT_SECURE)) {
 				player.sendMessage(newPlayerAlertComponent())
 			}
+		}
+
+		if (!isNpcCombatTagged(player)) {
+			log.info("${player.name} entered NPC combat in ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}, for reason: $reason")
 		}
 
 		npcTimer[player.uniqueId] = System.currentTimeMillis() + NPC_TIMER_MINS.toMillis()
@@ -234,11 +250,15 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 
 		if (!isPvpCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
-			player.alert("You are now in combat (PVP)")
+			player.alert("You are now in combat (PVP) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 			if (player.hasProtection() && !player.world.hasFlag(WorldFlag.NOT_SECURE)) {
 				player.sendMessage(newPlayerAlertComponent())
 			}
+		}
+
+		if (!isPvpCombatTagged(player)) {
+			log.info("${player.name} entered PvP combat in ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}, for reason: $reason")
 		}
 
 		pvpTimer[player.uniqueId] = System.currentTimeMillis() + PVP_TIMER_MINS.toMillis()
