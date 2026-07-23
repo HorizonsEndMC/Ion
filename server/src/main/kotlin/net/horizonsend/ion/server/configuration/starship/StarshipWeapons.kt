@@ -262,7 +262,7 @@ data class HeavyNeutralizerBalancing(
 		override var maxDegrees: Double = 25.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override var effectStrength: Double = 0.85,
+		override var effectStrength: Double = 0.70,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(30L)
 
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
@@ -306,7 +306,7 @@ data class NeutralizerBalancing(
 		override var particleThickness: Double = 4.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override var effectStrength: Double = 0.70,
+		override var effectStrength: Double = 0.40,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L),
 		override val maxDegrees: Double = 45.0
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
