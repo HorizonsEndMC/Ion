@@ -632,8 +632,12 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"This ship cannot use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					JumpFieldGeneratorSubsystem::class.java,
+					"This ship cannot use a jump field generator!"
 				)
-			),
+				),
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -882,7 +886,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.72,
+			shieldPowerMultiplier = 0.65,
 			shieldRegenMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -1143,13 +1147,13 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
-			warmupTime = 15,
+			warmupTime = 10,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.35,
-			shieldRegenMultiplier = 0.8,
-			cruiseSpeedMultiplier = 1.40,
+			shieldPowerMultiplier = 0.55,
+			shieldRegenMultiplier = 0.85,
+			cruiseSpeedMultiplier = 1.45,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1559,14 +1563,14 @@ data class NewStarshipBalancing(
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,
 			cruiseSpeedMultiplier = 0.9,
-			shieldPowerMultiplier = 1.30,
+			shieldPowerMultiplier = 1.40,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 17500)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
-				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 28500),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),

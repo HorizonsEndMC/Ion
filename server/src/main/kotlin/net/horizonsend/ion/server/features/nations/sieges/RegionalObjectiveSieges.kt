@@ -55,9 +55,9 @@ object RegionalObjectiveSieges : IonServerComponent() {
 
 	val activeSieges = Collections.synchronizedList(mutableListOf<ActiveSiege>())
 
-	private val siegeDurationMillis get() = TimeUnit.MINUTES.toMillis(45)
+	private val siegeDurationMillis get() = TimeUnit.MINUTES.toMillis(30)
 	const val MIN_SHIP_SIZE = 8000
-	const val COOLDOWN_HOURS = 8L
+	const val COOLDOWN_HOURS = 12L
 	const val XENON_REWARD = 4
 	const val MIN_DOMINION_TERRITORIES = 1
 
