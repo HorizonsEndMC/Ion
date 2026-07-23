@@ -46,18 +46,15 @@ class IonTurretProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-
-		val speedPenalty = 1 - balancing.effectStrength
-
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
-			speedPenalty,
+			balancing.effectStrength,
 			balancing.effectDurationMillis,
 			shooter.starship,
 		))
 		starship.addStatusEffect(StarshipStatusEffect(
 			StarshipStatusEffectTypes.CRUISE_SLOW,
-			speedPenalty,
+			balancing.effectStrength,
 			balancing.effectDurationMillis,
 			shooter.starship,
 		))
