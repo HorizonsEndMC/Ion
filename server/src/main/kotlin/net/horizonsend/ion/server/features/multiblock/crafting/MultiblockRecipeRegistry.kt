@@ -175,7 +175,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		register(MultiblockRecipeKeys.CHEESE_PROCESSING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.CHEESE_PROCESSING,
 			clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
-			smeltingItem = MaterialRequirement(Material.MILK_BUCKET),
+			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.CHEESE_BUCKET),
 			fuelItem = null,
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(

@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_BREACHER_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CANNON_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE_BUCKET
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESEBURGER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
@@ -972,6 +973,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', TOMATO)
 			setIngredient('s', SALAMI)
 		}
+		shapeless(
+			"cheese_bucket",
+			CHEESE_BUCKET.getValue().constructItemStack(),
+			CraftingBookCategory.MISC,
+			MILK_BUCKET,
+			Material.WHEAT_SEEDS
+		)
 		shapeless("ice_cream_mixture", ICE_CREAM_MIXTURE.getValue().constructItemStack(), CraftingBookCategory.MISC, MILK_BUCKET, SUGAR, ICE)
 		shapeless("nutrient_cube", NUTRIENT_CUBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			addIngredient(MaterialChoice(WHEAT))
