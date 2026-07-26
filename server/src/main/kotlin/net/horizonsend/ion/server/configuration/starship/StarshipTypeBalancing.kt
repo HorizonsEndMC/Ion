@@ -1432,7 +1432,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.85,
 			shieldPowerMultiplier = 0.8,
-			shieldRegenMultiplier = 4.0,
+			shieldRegenMultiplier = 4.5,
 			commandBurstOverrides = listOf(
 				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
 					IncompatibleSubsystemInfo(
@@ -1501,7 +1501,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 3.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
-			cruiseSpeedMultiplier = 0.85,
+			cruiseSpeedMultiplier = 0.88,
 			shieldPowerMultiplier = 0.95,
 			shieldRegenMultiplier = 0.8,
 			weaponOverrides = listOf(

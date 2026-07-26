@@ -570,8 +570,8 @@ data class ThermonuclearMissileBalancing(
 
 	@Serializable
 	data class ThermonuclearMissileProjectileBalancing(
-		override var range: Double = 245.0,
-		override var speed: Double = 37.5,
+		override var range: Double = 265.0,
+		override var speed: Double = 42.5,
 		override var explosionPower: Float = 20f,
 		override var starshipShieldDamageMultiplier: Double = 15.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
@@ -709,7 +709,7 @@ data class RapidHeavyMissileLauncherBalancing(
 	@Serializable
 	data class RapidHeavyMissileLauncherProjectileBalancing(
 		override var range: Double = 300.0,
-		override var speed: Double = 35.0,
+		override var speed: Double = 42.5,
 		override var explosionPower: Float = 7.0f,
 		override var starshipShieldDamageMultiplier: Double = 10.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
