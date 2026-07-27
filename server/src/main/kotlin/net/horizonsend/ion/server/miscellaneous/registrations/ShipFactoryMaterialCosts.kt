@@ -69,6 +69,7 @@ import org.bukkit.Material.END_ROD
 import org.bukkit.Material.END_STONE
 import org.bukkit.Material.END_STONE_BRICKS
 import org.bukkit.Material.EXPOSED_COPPER
+import org.bukkit.Material.FARMLAND
 import org.bukkit.Material.FURNACE
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GRANITE
@@ -279,6 +280,7 @@ object ShipFactoryMaterialCosts {
 		MYCELIUM to 5.0,
 		COARSE_DIRT to 5.0,
 		ROOTED_DIRT to 5.0,
+		FARMLAND to 5.0,
 		MUD to 5.0,
 		CLAY to 5.0,
 		GRAVEL to 5.0,

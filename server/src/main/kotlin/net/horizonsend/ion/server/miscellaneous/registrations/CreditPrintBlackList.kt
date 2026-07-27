@@ -192,6 +192,7 @@ object CreditPrintBlackList {
 		Material.MYCELIUM,
 		Material.COARSE_DIRT,
 		Material.ROOTED_DIRT,
+		Material.FARMLAND,
 		Material.MUD,
 		Material.CLAY,
 		Material.GRAVEL,
