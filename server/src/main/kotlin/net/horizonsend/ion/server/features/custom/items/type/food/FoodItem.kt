@@ -26,6 +26,7 @@ class FoodItem(
     hunger: Int,
     saturation: Float,
     consumeSeconds: Float = 1.6f,
+    animation: ItemUseAnimation = ItemUseAnimation.EAT,
     sound: Key = Key.key("minecraft", "entity.generic.eat"),
     consumeEffects: MutableList<ConsumeEffect> = mutableListOf<ConsumeEffect>(),
     canAlwaysEat: Boolean = false,
@@ -41,7 +42,7 @@ class FoodItem(
         .setMaxStackSize(stackSize)
         .addData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
             .consumeSeconds(consumeSeconds)
-            .animation(ItemUseAnimation.EAT)
+            .animation(animation)
             .sound(sound)
             .hasConsumeParticles(true)
             .addEffects(consumeEffects)

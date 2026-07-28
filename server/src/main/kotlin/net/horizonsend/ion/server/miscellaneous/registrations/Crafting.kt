@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_BREACHER_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CANNON_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COFFEE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESEBURGER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
@@ -995,6 +996,13 @@ object Crafting : IonServerComponent() {
 			addIngredient(ExactChoice(TOMATO.getValue().constructItemStack()))
 			addIngredient(MaterialChoice(BOWL))
 		}
+		shapeless(
+			"coffee",
+			COFFEE.getValue().constructItemStack(),
+			CraftingBookCategory.MISC,
+			Material.COCOA_BEANS,
+			Material.FLOWER_POT,
+		)
 
 		//Flowers and fauna
 

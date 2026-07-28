@@ -1,5 +1,7 @@
 ﻿package net.horizonsend.ion.server.core.registration.registries
 
+import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -46,6 +48,7 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -57,6 +60,8 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.function.Supplier
 import kotlin.math.roundToInt
 
@@ -1082,6 +1087,27 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
             }
+		)
+		register(
+			CustomItemKeys.COFFEE, FoodItem(
+				key = CustomItemKeys.COFFEE,
+				displayName = Component.text("Coffee"),
+				itemModel = "food/coffee",
+				stackSize = 64,
+				hunger = 4,
+				saturation = 0f,
+				animation = ItemUseAnimation.DRINK,
+				sound = Key.key("minecraft", "entity.generic.drink"),
+				consumeEffects = mutableListOf(
+					ConsumeEffect.applyStatusEffects(
+						listOf(
+							PotionEffect(PotionEffectType.HUNGER, 3_200, 0),
+							PotionEffect(PotionEffectType.SPEED, 3_200, 1),
+						),
+						1.0f,
+					),
+				),
+			)
 		)
 	}
 
