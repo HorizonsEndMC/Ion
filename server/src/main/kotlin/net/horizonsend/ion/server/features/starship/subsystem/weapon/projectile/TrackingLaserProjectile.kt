@@ -29,7 +29,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	protected val maxDegrees: Double get() = balancing.maxDegrees
 
-	private fun calculateTarget() = getTargetOrigin().clone()
+	open fun calculateTarget() = targetBase.clone().add(getTargetOrigin())
 
 	override fun fire() {
 		processTarget()
@@ -87,7 +87,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		val targetDirection = calculateTarget()
 			.subtract(location.toVector())
 			.normalize()
-		direction = adjust(direction, targetDirection, Math.toRadians(maxDegrees * delta))
+		direction = adjust(direction, targetDirection, Math.toRadians(maxDegrees*delta))
 	}
 
 	private fun adjust(start: Vector, end: Vector, maxRadians: Double): Vector {
