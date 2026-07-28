@@ -222,7 +222,7 @@ data class NewStarshipBalancing(
 		val lightFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
-			warmupTime = 30,
+			warmupTime = 23,
 			interdictionRange = 900,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -257,7 +257,7 @@ data class NewStarshipBalancing(
 		val mediumFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
-			warmupTime = 30,
+			warmupTime = 23,
 			interdictionRange = 1200,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -337,7 +337,7 @@ data class NewStarshipBalancing(
 		val heavyFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
-			warmupTime = 30,
+			warmupTime = 23,
 			interdictionRange = 1500,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
@@ -369,7 +369,7 @@ data class NewStarshipBalancing(
 		val barge: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
-			warmupTime = 60,
+			warmupTime = 40,
 			interdictionRange = 4500,
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
@@ -421,7 +421,7 @@ data class NewStarshipBalancing(
 		val jumpFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
-			warmupTime = 120,
+			warmupTime = 60,
 			interdictionRange = 4500,
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
@@ -474,12 +474,12 @@ data class NewStarshipBalancing(
 		val industrialCommandShip: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
-			warmupTime = 120,
+			warmupTime = 60,
 			interdictionRange = 500,
-			jumpStrength = 3.0,
-			wellStrength = 1.0,
+			jumpStrength = 4.0,
+			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 3.0,
-			cruiseSpeedMultiplier = 0.50,
+			cruiseSpeedMultiplier = 1.20,
 			maxCruiseSpeed = 14,
 			shieldPowerMultiplier = 1.50,
 			weaponOverrides = listOf(
@@ -793,6 +793,10 @@ data class NewStarshipBalancing(
 					"This ship cannot use a jump field generator!"
 				),
 				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Interdiction Ships cannot use Disruptors!"
+				),
+				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
 				)
@@ -854,6 +858,12 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 0.8,
 			shieldRegenMultiplier = 0.5,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Interdiction Ships cannot use Disruptors!"
+				),
+			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -1198,9 +1208,9 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.77,
+			shieldPowerMultiplier = 0.62,
 			shieldRegenMultiplier = 0.8,
-			cruiseSpeedMultiplier = 0.85,
+			cruiseSpeedMultiplier = 0.80,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1349,6 +1359,12 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.9,
 			shieldPowerMultiplier = 0.7,
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Interdiction Ships cannot use Disruptors!"
+				),
+			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,

@@ -252,8 +252,8 @@ data class HeavyNeutralizerBalancing(
 
 	@Serializable
 	data class HeavyNeutralizerProjectileBalancing(
-		override var range: Double = 180.0,
-		override var speed: Double = 40.0,
+		override var range: Double = 200.0,
+		override var speed: Double = 65.0,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 2.0,
@@ -662,10 +662,10 @@ data class LightMissileLauncherBalancing(
 
 	@Serializable
 	data class LightMissileLauncherProjectileBalancing(
-		override var range: Double = 300.0,
-		override var speed: Double = 85.0,
+		override var range: Double = 275.0,
+		override var speed: Double = 80.0,
 		override var explosionPower: Float = 5.50f,
-		override var starshipShieldDamageMultiplier: Double = 7.0,
+		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
@@ -815,7 +815,7 @@ data class HeavyTurretBalancing(
 	@Serializable
 	data class HeavyTurretProjectileBalancing(
         override var range: Double = 400.0,
-        override var speed: Double = 70.0,
+        override var speed: Double = 80.0,
         override var explosionPower: Float = 3.5f,
         override var starshipShieldDamageMultiplier: Double = 3.25,
         override var areaShieldDamageMultiplier: Double = 1.0,
@@ -880,7 +880,7 @@ data class AssaultTurretBalancing(
 	@Serializable
 	data class AssaultTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 80.0,
+		override var speed: Double = 92.5,
 		override var explosionPower: Float = 4.5f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
@@ -944,7 +944,7 @@ data class QuadTurretBalancing(
 	@Serializable
 	data class QuadTurretProjectileBalancing(
         override var range: Double = 500.0,
-        override var speed: Double = 40.0,
+        override var speed: Double = 50.0,
         override var explosionPower: Float = 5f,
         override var starshipShieldDamageMultiplier: Double = 6.9,
         override var areaShieldDamageMultiplier: Double = 10.0,
@@ -976,7 +976,7 @@ data class ACAPTurretBalancing(
 	@Serializable
 	data class ACAPTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 37.5,
+		override var speed: Double = 50.0,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 9.5,
 		override var areaShieldDamageMultiplier: Double = 6.0,
@@ -1008,7 +1008,7 @@ data class IonTurretBalancing(
 	@Serializable
 	data class IonTurretProjectileBalancing(
 		override var range: Double = 400.0,
-		override var speed: Double = 55.0,
+		override var speed: Double = 65.0,
 		override var explosionPower: Float = 3f,
 		override var starshipShieldDamageMultiplier: Double = 3.7,
 		override var areaShieldDamageMultiplier: Double = 100.0,
@@ -1403,7 +1403,7 @@ data class LightLogisticsCannonBalancing(
 	@Serializable
 	data class LightLogisticsCannonProjectileBalancing(
 		override var range: Double = 140.0,
-		override var speed: Double = 2000.0,
+		override var speed: Double = 8000.0,
 		override var explosionPower: Float = 0f,
 		override var starshipShieldDamageMultiplier: Double = 0.0,
 		override var areaShieldDamageMultiplier: Double = 0.0,
@@ -1439,7 +1439,7 @@ data class HeavyLogisticsCannonBalancing(
 	@Serializable
 	data class HeavyLogisticsCannonProjectileBalancing(
 		override var range: Double = 200.0,
-		override var speed: Double = 2000.0,
+		override var speed: Double = 800.0,
 		override var explosionPower: Float = 0f,
 		override var starshipShieldDamageMultiplier: Double = 0.0,
 		override var areaShieldDamageMultiplier: Double = 0.0,

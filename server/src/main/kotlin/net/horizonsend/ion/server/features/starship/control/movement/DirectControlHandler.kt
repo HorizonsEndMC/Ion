@@ -95,7 +95,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		} ?: 0.0
 		 */
 		val targetSpeed = if (starship.type.tech2) {
-			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier) * 1.25) * oversizeModifier /*+ nationDirectControlModifier*/
+			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier) * 1.15) * oversizeModifier /*+ nationDirectControlModifier*/
 		} else {
 			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier /*+ nationDirectControlModifier*/
 		}
