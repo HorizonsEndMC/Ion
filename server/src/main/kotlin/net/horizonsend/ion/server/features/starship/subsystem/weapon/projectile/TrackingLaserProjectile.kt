@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
+import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import kotlin.math.acos
 import kotlin.math.cos
@@ -74,14 +75,18 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		if (distance < aimDistance) {
 			return
 		}
+
 		/*
 		If our projectile is within x blocks of the targeted block.
 		We prematurely detonate the projectile at the target block
 		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
 		 */
 		if (this.location.toVector().distanceSquared(calculateTarget()) <= balancing.detonationRange) {
-			impact(calculateTarget().toLocation(location.world), null, null)
-			return
+			val impacted = tryImpact(RayTraceResult(calculateTarget()),calculateTarget().toLocation(location.world))
+			if(impacted){
+				onImpact()
+				return onDespawn()
+			}
 		}
 
 		val targetDirection = calculateTarget()

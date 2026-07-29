@@ -22,13 +22,13 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	name: Component,
 	loc: Location,
 	val dir: Vector,
-	val initialDir: Vector,
+	initialDir: Vector,
 	override val balancing: B,
 	shooter: Damager,
 	var face: BlockFace, //Up = true, down = false
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
+) : PlayerGuidedLaserProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, originalTarget, baseAimDistance) {
 	var flightPath1Completed = false
 	var flightPath2Completed = false
 	var age = 0
