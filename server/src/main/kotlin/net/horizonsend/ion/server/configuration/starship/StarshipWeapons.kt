@@ -662,8 +662,8 @@ data class LightMissileLauncherBalancing(
 
 	@Serializable
 	data class LightMissileLauncherProjectileBalancing(
-		override var range: Double = 275.0,
-		override var speed: Double = 80.0,
+		override var range: Double = 285.0,
+		override var speed: Double = 85.0,
 		override var explosionPower: Float = 5.50f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 4.0,
