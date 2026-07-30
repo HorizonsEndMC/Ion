@@ -11,7 +11,6 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -167,15 +166,6 @@ object AchievementsCommand : SLCommand() {
 	 */
 
 	private fun openAchievementWindow(viewer: Player) {
-		val achievementObject = Achievements(viewer)
-		val gui = achievementObject.createGui()
-
-		val window = Window.single()
-			.setViewer(viewer)
-			.setTitle(achievementObject.buildTitle())
-			.setGui(gui)
-			.build()
-
-		window.open()
+		Achievements(viewer).openGui()
 	}
 }
