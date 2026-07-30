@@ -96,9 +96,9 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		We prematurely detonate the projectile at the target block
 		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
 		 */
-		if (this.location.toVector().distanceSquared(calculateTarget()) <= balancing.detonationRange) {
-			val impacted = tryImpact(RayTraceResult(calculateTarget()), calculateTarget().toLocation(location.world))
-			if (impacted) {
+		if (this.location.toVector().distance(calculateTarget()) <= balancing.detonationRange) {
+			val impacted = tryImpact(RayTraceResult(calculateTarget()),calculateTarget().toLocation(location.world))
+			if(impacted){
 				onImpact()
 				return onDespawn()
 			}
