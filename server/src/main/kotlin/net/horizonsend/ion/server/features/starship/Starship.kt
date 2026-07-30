@@ -914,7 +914,9 @@ class Starship(
 						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
 						if (contains(nearbyX, nearbyY, nearbyZ)) continue
 
-						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+						val material = world.getBlockAt(nearbyX, nearbyY, nearbyZ).type
+
+						if (!material.isAir && FLYABLE_BLOCKS.contains(material)) {
 							return true
 						}
 					}
