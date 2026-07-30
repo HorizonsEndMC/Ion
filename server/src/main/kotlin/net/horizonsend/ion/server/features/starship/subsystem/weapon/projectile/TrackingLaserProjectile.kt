@@ -4,11 +4,16 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProject
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound.Source
+import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
+import org.checkerframework.checker.units.qual.Current
+import kotlin.collections.minusAssign
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -27,6 +32,12 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	private lateinit var getTargetOrigin: () -> Vector
 	private lateinit var targetBase: Vector
 	var track: Boolean = true
+	override var speed: Double = balancing.speed
+
+	private var previousTargetPos: Vector? = null
+	private val smoothingAlpha = 2.0 / (35.0 + 1.0)
+	private var smoothedTargetSpeed: Vector = Vector(0.0, 0.0, 0.0)
+	private var turnRate = 1.0
 
 	protected val maxDegrees: Double get() = balancing.maxDegrees
 
@@ -41,13 +52,15 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	private fun processTarget() {
 		val targetOffset = originalTarget.clone().subtract(location.toVector())
 		val targetShips = ActiveStarships.getInWorld(location.world).filter {
-			it.centerOfMass.toCenterVector().distanceSquared(location.toVector()) <= range*range &&
+			it.centerOfMass.toCenterVector().distanceSquared(location.toVector()) <= range * range &&
 				it != shooter.starship
 
 		}
-		val angles = targetShips.map { it.centerOfMass.toCenterVector().subtract(location.toVector()).angle(targetOffset) }
+		val angles =
+			targetShips.map { it.centerOfMass.toCenterVector().subtract(location.toVector()).angle(targetOffset) }
 		val minAngleIndex = angles.withIndex().minByOrNull { it.value }?.index
-		val targetShip = if (minAngleIndex != null && angles[minAngleIndex] <= maxTrackingRadius) targetShips[minAngleIndex] else null
+		val targetShip =
+			if (minAngleIndex != null && angles[minAngleIndex] <= maxTrackingRadius) targetShips[minAngleIndex] else null
 		getTargetOrigin = {
 			targetShip?.centerOfMass?.toCenterVector() ?: originalTarget
 		}
@@ -59,7 +72,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 			However, removes their perfect tracking of the core of larger ships.
 		*/
 		val blockCount = targetShip?.currentBlockCount ?: 0
-		if (blockCount>3000) {
+		if (blockCount > 3000) {
 			targetBase = originalTarget.clone().add(getTargetOrigin())
 		}
 		//The zero vector here denotes no change from center of weight.
@@ -68,6 +81,9 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	override fun tick() {
 		super.tick()
+		// slows down projectile over time (and it's turning rate)
+		speed -= 0.5
+		turnRate -= 0.025
 		if (track) adjustDirection()
 	}
 
@@ -82,17 +98,35 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
 		 */
 		if (this.location.toVector().distanceSquared(calculateTarget()) <= balancing.detonationRange) {
-			val impacted = tryImpact(RayTraceResult(calculateTarget()),calculateTarget().toLocation(location.world))
-			if(impacted){
+			val impacted = tryImpact(RayTraceResult(calculateTarget()), calculateTarget().toLocation(location.world))
+			if (impacted) {
 				onImpact()
 				return onDespawn()
 			}
-		}
+			// Speed calculations for Lead
+			val currentTargetPos = calculateTarget()
+			val prevPos = previousTargetPos
+			if (prevPos != null) {
+				val targetSpeed = currentTargetPos.clone().subtract(prevPos).multiply(20.0)
+				smoothedTargetSpeed = smoothedTargetSpeed.multiply(1.0 - smoothingAlpha)
+					.add(targetSpeed.multiply(smoothingAlpha))
+				previousTargetPos = currentTargetPos.clone()
+			} else {
+				smoothedTargetSpeed = Vector(0.0, 0.0, 0.0)
+				previousTargetPos = currentTargetPos.clone()
+			}
+			val distanceToTarget = this.location.toVector().distance(currentTargetPos)
+			val timeToTarget = distanceToTarget / speed
 
-		val targetDirection = calculateTarget()
-			.subtract(location.toVector())
-			.normalize()
-		direction = adjust(direction, targetDirection, Math.toRadians(maxDegrees*delta))
+			val predictionOffset = smoothedTargetSpeed.clone()?.multiply(timeToTarget) ?: Vector(0.0, 0.0, 0.0)
+
+
+			val targetDirection = calculateTarget()
+				.subtract(location.toVector())
+				.add(predictionOffset)
+				.normalize()
+			direction = adjust(direction, targetDirection, Math.toRadians(turnRate * maxDegrees * delta))
+		}
 	}
 
 	private fun adjust(start: Vector, end: Vector, maxRadians: Double): Vector {
