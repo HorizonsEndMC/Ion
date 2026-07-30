@@ -32,7 +32,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	private lateinit var getTargetOrigin: () -> Vector
 	private lateinit var targetBase: Vector
 	var track: Boolean = true
-	override var speed: Double = balancing.speed
+	override var speed: Double = 0.0
 
 	private var previousTargetPos: Vector? = null
 	private val smoothingAlpha = 2.0 / (35.0 + 1.0)
@@ -54,7 +54,6 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		val targetShips = ActiveStarships.getInWorld(location.world).filter {
 			it.centerOfMass.toCenterVector().distanceSquared(location.toVector()) <= range * range &&
 				it != shooter.starship
-
 		}
 		val angles =
 			targetShips.map { it.centerOfMass.toCenterVector().subtract(location.toVector()).angle(targetOffset) }
@@ -81,13 +80,13 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	override fun tick() {
 		super.tick()
-		// slows down projectile over time (and it's turning rate)
-		speed -= 0.5
-		turnRate -= 0.025
 		if (track) adjustDirection()
 	}
 
 	private fun adjustDirection() {
+		//missile acceleration and less manuvering
+		speed = (speed + 10).coerceAtMost(balancing.speed)
+		turnRate = (turnRate - 0.045).coerceAtLeast(0.25)
 		if (distance < aimDistance) {
 			return
 		}
@@ -103,30 +102,30 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 				onImpact()
 				return onDespawn()
 			}
-			// Speed calculations for Lead
-			val currentTargetPos = calculateTarget()
-			val prevPos = previousTargetPos
-			if (prevPos != null) {
-				val targetSpeed = currentTargetPos.clone().subtract(prevPos).multiply(20.0)
-				smoothedTargetSpeed = smoothedTargetSpeed.multiply(1.0 - smoothingAlpha)
-					.add(targetSpeed.multiply(smoothingAlpha))
-				previousTargetPos = currentTargetPos.clone()
-			} else {
-				smoothedTargetSpeed = Vector(0.0, 0.0, 0.0)
-				previousTargetPos = currentTargetPos.clone()
-			}
-			val distanceToTarget = this.location.toVector().distance(currentTargetPos)
-			val timeToTarget = distanceToTarget / speed
-
-			val predictionOffset = smoothedTargetSpeed.clone()?.multiply(timeToTarget) ?: Vector(0.0, 0.0, 0.0)
-
-
-			val targetDirection = calculateTarget()
-				.subtract(location.toVector())
-				.add(predictionOffset)
-				.normalize()
-			direction = adjust(direction, targetDirection, Math.toRadians(turnRate * maxDegrees * delta))
 		}
+		// Speed calculations for Lead
+		val currentTargetPos = calculateTarget()
+		val prevPos = previousTargetPos
+		if (prevPos != null) {
+			val targetSpeed = currentTargetPos.clone().subtract(prevPos).multiply(20.0)
+			smoothedTargetSpeed = smoothedTargetSpeed.multiply(1.0 - smoothingAlpha)
+				.add(targetSpeed.multiply(smoothingAlpha))
+			previousTargetPos = currentTargetPos.clone()
+		} else {
+			smoothedTargetSpeed = Vector(0.0, 0.0, 0.0)
+			previousTargetPos = currentTargetPos.clone()
+		}
+		val distanceToTarget = this.location.toVector().distance(currentTargetPos)
+		val timeToTarget = distanceToTarget / speed
+
+		val predictionOffset = smoothedTargetSpeed.clone()?.multiply(timeToTarget) ?: Vector(0.0, 0.0, 0.0)
+
+
+		val targetDirection = calculateTarget()
+			.subtract(location.toVector())
+			.add(predictionOffset)
+			.normalize()
+		direction = adjust(direction, targetDirection, Math.toRadians(turnRate * maxDegrees * delta))
 	}
 
 	private fun adjust(start: Vector, end: Vector, maxRadians: Double): Vector {
