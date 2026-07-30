@@ -5,7 +5,10 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -33,7 +36,27 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, val con
 		debugAudience.debug("killStreakBonus: $killStreakBonus")
 		val percent = points.get().toDouble() / pointsSum.toDouble()
 		debugAudience.debug("percent: $percent")
-		val money = configuration.creditReward * percent / topPercent * difficultyMultiplier * killStreakBonus * penalty * 0.65
+
+		//Entire faction based final reward overrider
+		val faction = (starship.controller as? AIController)
+			?.getUtilModule(FactionManagerModule::class.java)
+			?.faction
+
+	    //Needs import per AIFaction
+		val factionCreditMultiplier = when (faction) {
+			PERSEUS_EXPLORERS -> 1.3
+			MINING_GUILD -> 1.0
+			//Every other undefined faction by %
+			else -> 1.0
+		}
+
+		val money = configuration.creditReward *
+			factionCreditMultiplier *
+			percent / topPercent *
+			difficultyMultiplier *
+			killStreakBonus *
+			penalty *
+			0.65
 
 		if (money <= 0.0) return
 

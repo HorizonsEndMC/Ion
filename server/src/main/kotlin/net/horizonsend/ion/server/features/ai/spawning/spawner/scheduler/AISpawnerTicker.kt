@@ -5,6 +5,9 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import org.slf4j.Logger
 import kotlin.random.Random
 
+//Set natural spawning rate as a percentage compared to the base
+private const val NATURAL_SPAWN_RATE_MULTIPLIER = 0.8
+
 class AISpawnerTicker(
 	private val pointChance: Double = 1.0,
 	private val pointThreshold: Int
@@ -27,7 +30,7 @@ class AISpawnerTicker(
 	override fun tick(logger: Logger) {
 		handleSuccess(logger)
 
-		if (Random.nextDouble() >= pointChance) return
+		if (Random.nextDouble() >= pointChance * NATURAL_SPAWN_RATE_MULTIPLIER) return
 
 		points++
 	}
