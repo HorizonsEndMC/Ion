@@ -4,16 +4,11 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProject
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.kyori.adventure.key.Key.key
-import net.kyori.adventure.sound.Sound.Source
-import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
-import org.checkerframework.checker.units.qual.Current
-import kotlin.collections.minusAssign
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -97,8 +92,8 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
 		 */
 		if (this.location.toVector().distance(calculateTarget()) <= balancing.detonationRange) {
-			val impacted = tryImpact(RayTraceResult(calculateTarget()),calculateTarget().toLocation(location.world))
-			if(impacted){
+			val impacted = tryImpact(RayTraceResult(calculateTarget()), calculateTarget().toLocation(location.world))
+			if (impacted) {
 				onImpact()
 				return onDespawn()
 			}
