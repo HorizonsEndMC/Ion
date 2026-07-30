@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.BushBlock
+import net.minecraft.world.level.block.VegetationBlock
 import net.minecraft.world.level.block.CropBlock
 import net.minecraft.world.level.block.DoublePlantBlock
 import net.minecraft.world.level.block.EntityBlock
@@ -234,7 +234,7 @@ object OptimizedMovement {
 		newBlockData.block is StainedGlassBlock
 		|| newBlockData.block is NetherPortalBlock
 		|| newBlockData.block is LiquidBlock
-		|| newBlockData.block is BushBlock
+		|| newBlockData.block is VegetationBlock // flowers, grass, ferns, sweet berry bushes, etc. It probably covers/overlaps some that are stated individually.
 		|| newBlockData.block is VineBlock // normal vines
 		|| newBlockData.block is GrowingPlantBlock // twisted vines on Luxiterna, kelp, etc.
 		|| newBlockData.block is LeavesBlock
