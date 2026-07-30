@@ -27,7 +27,7 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
 		//val sphereRadius = ((System.nanoTime() - firedAtNanos)/1_000_000_000.0)*speed
 		val sphereRadius = player.location.distance(location).plus(speed*delta)
-		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(location.toVector().multiply(-1))
+		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector())
 
 		return intercept
 	}
