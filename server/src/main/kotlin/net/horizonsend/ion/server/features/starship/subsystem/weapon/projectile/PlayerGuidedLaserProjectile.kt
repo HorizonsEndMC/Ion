@@ -25,6 +25,6 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
 		val sphereRadius = ((System.nanoTime() - firedAtNanos)/1_000_000_000.0)*speed
-		return player.location.direction.multiply(sphereRadius)
+		return player.location.direction.multiply(sphereRadius).add(player.location.toVector())
 	}
 }
