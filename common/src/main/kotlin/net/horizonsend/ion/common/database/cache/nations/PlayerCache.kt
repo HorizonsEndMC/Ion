@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.long
 import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
@@ -31,11 +32,13 @@ abstract class AbstractPlayerCache : ManualCache() {
 		val id: SLPlayerId,
 		var xp: Int?,
 		var level: Int?,
+		var power: Int?,
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
 		var settlementTag: String?,
 		var nationTag: String?,
 		var bounty: Double,
+		var lastDeathTimestamp: Long?,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
@@ -115,6 +118,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::power]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newPower = it.int()
+					data.power = newPower
+				}
+			}
+
 
 			change[SLPlayer::bounty]?.let {
 				synced {
@@ -129,6 +141,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
 					data.blockedPlayerIDs = it.mappedSet { it.slPlayerId() }
+				}
+			}
+
+			change[SLPlayer::lastDeathTimestamp]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.lastDeathTimestamp = it.long()
 				}
 			}
 		}
@@ -180,12 +200,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 			id = id,
 			xp = data.xp,
 			level = data.level,
+			power = data.power,
 			settlementOid = settlement,
 			nationOid = nation,
 			settlementTag = settlementTag,
 			nationTag = nationTag,
 			bounty = data.bounty,
-			blockedPlayerIDs = data.blockedPlayerIDs
+			blockedPlayerIDs = data.blockedPlayerIDs,
+			lastDeathTimestamp = data.lastDeathTimestamp
 		)
 	}
 

@@ -48,6 +48,7 @@ class RegionStationZone(zone: StationZone) : Region<StationZone>(zone) {
 	var trustedSettlements: Set<Oid<Settlement>>? = zone.trustedSettlements; private set
 	var minBuildAccess: Settlement.ForeignRelation? = zone.minBuildAccess; private set
 	var allowFriendlyFire: Boolean? = zone.allowFriendlyFire; private set
+	var artificialGravity: Boolean = zone.artificialGravity; private set
 	var interactableBlocks: Set<String> = zone.interactableBlocks; private set
 	override val world: String get() = SpaceStationCache[station]?.world ?: ""
 
@@ -80,6 +81,7 @@ class RegionStationZone(zone: StationZone) : Region<StationZone>(zone) {
 		delta[StationZone::allowFriendlyFire]?.let { bson ->
 			allowFriendlyFire = bson.nullable()?.boolean()
 		}
+		delta[StationZone::artificialGravity]?.let { artificialGravity = it.boolean() }
 		delta[StationZone::interactableBlocks]?.let { bson ->
 			interactableBlocks = bson.mappedSet { it.string() }
 		}

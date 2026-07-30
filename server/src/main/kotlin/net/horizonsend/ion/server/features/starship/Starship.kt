@@ -6,14 +6,19 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatException
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
@@ -28,6 +33,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -58,12 +64,20 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementFor
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.logStatistics
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType.DisplayType
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityUnitSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
@@ -76,6 +90,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -91,6 +106,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -106,6 +123,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
+import java.time.Duration
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -147,6 +165,7 @@ class Starship(
 	val minutesUnpiloted get() = if (isPiloted(this) || controller is NoOpController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 	var pilotDisconnectLocation: Vec3i? = null
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
+	val statusEffects: MutableMap<StarshipStatusEffectType, MutableList<StarshipStatusEffect>> = mutableMapOf()
 
 	var world: World = data.bukkitWorld()
 		set(value) {
@@ -177,6 +196,7 @@ class Starship(
 
 		multiblockManager.onDestroy()
 		transportManager.onDestroy()
+		disruptorTarget = null
 		subsystems.forEach { it.onDestroy() }
 	}
 
@@ -212,6 +232,22 @@ class Starship(
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
+		}
+
+		if (isInterdicting) {
+			var hasIntactWell = false
+			for (gravitywell in gravityWells) {
+				if (gravitywell.isIntact()) hasIntactWell = true
+			}
+			if (!hasIntactWell) isInterdicting = false
+		}
+
+		if (isJumpBeaconOn) {
+			var hasIntactBeacon = false
+			for (beacon in jumpBeacons) {
+				if (beacon.isIntact()) hasIntactBeacon = true
+			}
+			if (!hasIntactBeacon) isJumpBeaconOn = false
 		}
 
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
@@ -427,20 +463,13 @@ class Starship(
 	// Stored on starship so it can't be reset by switching to dc and back
 	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700)/*.coerceAtLeast(1)*/) * 30
 	var directControlCooldown = initialDirectControlCooldown
-	var directControlSpeedModifierFromIonTurrets = 1.0
-		set(value) {
-			field = value.coerceIn(0.85, 1.0)
-		}
-	var directControlSpeedModifierFromHeavyLasers = 1.0
-		set(value) {
-			field = value.coerceIn(0.0, 1.0)
-		}
-	var directControlSlowExpiryFromIonTurrets = 0L
-	var lastTimeThisShipWasHitByAnIonTurretAndTheSlowEffectHappened = 0L
-	var directControlSlowExpiryFromHeavyLasers = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		when(controller) {
+		if (enabled && StarshipCruising.isCruising(this)) {
+			this.userErrorAction("Direct Control cannot be enabled while cruising")
+			return
+		}
+		when (controller) {
 			is ActivePlayerController -> {
 				val controller = controller as ActivePlayerController
 				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
@@ -470,9 +499,14 @@ class Starship(
 	val thrusters = LinkedList<ThrusterSubsystem>()
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
+	val industrialInvulnerabilityUnits = LinkedList<IndustrialInvulnerabilityUnitSubsystem>()
+	val warpDisruptors = LinkedList<DisruptorSubsystem>()
+	val jumpBeacons = LinkedList<JumpBeaconSubsystem>()
+	val jumpFieldGenerators = LinkedList<JumpFieldGeneratorSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
+	val commandBursts = LinkedList<AbstractCommandBurstSubsystem<*>>()
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
@@ -481,8 +515,10 @@ class Starship(
 
 	val autoTurretTargets = mutableMapOf<String, AutoTurretTargeting.AutoTurretTarget<*>>()
 
+	var shieldRegenModifier: Double = 1.0
+
 	val shieldEfficiency: Double
-		get() = (shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7))
+		get() = (shieldRegenModifier*(shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7)))
 			.coerceAtMost(1.0)
 
 	val maxShields: Int = (0.00671215 * initialBlockCount.toDouble().pow(0.836512) - 0.188437).toInt()
@@ -497,6 +533,9 @@ class Starship(
 
 	var lastTick = System.nanoTime()
 
+	var isInvulnerable: Boolean = false
+	var lastInvulnerability: Long? = null //currenttimemillis
+
 	/** Ignore weapon color, use rainbows for pride month **/
 	var rainbowToggle = false
 
@@ -507,6 +546,8 @@ class Starship(
 	var isExploding = false
 
 	var isInterdicting = false; private set
+	var isJumpBeaconOn = false; private set
+	var disruptorTarget: Starship? = null
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -525,6 +566,35 @@ class Starship(
 		}
 
 		onlinePassengers.forEach { player -> player.success("Gravity well enabled") }
+	}
+
+	fun setIsDisrupting(otherStarship: Starship?) {
+		Tasks.checkMainThread()
+
+		if (otherStarship == null) {
+			disruptorTarget = null
+			onlinePassengers.forEach { player -> player.success("Disruptor disabled") }
+
+			return
+		}
+
+		disruptorTarget = otherStarship
+		onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${disruptorTarget?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
+	}
+
+	fun enableJumpBeacon() {
+		Tasks.checkMainThread()
+
+		jumpBeacons.filter { it.isIntact() }.map { it.pos.toLocation(world).block.state }
+
+		isJumpBeaconOn = true
+		onlinePassengers.forEach { player -> player.success("Jump Beacon Enabled") }
+		playSoundInRadius(centerOfMass.toLocation(world), 500.0, Sound.sound(key("horizonsend:starship.jump.beacon"), Sound.Source.PLAYER, 5.0f, 1.0f))
+		Tasks.syncDelay(20L * 60L) {
+			if (ActiveStarships.isActive(this)) {
+				isJumpBeaconOn = false
+			}
+		}
 	}
 
 	val disabledThrusterRatio: Double get() =
@@ -557,11 +627,15 @@ class Starship(
 
 		val calculatedSpeed = totalSpeed.pow(speedExponent) / mass.pow(massExponent) * baseSpeedFactor
 
-		val maxSpeed = reactor.output * .4 / totalSpeed
+		val maxSpeed = if(type.tech2){
+			reactor.output * .4 / totalSpeed}
+		else (reactor.output * .4 / totalSpeed)*1.1
 
 		val speed = (min(maxSpeed, calculatedSpeed) * finalSpeedFactor).roundToInt()
 
-		val acceleration = ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0
+		val acceleration = if(type.tech2) {
+			ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0 }
+		else (ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0)*1.1
 		return ThrustData(acceleration, speed)
 	}
 
@@ -747,5 +821,107 @@ class Starship(
 			vec3i.y,
 			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
 		)
+	}
+
+	fun addStatusEffect(newStatusEffect: StarshipStatusEffect) {
+		val type = newStatusEffect.type
+
+		if (statusEffects[type] == null) {
+			statusEffects[type] = mutableListOf()
+		}
+
+		val sameStrengthEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.strength == newStatusEffect.strength }
+		val alreadyAppliedEffect = statusEffects[type]?.firstOrNull { statusEffect -> statusEffect.applier == newStatusEffect.applier }
+
+		if (!type.stackable && sameStrengthEffect != null) {
+			// there already exists an effect with the same strength value as the new one, and the effect is not stackable. refresh the duration
+			// refresh the effect duration
+			sameStrengthEffect.durationMillis = max(sameStrengthEffect.durationMillis, newStatusEffect.durationMillis)
+
+			/*
+			this.playerPilot?.information("Refreshed status effect:")
+			this.playerPilot?.sendMessage(ofChildren(
+				sameStrengthEffect.type.displayName,
+				Component.newline(),
+				text("Strength: ${sameStrengthEffect.strength}", HE_MEDIUM_GRAY),
+				Component.newline(),
+				text("Duration: ${newStatusEffect.durationMillis/1000}", HE_MEDIUM_GRAY),
+				Component.newline(),
+				text("[Effect]", HE_LIGHT_ORANGE)
+					.hoverEvent(sameStrengthEffect.type.description),
+
+			))
+			*/
+			return
+		} else if (type.stackable && type.oneApplicationPerStarship && alreadyAppliedEffect != null) {
+			// the effect is being applied by the same starship with an already existing effect, and only one application per starship is allowed
+			// refresh the effect duration
+			alreadyAppliedEffect.durationMillis = max(alreadyAppliedEffect.durationMillis, newStatusEffect.durationMillis)
+
+			return
+		}
+
+		// this effect has no others with the same strength, or is stackable and can be applied multiple times by the same starship. add it to the list
+		statusEffects[type]?.add(newStatusEffect)
+
+		this.playerPilot?.information("Gained status effect:")
+		this.playerPilot?.sendMessage(ofChildren(
+			newStatusEffect.type.displayName,
+			Component.newline(),
+			if (type.displayType == DisplayType.PERCENT) {
+				text("Strength: ${(newStatusEffect.strength * 100).roundToInt()}%", HE_MEDIUM_GRAY)
+			} else {
+				text("Strength: ${(newStatusEffect.strength).roundToInt()}", HE_MEDIUM_GRAY)
+			},
+			Component.newline(),
+			text( "Duration: ${Duration.ofMillis(newStatusEffect.durationMillis).toSeconds()}", HE_MEDIUM_GRAY),
+			Component.newline(),
+			text( "Applied by: ${newStatusEffect.applier?.identifier ?: "unknown"}", HE_MEDIUM_GRAY),
+			Component.newline(),
+			text("[Effect]", HE_LIGHT_ORANGE)
+				.hoverEvent(newStatusEffect.type.description),
+		))
+	}
+
+	fun getStrongestActiveStatusEffectFromType(statusEffectType: StarshipStatusEffectType): StarshipStatusEffect? {
+		return statusEffects[statusEffectType]?.filter { statusEffect -> statusEffect.type == statusEffectType }?.maxByOrNull { statusEffect -> statusEffect.strength }
+	}
+
+	fun getAllActiveStatusEffectsFromType(statusEffectType: StarshipStatusEffectType): List<StarshipStatusEffect>? {
+		return statusEffects[statusEffectType]
+	}
+
+	fun removeStatusEffectType(statusEffectType: StarshipStatusEffectType) {
+		statusEffects[statusEffectType]?.clear()
+		this.information("All status effects of ${statusEffectType.displayName.plainText()} were removed")
+	}
+
+	fun isTouchingExternalBlock(): Boolean {
+		for (key in blocks.iterator()) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
+
+						val nearbyX = x + offsetX
+						val nearbyY = y + offsetY
+						val nearbyZ = z + offsetZ
+
+						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
+						if (contains(nearbyX, nearbyY, nearbyZ)) continue
+
+						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+							return true
+						}
+					}
+				}
+			}
+		}
+
+		return false
 	}
 }

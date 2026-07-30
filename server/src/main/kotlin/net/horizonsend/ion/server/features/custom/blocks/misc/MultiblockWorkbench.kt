@@ -64,8 +64,6 @@ object MultiblockWorkbench : CustomBlock(
 
 	// Initalized before multiblocks are registered
 	val multiblocks by lazy { MultiblockRegistration.getAllMultiblocks().toList() }
-	private var multiblockIndex = 0
-	private val currentMultiblock get() = multiblocks[multiblockIndex]
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		val player = event.player
@@ -84,6 +82,9 @@ object MultiblockWorkbench : CustomBlock(
 	class MultiblockWorkbenchMenu(viewer: Player, val location: Location): InteractableGUI(viewer) {
 		override val inventorySize = 36
 		override val internalInventory: Inventory = IonServer.server.createInventory(this, inventorySize)
+
+		private var multiblockIndex = 0
+		private val currentMultiblock get() = multiblocks[multiblockIndex]
 
 		private companion object {
 			const val SEARCH_BUTTON_SLOT = 10
@@ -237,6 +238,8 @@ object MultiblockWorkbench : CustomBlock(
 		}
 
 		private fun openSearchMenu() {
+			// Search replaces this transient inventory, so return its contents first.
+			addOrDropItems(location)
 			isSearching = true
 
 			viewer.openSearchMenu(

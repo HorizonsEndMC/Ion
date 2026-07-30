@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
@@ -330,7 +331,9 @@ object PrePackaged : SLEventListener() {
 
 		for ((offset, requirement) in requirements) {
 			val realBlock = structureOrigin.getRelativeIfLoaded(offset.x, offset.y, offset.z) ?: return
-			if (!BlockBreakEvent(sign.block, player).callEvent()) return
+			val event = BlockBreakEvent(sign.block, player)
+			CustomBlockListeners.noDropEvents.add(event)
+			if (!event.callEvent()) return
 			toBreak.add(realBlock)
 
 			val item = requirement.itemRequirement.toItemStack(realBlock.blockData)
@@ -340,7 +343,9 @@ object PrePackaged : SLEventListener() {
 		items.add(signItem)
 		toBreak.add(sign.block)
 
-		if (!BlockBreakEvent(sign.block, player).callEvent()) return
+		val event = BlockBreakEvent(sign.block, player)
+		CustomBlockListeners.noDropEvents.add(event)
+		if (!event.callEvent()) return
 
 		toBreak.asReversed().forEach {
 			val state = it.state

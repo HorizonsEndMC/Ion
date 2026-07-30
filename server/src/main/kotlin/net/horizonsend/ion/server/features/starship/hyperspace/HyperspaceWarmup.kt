@@ -8,10 +8,13 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
@@ -19,6 +22,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Vibration
 import org.bukkit.Vibration.Destination.BlockDestination
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.litote.kmongo.eq
 import kotlin.math.max
@@ -30,14 +34,32 @@ class HyperspaceWarmup(
     var warmup: Int,
     val dest: Location,
     val drive: HyperdriveSubsystem?,
-    private val useFuel: Boolean
+    private val useFuel: Boolean,
+	val beaconTarget: Player? = null
 ) : BukkitRunnable() {
 	init {
 		if (ship is ActiveControlledStarship) {
 			(ship.controller as? PlayerController)?.player?.let {
-				val stationCount = CapturableStation.count(CapturableStation::nation eq PlayerCache[it].nationOid).toInt()
+				//val stationCount = CapturableStation.count(CapturableStation::nation eq PlayerCache[it].nationOid).toInt()
 
-				warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
+				//warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
+
+				/*
+				val nationJumpWarmupBuffActive = NationBuffTypes.isEffectActive(it, NationBuffTypes.JUMP_WARMUP)
+				val nationJumpWarmupModifier = if (nationJumpWarmupBuffActive) {
+					NationBuffTypes.JUMP_WARMUP.value
+				} else 0.0
+				 */
+
+				//warmup -= nationJumpWarmupModifier.toInt()
+
+				val dominionWarmupReduction = DominionTerritoryBuffTypes.getWarmupReduction(it)
+				val territoryCount = DominionTerritoryBuffTypes.getTerritoryCount(it)
+				if (territoryCount >= 3) {
+					warmup = (warmup * (1 - dominionWarmupReduction)).toInt() // 20% reduction
+				} else if (territoryCount >= 1) {
+					warmup -= dominionWarmupReduction.toInt() // flat 1s
+				}
 			}
 
 			warmup = max(warmup, 0)
@@ -58,6 +80,14 @@ class HyperspaceWarmup(
 			cancel()
 		}
 
+		if (ship.isInvulnerable) {
+			ship.onlinePassengers.forEach { player ->
+				player.userError("You cannot jump while invulnerable!")
+				cancel()
+				return
+			}
+		}
+
 		ship.onlinePassengers.forEach { player ->
 			player.informationAction(
 				"Hyperdrive Warmup: $seconds/$warmup seconds"
@@ -73,13 +103,18 @@ class HyperspaceWarmup(
 			cancel()
 			return
 		}
-		val massShadows = MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble())
-		if (massShadows != null) {
-			var combinedWellStrength = 0.0
-			massShadows.forEach { combinedWellStrength += it.wellStrength }
-			if (ship.balancing.jumpStrength <= combinedWellStrength) {
+
+		if (Hyperspace.checkIsInterdicted(ship)) {
+			cancel()
+			return
+		}
+
+		// Add this after the gravity well check
+		if (beaconTarget != null) {
+			val targetShip = ActiveStarships.findByPilot(beaconTarget)
+			if (targetShip == null || !targetShip.isJumpBeaconOn) {
 				ship.onlinePassengers.forEach { player ->
-					player.userErrorAction("Ship is within a strong Gravity Well! Jump cancelled")
+					player.userErrorAction("Jump beacon went offline! Jump cancelled.")
 				}
 				cancel()
 				return
@@ -150,25 +185,25 @@ class HyperspaceWarmup(
 	}
 
 	private fun playChargeSound() {
-		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+		toPlayersInRadius(startLocation, 100.0 * 20.0) { player ->
 			playDirectionalStarshipSound(
 				startLocation,
 				player,
 				ship.balancing.shipSounds.jumpChargeNear,
 				ship.balancing.shipSounds.jumpChargeFar,
-				500.0
+				100.0
 			)
 		}
 	}
 
 	private fun playCompleteWarmupSound() {
-		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+		toPlayersInRadius(startLocation, 100.0 * 20.0) { player ->
 			playDirectionalStarshipSound(
 				startLocation,
 				player,
 				ship.balancing.shipSounds.jumpCompleteNear,
 				ship.balancing.shipSounds.jumpCompleteFar,
-				500.0
+				100.0
 			)
 		}
 	}

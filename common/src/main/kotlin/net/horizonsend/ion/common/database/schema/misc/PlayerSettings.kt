@@ -11,7 +11,7 @@ import org.litote.kmongo.id.StringId
 data class PlayerSettings(
 	override val _id: StringId<PlayerSettings>,
 
-	var contactsDistance: Int = 6000,
+	var contactsDistance: Int = MAX_CONTACTS_DISTANCE,
 	var contactsMaxNameLength: Int = 64,
 	var contactsSort: Int = 0,
 	var contactsColoring: Int = 0,
@@ -45,6 +45,7 @@ data class PlayerSettings(
 	var advancedStarshipInfo: Boolean = true,
 	var rotateCompass: Boolean = false,
 	var combatTimerEnabled: Boolean = true,
+	var dynmapTransponderEnabled: Boolean = true,
 
 	var hudPlanetsImage: Boolean = true,
 	var hudPlanetsSelector: Boolean = true,
@@ -60,6 +61,7 @@ data class PlayerSettings(
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
+	var releaseTouchVerification: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
 	var hitmarkerOnShield: Boolean = true,
 	var flareTime: Int = 5,
@@ -87,6 +89,7 @@ data class PlayerSettings(
 	var displayEntityVisibility: Int = 0,
 	var nearbyWeaponSounds: Int = 0,
 	var farWeaponSounds: Int = 0,
+	var energySwordIdleSound: Boolean = true,
 	var floatWhileDc: Boolean = true,
 	var reverseDcBoost: Boolean = false,
 	var toggleDcBoost: Boolean = false,
@@ -98,6 +101,8 @@ data class PlayerSettings(
 	var hudIconSize: Int = 5,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
+		const val MAX_CONTACTS_DISTANCE = 2500
+
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->
 			require(col.none(session, PlayerSettings::_id eq id))
 

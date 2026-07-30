@@ -120,7 +120,7 @@ object SettingsCommand : SLCommand() {
     }
 
     @CommandAlias("sidebar contacts changecontactsrange")
-    @CommandCompletion("0|6000")
+    @CommandCompletion("0|2500")
     fun onSettingsSidebarContactsChangeContactsRange(sender: Player, value: Int) = asyncCommand(sender) {
         handleIntegerInputSetting(sender, PlayerSettings::contactsDistance, value, 0, MainSidebar.CONTACTS_RANGE)
     }
@@ -393,6 +393,12 @@ object SettingsCommand : SLCommand() {
     fun onSettingsSoundFarWeaponSounds(sender: Player, value: AudioRange) = asyncCommand(sender) {
         handleEnumCycleSetting(sender, PlayerSettings::farWeaponSounds, value, AudioRange::class.java)
     }
+
+	@CommandAlias("sound energyswordidlesound")
+	@CommandCompletion("true|false")
+	fun onSettingsSoundEnergySwordIdleSound(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
+		handleBooleanToggleSetting(sender, PlayerSettings::energySwordIdleSound, enabled)
+	}
 
     @CommandAlias("other enablecombattimeralerts")
     @CommandCompletion("true|false")

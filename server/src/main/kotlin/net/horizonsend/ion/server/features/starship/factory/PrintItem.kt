@@ -6,7 +6,9 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.minecraft.world.level.block.WallBannerBlock
 import org.bukkit.Material
+import org.bukkit.block.Banner
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.WallSign
@@ -78,6 +80,27 @@ data class PrintItem(val itemString: String) {
 
 				data.material == Material.COPPER_WALL_TORCH -> {
 					return PrintItem(Material.COPPER_TORCH)
+				}
+
+				data.material.name.contains("WALL_BANNER") -> {
+					val itemMat = Material.getMaterial(data.material.name.replace("WALL_BANNER", "BANNER"))
+					checkNotNull(itemMat)
+					return PrintItem(itemMat)
+				}
+
+				data.material.name.startsWith("POTTED_") -> {
+					val plantName = data.material.name.removePrefix("POTTED_")
+
+					val itemMat =
+						Material.getMaterial(plantName)
+							?: Material.getMaterial(plantName.removeSuffix("_BUSH"))
+
+					if (itemMat == null) {
+						log.warn("No item material for potted block ${data.material}; tried $plantName")
+						return null
+					}
+
+					return PrintItem(itemMat)
 				}
 
 				else -> {

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.core.registration.keys
+﻿package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
@@ -39,6 +39,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 
 	val GUN_BARREL = registerKey("GUN_BARREL")
 	val CIRCUITRY = registerKey("CIRCUITRY")
+	val DATA_CHIP = registerKey("DATA_CHIP")
+	val GUIDANCE_SYSTEM = registerKey("GUIDANCE_SYSTEM")
 
 	val PISTOL_RECEIVER = registerKey("PISTOL_RECEIVER")
 	val RIFLE_RECEIVER = registerKey("RIFLE_RECEIVER")
@@ -68,6 +70,24 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val URANIUM_ORE = registerTypedKey<CustomBlockItem>("URANIUM_ORE")
 	val URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("URANIUM_BLOCK")
 	val RAW_URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_URANIUM_BLOCK")
+
+	val SCORDITE_ORE = registerKey("SCORDITE_ORE")
+	val SCORDITE = registerKey("SCORDITE")
+	val SCORDITE_BLOCK = registerKey("SCORDITE_BLOCK")
+
+	val VANADIUM_ORE = registerKey("VANADIUM_ORE")
+	val VANADIUM = registerKey("VANADIUM")
+	val VANADIUM_BLOCK = registerKey("VANADIUM_BLOCK")
+
+	val ZIRCON_ORE = registerKey("ZIRCON_ORE")
+	val ZIRCON = registerKey("ZIRCON")
+	val ZIRCON_BLOCK = registerKey("ZIRCON_BLOCK")
+
+	val ATAVUM_ORE = registerKey("ATAVUM_ORE")
+	val ATAVUM = registerKey("ATAVUM")
+	val ATAVUM_BLOCK = registerKey("ATAVUM_BLOCK")
+
+	val ASSEMBLY_CORE = registerKey("ASSEMBLY_CORE")
 
 	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")
 	val ENRICHED_URANIUM = registerKey("ENRICHED_URANIUM")
@@ -108,17 +128,45 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val UNCHARGED_SHELL = registerKey("UNCHARGED_SHELL")
 	val CHARGED_SHELL = registerKey("CHARGED_SHELL")
 
+	val UNLOADED_BREACHER_SHELL = registerKey("UNLOADED_BREACHER_SHELL")	// Gauss Cannon
+	val LOADED_BREACHER_SHELL = registerKey("LOADED_BREACHER_SHELL")
+	val UNLOADED_STASIS_CHARGE = registerKey("UNLOADED_STASIS_CHARGE")	// Webifier
+	val LOADED_STASIS_CHARGE = registerKey("LOADED_STASIS_CHARGE")
+	val UNLOADED_ENTROPIC_CHARGE = registerKey("UNLOADED_ENTROPIC_CHARGE")// Neutralizer + Heavy Neutralizer
+	val LOADED_ENTROPIC_CHARGE = registerKey("LOADED_ENTROPIC_CHARGE")
+	val UNLOADED_HELIX_SHELL = registerKey("UNLOADED_HELIX_SHELL")		// Assault Turret
+	val LOADED_HELIX_SHELL = registerKey("LOADED_HELIX_SHELL")
+	val UNLOADED_SIEGE_SHELL = registerKey("UNLOADED_SIEGE_SHELL")		// ACAP Turret
+	val LOADED_SIEGE_SHELL = registerKey("LOADED_SIEGE_SHELL")
+	val UNLOADED_STELLAR_PRISM = registerKey("UNLOADED_STELLAR_PRISM")    // Doomsday Laser
+	val LOADED_STELLAR_PRISM = registerKey("LOADED_STELLAR_PRISM")
+
 	val ARSENAL_MISSILE = registerKey("ARSENAL_MISSILE")
 	val UNLOADED_ARSENAL_MISSILE = registerKey("UNLOADED_ARSENAL_MISSILE")
 	val ACTIVATED_ARSENAL_MISSILE = registerKey("ACTIVATED_ARSENAL_MISSILE")
+	val LIGHT_MISSILE = registerKey("LIGHT_MISSILE")
+	val HEAVY_MISSILE = registerKey("HEAVY_MISSILE")
+	val THERMONUCLEAR_MISSILE = registerKey("THERMONUCLEAR_MISSILE")
+	val SCANNER_PROBE = registerKey("SCANNER_PROBE")
+	val COMBAT_PROBE = registerKey("COMBAT_PROBE")
+	val UNLOADED_LIGHT_MISSILE = registerKey("UNLOADED_LIGHT_MISSILE")
+	val UNLOADED_HEAVY_MISSILE = registerKey("UNLOADED_HEAVY_MISSILE")
+	val UNLOADED_THERMONUCLEAR_MISSILE = registerKey("UNLOADED_THERMONUCLEAR_MISSILE")
+	val UNLOADED_EMP_MISSILE = registerKey("UNLOADED_EMP_MISSILE")
+	val EMP_MISSILE = registerKey("EMP_MISSILE")
 
 	val PROGRESS_HOLDER = registerKey("PROGRESS_HOLDER")
 
 	val BATTLECRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BATTLECRUISER_REACTOR_CORE")
 	val BARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BARGE_REACTOR_CORE")
 	val CRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("CRUISER_REACTOR_CORE")
+	val MINI_REACTOR_CORE = registerTypedKey<CustomBlockItem>("MINI_REACTOR_CORE")
+	val SMALL_REACTOR_CORE = registerTypedKey<CustomBlockItem>("SMALL_REACTOR_CORE")
+	val MEDIUM_REACTOR_CORE = registerTypedKey<CustomBlockItem>("MEDIUM_REACTOR_CORE")
+	val LARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("LARGE_REACTOR_CORE")
 
 	val GAS_CANISTER_EMPTY = registerKey("GAS_CANISTER_EMPTY")
+	val GAS_CANISTER_XENON = registerTypedKey<GasCanister>("GAS_CANISTER_XENON")
 	val GAS_CANISTER_HYDROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_HYDROGEN")
 	val GAS_CANISTER_NITROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_NITROGEN")
 	val GAS_CANISTER_METHANE = registerTypedKey<GasCanister>("GAS_CANISTER_METHANE")
@@ -222,6 +270,17 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SIRIUS = registerKey("SIRIUS")
 	val PLANET_SELECTOR = registerKey("PLANET_SELECTOR")
 
+	/*
+	val SHIELD_RESISTANCE_BUFF = registerKey("SHIELD_RESISTANCE_BUFF")
+	val TURRET_DAMAGE_BUFF = registerKey("TURRET_DAMAGE_BUFF")
+	val SHIELD_REGENERATION_BUFF = registerKey("SHIELD_REGENERATION_BUFF")
+	val CRUISE_SPEED_BUFF = registerKey("CRUISE_SPEED_BUFF")
+	val DIRECT_CONTROL_SPEED_BUFF = registerKey("DIRECT_CONTROL_SPEED_BUFF")
+	val ACCELERATION_BUFF = registerKey("ACCELERATION_BUFF")
+	val JUMP_WARMUP_BUFF = registerKey("JUMP_WARMUP_BUFF")
+	val CONTACT_RANGE_BUFF = registerKey("CONTACT_RANGE_BUFF")
+	 */
+
 	val DEBUG_LINE_RED = registerKey("DEBUG_LINE_RED")
 	val DEBUG_LINE_GREEN = registerKey("DEBUG_LINE_GREEN")
 	val DEBUG_LINE_BLUE = registerKey("DEBUG_LINE_BLUE")
@@ -238,6 +297,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val TOMATO = registerTypedKey<FoodItem>("TOMATO")
 	val LETTUCE = registerTypedKey<FoodItem>("LETTUCE")
 	val CHEESE = registerTypedKey<FoodItem>("CHEESE")
+	val CHEESE_BUCKET = registerKey("CHEESE_BUCKET")
 	val GROUND_BEEF = registerTypedKey<FoodItem>("GROUND_BEEF")
 	val COOKED_GROUND_BEEF = registerTypedKey<FoodItem>("COOKED_GROUND_BEEF")
 	val CHEESEBURGER = registerTypedKey<FoodItem>("CHEESEBURGER")

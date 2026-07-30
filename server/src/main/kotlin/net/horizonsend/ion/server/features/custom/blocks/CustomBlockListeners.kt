@@ -76,6 +76,8 @@ object CustomBlockListeners : SLEventListener() {
 		block.placeCallback(itemStack, event.block)
     }
 
+	// EVERY NEW INSTANCE OF BlockBreakEvent NEEDS TO BE ADDED TO THIS SET. BlockBreakEvents HAVE BEEN THE CAUSE OF
+	// MULTIPLE DUPE BUGS AND I AM SICK AND TIRED OF HAVING TO FIX THE EXACT SAME BUG APPEARING OVER AND OVER AGAIN!
 	val noDropEvents: ConcurrentHashMap.KeySetView<BlockBreakEvent, Boolean> = ConcurrentHashMap.newKeySet()
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -108,7 +110,7 @@ object CustomBlockListeners : SLEventListener() {
 		customBlock.removeCallback(block)
     }
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onPlayerInteract(event: PlayerInteractEvent) {
 		val clickedBlock = event.clickedBlock ?: return
 		val customBlock = clickedBlock.customBlock ?: return

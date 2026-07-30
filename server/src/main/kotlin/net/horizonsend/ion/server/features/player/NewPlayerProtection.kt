@@ -13,9 +13,12 @@ import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
+import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -31,10 +34,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import java.time.Duration
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
-object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
+object NewPlayerProtection : SLCommand(), Listener {
 	private val lpUserManager = luckPerms.userManager
 
 	private val oldProtectionIndicator = SuffixNode.builder("&6★&r", 0).build()
@@ -184,10 +189,48 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	@EventHandler
 	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player || event.damager !is Player) return
+		if (event.entity.world.hasFlag(WorldFlag.NOT_SECURE)) return
 
-		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) event.damager.alertAction(
-			"The player you are attacking has new player protection!\n" +
-				"Attacking them for any reason other than self defense is against the rules"
-		)
+		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
+			event.damager.alertAction(
+				"The player you are attacking has new player protection! " +
+						"Attacking them for any reason other than self defense is against the rules"
+			)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onNoobHurtPlayer(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player || event.damager !is Player) return
+		if (event.entity.world.hasFlag(WorldFlag.NOT_SECURE)) return
+
+		if ((event.damager as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
+			event.damager.alertAction(
+				"You have new player protection and cannot attack other players! " +
+						"Use /removeprotection to remove your protection and enable attacking"
+			)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onPlayerHurtInSafezone(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player || event.damager !is Player) return
+
+		if (event.entity.world.hasFlag(WorldFlag.SAFE_WORLD)) {
+			event.damager.alertAction("Combat is disabled in this region!")
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onStarshipAttackInSafezone(event: ImpactStarshipEvent) {
+		if (event.starship.world.hasFlag(WorldFlag.SAFE_WORLD)) {
+			if (event.damager !is AIShipDamager) {
+				event.damager.alertAction("Combat is disabled in this region!")
+				event.isCancelled = true
+			}
+		}
 	}
 }

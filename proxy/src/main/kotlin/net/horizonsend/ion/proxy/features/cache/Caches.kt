@@ -13,7 +13,7 @@ object Caches : IonComponent() {
 		PlayerSettingsCache,
 		SettlementCache,
 		NationCache,
-		RelationCache
+		RelationCache,
 	)
 
 	override fun onEnable() = caches.forEach {

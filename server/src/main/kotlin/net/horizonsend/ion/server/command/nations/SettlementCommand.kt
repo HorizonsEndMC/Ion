@@ -314,6 +314,23 @@ internal object SettlementCommand : SLCommand() {
 		sender.success("Changed min build access to $accessLevel. Description: $description")
 	}
 
+	@Subcommand("get minbuildaccess")
+	@CommandCompletion("@settlements")
+	@Description("View a settlement's minimum build access level")
+	fun onGetMinBuildAccess(sender: CommandSender, @Optional settlement: String?): Unit = asyncCommand(sender) {
+		val settlementId: Oid<Settlement> = when (sender) {
+			is Player -> when (settlement) {
+				null -> PlayerCache[sender].settlementOid ?: fail { "You need to specify a settlement. /s get minbuildaccess <settlement>" }
+				else -> resolveSettlement(settlement)
+			}
+			else -> resolveSettlement(settlement ?: fail { "Non-players must specify a settlement" })
+		}
+
+		val cached = SettlementCache[settlementId]
+		val accessLevel = cached.minBuildAccess ?: Settlement.ForeignRelation.SETTLEMENT_MEMBER
+		sender.sendMessage(settlementMessageFormat("Min build access for {0}: {1}", cached.name, accessLevel.name))
+	}
+
 	@Subcommand("set tax")
 	@CommandCompletion("0|1|5|10|15")
 	@Description("Set your settlement's trade tax. For cities only")
@@ -803,7 +820,7 @@ internal object SettlementCommand : SLCommand() {
 
 
 	@Subcommand("trusted remove settlement")
-	@Description("Give a settlement build access to the settlement")
+	@Description("Revoke a settlement build access to the settlement")
 	@CommandCompletion("@settlements")
     fun onTrustedRemoveSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
@@ -827,7 +844,7 @@ internal object SettlementCommand : SLCommand() {
 	}
 
 	@Subcommand("trusted remove nation")
-	@Description("Give a nation build access to the settlement")
+	@Description("Revoke a nation build access to the settlement")
 	@CommandCompletion("@nations")
     fun onTrustedRemoveNation(sender: Player, nation: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)

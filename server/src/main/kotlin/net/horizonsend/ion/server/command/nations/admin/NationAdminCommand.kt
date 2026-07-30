@@ -22,18 +22,24 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.*
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.packTerritoryPolygon
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.*
+import java.awt.Polygon
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -341,6 +347,67 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		siege.removeActive()
 	}
 
+	@Subcommand("tradeworld create")
+	@CommandPermission("nations.admin")
+	fun onTradeWorldCreate(sender: CommandSender, worldName: String, displayName: String, color: Int) {
+		val world = Bukkit.getWorld(worldName) ?: fail { "World not found: $worldName" }
+		val worldBorder = world.worldBorder
+
+		Tasks.async {
+			failIf(TradeWorldTerritory.findByWorld(worldName) != null) { "A trade world city already exists for $worldName!" }
+
+			val dummyPolygon = packTerritoryPolygon(Polygon(
+				intArrayOf(
+					0,
+					0,
+					worldBorder.size.toInt(),
+					worldBorder.size.toInt(),
+				),
+				intArrayOf(
+					0,
+					worldBorder.size.toInt(),
+					worldBorder.size.toInt(),
+					0,
+				),
+				4
+			))
+			val territoryId = Territory.create(displayName, worldName, dummyPolygon)
+			NPCTerritoryOwner.create(territoryId, displayName, color, tradeCity = true)
+			Territory.findById(territoryId)?.isProtected = false
+			TradeWorldTerritory.create(worldName, displayName, color, territoryId)
+
+			Tasks.sync {
+				IonWorld[world].configuration.flags.add(WorldFlag.DOMINION_TRADE_WORLD)
+			}
+
+			sender.success("Created trade world city $displayName for world $worldName with size ${worldBorder.size.toInt()}x${worldBorder.size.toInt()}")
+		}
+	}
+
+	@Subcommand("tradeworld delete")
+	@CommandPermission("nations.admin")
+	fun onTradeWorldDelete(sender: CommandSender, worldName: String) {
+		val world = Bukkit.getWorld(worldName) ?: fail { "World not found: $worldName" }
+
+		Tasks.async {
+			val tradeWorld =
+				TradeWorldTerritory.findByWorld(worldName) ?: fail { "No trade world city found for $worldName!" }
+
+			val territory = Territory.findById(tradeWorld.backingTerritory) ?: fail { "Backing territory not found!" }
+			val npcOwner = territory.npcOwner ?: fail { "No NPC owner found on backing territory!" }
+
+			TradeWorldTerritory.col.deleteOneById(tradeWorld._id)
+			NPCTerritoryOwner.delete(npcOwner)
+			Territory.delete(territory._id)
+
+			Tasks.sync {
+				IonWorld[world].configuration.flags.remove(WorldFlag.DOMINION_TRADE_WORLD)
+			}
+
+			sender.success("Deleted trade world city for $worldName")
+		}
+	}
+
 	@Subcommand("ecoshutdown")
 	fun emergancyEconomyShutoff(sender: Player) {
 		val newState = !ConfigurationFiles.featureFlags().economy
@@ -349,5 +416,49 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		ConfigurationFiles.featureFlags.saveToDisk()
 
 		sender.alert("Economy set to $newState")
+	}
+
+	@Subcommand("dominionterritory create")
+	@CommandPermission("nations.admin")
+	fun setWorldAsDominionTerritory(sender: Player, worldName: String) {
+		val world = Bukkit.getWorld(worldName) ?: fail { "World not found: $worldName" }
+
+		Tasks.async {
+			failIf (DominionTerritory.findByWorld(worldName) != null) { "World $worldName is already a Dominion territory!" }
+			DominionTerritory.create(worldName, world.name)
+			Tasks.sync {
+				IonWorld[world].configuration.flags.add(WorldFlag.DOMINION_WORLD)
+			}
+			sender.success("Set world $worldName as Dominion territory")
+		}
+	}
+
+	@Subcommand("dominionterritory delete")
+	@CommandPermission("nations.admin")
+	fun unsetWorldAsDominionTerritory(sender: Player, worldName: String) {
+		val world = Bukkit.getWorld(worldName) ?: fail { "World not found: $worldName" }
+
+		Tasks.async {
+			val territory = DominionTerritory.findByWorld(worldName) ?: fail { "World $worldName is not a Dominion territory!" }
+			DominionTerritory.delete(territory._id)
+			Tasks.sync {
+				IonWorld[world].configuration.flags.remove(WorldFlag.DOMINION_WORLD)
+			}
+			sender.success("Unset world $worldName as Dominion territory")
+		}
+	}
+
+	@Subcommand("territory trustedfixer")
+	@CommandPermission("nations.admin")
+	fun territoryTrustedFixer(sender: Player) = asyncCommand(sender) {
+		for (territory in Territory.all()) {
+			Territory.updateById(territory._id, org.litote.kmongo.setValue(Territory::trustedPlayers, mutableSetOf()))
+
+			Territory.updateById(territory._id, org.litote.kmongo.setValue(Territory::trustedSettlements, mutableSetOf()))
+
+			Territory.updateById(territory._id, org.litote.kmongo.setValue(Territory::trustedNations, mutableSetOf()))
+		}
+
+		sender.information("Fix territories maybe?")
 	}
 }

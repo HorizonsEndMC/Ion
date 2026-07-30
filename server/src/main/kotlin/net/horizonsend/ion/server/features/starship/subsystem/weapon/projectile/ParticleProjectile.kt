@@ -25,6 +25,8 @@ abstract class ParticleProjectile<out B : StarshipProjectileBalancing>(
 			val force = i % 3 == 0
 			spawnParticle(x, y, z, force)
 		}
+
+		spawnParticle(newLocation.x, newLocation.y, newLocation.z, true)
 	}
 
 	protected abstract fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean)

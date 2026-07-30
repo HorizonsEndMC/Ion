@@ -131,7 +131,7 @@ class SolarSiege(
 	fun succeed() {
 		SolarSiegeZone.setNation(region.id, attacker)
 
-		disperseMaterialRewards(true)
+		//disperseMaterialRewards(true)
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
@@ -193,7 +193,7 @@ class SolarSiege(
 			return
 		}
 
-		disperseMaterialRewards(false)
+		//disperseMaterialRewards(false)
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name

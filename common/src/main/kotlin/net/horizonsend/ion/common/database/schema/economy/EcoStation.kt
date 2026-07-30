@@ -61,9 +61,4 @@ data class EcoStation(
 	}
 
 	data class Collector(var x: Int, var y: Int, var z: Int)
-
-	fun distance(x: Number, y: Number, z: Number): Double {
-		//TODO: Eco stations aren't used
-		return /* distance(this.x.toDouble(), 128.0, this.z.toDouble(), x.toDouble(), y.toDouble(), z.toDouble()) */ 0.0
-	}
 }

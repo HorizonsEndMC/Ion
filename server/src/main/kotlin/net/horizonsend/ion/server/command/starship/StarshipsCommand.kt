@@ -37,12 +37,12 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.or
 
-@CommandAlias("starships")
+@CommandAlias("starships|mystarships")
 object StarshipsCommand : SLCommand() {
 	@Description("List all of your starships")
 	@Suppress("Unused")
 	@Default
-	fun starships(sender: Player, @Optional currentPage: Int?) {
+	fun starships(sender: Player, @Optional currentPage: Int?) = asyncCommand(sender) {
 		val ships = PlayerStarshipData.find(and(
 			PlayerStarshipData::captain eq sender.slPlayerId,
 			or(
@@ -56,7 +56,7 @@ object StarshipsCommand : SLCommand() {
 
 	@Subcommand("inworld")
 	@Description("List all of your starships in a world")
-	fun starshipsWorld(sender: Player, world: World, @Optional currentPage: Int?) {
+	fun starshipsWorld(sender: Player, world: World, @Optional currentPage: Int?) = asyncCommand(sender) {
 		val ships = PlayerStarshipData.find(and(
 			PlayerStarshipData::captain eq sender.slPlayerId,
 			PlayerStarshipData::levelName eq world.name,
@@ -71,7 +71,7 @@ object StarshipsCommand : SLCommand() {
 
 	@CommandPermission("ion.starships.other")
 	@Subcommand("other")
-	fun onStarshipsOther(sender: CommandSender, otherName: String, @Optional currentPage: Int?) {
+	fun onStarshipsOther(sender: CommandSender, otherName: String, @Optional currentPage: Int?) = asyncCommand(sender) {
 		val user = resolveOfflinePlayer(otherName).slPlayerId
 
 		val ships = PlayerStarshipData.find(and(

@@ -401,7 +401,7 @@ object CollectionMissions : IonServerComponent() {
 			return
 		}
 
-		val itemStack: ItemStack = getPurchasedItem(collectedItem, stationId, costPerStack)
+		val itemStack: ItemStack = getPurchasedItem(collectedItem)
 
 		val totalCost: Double = takeMoney(costPerStack, buyAmount, player)
 		giveItems(buyAmount, player, itemStack)
@@ -422,14 +422,8 @@ object CollectionMissions : IonServerComponent() {
 		))
 	}
 
-	private fun getPurchasedItem(collectedItem: CollectedItem, stationId: Oid<EcoStation>, costPerStack: Double) =
-		createItem(collectedItem).apply {
-			amount = maxStackSize
-			lore(mutableListOf(
-				textOfChildren(text("Purchased from ", NamedTextColor.GOLD), text(EcoStations[stationId].name, NamedTextColor.AQUA)),
-				textOfChildren(text("for ", NamedTextColor.GOLD), text(costPerStack.toCreditsString(), NamedTextColor.YELLOW)),
-			))
-		}
+	private fun getPurchasedItem(collectedItem: CollectedItem) =
+		createItem(collectedItem).apply { amount = maxStackSize }
 
 	private fun getMaxBuy(shiftClick: Boolean, player: Player): Int {
 		return when {

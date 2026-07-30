@@ -32,6 +32,7 @@ data class TradeCityData(
 	val tax: Double
 		get() = when (type) {
 			TradeCityType.NPC -> NATIONS_BALANCE.settlement.maxTaxPercent / 100.0
+			TradeCityType.TRADE_WORLD -> NATIONS_BALANCE.settlement.maxTaxPercent / 100.0
 			TradeCityType.SETTLEMENT -> SettlementCache[settlementId].tradeTax ?: 0.0
 		}
 

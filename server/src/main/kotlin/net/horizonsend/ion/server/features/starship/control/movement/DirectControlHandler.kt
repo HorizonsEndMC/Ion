@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.userErrorAction
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -8,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.control.input.DirectControlI
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import org.bukkit.util.Vector
@@ -81,9 +83,22 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 
 		// The starship's direction
 		val direction = starship.getTargetForward()
-		val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
-		val targetSpeed = (calculateSpeed(data.selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets *
-				starship.directControlSpeedModifierFromHeavyLasers) * oversizeModifier
+        val oversizeModifier = if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) 0.5 else 1.0
+		val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SPEED)?.strength ?: 0.0
+		val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW)?.strength ?: 0.0
+		/*
+		val nationDirectControlModifier = starship.playerPilot?.let { player ->
+			val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.DIRECT_CONTROL_SPEED)
+			if (cruiseBuffActive) {
+				NationBuffTypes.DIRECT_CONTROL_SPEED.value
+			} else 0.0
+		} ?: 0.0
+		 */
+		val targetSpeed = if (starship.type.tech2) {
+			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier) * 1.15) * oversizeModifier /*+ nationDirectControlModifier*/
+		} else {
+			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier /*+ nationDirectControlModifier*/
+		}
 
 		if (data.isBoosting) {
 			// Initialize forward movement

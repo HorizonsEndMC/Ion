@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.IonNPCCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
+import net.horizonsend.ion.server.command.admin.RegionalObjectiveCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.admin.SequenceAdminCommand
 import net.horizonsend.ion.server.command.admin.StructureCreator
@@ -43,6 +44,7 @@ import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.SuicideCommand
+import net.horizonsend.ion.server.command.misc.TransponderCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
@@ -62,6 +64,7 @@ import net.horizonsend.ion.server.command.nations.stationZones.StationPlotComman
 import net.horizonsend.ion.server.command.nations.stationZones.StationZoneCommand
 import net.horizonsend.ion.server.command.progression.AdvanceAdminCommand
 import net.horizonsend.ion.server.command.progression.BuyXPCommand
+import net.horizonsend.ion.server.command.economy.BuyChetheriteCommand
 import net.horizonsend.ion.server.command.progression.XPCommand
 import net.horizonsend.ion.server.command.qol.BlockStatsCommand
 import net.horizonsend.ion.server.command.qol.CalcExpCommand
@@ -77,7 +80,7 @@ import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetFluidCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
-import net.horizonsend.ion.server.command.space.SpaceGenCommand
+import net.horizonsend.ion.server.command.space.SignatureCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
@@ -99,6 +102,7 @@ import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
 	GToggleCommand,
+	TransponderCommand,
 	PlayerInfoCommand,
 	DyeCommand,
 	GlobalGameRuleCommand,
@@ -108,12 +112,14 @@ val commands: List<SLCommand> = listOf(
 	TransportDebugCommand,
 	ShuttleCommand,
 	BuyXPCommand,
+	BuyChetheriteCommand,
 	RainbowProjectileCommand,
 
 	SettlementCommand,
 	NationCommand,
 	SpaceStationCommand,
 	NationRelationCommand,
+//	FrontierNationCommand,
 
 	CityManageCommand,
 	NationAdminCommand,
@@ -159,9 +165,9 @@ val commands: List<SLCommand> = listOf(
 	GracePeriod,
 	NewPlayerProtection,
 	CapturableStationsCommand,
+	RegionalObjectiveCommand,
 
 	MultiblockCommand,
-	SpaceGenCommand,
 	ConfigurationCommands,
 	WorldCommand,
 	IonChunkCommand,
@@ -210,5 +216,7 @@ val commands: List<SLCommand> = listOf(
 	EnableOrbitBreakingCommand,
 	SetFluidCommand,
 	EnableStationBreakingCommand,
-	SequenceAdminCommand
+	SequenceAdminCommand,
+	SetFluidCommand,
+	SignatureCommand
 )

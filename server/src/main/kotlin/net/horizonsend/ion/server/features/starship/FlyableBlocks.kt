@@ -38,6 +38,7 @@ import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BOOKSHELF
 import org.bukkit.Material.BREWING_STAND
 import org.bukkit.Material.BROWN_MUSHROOM_BLOCK
+import org.bukkit.Material.RED_MUSHROOM_BLOCK
 import org.bukkit.Material.CAMPFIRE
 import org.bukkit.Material.CARROTS
 import org.bukkit.Material.CARTOGRAPHY_TABLE
@@ -202,6 +203,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 
 	SPONGE, // used for lots of ship subsystems, esp. weapons
 	WET_SPONGE,
+	Material.POLISHED_BASALT,
 
 	GLASS,
 	GLASS_PANE,
@@ -221,6 +223,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	EMERALD_BLOCK,
 	COAL_BLOCK,
 	BROWN_MUSHROOM_BLOCK, // custom ores
+	RED_MUSHROOM_BLOCK, // custom ores
 	VAULT, // custom blocks
 
 	// used for landing gears

@@ -145,10 +145,11 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 	 *
 	 * `viewerPlayer` is an optional argument that allows setting the inventory viewer to one not defined by `InvUIWindowWrapper`
 	 **/
-	fun normalWindow(gui: Gui, viewerPlayer: Player = viewer): Window = Window.single()
+	fun normalWindow(gui: Gui, viewerPlayer: Player = viewer, closeHandlers: List<Runnable> = listOf()): Window = Window.single()
 		.setViewer(viewerPlayer)
 		.setGui(gui)
 		.setTitle(buildTitle())
+		.setCloseHandlers(closeHandlers)
 		.build()
 
 	fun parentOrBackButton(icon: GuiItem = GuiItem.CANCEL) =

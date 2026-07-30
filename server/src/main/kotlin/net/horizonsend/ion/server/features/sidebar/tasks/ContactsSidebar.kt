@@ -14,8 +14,8 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -62,7 +63,6 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
-import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -77,7 +77,27 @@ import kotlin.math.abs
 
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
-        return player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsDistance)?.squared() ?: 0
+        val settingValue = player
+            .takeIf { it.isOnline }
+            ?.getSettingOrThrow(PlayerSettings::contactsDistance)
+            // Needed clamping as part off a legacy db bug fix also changed the calculation re ordering because the divisor needs to go before the dominion bonus.
+            ?.coerceIn(0, PlayerSettings.MAX_CONTACTS_DISTANCE)
+            ?: return 0
+
+        val dominionContactRangeModifier =
+            if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE)) {
+                DominionTerritoryBuffTypes.CONTACT_RANGE.value
+            } else {
+                0.0
+            }
+
+        val effectiveDistance = if (player.world.hasFlag(WorldFlag.DOMINION_WORLD)) {
+            settingValue * 0.5 + dominionContactRangeModifier
+        } else {
+            settingValue + dominionContactRangeModifier
+        }
+
+        return effectiveDistance.squared().toInt()
     }
 
     private fun priorityColorChange(): Boolean {
@@ -87,10 +107,10 @@ object ContactsSidebar {
     fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
-            distance < 1500 -> GOLD
-            distance < 2500 -> YELLOW
-            distance < 3500 -> DARK_GREEN
-            distance < 6000 -> GREEN
+            distance < 1500 -> YELLOW
+            distance < 2500 -> GREEN
+ //           distance < 3500 -> DARK_GREEN unneeded as max contacts is 2500
+ //           distance < 6000 -> GREEN
             else -> GREEN
         }
     }
@@ -289,7 +309,8 @@ object ContactsSidebar {
         val starships: List<ActiveStarship> = if (starshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
-                        it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
+					if (it.type == StarshipType.BLACK_OPS_FRIGATE || it.type == StarshipType.RECON_STARFIGHTER) {it.centerOfMass.toVector().distanceSquared(sourceVector) <= (700.squared())}
+                    else{it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)} &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
                         isRelationEnabled(player, it.controller) &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
@@ -445,6 +466,9 @@ object ContactsSidebar {
                         if (starship.isInterdicting) {
                             interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
                         } else empty(),
+						if (starship.disruptorTarget == player) {
+							interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
+						} else empty(),
                         if (inFleet) {
                             ofChildren(
                                 if (fleet != null && fleet.leader == otherPlayer.uniqueId) {
@@ -469,13 +493,13 @@ object ContactsSidebar {
 
     fun createJammedStarshipContact(contactsData: ContactsData): ContactsData {
         return ContactsData(
-            name = text("########", DARK_RED),
+            name = contactsData.name,
             type = contactsData.type,
-            relation = null,
-            priority = false,
-            prefix = constructPrefixTextComponent(SidebarIcon.X_CROSS_ICON.text, DARK_RED),
-            suffix = empty(),
-            heading = constructHeadingTextComponent("XX", GRAY),
+            relation = contactsData.relation,
+            priority = contactsData.priority,
+            prefix = contactsData.prefix,
+            suffix = contactsData.suffix,
+            heading = contactsData.heading,
             height = constructHeightTextComponent("XXX", GRAY),
             distance = constructDistanceTextComponent("XXXX", GRAY),
             distanceInt = contactsData.distanceInt,

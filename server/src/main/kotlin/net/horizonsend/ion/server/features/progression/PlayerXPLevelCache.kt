@@ -40,6 +40,9 @@ object PlayerXPLevelCache : IonServerComponent() {
 
 			change[SLPlayer::level]?.int() // get the changed level value
 				?.let { lvl -> map[id.uuid]?.cachedLevel = lvl } // attempt to update the cached level as well
+
+			change[SLPlayer::power]?.int()
+				?.let { power -> map[id.uuid]?.cachedPower = power }
 		}
 	}
 
@@ -49,9 +52,10 @@ object PlayerXPLevelCache : IonServerComponent() {
 
 	/** A data class which stores cached data on online players.
 	 * Shouldn't be updated directly, database should be updated and caches should be refreshed. */
-	data class CachedAdvancePlayer(val uniqueId: UUID, var cachedXP: Int, var cachedLevel: Int) {
+	data class CachedAdvancePlayer(val uniqueId: UUID, var cachedXP: Int, var cachedLevel: Int, var cachedPower: Int) {
 		val xp get() = cachedXP
 		val level get() = cachedLevel
+		val power get() = cachedPower
 	}
 
 	private val map = ConcurrentHashMap<UUID, CachedAdvancePlayer>()
@@ -61,10 +65,13 @@ object PlayerXPLevelCache : IonServerComponent() {
 		val (xp: Int, level: Int) = SLPlayer.getXPAndLevel(uniqueId.slPlayerId)
 			?: error("Cached advancement data had no matching database mirror! UUID $uniqueId")
 
-		return@computeIfAbsent CachedAdvancePlayer(uniqueId, xp, level)
+		val power = SLPlayer.getPower(uniqueId.slPlayerId) ?: error("Cached advancement data had no matching database mirror! UUID $uniqueId")
+
+		return@computeIfAbsent CachedAdvancePlayer(uniqueId, xp, level, power)
 	}
 
 	private fun onJoin(playerID: UUID) {
+		setPowerIfNull(playerID)
 		cachePlayerData(playerID)
 		Levels.markForCheck(playerID)
 	}
@@ -126,9 +133,29 @@ object PlayerXPLevelCache : IonServerComponent() {
 		SLPlayer.setXP(uniqueId.slPlayerId, amount)
 	}
 
+	/** Calls database and gets the player's power. Shouldn't be called from the main thread. */
+	fun fetchPower(uniqueId: UUID): Int {
+		return SLPlayer.getPower(uniqueId.slPlayerId) ?: error("Expected $uniqueId to exist")
+	}
+
+	/** Adds power to a player in the database, then refreshes the changes */
+	fun addPower(uniqueId: UUID, amount: Int) {
+		SLPlayer.addPower(uniqueId.slPlayerId, amount)
+	}
+
+	/** Sets a player's power in the database, then refreshes the changes */
+	fun setPower(uniqueId: UUID, amount: Int) {
+		SLPlayer.setPower(uniqueId.slPlayerId, amount)
+	}
+
 	/** Runs an async task on the player cache thread */
 	fun async(block: PlayerXPLevelCache.() -> Unit): Future<*> = cacheThread.submit {
 		block.invoke(this@PlayerXPLevelCache)
 	}
 
+	private fun setPowerIfNull(uniqueId: UUID) {
+		if (SLPlayer.getPower(uniqueId.slPlayerId) == null) {
+			SLPlayer.setPower(uniqueId.slPlayerId, 20)
+		}
+	}
 }

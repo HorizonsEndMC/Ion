@@ -14,6 +14,11 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.SpaceRegion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
@@ -71,6 +76,25 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 	override fun generateEntries(): List<Map.Entry<String, List<BazaarItem>>> = BazaarItem
 		.find(bson)
 		.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
+		.filter { item ->
+			val cityWorld = Regions.get<RegionTerritory>(item.cityTerritory).bukkitWorld ?: return@filter false
+			val buyerWorld = viewer.world
+
+			val buyerInDeepSpace = buyerWorld.hasFlag(WorldFlag.DOMINION_WORLD)
+			val buyerInCore = buyerWorld.hasFlag(WorldFlag.CORE_REGION_WORLD)
+			val cityIsTradeWorld = cityWorld.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)
+			val cityInCore = cityWorld.hasFlag(WorldFlag.CORE_REGION_WORLD)
+
+			when {
+				buyerInDeepSpace && cityInCore -> false
+				buyerInCore && cityIsTradeWorld -> false
+				else -> {
+					val buyerRegion = buyerWorld.ion.getSpaceRegion()
+					val cityRegion = cityWorld.ion.getSpaceRegion()
+					buyerRegion == cityRegion || buyerRegion == SpaceRegion.NONE || cityRegion == SpaceRegion.NONE
+				}
+			}
+		}
 		.groupBy(BazaarItem::itemString)
 		.entries
 		.toMutableList()

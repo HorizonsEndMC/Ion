@@ -8,6 +8,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
@@ -26,6 +27,10 @@ import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -37,6 +42,7 @@ import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.StationZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.TradeWorldTerritory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
@@ -121,6 +127,9 @@ object DBManager : IonComponent() {
 
 		// nations
 		CapturableStation.init()
+		RegionalObjectiveSiegeData.init()
+		RegionalObjective.init()
+
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
 		SolarSiegeData.init()
@@ -134,10 +143,12 @@ object DBManager : IonComponent() {
 		SettlementZone.init()
 		StationZone.init()
 		Territory.init()
-
 		NationSpaceStation.init()
 		SettlementSpaceStation.init()
 		PlayerSpaceStation.init()
+		DominionTerritory.init()
+		DominionTerritorySiegeData.init()
+		TradeWorldTerritory.init()
 
 		// space
 		Planet.init()
@@ -166,6 +177,8 @@ object DBManager : IonComponent() {
 
 		Cryopod.init()
 		Bookmark.init()
+
+		BankedItem.init()
 	}
 
 	override fun onDisable() {

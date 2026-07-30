@@ -365,11 +365,16 @@ class MultiblockShape {
 		fun emeraldBlock() = type(Material.EMERALD_BLOCK)
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
 		fun lapisBlock() = type(Material.LAPIS_BLOCK)
+		fun scorditeBlock() = customBlock(CustomBlockKeys.SCORDITE_BLOCK.getValue())
+		fun vanadiumBlock() = customBlock(CustomBlockKeys.VANADIUM_BLOCK.getValue())
+		fun zirconBlock() = customBlock(CustomBlockKeys.ZIRCON_BLOCK.getValue())
+		fun atavumBlock() = customBlock(CustomBlockKeys.ATAVUM_BLOCK.getValue())
 
 		fun titaniumBlock() = customBlock(CustomBlockKeys.TITANIUM_BLOCK.getValue())
 		fun aluminumBlock() = customBlock(CustomBlockKeys.ALUMINUM_BLOCK.getValue())
 		fun chetheriteBlock() = customBlock(CustomBlockKeys.CHETHERITE_BLOCK.getValue())
 		fun steelBlock() = customBlock(CustomBlockKeys.STEEL_BLOCK.getValue())
+		fun uraniumBlock() = customBlock(CustomBlockKeys.URANIUM_BLOCK.getValue())
 		fun enrichedUraniumBlock() = customBlock(CustomBlockKeys.ENRICHED_URANIUM_BLOCK.getValue())
 
 		fun anyCopperVariant() = anyType(
@@ -481,6 +486,8 @@ class MultiblockShape {
 			Material.OXIDIZED_COPPER_BULB,
 			alias = "any unwaxed copper bulb"
 		)
+
+		fun assemblyCore() = customBlock(CustomBlockKeys.ASSEMBLY_CORE.getValue())
 
 		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)

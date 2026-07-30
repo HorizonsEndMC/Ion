@@ -5,6 +5,9 @@ import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
@@ -25,7 +28,10 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -33,6 +39,8 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
@@ -76,6 +84,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
+import org.litote.kmongo.util.idValue
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
@@ -104,10 +113,12 @@ object ShipmentManager : IonServerComponent() {
 		val routeValue: Double
 	)
 
+	/*
 	private data class TradeTimeLimitData(
 		var trades: Int = 0,
 		var firstTrade: Long = 0,
 	)
+	 */
 
 	override fun onEnable() {
 		regenerateShipmentsAsync()
@@ -121,7 +132,7 @@ object ShipmentManager : IonServerComponent() {
 	 */
 	private var crateItemOwnershipMap = mutableMapOf<UUID, ItemOwnerData>()
 
-	private val playerCityTradeTimes = mutableMapOf<UUID, MutableMap<TradeCityData, TradeTimeLimitData>>()
+	//private val playerCityTradeTimes = mutableMapOf<UUID, MutableMap<TradeCityData, TradeTimeLimitData>>()
 
 	// Map of territory id to list of shipments
 	private val shipments = ConcurrentHashMap<Oid<Territory>, List<UnclaimedShipment>>()
@@ -200,6 +211,7 @@ object ShipmentManager : IonServerComponent() {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
 
+
 		return listOf(
 			"${SLTextStyle.GRAY}Destination:" +
 				" ${SLTextStyle.DARK_GREEN}${shipment.to.displayName}" +
@@ -241,8 +253,10 @@ object ShipmentManager : IonServerComponent() {
 		}
 	}
 
+	/*
 	private const val TIME_LIMIT = 23L
 	private const val TRADE_LIMIT_PER_CITY_PER_DAY = 3
+	 */
 
 	private fun giveShipment(player: Player, shipment: UnclaimedShipment, count: Int) {
 		val cost = getCost(shipment, count)
@@ -256,6 +270,7 @@ object ShipmentManager : IonServerComponent() {
 			// database stuff async
 			val playerId = player.slPlayerId
 
+			/*
 			val playerTradeData = playerCityTradeTimes[player.uniqueId]
 			if (playerTradeData != null) {
 				// player has traded since the last restart
@@ -275,6 +290,7 @@ object ShipmentManager : IonServerComponent() {
 					}
 				}
 			}
+			 */
 
 			/*
 			if (CargoCrateShipment.hasPurchasedFrom(playerId, shipment.from.territoryId, TIME_LIMIT)) {
@@ -306,6 +322,7 @@ object ShipmentManager : IonServerComponent() {
 					return@sync player.serverError("Shipment is not available")
 				}
 
+				/*
 				val playerTradeData = playerCityTradeTimes[player.uniqueId]
 				if (playerTradeData == null) {
 					playerCityTradeTimes[player.uniqueId] = mutableMapOf(
@@ -321,6 +338,7 @@ object ShipmentManager : IonServerComponent() {
 						playerCityTradeTimes[player.uniqueId]!![shipment.from]!!.trades += 1
 					}
 				}
+				 */
 
 				completePurchase(player, shipment, item, count)
 				player.closeInventory()
@@ -358,6 +376,10 @@ object ShipmentManager : IonServerComponent() {
 
 		player msg "&7&oThe items can only be picked up by you for one hour, " +
 			"or until you pick them up (and drop them again), so move them to your ship!"
+
+		log.info("${player.name} accepted a shipment for $costString to deliver $count Crates " +
+			"to ${shipment.to.displayName} on $planetName " +
+			"in exchange for a total revenue of $revenueString")
 	}
 
 	private fun makeShipmentAndItem(player: SLPlayerId, city: Oid<Territory>, shipment: UnclaimedShipment, count: Int): ItemStack {
@@ -466,6 +488,11 @@ object ShipmentManager : IonServerComponent() {
 						"&d${if (!isReturn) "to " else "meant for "}&1$destinationCityName " +
 						"&dearning &6$revenueString &dfor shipment with ID &3${delivery.id}"
 
+					log.info("${player.name} ${if (isReturn) "returned" else "delivered"} $amountImported ${crate.name} Crates " +
+						"from $originCityName " +
+						"${if (!isReturn) "to " else "meant for "}$destinationCityName " +
+						"earning $revenueString for shipment with ID ${delivery.id}")
+
 					if (!isReturn) {
 						val totalDelivered = delivery.newDeliveredCrates + delivery.oldDeliveredCrates
 						val completed = totalDelivered >= delivery.totalCrates
@@ -504,14 +531,41 @@ object ShipmentManager : IonServerComponent() {
 
 				val playernationid = PlayerCache[player].nationOid
 
+				/*
 				val capturedStationCount =
 					min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
+				 */
 
+				val dominionCrateBonus = DominionTerritoryBuffTypes.getCrateBonus(player)
+				val dominionBonus = totalRevenue * dominionCrateBonus
+				if (dominionBonus > 0) {
+					player.information("Received ${(dominionCrateBonus * 100).toInt()}% (C$dominionBonus) bonus from owning dominion territory.")
+					totalRevenue += dominionBonus
+				}
+
+				// Tax beacon passive tax collection
+				val beacons = Regions.getAllOf<RegionRegionalObjective>()
+				val playerRegion = player.world.ion.getSpaceRegion()
+				for (beacon in beacons) {
+					val taxBeaconRegion = beacon.bukkitWorld?.ion?.getSpaceRegion() ?: continue //likely failure point ig
+					if (beacon.type == RegionalObjectiveType.TAX_BEACON && taxBeaconRegion == playerRegion) {
+						val beaconNationId = beacon.nation
+						if (beaconNationId != null && beaconNationId != playernationid) {
+							val beaconTax = (totalRevenue * 0.10).roundToInt()
+							totalRevenue -= beaconTax
+							Nation.deposit(beaconNationId, beaconTax)
+							player.information("Paid ${beaconTax.toCreditsString()} tax to the controlling nation of ${taxBeaconRegion.name}.")
+						}
+					}
+				}
+
+				/*
 				player.information("Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations.")
 
 				totalRevenue += siegeBonus
+				 */
 
 				if (totalRevenue > 0) {
 					player msg "&1Revenue from all updated shipments, after tax: " +
@@ -673,7 +727,10 @@ object ShipmentManager : IonServerComponent() {
 	): ItemStack {
 		val destination: RegionTerritory = Regions[shipment.to.territoryId]
 		val originSystemName = Space.planetNameCache[Regions.get<RegionTerritory>(shipment.from.territoryId).world].orNull()?.spaceWorldName
+			?: Regions.get<RegionTerritory>(shipment.from.territoryId).world
+
 		val destinationSystemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName
+			?: destination.world
 
 		val lore = mutableListOf(
 			ofChildren(text("Shipping From: ", DARK_AQUA), text("${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)", AQUA)),

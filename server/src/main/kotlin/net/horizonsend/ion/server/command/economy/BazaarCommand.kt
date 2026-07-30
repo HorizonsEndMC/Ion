@@ -195,10 +195,15 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("withdraw")
 	@Description("Withdraw the specified amount of the item")
-	@CommandCompletion("@bazaarItemStrings 1|64")
-	fun onWithdraw(sender: Player, itemString: String, amount: Int) = asyncCommand(sender) {
+	@CommandCompletion("@bazaarItemStrings 1|64 confirm")
+	fun onWithdraw(sender: Player, itemString: String, amount: Int, @Optional confirm: String?) = asyncCommand(sender) {
 		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
+
+		failIf(amount > 2000 && confirm != "confirm") {
+			"Withdrawing more than 2000 items from the bazaar may cause your items to disappear, requiring staff intervention. Do \"/bazaar withdraw $itemString $amount confirm\" to override this warning."
+		}
+
 		Bazaars.withdrawListingBalance(sender, territory, itemString, amount).sendReason(sender)
 	}
 
@@ -237,7 +242,7 @@ object BazaarCommand : SLCommand() {
 		builder.append(text("Your Items (${items.size})"), newline())
 		builder.append(lineBreak(45), newline())
 
-		var totalBalance = 0.0
+		var totalPageBalance = 0.0
 
 		val body = formatPaginatedMenu(
 			items.size,
@@ -251,7 +256,7 @@ object BazaarCommand : SLCommand() {
 			val uncollected = item.balance.toCreditComponent()
 			val price = item.price.toCreditComponent()
 
-			totalBalance += item.balance
+			totalPageBalance += item.balance
 
 			ofChildren(
 				itemDisplayName,
@@ -263,11 +268,12 @@ object BazaarCommand : SLCommand() {
 
 		builder.append(body, newline())
 		builder.append(lineBreak(45), newline())
-		builder.append(template(text("Total Uncollected Credits: {0}", HE_MEDIUM_GRAY), totalBalance.toCreditComponent()))
+		builder.append(template(text("Total Uncollected Credits On This Page: {0}", HE_MEDIUM_GRAY), totalPageBalance.toCreditComponent()))
+		builder.append(template(text("Total Uncollected Credits: {0}", HE_MEDIUM_GRAY), items.sumOf { it.balance }.toCreditComponent()))
 
 		sender.sendMessage(builder.build())
 	}
-	
+
 	@Subcommand("export")
 	@Description("Export your sell orders in CSV format (provides link)")
 	fun onExportPlayer(sender: Player) = asyncCommand(sender) {
@@ -561,7 +567,7 @@ object BazaarCommand : SLCommand() {
 			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
 		}
 	}
-	
+
 	private fun exportBuyOrders(
 		items: List<BazaarOrder>,
 		sender: Player,
