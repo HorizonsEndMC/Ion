@@ -33,6 +33,8 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	var flightPath2Completed = false
 	var age = 0
 
+	override val minimumSphereRadius: Double = 60.0
+
 	val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
 	override val color: Color = Color.ORANGE
 
