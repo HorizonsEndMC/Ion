@@ -37,7 +37,18 @@ object CustomItemCommand : SLCommand() {
 		@Optional amount: Int?,
 		@Optional target: OnlinePlayer?
 	) {
-		val player = target?.player ?: sender as? Player ?: fail { "Console must specify a target player" }
+		val senderPlayer = sender as? Player
+
+		if (
+			senderPlayer != null &&
+			target != null &&
+			target.player.uniqueId != senderPlayer.uniqueId
+		) {
+			senderPlayer.userError("You can only give custom items to yourself!")
+			return
+		}
+
+		val player = target?.player ?: senderPlayer ?: fail { "Console must specify a target player" }
 
 		val itemStack = CustomItemKeys[customItem]?.getValue()?.constructItemStack()
 
