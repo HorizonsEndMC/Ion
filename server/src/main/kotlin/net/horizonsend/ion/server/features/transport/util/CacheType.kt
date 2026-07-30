@@ -27,6 +27,14 @@ import org.bukkit.Material
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHEST
+import org.bukkit.Material.COPPER_CHEST
+import org.bukkit.Material.EXPOSED_COPPER_CHEST
+import org.bukkit.Material.WEATHERED_COPPER_CHEST
+import org.bukkit.Material.OXIDIZED_COPPER_CHEST
+import org.bukkit.Material.WAXED_COPPER_CHEST
+import org.bukkit.Material.WAXED_EXPOSED_COPPER_CHEST
+import org.bukkit.Material.WAXED_WEATHERED_COPPER_CHEST
+import org.bukkit.Material.WAXED_OXIDIZED_COPPER_CHEST
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DECORATED_POT
@@ -149,6 +157,14 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addSimpleNode(
 				CHEST,
 				TRAPPED_CHEST,
+				COPPER_CHEST,
+				EXPOSED_COPPER_CHEST,
+				WEATHERED_COPPER_CHEST,
+				OXIDIZED_COPPER_CHEST,
+				WAXED_COPPER_CHEST,
+				WAXED_EXPOSED_COPPER_CHEST,
+				WAXED_WEATHERED_COPPER_CHEST,
+				WAXED_OXIDIZED_COPPER_CHEST,
 				BARREL,
 				FURNACE,
 				SMOKER,
