@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProject
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
@@ -24,7 +25,10 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 	override fun calculateTarget(): Vector {
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
-		val sphereRadius = ((System.nanoTime() - firedAtNanos)/1_000_000_000.0)*speed
-		return player.location.direction.multiply(sphereRadius).add(player.location.toVector())
+		//val sphereRadius = ((System.nanoTime() - firedAtNanos)/1_000_000_000.0)*speed
+		val sphereRadius = player.location.distance(location).plus(speed*delta)
+		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(location.toVector().multiply(-1))
+
+		return intercept
 	}
 }
