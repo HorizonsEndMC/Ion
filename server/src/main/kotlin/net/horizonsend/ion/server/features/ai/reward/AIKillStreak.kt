@@ -17,8 +17,9 @@ object AIKillStreak : IonServerComponent() {
 	private val playerHeatList: MutableMap<UUID, PlayerHeat> = mutableMapOf()
 	private const val BASE_DECAY = 5
 	private const val ADDITIONAL_DECAY_PER_LEVEL = 0.2
-	const val MAX_LEVELS = 60
-	const val MAX_MULTIPLIER = 6.0
+	const val MAX_LEVELS = 30
+	const val MAX_MULTIPLIER = 4.0
+	private const val MAX_SCORE = MAX_LEVELS * 1000 + 499
 
 	override fun onEnable() {
 		Tasks.syncRepeat(200, 20, ::tick)
@@ -54,10 +55,10 @@ object AIKillStreak : IonServerComponent() {
 		var entry = playerHeatList[player.uniqueId]
 
 		if (entry == null) {
-			entry = PlayerHeat(score, 0)
+			entry = PlayerHeat(score.coerceAtMost(MAX_SCORE), 0)
 			playerHeatList[player.uniqueId] = entry
 		} else {
-			entry.score += score
+			entry.score = (entry.score + score).coerceAtMost(MAX_SCORE)
 		}
 
 		if (calculateHeat(entry.score) > entry.currentHeat) {
@@ -72,7 +73,7 @@ object AIKillStreak : IonServerComponent() {
 	}
 
 	fun setHeatLevel(player: Player, level: Int) {
-	    val clampedLevel = level.coerceIn(0, 20)
+	    val clampedLevel = level.coerceIn(0, MAX_LEVELS)
 
 	    if (clampedLevel == 0) {
 		      playerHeatList.remove(player.uniqueId)
