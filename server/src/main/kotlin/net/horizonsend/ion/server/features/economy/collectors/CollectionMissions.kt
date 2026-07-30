@@ -54,6 +54,9 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object CollectionMissions : IonServerComponent() {
+	//Absolute hard limit for any eco station config
+	private const val ABSOLUTE_MAX_PROFIT_PER_STATION_PER_DAY = 100_000.0
+
 	@Serializable
 	data class Config(val generateAmount: Int = 27, val xpPerCreditRoot: Double = 0.5, val buyMultiplier: Double = 2.0)
 
@@ -124,13 +127,29 @@ object CollectionMissions : IonServerComponent() {
 
 	private fun randomItem(station: EcoStation) = itemCache[station._id].random()
 
-	private fun getMaxProfitPerStationPerDay(player: Player): Double {
+	private fun getMaxProfitPerStationPerDay(player: Player, ecoStation: EcoStation): Double {
 		val configuration = ConfigurationFiles.tradeConfiguration().ecoStationConfiguration
+
+		val stationType = configuration.stationTypeByEcoStationName.entries
+			.firstOrNull { (stationName, _) -> stationName.equals(ecoStation.name, ignoreCase = true) }
+			?.value
+
+		val stationTypeConfiguration = stationType?.let { type ->
+			configuration.stationTypeConfigurations.entries
+				.firstOrNull { (typeName, _) -> typeName.equals(type, ignoreCase = true) }
+				?.value
+		}
+
+		val profitCapPerLevel = stationTypeConfiguration?.profitCapPerLevel
+			?: configuration.profitCapPerLevel
+		val configuredMaximum = stationTypeConfiguration?.maxProfitPerStationPerDay
+			?: configuration.maxProfitPerStationPerDay
 		val playerLevel = PlayerXPLevelCache[player].level.coerceAtLeast(1)
 
 		return minOf(
-			configuration.profitCapPerLevel * playerLevel,
-			configuration.maxProfitPerStationPerDay
+			profitCapPerLevel * playerLevel,
+			configuredMaximum,
+			ABSOLUTE_MAX_PROFIT_PER_STATION_PER_DAY
 		)
 	}
 
@@ -146,7 +165,7 @@ object CollectionMissions : IonServerComponent() {
 
 		val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-		if (profitLastDay >= getMaxProfitPerStationPerDay(player)) {
+		if (profitLastDay >= getMaxProfitPerStationPerDay(player, ecoStation)) {
 			player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
 			return@async
 		}
@@ -269,7 +288,7 @@ object CollectionMissions : IonServerComponent() {
 		Tasks.async {
 			val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-			if (profitLastDay >= getMaxProfitPerStationPerDay(player)) {
+			if (profitLastDay >= getMaxProfitPerStationPerDay(player, EcoStations[stationId])) {
 				player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
 				return@async
 			}

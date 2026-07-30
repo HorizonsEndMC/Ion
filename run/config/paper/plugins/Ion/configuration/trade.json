@@ -1,0 +1,27 @@
+{
+  "ecoStationConfiguration": {
+    "profitCapPerLevel": 1000.0,
+    "maxProfitPerStationPerDay": 100000.0,
+    "stationTypeByEcoStationName": {
+      "Gaia": "foods",
+      "Prometheus": "crops",
+      "Deepspace": "mining",
+      "Deepspace2": "mining",
+      "Regulus": "crops"
+    },
+    "stationTypeConfigurations": {
+      "foods": {
+        "profitCapPerLevel": 2000.0,
+        "maxProfitPerStationPerDay": 100000.0
+      },
+      "crops": {
+        "profitCapPerLevel": 2000.0,
+        "maxProfitPerStationPerDay": 100000.0
+      },
+      "mining": {
+        "profitCapPerLevel": 100000.0,
+        "maxProfitPerStationPerDay": 100000.0
+      }
+    }
+  }
+}
