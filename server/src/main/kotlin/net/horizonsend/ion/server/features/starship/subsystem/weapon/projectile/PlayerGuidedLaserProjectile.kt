@@ -21,13 +21,14 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
+	val randomOffset = Vector(Math.random(), Math.random(), Math.random()).normalize().multiply(Math.random()*7.5)
 
 	override fun calculateTarget(): Vector {
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
-		//val sphereRadius = ((System.nanoTime() - firedAtNanos)/1_000_000_000.0)*speed
-		val sphereRadius = player.location.distance(location).plus(speed*delta)
-		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector())
+
+		val sphereRadius = player.location.distance(location).plus(speed*delta).coerceIn(30.0,10000.0)
+		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(randomOffset)
 
 		return intercept
 	}
