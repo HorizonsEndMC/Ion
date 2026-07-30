@@ -4,11 +4,11 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProject
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
+import kotlin.random.Random
 
 abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	source: ProjectileSource,
@@ -21,7 +21,8 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
-	val randomOffset = Vector(Math.random(), Math.random(), Math.random()).normalize().multiply(Math.random()*7.5)
+	val random = Random(System.currentTimeMillis())
+	val randomOffset = Vector(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0)).normalize().multiply(Math.random()*3.5)
 
 	override fun calculateTarget(): Vector {
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
