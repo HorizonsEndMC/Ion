@@ -665,7 +665,7 @@ data class LightMissileLauncherBalancing(
 		override var range: Double = 285.0,
 		override var speed: Double = 85.0,
 		override var explosionPower: Float = 5.50f,
-		override var starshipShieldDamageMultiplier: Double = 6.0,
+		override var starshipShieldDamageMultiplier: Double = 4.8,
 		override var areaShieldDamageMultiplier: Double = 4.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
