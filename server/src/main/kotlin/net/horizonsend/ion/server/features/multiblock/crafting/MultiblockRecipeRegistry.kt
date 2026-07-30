@@ -493,6 +493,12 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			Triple(MultiblockRecipeKeys.LIGHTNING_ROD_OXIDATION, Material.LIGHTNING_ROD, Material.EXPOSED_LIGHTNING_ROD),
 			Triple(MultiblockRecipeKeys.EXPOSED_LIGHTNING_ROD_OXIDATION, Material.EXPOSED_LIGHTNING_ROD, Material.WEATHERED_LIGHTNING_ROD),
 			Triple(MultiblockRecipeKeys.WEATHERED_LIGHTNING_ROD_OXIDATION, Material.WEATHERED_LIGHTNING_ROD, Material.OXIDIZED_LIGHTNING_ROD),
+			Triple(MultiblockRecipeKeys.COPPER_CHAIN_OXIDATION, Material.COPPER_CHAIN, Material.EXPOSED_COPPER_CHAIN),
+			Triple(MultiblockRecipeKeys.EXPOSED_COPPER_CHAIN_OXIDATION, Material.EXPOSED_COPPER_CHAIN, Material.WEATHERED_COPPER_CHAIN),
+			Triple(MultiblockRecipeKeys.WEATHERED_COPPER_CHAIN_OXIDATION, Material.WEATHERED_COPPER_CHAIN, Material.OXIDIZED_COPPER_CHAIN),
+			Triple(MultiblockRecipeKeys.COPPER_LANTERN_OXIDATION, Material.COPPER_LANTERN, Material.EXPOSED_COPPER_LANTERN),
+			Triple(MultiblockRecipeKeys.EXPOSED_COPPER_LANTERN_OXIDATION, Material.EXPOSED_COPPER_LANTERN, Material.WEATHERED_COPPER_LANTERN),
+			Triple(MultiblockRecipeKeys.WEATHERED_COPPER_LANTERN_OXIDATION, Material.WEATHERED_COPPER_LANTERN, Material.OXIDIZED_COPPER_LANTERN),
 		)
 
 		for ((key, ingredient, result) in pairs) {
