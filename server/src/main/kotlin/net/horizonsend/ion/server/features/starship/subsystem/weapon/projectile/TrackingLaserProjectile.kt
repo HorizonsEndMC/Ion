@@ -92,11 +92,9 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
 		 */
 		if (this.location.toVector().distance(calculateTarget()) <= balancing.detonationRange) {
-			val impacted = tryImpact(RayTraceResult(calculateTarget()), calculateTarget().toLocation(location.world))
-			if (impacted) {
-				onImpact()
-				return onDespawn()
-			}
+			impact(calculateTarget().toLocation(location.world),null,null)
+			onImpact()
+			return onDespawn()
 		}
 		// Speed calculations for Lead
 		val currentTargetPos = calculateTarget()
