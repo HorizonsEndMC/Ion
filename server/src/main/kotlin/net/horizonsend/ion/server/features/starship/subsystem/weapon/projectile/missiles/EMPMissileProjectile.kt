@@ -37,23 +37,25 @@ class EMPMissileProjectile(
 	var flightPath2Completed = false
 	var age = 0
 
-	val item = ItemFactory.Preset.unStackableCustomItem("projectile/activated_emp_missile").construct()
+	val item by lazy{ ItemFactory.Preset.unStackableCustomItem("projectile/activated_emp_missile").construct()}
 	override val color: Color = Color.ORANGE
 
 	init {
 		track = false
 	}
 
-	private val container = ItemDisplayContainer(
-        source.getWorld(),
-        1.0F,
-        loc.toVector(),
-        dir.clone().multiply(-1),
-        item,
-        interpolation = 2
-    ).apply {
-		getEntity().transformationInterpolationDuration = 2
-		getEntity().teleportDuration = 2
+	private val container by lazy {
+		ItemDisplayContainer(
+			source.getWorld(),
+			1.0F,
+			loc.toVector(),
+			dir.clone().multiply(-1),
+			item,
+			interpolation = 2
+		).apply {
+			getEntity().transformationInterpolationDuration = 2
+			getEntity().teleportDuration = 2
+		}
 	}
 
 	override fun tick() {
