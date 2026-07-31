@@ -76,8 +76,8 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	override fun tick() {
 		super.tick()
 		//missile acceleration and less manuvering
-		speed = (speed + 10).coerceAtMost(balancing.speed)
-		turnRate = (turnRate - 0.0045).coerceAtLeast(0.25)
+		speed = (speed + balancing.acceleration).coerceAtMost(balancing.speed)
+		turnRate = (turnRate - 0.005).coerceAtLeast(balancing.turnRate)
 		if (track) adjustDirection()
 	}
 
