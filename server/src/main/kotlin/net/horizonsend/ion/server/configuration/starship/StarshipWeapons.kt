@@ -79,7 +79,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.EMPMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles.EMPMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLogisticsProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyNeutralizerProjectile
@@ -100,7 +100,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.SwarmMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TestBoidProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TorpedoProjectile
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles.TrackingMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.WebifierProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem

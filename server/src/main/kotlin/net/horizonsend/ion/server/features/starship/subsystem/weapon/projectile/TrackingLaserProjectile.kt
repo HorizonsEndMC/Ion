@@ -26,7 +26,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	val maxTrackingRadius = 0.15
 	private lateinit var getTargetOrigin: () -> Vector
 	private lateinit var targetBase: Vector
-	var track: Boolean = true
+	open var track: Boolean = true
 	override var speed: Double = 0.0
 
 	private var previousTargetPos: Vector? = null
