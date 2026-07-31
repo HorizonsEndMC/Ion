@@ -36,19 +36,21 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 		balancing.particleThickness.toFloat()
 	)
 
-	override val item = ItemFactory.Preset.unStackableCustomItem("projectile/activated_thermonuclear_missile").construct()
+	override val item by lazy {ItemFactory.Preset.unStackableCustomItem("projectile/activated_thermonuclear_missile").construct()}
 	override val color: Color = Color.ORANGE
 
-	override val container = ItemDisplayContainer(
-        source.getWorld(),
-        6.0F,
-        loc.toVector(),
-        dir,
-        item,
-        interpolation = 2
-    ).apply {
-		getEntity().transformationInterpolationDuration = 2
-		getEntity().teleportDuration = 2
+	override val container by lazy {
+		ItemDisplayContainer(
+			source.getWorld(),
+			6.0F,
+			loc.toVector(),
+			dir,
+			item,
+			interpolation = 2
+		).apply {
+			getEntity().transformationInterpolationDuration = 2
+			getEntity().teleportDuration = 2
+		}
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {

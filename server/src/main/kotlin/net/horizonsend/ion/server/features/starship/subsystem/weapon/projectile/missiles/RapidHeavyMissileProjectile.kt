@@ -31,19 +31,21 @@ class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
     baseAimDistance: Int
 ) : PlayerGuidedLaserProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
 
-	override val item = ItemFactory.Preset.unStackableCustomItem("projectile/activated_heavy_missile").construct()
+	override val item by lazy { ItemFactory.Preset.unStackableCustomItem("projectile/activated_heavy_missile").construct()}
 	override val color: Color = Color.ORANGE
 
-	override val container = ItemDisplayContainer(
-        source.getWorld(),
-        2.0F,
-        loc.toVector(),
-        dir,
-        item,
-        interpolation = 2
-    ).apply {
-		getEntity().transformationInterpolationDuration = 2
-		getEntity().teleportDuration = 2
+	override val container by lazy {
+		ItemDisplayContainer(
+			source.getWorld(),
+			2.0F,
+			loc.toVector(),
+			dir,
+			item,
+			interpolation = 2
+		).apply {
+			getEntity().transformationInterpolationDuration = 2
+			getEntity().teleportDuration = 2
+		}
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
