@@ -1995,9 +1995,9 @@ sealed interface StarshipTrackingProjectileBalancing : StarshipParticleProjectil
 	val detonationRange: Double
 		get() = 2.25
 	val turnRate: Double
-		get() = 1.0
+		get() = 0.67
 	val acceleration: Double
-		get() = 1.0
+		get() = 10.0
 }
 
 @Serializable
