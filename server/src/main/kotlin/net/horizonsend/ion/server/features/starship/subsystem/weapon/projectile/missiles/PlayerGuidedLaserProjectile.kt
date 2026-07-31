@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles
 
 import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
-import org.bukkit.damage.DamageType
+import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
@@ -15,12 +15,13 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	open val initialDir: Vector,
+	initialDir: Vector,
 	override val balancing: B,
 	shooter: Damager,
+	face: BlockFace,
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
+) : TrackingMissileProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
 	val random = Random(System.currentTimeMillis())
 	val randomOffset = Vector(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0)).normalize().multiply(Math.random()*10.0)
 
@@ -30,7 +31,7 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
 
-		val sphereRadius = player.location.distance(location).plus(speed*delta).coerceIn(minimumSphereRadius,10000.0)
+		val sphereRadius = player.location.distance(location).plus(speed * delta).coerceIn(minimumSphereRadius,10000.0)
 		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(randomOffset)
 
 		return intercept

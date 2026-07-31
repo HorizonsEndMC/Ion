@@ -1,22 +1,5 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.DyedItemColor
-import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
-import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
-import net.horizonsend.ion.server.features.client.display.teleportDuration
-import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
-import net.kyori.adventure.text.Component
-import org.bukkit.Location
-import org.bukkit.Particle
-import org.bukkit.block.BlockFace
-import org.bukkit.damage.DamageType
-import org.bukkit.util.Vector
 /*
 class ArsenalRocketProjectile(
 	source: ProjectileSource,

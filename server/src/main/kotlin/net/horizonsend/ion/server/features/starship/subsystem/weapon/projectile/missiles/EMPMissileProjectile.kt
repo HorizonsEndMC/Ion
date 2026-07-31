@@ -1,41 +1,43 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles
 
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.EMPMissileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
-import org.bukkit.damage.DamageType
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
-class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
-	source: ProjectileSource,
-	name: Component,
-	loc: Location,
-	val dir: Vector,
-	initialDir: Vector,
-	override val balancing: B,
-	shooter: Damager,
-	var face: BlockFace, //Up = true, down = false
-	originalTarget: Vector,
-	baseAimDistance: Int
-) : PlayerGuidedLaserProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, originalTarget, baseAimDistance) {
+class EMPMissileProjectile(
+    source: ProjectileSource,
+    name: Component,
+    loc: Location,
+    val dir: Vector,
+    val initialDir: Vector,
+    shooter: Damager,
+    var face: BlockFace, //Up = true, down = false
+    originalTarget: Vector,
+    baseAimDistance: Int
+) : TrackingLaserProjectile<EMPMissileBalancing.EMPMissileProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
 	var flightPath1Completed = false
 	var flightPath2Completed = false
 	var age = 0
 
-	override val minimumSphereRadius: Double = 60.0
-
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
+	val item = ItemFactory.Preset.unStackableCustomItem("projectile/activated_emp_missile").construct()
 	override val color: Color = Color.ORANGE
 
 	init {
@@ -43,13 +45,13 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	}
 
 	private val container = ItemDisplayContainer(
-		source.getWorld(),
-		4.0F,
-		loc.toVector(),
-		dir.clone().multiply(-1),
-		item,
-		interpolation = 2
-	).apply {
+        source.getWorld(),
+        1.0F,
+        loc.toVector(),
+        dir.clone().multiply(-1),
+        item,
+        interpolation = 2
+    ).apply {
 		getEntity().transformationInterpolationDuration = 2
 		getEntity().teleportDuration = 2
 	}
@@ -62,7 +64,7 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 
 				initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
 
-			if (distance > 30) {
+			if (distance > 10) {
 				distance = 0.0
 				flightPath1Completed = true
 				track = true
@@ -87,7 +89,7 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		container.position = location.toVector()
-		container.heading = direction.clone().multiply(-1)
+		container.heading = direction.clone().multiply(1)
 		container.update()
 
 		/*for (lineLoc in oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 5)) {
@@ -142,7 +144,7 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 		for (loc in location.circlePoints(2.0, 30, direction)) {
 			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
 			loc.world.spawnParticle(
-				Particle.CLOUD,
+				Particle.SOUL_FIRE_FLAME,
 				location,
 				0,
 				radialVector.x,
@@ -161,7 +163,7 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 				.rotateAroundY(randomDouble(-angle, angle))
 				.rotateAroundZ(randomDouble(-angle, angle))
 			location.world.spawnParticle(
-				Particle.FLAME,
+				Particle.SOUL_FIRE_FLAME,
 				location,
 				0,
 				opposite.x,
@@ -191,6 +193,20 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 				true
 			)
 		}
+	}
 
+	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+		if (starship.initialBlockCount > 4500) return
+		val shieldPenalty = balancing.effectStrength
+
+		starship.addStatusEffect(
+            StarshipStatusEffect(
+                StarshipStatusEffectTypes.SHIELD_WEAKNESS,
+                shieldPenalty,
+                balancing.effectDurationMillis,
+                shooter.starship
+            )
+		)
+		starship.userErrorAction("Shields weakened by ${(shieldPenalty * 100).toInt()}%!")
 	}
 }
