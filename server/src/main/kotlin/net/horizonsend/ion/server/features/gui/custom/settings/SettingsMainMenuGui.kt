@@ -36,6 +36,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Reverse DC Speed Boost Key"), "Enabled = DC speed is boosted by default; sneaking slows. Disabled = DC speed is slow by default; sneaking boosts.", GuiItem.LIST, false, PlayerSettings::reverseDcBoost),
 			DBCachedBooleanToggle(text("Toggle DC Speed Boost Key"), "Enabling this setting changes the DC boost key to a toggle.", GuiItem.LIST, false, PlayerSettings::toggleDcBoost),
 			DBCachedBooleanToggle(text("Switch Light/Heavy Weapon Keys"), "Switches the firing controls for light and heavy weapons.", GuiItem.LIST, false, PlayerSettings::alternateFireButtons),
+			DBCachedBooleanToggle(text("Rotate Player with the ship"), "Disables camera rotation, useful for aiming player guided missiles.", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::playerRotateWithShip),
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
