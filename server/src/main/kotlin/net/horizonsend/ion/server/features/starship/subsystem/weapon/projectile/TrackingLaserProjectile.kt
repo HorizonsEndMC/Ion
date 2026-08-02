@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import com.comphenix.protocol.wrappers.EnumWrappers.Particle
 import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
@@ -117,18 +117,6 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 					}
 				}
 			}
-		}
-
-		/*
-		If our projectile is within x blocks of the targeted block.
-		We prematurely detonate the projectile at the target block
-		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
-	 	*/
-
-		if (this.location.toVector().distance(calculateTarget()) <= balancing.detonationRange) {
-			impact(calculateTarget().toLocation(location.world), null, null)
-			onImpact()
-			return onDespawn()
 		}
 
 		super.tick()
