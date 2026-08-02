@@ -160,11 +160,11 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		if (start.distance(end) < 0.01) {
 			return end
 		}
-		val percent = (maxRadians / start.angle(end)).coerceAtMost(1.0)
-		val dot = start.dot(end).coerceIn(-1.0, 1.0)
+		val percent = (maxRadians / start.clone().angle(end.clone())).coerceAtMost(1.0)
+		val dot = start.clone().dot(end.clone()).coerceIn(-1.0, 1.0)
 		val theta = acos(dot) * percent
-		val relativeVec = end.subtract(start.multiply(dot)).normalize()
-		return start.multiply(cos(theta)).add(relativeVec.multiply(sin(theta))).normalize()
+		val relativeVec = end.clone().subtract(start.clone().multiply(dot)).normalize()
+		return start.clone().multiply(cos(theta)).add(relativeVec.multiply(sin(theta))).normalize()
 	}
 
 	companion object {
