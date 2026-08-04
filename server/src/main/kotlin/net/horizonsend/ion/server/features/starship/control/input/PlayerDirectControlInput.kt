@@ -205,7 +205,8 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 				//Disrupts the ship the player is looking at
 				player.debugBanner("INTERACT EVENT DISRUPT TARGETING START")
 				val targetShip = ActiveStarships.getInWorld(player.world).filter {
-					it.centerOfMass.toCenterVector().distanceSquared(player.location.toVector()) <= 600 * 600 &&
+					it.centerOfMass.toCenterVector().distanceSquared(player.location.toVector()) <=
+						starship.balancing.interdictionRange * starship.balancing.interdictionRange &&
 						it != ActiveStarships.findByPassenger(player)
 				}.sortedBy { it.centerOfMass.toCenterVector().subtract(player.location.toVector()).angle(player.eyeLocation.direction) }.firstOrNull()
 
