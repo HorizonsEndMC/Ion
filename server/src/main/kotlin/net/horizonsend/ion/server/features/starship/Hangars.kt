@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
@@ -29,9 +29,6 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object Hangars : IonServerComponent() {
 	private val hangarData: PerWorld<Multimap<BlockData, Long>> = PerWorld(::load)

@@ -46,6 +46,7 @@ object PlayerCache : AbstractPlayerCache() {
 	}
 
 	fun getIfOnline(player: Player): PlayerData? = PLAYER_DATA[player.uniqueId]
+	fun getIfOnline(player: UUID): PlayerData? = PLAYER_DATA[player]
 
 	operator fun get(player: Player): PlayerData = PLAYER_DATA[player.uniqueId]
 		?: error("Data wasn't cached for ${player.name}")

@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.type
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.GAS_STORAGE
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.GasStorage
@@ -11,24 +12,23 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 
 class GasCanister(
-	identifier: String,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 
 	val model: String,
 	displayName: Component,
-	private val gasSupplier: Supplier<Gas>
+	private val gasKey: IonRegistryKey<Gas, out Gas>
 ) : CustomItem(
-	identifier,
+	key,
 	displayName,
 	ItemFactory.unStackableCustomItem(model)
 ) {
-	val gas get() = gasSupplier.get()
+	val gas get() = gasKey.getValue()
 	val maximumFill = gas.configuration.maxStored
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
-		addComponent(GAS_STORAGE, GasStorage(maximumFill, true, gasSupplier))
+		addComponent(GAS_STORAGE, GasStorage(maximumFill, true))
 	}
 
 	fun createWithFill(fill: Int): ItemStack {
@@ -43,14 +43,14 @@ class GasCanister(
 	}
 
 	fun replaceWithEmpty(itemStack: ItemStack) {
-		itemStack.itemMeta = CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack().itemMeta
+		itemStack.itemMeta = CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack().itemMeta
 	}
 
 	fun getFill(itemStack: ItemStack): Int = getComponent(GAS_STORAGE).getFill(itemStack)
 
 	/** Replaces the gas canister with an empty one **/
 	fun empty(itemStack: ItemStack, inventory: Inventory) {
-		val empty = CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack()
+		val empty = CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack()
 
 		val firstMatching = inventory.all(itemStack).keys.firstOrNull() ?: return // Shouldn't happen
 

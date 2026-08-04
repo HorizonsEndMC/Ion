@@ -3,17 +3,22 @@ package net.horizonsend.ion.server.features.chat
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializer
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializerOptions
 import github.scarsz.discordsrv.DiscordSRV
+import github.scarsz.discordsrv.api.Subscribe
+import github.scarsz.discordsrv.api.events.DiscordGuildMessagePreBroadcastEvent
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
 import github.scarsz.discordsrv.dependencies.jda.api.JDA
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.misc.GToggleCommand
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.translation.GlobalTranslator
 import org.bukkit.Bukkit.getPluginManager
+import org.bukkit.entity.Player
 import java.time.Instant
 import java.util.Locale
 
@@ -30,6 +35,8 @@ object Discord : IonServerComponent(true) {
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("DiscordSRV")) return
 
+		Tasks.asyncRepeat(20L * 60L, 20L * 60L, ::checkJda)
+
 		val jda = DiscordSRV.getPlugin().jda
 
 		if (jda == null) {
@@ -39,6 +46,8 @@ object Discord : IonServerComponent(true) {
 
 		JDA = jda
 		enabled = true
+
+		registerGtoggleListener()
 	}
 
 	private val channelMap: MutableMap<Long, TextChannel?> = mutableMapOf()
@@ -75,6 +84,26 @@ object Discord : IonServerComponent(true) {
 		val textChannel = getChannel(channel) ?: return
 
 		textChannel.sendMessage(asDiscord(message)).queue()
+	}
+
+	private fun registerGtoggleListener() {
+		DiscordSRV.api.subscribe(this)
+	}
+
+	@Subscribe
+	fun onDiscordGuildMessagePreBroadcast(event: DiscordGuildMessagePreBroadcastEvent) {
+		event.recipients.removeAll { it is Player && GToggleCommand.isEnabled(it) }
+	}
+
+	fun checkJda() {
+		if (JDA != null) return
+
+        val jda = DiscordSRV.getPlugin().jda ?: return
+
+        JDA = jda
+		enabled = true
+
+		registerGtoggleListener()
 	}
 }
 

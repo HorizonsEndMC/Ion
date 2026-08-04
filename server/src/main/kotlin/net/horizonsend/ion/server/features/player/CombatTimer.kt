@@ -2,23 +2,28 @@ package net.horizonsend.ion.server.features.player
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -27,6 +32,9 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
@@ -54,11 +62,17 @@ object CombatTimer : IonServerComponent() {
 	private const val REASON_PVP_WITHIN_GRAVITY_WELL = "Getting caught in non-friendly starship's gravity well"
 	const val REASON_PVP_GROUND_COMBAT = "Engaging in combat with another player on the ground"
 	private const val REASON_ENEMY_PROXIMITY = "Being in close proximity to a hostile starship"
+	const val REASON_SIEGE_STATION = "Initiating a station siege"
+	const val MINIMUM_WELL_PROXIMITY_BLOCK_COUNT = 1000
+	private const val MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT = 4000
 
 	private var enabled = false
 
 	private val npcTimer = mutableMapOf<UUID, Long>()
 	private val pvpTimer = mutableMapOf<UUID, Long>()
+	//TODO: save more than just the display name
+	private val killLog = mutableMapOf<UUID,  MutableList<Pair<Component,MutableMap<Damager, ShipKillXP.ShipDamageData>>>>()
+	private val announceLog = mutableSetOf<UUID>()
 
 	override fun onEnable() {
 		enabled = ConfigurationFiles.featureFlags().combatTimers
@@ -68,35 +82,49 @@ object CombatTimer : IonServerComponent() {
 		Tasks.syncRepeat(0L, 20L) {
 
 			// Remove combat tags if enough time has elapsed
-			for (entry in npcTimer) {
-				if (entry.value <= System.currentTimeMillis()) {
-					npcTimer.remove(entry.key)
-					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (NPC)")
+			val npcKeysToRemove = npcTimer.filter { it.value <= System.currentTimeMillis() }.keys
+			for (uuid in npcKeysToRemove) {
+				npcTimer.remove(uuid)
+				val player = Bukkit.getPlayer(uuid)
+				if (player != null) {
+					player.success("You are no longer in combat (NPC) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
 				}
+				log.info("${Bukkit.getPlayer(uuid)?.name ?: "Player UUID $uuid"} left NPC combat for reason: Expired")
+				if (!pvpTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
-			for (entry in pvpTimer) {
-				if (entry.value <= System.currentTimeMillis()) {
-					pvpTimer.remove(entry.key)
-					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (PvP)")
+			val pvpKeysToRemove = pvpTimer.filter { it.value <= System.currentTimeMillis() }.keys
+			for (uuid in pvpKeysToRemove) {
+				pvpTimer.remove(uuid)
+				val player = Bukkit.getPlayer(uuid)
+				if (player != null) {
+					player.success("You are no longer in combat (PVP) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
 				}
+				log.info("${Bukkit.getPlayer(uuid)?.name ?: "Player UUID $uuid"} left PVP combat for reason: Expired")
+				if (!npcTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 			}
 
 			Bukkit.getOnlinePlayers().forEach { player ->
 				val pilotedStarship = PilotedStarships[player]
 
-				// Only actively controlled warships (that are not starfighter or interceptor) can cause proximity triggered combat tags
+				// Three types of proximity combat tag triggers:
+				// - Starship enters the interdiction range of an enemy starship that is currently interdicting
+				// - Player enters the SvP range of an enemy ship
+				// - Ship pilot is already combat tagged and there is an enemy ship within the maintain combat range
+
+				// If the aggressing ship is less than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, they can only incur proximity tag on other ships that are smaller than 4000 blocks
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP &&
-					pilotedStarship.type != StarshipType.INTERCEPTOR && pilotedStarship.type != StarshipType.STARFIGHTER) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting && pilotedStarship.world.hasFlag(WorldFlag.SPACE_WORLD)) {
-						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, and not in a protected city
+						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, not in a protected city, and
+						// (either the interdicting ship is larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, or the other ship is smaller than MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT)
 						toPlayersInRadius(starshipCom, Interdiction.starshipInterdictionRangeEquation(pilotedStarship)) { otherPlayer ->
 							val otherStarship = PilotedStarships[otherPlayer]
 							if (otherStarship != null &&
-								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world))) {
+								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world)) &&
+								(pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT || otherStarship.initialBlockCount < MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT)) {
 								evaluatePvp(
 									player,
 									otherPlayer,
@@ -107,10 +135,12 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will place combat tags on other players that are unfriendly if they are within 500 blocks, the defender is not piloting a ship, and they are not in a protected city
+					// Piloted ships will place combat tags on other players that are unfriendly if they are within SVP_ENTER_COMBAT_DIST blocks, the defender is not piloting a ship, not in a protected city, and
+					// larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT
 					toPlayersInRadius(starshipCom, SVP_ENTER_COMBAT_DIST) { otherPlayer ->
 						if (PilotedStarships[otherPlayer] == null &&
-							!ProtectionListener.isProtectedCity(otherPlayer.location)) {
+							!ProtectionListener.isProtectedCity(otherPlayer.location) &&
+							pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT) {
 							evaluatePvp(
 								player,
 								otherPlayer,
@@ -121,10 +151,14 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will maintain combat tag on all players, within 1000 blocks if the pilot is unfriendly to them and the other player was already tagged and not in a protected city
+					// Piloted ships will maintain combat tag on all players, within MAINTAIN_COMBAT_DIST blocks if the pilot is unfriendly to them and the other player was already tagged and not in a protected city,
+					// and if the other player is not piloting a starship, or the other player piloting a starship and the piloted ship is larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, or
+					// the other player is piloting a starship and the other player's ship is smaller than MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT
 					toPlayersInRadius(starshipCom, MAINTAIN_COMBAT_DIST) { otherPlayer ->
+						val otherStarship = PilotedStarships[otherPlayer]
 						if (isPvpCombatTagged(otherPlayer) &&
-							!ProtectionListener.isProtectedCity(otherPlayer.location)) {
+							!ProtectionListener.isProtectedCity(otherPlayer.location) &&
+							(otherStarship == null || pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT || otherStarship.initialBlockCount < MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT)) {
 							evaluatePvp(
 								player,
 								otherPlayer,
@@ -136,28 +170,53 @@ object CombatTimer : IonServerComponent() {
 					}
 				}
 			}
+			announceKillLog()
 		}
 
 		// Remove all combat tags on death
 		listen<PlayerDeathEvent> { event ->
 			if (npcTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (NPC)")
+				event.player.success("You are no longer in combat (NPC) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left NPC combat for reason: Died at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				npcTimer.remove(event.player.uniqueId)
+				if (!pvpTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 			if (pvpTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (PVP)")
+				event.player.success("You are no longer in combat (PVP) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left PvP combat for reason: Died at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				pvpTimer.remove(event.player.uniqueId)
+				if (!npcTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 		}
 
 		listen<PlayerPostRespawnEvent> { event ->
 			if (npcTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (NPC)")
+				event.player.success("You are no longer in combat (NPC) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left NPC combat for reason: Respawned at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				npcTimer.remove(event.player.uniqueId)
+				if (!pvpTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 			if (pvpTimer[event.player.uniqueId] != null) {
-				event.player.success("You are no longer in combat (PVP)")
+				event.player.success("You are no longer in combat (PVP) at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
+				log.info("${event.player.name} left PvP combat for reason: Respawned at ${event.player.world.name}, ${event.player.location.x.toInt()}, ${event.player.location.y.toInt()}, ${event.player.location.z.toInt()}")
 				pvpTimer.remove(event.player.uniqueId)
+				if (!npcTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
+			}
+		}
+
+		listen<StarshipSunkEvent> {event ->
+			val damagerData = event.starship.damagers
+
+			damagerData.keys.forEach { damager ->
+				val playerID = (damager as? PlayerDamager)?.player?.uniqueId ?: return@forEach
+				if (npcTimer.contains(playerID) || pvpTimer.contains(playerID)) {
+					if (!killLog.contains(playerID)) killLog[playerID] = mutableListOf()
+					killLog[playerID]?.add(event.starship.getDisplayName() to damagerData)
+				}
 			}
 		}
 	}
@@ -169,9 +228,16 @@ object CombatTimer : IonServerComponent() {
 	fun refreshNpcTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
-			player.alert("You are now in combat (NPC)")
+		if (!isNpcCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
+			player.alert("You are now in combat (NPC) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
 			player.sendMessage(npcTimerAlertComponent(reason))
+			if (player.hasProtection() && !player.world.hasFlag(WorldFlag.NOT_SECURE)) {
+				player.sendMessage(newPlayerAlertComponent())
+			}
+		}
+
+		if (!isNpcCombatTagged(player)) {
+			log.info("${player.name} entered NPC combat in ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}, for reason: $reason")
 		}
 
 		npcTimer[player.uniqueId] = System.currentTimeMillis() + NPC_TIMER_MINS.toMillis()
@@ -183,9 +249,16 @@ object CombatTimer : IonServerComponent() {
 	fun refreshPvpTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
-			player.alert("You are now in combat (PVP)")
+		if (!isPvpCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts) ?: true) {
+			player.alert("You are now in combat (PVP) at ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}")
 			player.sendMessage(pvpTimerAlertComponent(reason))
+			if (player.hasProtection() && !player.world.hasFlag(WorldFlag.NOT_SECURE)) {
+				player.sendMessage(newPlayerAlertComponent())
+			}
+		}
+
+		if (!isPvpCombatTagged(player)) {
+			log.info("${player.name} entered PvP combat in ${player.world.name}, ${player.location.x.toInt()}, ${player.location.y.toInt()}, ${player.location.z.toInt()}, for reason: $reason")
 		}
 
 		pvpTimer[player.uniqueId] = System.currentTimeMillis() + PVP_TIMER_MINS.toMillis()
@@ -200,17 +273,26 @@ object CombatTimer : IonServerComponent() {
 	fun evaluatePvp(attacker: Player, defender: Player, reason: String, neutralTriggersCombat: Boolean = true, tagAttacker: Boolean = true) {
 		if (!enabled) return
 		if (attacker == defender) return
+		if (defender.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
-		// don't run for combat NPCs
-		if (defender.hasMetadata("NPC")) return
+		// If the defender is an NPC, just give the attacker a combat NPC regardless
+		if (defender.hasMetadata("NPC") && tagAttacker) {
+			refreshPvpTimer(attacker, reason)
+			return
+		}
 
-		val attackerData = PlayerCache[attacker]
+		val attackerFleet = Fleets.findByMember(attacker)
+		val defenderFleet = Fleets.findByMember(defender)
+
+		if (attackerFleet != null && attackerFleet == defenderFleet ) return
+
+		val attackerData = PlayerCache.getIfOnline(attacker) ?: return
 		val attackerNation = attackerData.nationOid
 
-		val defenderData = PlayerCache[defender]
-		val defenderNation = defenderData.nationOid
+		val defenderData = PlayerCache.getIfOnline(defender)
+		val defenderNation = defenderData?.nationOid
 
 		if (attackerNation == defenderNation) return
 
@@ -241,6 +323,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun evaluateSvs(shooter: Damager, defendingStarship: ActiveStarship) {
 		if (!enabled) return
+		if (defendingStarship.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) return
 		if (shooter is PlayerDamager && shooter.player.hasPermission("group.dutymode")) return
 		if (defendingStarship.playerPilot?.hasPermission("group.dutymode") == true) return
 
@@ -291,6 +374,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun removeNpcCombatTag(uuid: UUID) {
 		npcTimer.remove(uuid)
+		if (!pvpTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 	}
 
 	/**
@@ -298,6 +382,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun removePvpCombatTag(uuid: UUID) {
 		pvpTimer.remove(uuid)
+		if (!npcTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 	}
 
 	/**
@@ -381,12 +466,97 @@ object CombatTimer : IonServerComponent() {
 					newline(),
 					text("- Combat NPCs created when you log off will last for the duration of your combat tag", HE_LIGHT_BLUE),
 					newline(),
-					text("- Cannot use Power Drill, Drill, Mining Laser, Decomposer, or Ship Factory", HE_LIGHT_BLUE),
+					text("- Cannot use Drill, Mining Laser, Decomposer, or Ship Factory", HE_LIGHT_BLUE),
+					newline(),
+					text("- Cannot enter planets more frequently than ${PlanetTeleportCooldown.ENTRY_COOLDOWN.toMinutesPart()} minutes", HE_LIGHT_BLUE),
+					newline(),
+					text("- Cannot enter planets more frequently than ${PlanetTeleportCooldown.EXIT_COOLDOWN.toMinutesPart()} minutes", HE_LIGHT_BLUE),
 					newline(),
 					text("- Remaining within ${MAINTAIN_COMBAT_DIST.toInt()} blocks of unfriendly and enemy starships will refresh your combat tag", HE_LIGHT_BLUE),
 					)),
 			newline(),
 			lineBreak(45),
 		)
+	}
+
+	private fun newPlayerAlertComponent(): Component {
+		return ofChildren(
+			text(repeatString(" ", 8) + "YOU HAVE NEW PLAYER PROTECTION", GOLD).decorate(BOLD),
+			newline(),
+			text("You are immune to most forms of damage", HE_LIGHT_BLUE),
+			newline(),
+			text("Consequences: ", HE_MEDIUM_GRAY),
+			text("[Hover]", HE_LIGHT_BLUE)
+				.hoverEvent(ofChildren(
+					text("- You will not take damage from other ships", HE_LIGHT_BLUE),
+					newline(),
+					text("- You are protected by new player rules", HE_LIGHT_BLUE),
+					newline(),
+					text("- Players are forbidden from attacking you unprovoked", HE_LIGHT_BLUE),
+					newline(),
+					text("- Items/Ship will be returned if you die", HE_LIGHT_BLUE),
+					newline(),
+					text("- You or your Combat NPC can be killed within safe zones", HE_LIGHT_BLUE),
+					newline(),
+					text("- Moderation will rule in favor of you", HE_LIGHT_BLUE),
+				)),
+			newline(),
+			text(repeatString(" ", 8) + "DO NOT ATTACK. ATTACKING WILL CANCEL YOUR PROTECTION", DARK_RED).decorate(BOLD),
+			newline(),
+			lineBreak(45),
+		)
+	}
+
+	private fun announceKillLog() {
+		announceLog.mapNotNull { Bukkit.getPlayer(it) }.forEach { announcePerPlayer(it) }
+		announceLog.clear()
+	}
+
+	private fun announcePerPlayer(player: Player) {
+
+		val data = killLog[player.uniqueId] ?: return
+
+		player.sendMessage(lineBreakWithCenterText(text("Kill Log", GOLD)))
+		data.forEach { entry ->
+
+			val topDamager = entry.second.entries.maxByOrNull { it.value.points.get() } ?: return
+			val lastDamager = entry.second.entries.maxByOrNull { it.value.lastDamaged } ?: return
+
+			val breakdown = entry.second.entries.sortedBy { -it.value.points.get() }.map { damagerWithData ->
+				val name = damagerWithData.key.starship?.getDisplayName() ?: damagerWithData.key.getDisplayName()
+				val pilot = damagerWithData.key.starship?.controller?.pilotName ?: damagerWithData.key.getDisplayName()
+				val points = damagerWithData.value.points
+				val color = if (damagerWithData.key == topDamager.key) HE_LIGHT_ORANGE
+					else if (isDamager(player,damagerWithData.key)) HE_LIGHT_BLUE else HE_MEDIUM_GRAY
+				template(
+					message = text("Damager: {0} piloted by {1} , Points: {2}\n", color),
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = false,
+					name,  // {0}
+					pilot, // {1}
+					points // {2}
+				)
+			}
+
+			val breakdownText = text("[Details]", HE_LIGHT_BLUE).hoverEvent(ofChildren(*breakdown.toTypedArray()))
+
+			val messageEntry = template(
+				message = text("{0} killed by: {1}, Top: {2} {3}.", HE_MEDIUM_GRAY),
+				paramColor = HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				entry.first,                      // {0}
+				lastDamager.key.getDisplayName(), // {1}
+				topDamager.key.getDisplayName(),  // {2}
+				breakdownText                     // {3}
+			)
+			player.sendMessage(messageEntry)
+		}
+		player.sendMessage(lineBreak(44))
+		killLog.remove(player.uniqueId)
+	}
+
+	private fun isDamager(player: Player, damager: Damager) : Boolean{
+		if (damager !is PlayerDamager) return false
+		return player == damager.player
 	}
 }

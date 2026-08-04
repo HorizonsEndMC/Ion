@@ -24,6 +24,8 @@ object Notify : IonComponent() {
 		Bukkit.broadcast(message)
 	}.registerRedisAction("notify-online", runSync = false)
 
+	fun allOnline(message: Component) = notifyOnlineAction.invoke(message)
+
 	fun chatAndEvents(message: Component) {
 		chatAndGlobal(message)
 		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)

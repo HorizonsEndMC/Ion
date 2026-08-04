@@ -98,8 +98,7 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 
 	class ItemResultHolder<E: ItemResultEnviornment, R: ItemResult<E>>(result: R) : ResultHolder<E, R>(result) {
 		override fun buildTransaction(enviornment: E, resultEnviornment: ResultExecutionEnviornment<E>) {
-			val slotModificationWrapper = enviornment.getResultItemSlotModifier()
-			result.buildTransaction(enviornment, resultEnviornment, slotModificationWrapper)
+			result.buildTransaction(enviornment, resultEnviornment)
 		}
 	}
 }

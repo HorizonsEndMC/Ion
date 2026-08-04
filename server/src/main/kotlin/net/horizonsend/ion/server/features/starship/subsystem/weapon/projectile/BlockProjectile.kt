@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.Projectiles
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
@@ -20,14 +21,14 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
-abstract class BlockProjectile(
-	starship: ActiveStarship?,
+abstract class BlockProjectile<B : StarshipProjectileBalancing>(
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
 	damageType: DamageType
-) : SimpleProjectile(starship, name, loc, dir, shooter, damageType) {
+) : SimpleProjectile<B>(source, name, loc, dir, shooter, damageType) {
 	abstract val blockMap: Map<Vec3i, BlockData>
 	private val refreshedBlocks = LongOpenHashSet()
 
@@ -107,7 +108,7 @@ abstract class BlockProjectile(
 		val nmsBlockPos = BlockPos(block.x, block.y, block.z)
 		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
 
-		val players = block.chunk.minecraft.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false)
+		val players = block.chunk.minecraft.`moonrise$getChunkHolder`().vanillaChunkHolder.`moonrise$getPlayers`(false)
 		players.forEach { it.connection.send(packet) }
 	}
 }

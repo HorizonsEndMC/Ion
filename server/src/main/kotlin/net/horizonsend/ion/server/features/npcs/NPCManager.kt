@@ -80,7 +80,7 @@ class NPCManager(private val logger: Logger, val name: String) {
 		if (!enabled) throw IllegalStateException()
 
 		val npc = npcRegistry.createNPC(EntityType.PLAYER, uuid, id, name)
-		spawnNPCAsync(npc, location, callback = callback)
+		spawnNPCAsync(npc = npc, location = location, preCheck = preCheck, callback = callback)
 
 		return npc
 	}

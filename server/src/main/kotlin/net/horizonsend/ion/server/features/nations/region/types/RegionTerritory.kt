@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.array
 import net.horizonsend.ion.common.database.binary
 import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
@@ -9,14 +10,17 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -39,9 +43,14 @@ class RegionTerritory(territory: Territory) :
 	override var world: String = territory.world; private set
 	var settlement: Oid<Settlement>? = territory.settlement; private set
 	var nation: Oid<Nation>? = territory.nation; private set
+	var alias: String? = territory.alias; private set
 	var npcOwner: Oid<NPCTerritoryOwner>? = territory.npcOwner; private set
 	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 	var isProtected: Boolean = territory.isProtected; private set
+	var trustedNations: Set<Oid<Nation>> = territory.trustedNations; private set
+	var trustedSettlements: Set<Oid<Settlement>> = territory.trustedSettlements; private set
+	var trustedPlayers: Set<SLPlayerId> = territory.trustedPlayers; private set
+
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
 
 	val oldCost
@@ -62,7 +71,14 @@ class RegionTerritory(territory: Territory) :
 	val isUnclaimed get() = settlement == null && nation == null && npcOwner == null
 	val isClaimed get() = settlement != null || nation != null || npcOwner != null
 
-	override fun contains(x: Int, y: Int, z: Int): Boolean = polygon.contains(x, z)
+	override fun contains(x: Int, y: Int, z: Int): Boolean {
+		if (npcOwner != null && polygon.npoints <= 1) {
+			val dx = x - centerX
+			val dz = z - centerZ
+			return (dx * dx + dz * dz) <= 600 * 600
+		}
+		return polygon.contains(x, z)
+	}
 
 	override fun update(delta: ChangeStreamDocument<Territory>) {
 		delta[Territory::name]?.let { name = it.string() }
@@ -72,11 +88,21 @@ class RegionTerritory(territory: Territory) :
 		}
 		delta[Territory::settlement]?.let { settlement = it.nullable()?.oid() }
 		delta[Territory::nation]?.let { nation = it.nullable()?.oid() }
+		delta[Territory::alias]?.let { alias = it.nullable()?.string() }
 		delta[Territory::npcOwner]?.let { npcOwner = it.nullable()?.oid() }
 		delta[Territory::isProtected]?.let {
 			isProtected = it.boolean()
 			centerX = polygon.xpoints.average().roundToInt()
 			centerZ = polygon.ypoints.average().roundToInt()
+		}
+		delta[Territory::trustedNations]?.let { bson ->
+			trustedNations = bson.array().mappedSet { it.oid() }
+		}
+		delta[Territory::trustedSettlements]?.let { bson ->
+			trustedSettlements = bson.array().mappedSet { it.oid() }
+		}
+		delta[Territory::trustedPlayers]?.let { bson ->
+			trustedPlayers = bson.array().mappedSet { it.slPlayerId() }
 		}
 
 		NationsMap.updateTerritory(this)
@@ -117,6 +143,17 @@ class RegionTerritory(territory: Territory) :
 
 		// allow nation members
 		if (playerNation == nation) {
+			return null
+		}
+
+		// Territory nation claim trusting
+		if (trustedPlayers.contains(playerData.id)) {
+			return null
+		}
+		if (trustedSettlements.contains(playerData.settlementOid)) {
+			return null
+		}
+		if (trustedNations.contains(playerData.nationOid)) {
 			return null
 		}
 
@@ -176,14 +213,14 @@ class RegionTerritory(territory: Territory) :
 				return null
 			}
 
-			// if it's nation access, they can build if they're the same nation
-			if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
-				return null
-			}
-
-			// if the min build access is ally, and they're at least an ally, they can build
 			if (settlementNation != null) {
-				if (RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
+				// if it's nation access, they can build if they're the same nation
+				if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
+					return null
+				}
+
+				// if the min build access is ally, and they're at least an ally (and not in the same nation), they can build
+				if (settlementBuildAccess == Settlement.ForeignRelation.ALLY && RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
 					return null
 				}
 			}

@@ -6,7 +6,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Ageable
 import org.bukkit.inventory.ItemStack
 
-enum class Crop(val material: Material, val seed: Material) {
+enum class Crop(val material: Material, val seed: Material?) {
 	WHEAT(Material.WHEAT, Material.WHEAT_SEEDS),
 	CARROTS(Material.CARROTS, Material.CARROT),
 	POTATOES(Material.POTATOES, Material.POTATO),
@@ -40,8 +40,13 @@ enum class Crop(val material: Material, val seed: Material) {
 		override fun canBePlanted(block: Block): Boolean {
 			return plantable.contains(block.getRelative(BlockFace.DOWN).type)
 		}
+	},
+	PUMPKINS(Material.PUMPKIN, null) {
+		override fun canBeHarvested(block: Block): Boolean = true
+	},
+	MELONS(Material.MELON, null) {
+		override fun canBeHarvested(block: Block): Boolean = true
 	}
-
 	;
 
 	open fun harvest(block: Block) {
@@ -52,6 +57,12 @@ enum class Crop(val material: Material, val seed: Material) {
 
 	open fun plant(block: Block) {
 		block.type = material
+	}
+
+	open fun canBeHarvested(block: Block): Boolean {
+		val blockData = block.blockData
+
+		return blockData is Ageable && blockData.age == blockData.maximumAge
 	}
 
 	open fun canBePlanted(block: Block): Boolean {

@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.features.starship.subsystem.reactor
 
 class PowerDistributor {
-	var shieldPortion: Double = 0.3
+	var shieldPortion: Double = 0.5
 		private set
-	var weaponPortion: Double = 0.3
+	var weaponPortion: Double = 0.5
 		private set
-	var thrusterPortion: Double = 0.4
+	var thrusterPortion: Double = 0.5
 		private set
 
-	fun setDivision(shield: Double, weapon: Double, thruster: Double) {
-		check(shield + weapon + thruster == 1.0) {
+	fun setDivision(shield: Double, weapon: Double, thruster: Double, bypassCheck : Boolean = false) {
+		check(bypassCheck or (shield + weapon + thruster - 1.0 <= 1e-4)) {
 			"shield ($shield) + weapon ($weapon) + thruster ($thruster) must add up to 1"
 		}
 

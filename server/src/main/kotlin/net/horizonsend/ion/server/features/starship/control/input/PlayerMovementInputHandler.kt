@@ -12,7 +12,7 @@ abstract class PlayerMovementInputHandler(val controller: PlayerController, val 
 	val starship = controller.starship
 
 	open fun create() {}
-	open fun destroy(new: PlayerMovementInputHandler) {}
+	open fun destroy() {}
 
 	open fun handleMove(event: PlayerMoveEvent) {}
 	open fun handleSneak(event: PlayerToggleSneakEvent) {}

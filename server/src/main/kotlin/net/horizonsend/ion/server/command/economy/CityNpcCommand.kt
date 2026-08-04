@@ -7,6 +7,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
+import net.horizonsend.ion.common.database.schema.nations.TradeWorldTerritory
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -15,6 +17,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
@@ -32,10 +35,23 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	private fun getCurrentCityContext(sender: Player): Triple<Location, RegionTerritory, TradeCityData> {
 		val location: Location = sender.location
-		val territory: RegionTerritory = Regions.findFirstOf(location)
-			?: throw ConditionFailedException("You aren't in a territory")
+
+		// Check normal territory first
+		val territory: RegionTerritory = Regions.findFirstOf<RegionTerritory>(location)
+			?: run {
+				// Fall back to dominion territory for trade worlds
+				Regions.findFirstOf<RegionDominionTerritory>(location)
+					?: throw ConditionFailedException("You aren't in a territory")
+
+				val backingTerritory = TradeWorldTerritory.findByWorld(sender.world.name)
+					?: throw ConditionFailedException("You aren't in a territory")
+
+				Regions[backingTerritory.backingTerritory]
+			}
+
 		val cityData: TradeCityData = TradeCities.getIfCity(territory)
 			?: throw ConditionFailedException("You are not in a protected trade city")
+
 		return Triple(location, territory, cityData)
 	}
 
@@ -46,7 +62,8 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		when (cityData.type) {
 			TradeCityType.NPC -> throw ConditionFailedException("You don't have control over NPC cities!")
-			TradeCityType.SETTLEMENT -> requireSettlementLeader(sender, cityData.settlementId)
+			TradeCityType.TRADE_WORLD -> throw ConditionFailedException("You don't have control over NPC cities!")
+			TradeCityType.SETTLEMENT -> requireSettlementPermission(sender, cityData.settlementId, SettlementRole.Permission.MANAGE_NPCS)
 		}
 	}
 
@@ -65,7 +82,7 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.success("Created NPC!")
 	}
 
-	private fun getIdFromName(name: String): UUID = SLPlayer[name]?._id?.uuid
+	fun getIdFromName(name: String): UUID = SLPlayer[name]?._id?.uuid
 		?: Bukkit.createProfile(name).apply { complete(false) }.id
 		?: fail { "Player $name not found" }
 

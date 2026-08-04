@@ -3,9 +3,12 @@ package net.horizonsend.ion.server.features.space.body
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getSphereBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.kyori.adventure.text.Component
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.block.data.BlockData
@@ -23,7 +26,13 @@ class CachedStar(
 	NamedCelestialBody {
 	companion object {
 		private const val MAX_SIZE = 190
+
+		val DEFAULT_ITEM_FACTORY = ItemFactory.unStackableCustomItem("planet/asteri_2")
 	}
+
+	val starIconFactory = ItemFactory.builder(ItemFactory.unStackableCustomItem("planet/${name.lowercase().replace(' ', '_')}_2"))
+		.setNameSupplier { Component.text(name).itemName }
+		.build()
 
 	init {
 		require(size > 0 && size <= 1)

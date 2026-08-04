@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.movement
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -15,8 +15,8 @@ import java.util.UUID
 
 object PlanetTeleportCooldown : IonServerComponent() {
 
-    private val ENTRY_COOLDOWN = Duration.ofMinutes(2)
-    private val EXIT_COOLDOWN = Duration.ofMinutes(2)
+    val ENTRY_COOLDOWN: Duration = Duration.ofMinutes(2)
+    val EXIT_COOLDOWN: Duration = Duration.ofMinutes(2)
 
     private val entryCooldown = mutableMapOf<UUID, Long>()
     private val exitCooldown = mutableMapOf<UUID, Long>()

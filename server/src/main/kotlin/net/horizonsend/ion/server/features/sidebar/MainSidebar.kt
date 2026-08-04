@@ -1,11 +1,17 @@
 package net.horizonsend.ion.server.features.sidebar
 
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.utils.text.wrap
+import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sidebar.component.CombatTagSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.GenericSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.ObjectiveHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent1
 import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent2
@@ -14,11 +20,11 @@ import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarCom
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsNameSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsSidebarComponent
-import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.WaypointsSidebar
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
@@ -33,7 +39,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 	companion object {
 		const val MIN_LENGTH = 0
 		const val WAYPOINT_MAX_LENGTH = 30
-		const val CONTACTS_RANGE = 6000
+		const val CONTACTS_RANGE = PlayerSettings.MAX_CONTACTS_DISTANCE
 		const val MAX_NAME_LENGTH = 64
 		//const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
 	}
@@ -59,14 +65,14 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 
 		// Combat tag
-		val combatTimerEnabled = PlayerCache[player.uniqueId].combatTimerEnabled
+		val combatTimerEnabled = player.getSettingOrThrow(PlayerSettings::combatTimerEnabled)
 		if (combatTimerEnabled && (CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player))) {
 			val combatTagComponent: SidebarComponent = CombatTagSidebarComponent(player)
 			lines.addComponent(combatTagComponent)
 		}
 
 		// Starship
-		val starshipsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
+		val starshipsEnabled = player.getSettingOrThrow(PlayerSettings::starshipsEnabled)
 		if (starshipsEnabled) {
 			val starship = PilotedStarships[player]
 			if (starship != null) {
@@ -80,19 +86,20 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 				lines.addComponent(starshipsSidebarComponent1)
 				lines.addComponent(starshipsSidebarComponent2)
 				lines.addComponent(starshipsSidebarComponent3)
-				if (PlayerCache[player.uniqueId].advancedStarshipInfo) {
+				if (player.getSettingOrThrow(PlayerSettings::advancedStarshipInfo)) {
 					lines.addComponent(starshipsSidebarComponent4)
 				}
 			}
 		}
 
 		// Contacts
-		val contactsEnabled = PlayerCache[player.uniqueId].contactsEnabled
+		val contactsEnabled = player.getSettingOrThrow(PlayerSettings::contactsEnabled)
 		if (contactsEnabled) {
 			val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
 			val contacts = ContactsSidebar.getPlayerContacts(player)
 			val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
-			if (!ContactsJammingSidebar.jammedPlayers.containsKey(player.uniqueId)) {
+			val isJammed = PilotedStarships[player]?.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.JAMMED)
+			if (isJammed == null) {
 				for (contact in contacts) {
 					contactsComponents.add(ContactsSidebarComponent { contact })
 				}
@@ -106,7 +113,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		}
 
 		// Waypoints
-		val waypointsEnabled = PlayerCache[player.uniqueId].waypointsEnabled
+		val waypointsEnabled = player.getSettingOrThrow(PlayerSettings::waypointsEnabled)
 		if (waypointsEnabled && WaypointManager.getNextWaypoint(player) != null) {
 			val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
 			lines.addComponent(waypointsHeaderComponent)
@@ -131,6 +138,20 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 			if (!lastWaypoint.isNullOrEmpty()) {
 				val lastWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ lastWaypoint }, true)
 				lines.addComponent(lastWaypointComponent)
+			}
+		}
+
+		// Objective
+		val objectiveHeaderComponent: SidebarComponent = ObjectiveHeaderSidebarComponent()
+
+		val sequence = SequenceManager.getCurrentSequences(player).firstOrNull()
+		val phase = sequence?.let { SequenceManager.getCurrentPhase(player, sequence) }
+		val description = phase?.let { IonRegistries.SEQUENCE_PHASE[phase].description?.formattedDescription(IonRegistries.SEQUENCE[sequence].getContext()) }
+		val wrappedDescription = description?.wrap(30 * 6)
+		wrappedDescription?.let {
+			lines.addComponent(objectiveHeaderComponent)
+			for (descriptionLine in wrappedDescription) {
+				lines.addComponent(GenericSidebarComponent(descriptionLine))
 			}
 		}
 

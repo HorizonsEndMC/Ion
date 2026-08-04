@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.component
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -11,7 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class MagazineType<T : Balancing>(val balancing: Supplier<T>, private val magazineType: Supplier<CustomItem>) : CustomItemComponent, LoreManager {
+class MagazineType<T : Balancing>(val balancing: Supplier<T>, private val magazineType: IonRegistryKey<CustomItem, out CustomItem>) : CustomItemComponent, LoreManager {
 
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {}
 
@@ -20,7 +21,7 @@ class MagazineType<T : Balancing>(val balancing: Supplier<T>, private val magazi
 	}
 
 	override fun getLines(customItem: CustomItem, itemStack: ItemStack): List<Component> {
-		return listOf(ofChildren(text("Magazine: ", GRAY), magazineType.get().displayName).itemLore)
+		return listOf(ofChildren(text("Magazine: ", GRAY), magazineType.getValue().displayName).itemLore)
 	}
 
 	override fun shouldIncludeSeparator(): Boolean = false

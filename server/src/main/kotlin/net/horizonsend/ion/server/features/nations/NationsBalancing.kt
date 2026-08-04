@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.nations
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
+import net.horizonsend.ion.server.core.IonServerComponent
 
 lateinit var NATIONS_BALANCE: NationsBalancing.Config
 
@@ -12,7 +12,7 @@ object NationsBalancing : IonServerComponent() {
 	data class Config(
 		val settlement: Settlements = Settlements(),
 		val nation: Nations = Nations(),
-		val capturableStation: Stations = Stations()
+		val capturableStation: Stations = Stations(),
 	) {
 		@Serializable
 		data class Settlements(
@@ -55,5 +55,4 @@ object NationsBalancing : IonServerComponent() {
 	fun reload() {
 		NATIONS_BALANCE = Configuration.load(sharedDataFolder, "nations_balancing.json")
 	}
-
 }

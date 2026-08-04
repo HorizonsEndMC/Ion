@@ -25,7 +25,7 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 		counter++
 
 		addWriteTask {
-			NewTransport.invalidateCache(bukkitWorld, x, y, z)
+			NewTransport.invalidateCache(bukkitWorld, x, y, z, null)
 			val oldData = BukkitAdapter.adapt(BlockTypesCache.states[combinedFrom])
 			val newType = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo].blockType)
 

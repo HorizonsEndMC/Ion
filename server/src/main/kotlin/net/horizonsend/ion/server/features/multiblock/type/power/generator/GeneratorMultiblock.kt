@@ -93,13 +93,19 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 				return
 			}
 
-			val fuelItem = furnaceInventory.fuel ?: return sleepWithStatus(text("No Fuel", RED), 100)
-			val fuel = GeneratorFuel.getFuel(fuelItem) ?: return sleepWithStatus(text("Invalid Fuel", RED), 100)
+			val topFuelItem = furnaceInventory.smelting
+			val bottomFuelItem = furnaceInventory.fuel
+			if (topFuelItem == null && bottomFuelItem == null) return sleepWithStatus(text("No Fuel", RED), 100)
+
+			val topFuel = topFuelItem?.let { GeneratorFuel.getFuel(it) }
+			val bottomFuel = bottomFuelItem?.let { GeneratorFuel.getFuel(it) }
+			val fuel = topFuel ?: bottomFuel ?: return sleepWithStatus(text("Invalid Fuel", RED), 100)
 
 			val sleepTicks = (fuel.cooldown / multiblock.speed).toInt()
 			sleepWithStatus(text("Working", GREEN), sleepTicks)
 
-			fuelItem.amount--
+			if (topFuelItem != null && fuel === topFuel) topFuelItem.amount--
+			else if (bottomFuelItem != null) bottomFuelItem.amount--
 
 			val furnace = furnaceInventory.holder
 

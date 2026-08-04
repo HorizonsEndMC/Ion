@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.gui
 
+import com.google.common.collect.HashBasedTable
+import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
@@ -7,6 +9,8 @@ import net.horizonsend.ion.common.utils.text.GUI_MARGIN
 import net.horizonsend.ion.common.utils.text.SHIFT_DOWN_MIN
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -38,6 +42,15 @@ class GuiText(
      * List of chars that indicate if a slot should have an overlay. Similar to setStructure in InvUI.
      */
     private val slotOverlayStructure = mutableListOf<String>()
+
+    /**
+     * List of chars that indicate if a slot should have an overlay. Similar to setStructure in InvUI.
+     */
+    private val iconStructure = mutableListOf<List<Char>>()
+    private val iconMap = mutableMapOf<Char, GuiIcon>('.' to GuiIcon.EMPTY)
+    private val iconindexes = HashBasedTable.create<Int, Int, GuiIcon>()
+
+	private val guiBorders = mutableListOf<GuiBorder>()
 
     /**
      * Adds a GuiComponent to the GuiText
@@ -79,8 +92,9 @@ class GuiText(
     /**
      * Adds a default GuiBackground to the GuiText
      */
-    fun addBackground() {
+    fun addBackground(): GuiText {
         addBackground(GuiBackground())
+		return this
     }
 
     /**
@@ -134,11 +148,50 @@ class GuiText(
     }
 
     /**
+     * Sets the slot overlays in the GUI. The provided characters will be referenced from ones added to the icon mapping
+     * @param structureData list of strings indicating what each slot should be covered with
+     */
+    fun setGuiIconOverlay(vararg structureData: String): GuiText {
+        iconStructure.clear()
+        for (row in structureData) {
+            val sanitizedRow = row.replace(" ", "").replace("\n", "").toList()
+			iconStructure.add(sanitizedRow)
+        }
+
+		return this
+    }
+
+	/**
+	 * Marks the character to be displayed as the provided icon
+	 */
+	fun addIcon(key: Char, icon: GuiIcon): GuiText {
+		iconMap[key] = icon
+		return this
+	}
+
+	/**
+	 * Marks the character to be displayed as the provided icon
+	 */
+	fun setIcon(rowIndex: Int, columnIndex: Int, icon: GuiIcon): GuiText {
+		iconindexes[rowIndex, columnIndex] = icon
+		return this
+	}
+
+	fun addBorder(border: GuiBorder): GuiText {
+		guiBorders.add(border)
+		return this
+	}
+
+    /**
      * Builds the GuiText, returning a Component that can be placed in an Inventory's title
      * @return an Adventure Component for use in an Inventory
      */
     fun build(): Component {
         val renderedComponents = mutableListOf<Component>()
+
+		for (border in guiBorders) {
+			renderedComponents.add(border.build())
+		}
 
         // add GUI background. this operation must be performed first as subsequent text components will be placed on
         // top of previous components
@@ -164,6 +217,32 @@ class GuiText(
 
             renderedComponents.add(Component.textOfChildren(*slotOverlayComponents.toTypedArray()).shiftToStartOfComponent())
         }
+
+        // parse slot overlay structure and add overlay components
+        for ((index, inputOverlayRow) in iconStructure.withIndex()) {
+            val inputBoxComponents = mutableListOf<Component>()
+            val line = index * 2 // slots only on even line
+
+            for (key in inputOverlayRow) {
+				val icon = iconMap[key] ?: GuiIcon.EMPTY
+
+				inputBoxComponents.add(icon.getComponent(line))
+            }
+
+            renderedComponents.add(Component.textOfChildren(*inputBoxComponents.toTypedArray()).shiftToStartOfComponent())
+        }
+
+		for (row in iconindexes.rowKeySet()) {
+			val line = row * 2 // slots only on even line
+			val inputBoxComponents = mutableListOf<Component>()
+
+			for (columnIndex in 0..9) {
+				val icon = iconindexes[row, columnIndex] ?: GuiIcon.EMPTY
+
+				inputBoxComponents.add(icon.getComponent(line))
+			}
+			renderedComponents.add(Component.textOfChildren(*inputBoxComponents.toTypedArray()).shiftToStartOfComponent())
+		}
 
         // get sorted list of all lines in the builder
         for (line in guiComponents.map { it.line }.toSet().sorted()) {
@@ -222,7 +301,29 @@ class GuiText(
             renderedComponents.add(currentComponent)
         }
 
-        return Component.textOfChildren(*renderedComponents.toTypedArray())
+		val left = mutableListOf<Component>()
+		val right = mutableListOf<Component>()
+
+		guiBorders.forEach { background ->
+			background.headerIcon?.build()?.let(renderedComponents::add)
+
+			val headerWidth = background.headerIcon?.width ?: 0
+			val textSize = (DEFAULT_GUI_WIDTH - headerWidth) / 2
+
+			background.leftText?.let {
+				left += GuiText("", guiWidth = textSize, initialShiftDown = -8)
+					.add(it, alignment = TextAlignment.CENTER)
+					.build()
+			}
+
+			background.rightText?.let {
+				right += GuiText("", guiWidth = textSize - 1, initialShiftDown = -8)
+					.add(it, alignment = TextAlignment.CENTER, horizontalShift = textSize + (headerWidth) + 2)
+					.build()
+			}
+		}
+
+        return Component.textOfChildren(*renderedComponents.toTypedArray(), *left.toTypedArray(), *right.toTypedArray())
     }
 
     /**
@@ -254,7 +355,8 @@ class GuiText(
         val backgroundChar: Char = DEFAULT_BACKGROUND_CHARACTER,
         val backgroundWidth: Int = DEFAULT_GUI_WIDTH,
         val horizontalShift: Int = 0,
-		val verticalShift: Int = 0
+		val verticalShift: Int = 0,
+		val subText: GuiText? = null
     )
 
     /**

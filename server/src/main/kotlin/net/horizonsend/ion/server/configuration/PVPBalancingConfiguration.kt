@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.configuration.StarshipSounds.SoundInfo
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.kyori.adventure.sound.Sound
 
 @Serializable

@@ -14,9 +14,11 @@ import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.enchantments.EnchantmentOffer
+import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.ItemStack
 
 class GameplayTweaksListeners : SLEventListener() {
@@ -80,4 +82,12 @@ class GameplayTweaksListeners : SLEventListener() {
 		event.offers[1] = null
 		event.offers[2] = null
 	}
+
+	@EventHandler
+	fun onWitherSpawn(event: CreatureSpawnEvent) {
+		if (event.entityType == EntityType.WITHER) {
+			event.isCancelled = true
+		}
+	}
+
 }

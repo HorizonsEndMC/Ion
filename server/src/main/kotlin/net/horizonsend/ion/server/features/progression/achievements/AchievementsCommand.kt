@@ -44,7 +44,7 @@ object AchievementsCommand : SLCommand() {
 			sender.userError("Player not found or not online")
 			return
 		}
-		openAchievementWindow(sender, targetPlayer)
+		openAchievementWindow(sender)
 	}
 
 	@Subcommand("grant")
@@ -165,24 +165,7 @@ object AchievementsCommand : SLCommand() {
 	}
 	 */
 
-	private fun openAchievementWindow(viewer: Player, player: Player = viewer) {
-		val achievementObject = Achievements(viewer)
-		val gui = achievementObject.createGui()
-
-		val window = Window.single()
-			.setViewer(viewer)
-			.setTitle(AdventureComponentWrapper(achievementObject.createText(player, 0)))
-			.setGui(gui)
-			.build()
-
-		fun updateTitle(): (Int, Int) -> Unit {
-			return { _, currentPage ->
-				window.changeTitle(AdventureComponentWrapper(achievementObject.createText(player, currentPage)))
-			}
-		}
-
-		gui.addPageChangeHandler(updateTitle())
-
-		window.open()
+	private fun openAchievementWindow(viewer: Player) {
+		Achievements(viewer).openGui()
 	}
 }

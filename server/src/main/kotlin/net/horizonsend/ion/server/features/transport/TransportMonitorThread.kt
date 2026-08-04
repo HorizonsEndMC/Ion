@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.transport
 
 import io.netty.util.internal.logging.Slf4JLoggerFactory
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.toJavaDuration
 
 class TransportMonitorThread : Thread() {
 	private val logger = Slf4JLoggerFactory.getInstance("Transport Monitor Thread")
@@ -29,6 +31,8 @@ class TransportMonitorThread : Thread() {
 				logger.warn("Encountered error when polling transport tasks!")
 				e.printStackTrace()
 			}
+
+			sleep(1.milliseconds.toJavaDuration())
 		}
 	}
 }

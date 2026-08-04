@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import kotlin.reflect.KClass
 
@@ -12,9 +13,9 @@ interface ApplicationPredicate {
 		}
 	}
 
-	class SpecificPredicate(val customItem: CustomItem) : ApplicationPredicate {
+	class SpecificPredicate(val customItem: IonRegistryKey<CustomItem, out CustomItem>) : ApplicationPredicate {
 		override fun canApplyTo(customItem: CustomItem): Boolean {
-			return customItem.identifier == this.customItem.identifier
+			return customItem.key == this.customItem
 		}
 	}
 }

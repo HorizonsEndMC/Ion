@@ -6,7 +6,7 @@ import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.createNamedMemoryRegistry
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -17,7 +17,6 @@ import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 
 object Collectors : IonServerComponent(true) {
 	private lateinit var citizensRegistry: NPCRegistry

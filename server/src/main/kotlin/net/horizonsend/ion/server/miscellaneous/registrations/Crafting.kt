@@ -1,138 +1,188 @@
-package net.horizonsend.ion.server.miscellaneous.registrations
+﻿package net.horizonsend.ion.server.miscellaneous.registrations
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ADVANCED_ITEM_EXTRACTOR
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_INGOT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_ORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_NIGHT_VISION
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ASSEMBLY_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BARGE_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTERY_A
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTERY_G
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTERY_M
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_CANNON
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_PISTOL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_RIFLE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SHOTGUN
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SNIPER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_BREACHER_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CANNON_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE_BUCKET
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESEBURGER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUITRY
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUIT_BOARD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COOKED_GROUND_BEEF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COOKED_PEPPERONI_PIZZA
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRATE_PLACER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DETONATOR
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_BLUE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_GREEN
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_ORANGE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_PINK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_PURPLE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_RED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENERGY_SWORD_YELLOW
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENRICHED_URANIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.FABRICATED_ASSEMBLY
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.FUEL_CELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.FUEL_CONTROL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.FUEL_ROD_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_OXYGEN
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GROUND_BEEF
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARREL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HORIZON_FRIED_EGG
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ICE_CREAM_MIXTURE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MEDIUM_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MINI_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LETTUCE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIMETER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MUSHROOM_SKEWER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NETHERITE_CASING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NUTRIENT_CUBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PEPPERONI_PIZZA
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PISTOL_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_BOOTS
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_CHESTPLATE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_HELMET
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_LEGGINGS
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_CHAINSAW_ADVANCED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_CHAINSAW_BASIC
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_CHAINSAW_ENHANCED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_DRILL_ADVANCED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_DRILL_BASIC
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_DRILL_ENHANCED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_HOE_ADVANCED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_HOE_BASIC
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_HOE_ENHANCED
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RAW_ALUMINUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RAW_ALUMINUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RAW_TITANIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RAW_TITANIUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RAW_URANIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RAW_URANIUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTIVE_ASSEMBLY
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTIVE_CHASSIS
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTIVE_COMPONENT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTIVE_HOUSING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTIVE_MEMBRANE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTIVE_PLATING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_CONTROL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_FRAME
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REINFORCED_FRAME
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAMI
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMOKE_GRENADE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SNIPER_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SPECIAL_MAGAZINE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_ASSEMBLY
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_CHASSIS
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_INGOT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_MODULE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_PLATE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SUBMACHINE_BLASTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SUPERCONDUCTOR
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SUPERCONDUCTOR_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SUPERCONDUCTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_INGOT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_ORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOMATO
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOMATO_SOUP
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_RANGE_1
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_RANGE_2
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_RANGE_3
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNCHARGED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHARGED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COMBAT_PROBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DATA_CHIP
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_ENTROPIC_CHARGE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUIDANCE_SYSTEM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEAVY_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_HELIX_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LIGHT_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_ARSENAL_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LOADED_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCANNER_PROBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_SIEGE_SHELL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_STASIS_CHARGE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_STELLAR_PRISM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.THERMONUCLEAR_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_EMP_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_HEAVY_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_LIGHT_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_THERMONUCLEAR_MISSILE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ROD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ADVANCED_ITEM_EXTRACTOR
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_ORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_ENVIRONMENT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_NIGHT_VISION
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_PRESSURE_FIELD
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_ROCKET_BOOSTING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_SHOCK_ABSORBING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_SPEED_BOOSTING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_COMPOST
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_REPLANT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_SMELT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BARGE_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_A
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_G
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_M
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTLECRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_CANNON
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_PISTOL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_RIFLE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_SHOTGUN
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_SNIPER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CANNON_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CIRCUITRY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CIRCUIT_BOARD
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CRATE_PLACER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.DETONATOR
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_BLUE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_GREEN
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_ORANGE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_PINK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_PURPLE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_RED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_YELLOW
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENRICHED_URANIUM
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.EXTENDED_BAR
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FABRICATED_ASSEMBLY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FERTILIZER_DISPENSER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FORTUNE_1
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FORTUNE_2
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FORTUNE_3
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FUEL_CELL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FUEL_CONTROL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.FUEL_ROD_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_HYDROGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_OXYGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GUN_BARREL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ITEM_FILTER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MOTHERBOARD
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIBLOCK_WORKBENCH
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.NETHERITE_CASING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PISTOL_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_BOOTS
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_CHESTPLATE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_HELMET
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_LEGGINGS
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_CAPACITY_25
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_CAPACITY_50
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_CHAINSAW_ADVANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_CHAINSAW_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_CHAINSAW_ENHANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_ADVANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_ENHANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_HOE_ADVANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_HOE_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_HOE_ENHANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RANGE_1
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RANGE_2
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RANGE_3
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RAW_ALUMINUM
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RAW_ALUMINUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RAW_TITANIUM
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RAW_TITANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RAW_URANIUM
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RAW_URANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTIVE_ASSEMBLY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTIVE_CHASSIS
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTIVE_COMPONENT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTIVE_HOUSING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTIVE_MEMBRANE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTIVE_PLATING
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTOR_CONTROL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REACTOR_FRAME
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.REINFORCED_FRAME
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.RIFLE_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SHOTGUN_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SILK_TOUCH_MOD
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SMB_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SMOKE_GRENADE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SNIPER_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SPECIAL_MAGAZINE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STANDARD_MAGAZINE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STEEL_ASSEMBLY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STEEL_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STEEL_CHASSIS
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STEEL_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STEEL_MODULE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.STEEL_PLATE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUBMACHINE_BLASTER
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPERCONDUCTOR
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPERCONDUCTOR_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPERCONDUCTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_ORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNCHARGED_SHELL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNLOADED_ARSENAL_MISSILE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNLOADED_SHELL
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ORE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ROD
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.VEIN_MINER_25
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.WRENCH
-import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
-import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
-import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.LOG_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.MUSHROOM_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.SAPLING_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -141,10 +191,14 @@ import org.bukkit.Material
 import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
+import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
+import org.bukkit.Material.BOWL
 import org.bukkit.Material.CHAINMAIL_HELMET
+import org.bukkit.Material.CHARCOAL
 import org.bukkit.Material.CHERRY_LEAVES
 import org.bukkit.Material.COAL
+import org.bukkit.Material.COBBLESTONE
 import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
@@ -156,14 +210,17 @@ import org.bukkit.Material.DEEPSLATE_REDSTONE_ORE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
+import org.bukkit.Material.EGG
 import org.bukkit.Material.EMERALD
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENCHANTED_BOOK
+import org.bukkit.Material.END_ROD
 import org.bukkit.Material.FEATHER
 import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GILDED_BLACKSTONE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GLOWSTONE
 import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
@@ -172,13 +229,16 @@ import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.HONEYCOMB_BLOCK
 import org.bukkit.Material.HOPPER
+import org.bukkit.Material.ICE
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.IRON_NUGGET
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LAPIS_LAZULI
 import org.bukkit.Material.LEATHER
 import org.bukkit.Material.MELON
+import org.bukkit.Material.MILK_BUCKET
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
 import org.bukkit.Material.NAME_TAG
@@ -201,6 +261,8 @@ import org.bukkit.Material.RAW_GOLD
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.RED_TERRACOTTA
+import org.bukkit.Material.RESIN_CLUMP
+import org.bukkit.Material.ROTTEN_FLESH
 import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
@@ -211,11 +273,16 @@ import org.bukkit.Material.SPONGE
 import org.bukkit.Material.SPORE_BLOSSOM
 import org.bukkit.Material.STICK
 import org.bukkit.Material.STRING
+import org.bukkit.Material.SUGAR
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.WHEAT
+import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -224,50 +291,83 @@ import org.bukkit.inventory.RecipeChoice.ExactChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
+import org.bukkit.inventory.SmokingRecipe
+import org.bukkit.inventory.recipe.CookingBookCategory
+import org.bukkit.inventory.recipe.CraftingBookCategory
+import org.bukkit.Material.ALLIUM
+import org.bukkit.Material.AZURE_BLUET
+import org.bukkit.Material.BLUE_ORCHID
+import org.bukkit.Material.BROWN_MUSHROOM
+import org.bukkit.Material.CORNFLOWER
+import org.bukkit.Material.CRYING_OBSIDIAN
+import org.bukkit.Material.DANDELION
+import org.bukkit.Material.DEAD_BUSH
+import org.bukkit.Material.HANGING_ROOTS
+import org.bukkit.Material.LILAC
+import org.bukkit.Material.LILY_OF_THE_VALLEY
+import org.bukkit.Material.LILY_PAD
+import org.bukkit.Material.MANGROVE_PROPAGULE
+import org.bukkit.Material.ORANGE_TULIP
+import org.bukkit.Material.OXEYE_DAISY
+import org.bukkit.Material.PEONY
+import org.bukkit.Material.POPPY
+import org.bukkit.Material.RED_MUSHROOM
+import org.bukkit.Material.RED_TULIP
+import org.bukkit.Material.ROSE_BUSH
+import org.bukkit.Material.SUNFLOWER
+import org.bukkit.Material.WHITE_TULIP
+import org.bukkit.Material.WITHER_ROSE
 
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
+	val listOfCustomRecipes = mutableListOf<NamespacedKey>()
+
 	override fun onEnable() {
-		registerOreFurnaceRecipes()
+	registerOreFurnaceRecipes()
+		registerFoodFurnaceRecipes()
 		registerTools()
 		registerMisc()
 
 		// Prismarine Bricks
-		Bukkit.addRecipe(FurnaceRecipe(
+		val primarineBricksFurnaceRecipe = FurnaceRecipe(
 			NamespacedKey(IonServer, "prismarine_bricks"),
 			ItemStack(PRISMARINE_BRICKS),
 			PRISMARINE,
 			1f,
 			200
-		))
+		)
+		primarineBricksFurnaceRecipe.category = CookingBookCategory.BLOCKS
+		Bukkit.addRecipe(primarineBricksFurnaceRecipe)
+		listOfCustomRecipes.add(primarineBricksFurnaceRecipe.key)
+
 		// Bell
-		shaped("bell", BELL) {
+		shaped("bell", BELL, CraftingBookCategory.BUILDING) {
 			shape("sos", "igi", "ggg")
 
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_BLOCK)
-			setIngredient('o', OAK_LOG)
+			setIngredient('o', MaterialChoice(LOG_TYPES.toList()))
 			setIngredient('s', STICK)
 		}
 		// Wool -> String
-		for (material in WOOL_TYPES) shapeless(material.name.lowercase(), ItemStack(STRING, 4), material)
+		for (material in WOOL_TYPES) shapeless(material.name.lowercase(), ItemStack(STRING, 4), CraftingBookCategory.BUILDING, material)
 		shaped("saddle", SADDLE) {
 			shape("lll", "t t")
 
 			setIngredient('l', LEATHER)
 			setIngredient('t', TRIPWIRE_HOOK)
 		}
-		shapedMaterial("nametag", NAME_TAG, "s", "t", "p", 's' to STRING, 't' to TRIPWIRE_HOOK, 'p' to PAPER)
-		shapedMaterial("gilded_blackstone", GILDED_BLACKSTONE, "gbg", "bgb", "gbg", 'g' to GOLD_NUGGET, 'b' to BLACKSTONE)
-		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "ggg", "gbg", "ggg", 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
-		shapedMaterial("deepslate_gold_ore", DEEPSLATE_GOLD_ORE, "gbg", "bgb", "gbg", 'g' to RAW_GOLD, 'b' to Material.DEEPSLATE)
-		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
-		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
-		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), Material.OAK_SAPLING, Material.BONE)
-		shapeless("pale_moss", ItemStack(Material.PALE_MOSS_BLOCK), MOSS_BLOCK, Material.PALE_OAK_LEAVES)
-		shapedMaterial("verdant_froglight", VERDANT_FROGLIGHT, " x ", "xlx", " x ", 'x' to SLIME_BALL, 'l' to SHROOMLIGHT)
-		shapedMaterial("pearlescent_froglight", PEARLESCENT_FROGLIGHT, " x ", "xlx", " x ", 'x' to AMETHYST_SHARD, 'l' to SHROOMLIGHT)
-		shaped("spore_blossom", SPORE_BLOSSOM) {
+		shapedMaterial("nametag", NAME_TAG, "s", "t", "p", CraftingBookCategory.MISC, 's' to STRING, 't' to TRIPWIRE_HOOK, 'p' to PAPER)
+		shapedMaterial("gilded_blackstone", GILDED_BLACKSTONE, "gbg", "bgb", "gbg", CraftingBookCategory.BUILDING, 'g' to GOLD_NUGGET, 'b' to BLACKSTONE)
+		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "ggg", "gbg", "ggg", CraftingBookCategory.BUILDING, 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
+		shapedMaterial("deepslate_gold_ore", DEEPSLATE_GOLD_ORE, "gbg", "bgb", "gbg", CraftingBookCategory.BUILDING, 'g' to RAW_GOLD, 'b' to Material.DEEPSLATE)
+		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", CraftingBookCategory.MISC, 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
+		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", CraftingBookCategory.BUILDING, 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
+		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), CraftingBookCategory.BUILDING, Material.OAK_SAPLING, Material.BONE)
+		shapeless("pale_moss", ItemStack(Material.PALE_MOSS_BLOCK), CraftingBookCategory.BUILDING, MOSS_BLOCK, Material.PALE_OAK_LEAVES)
+		shapedMaterial("verdant_froglight", VERDANT_FROGLIGHT, " x ", "xlx", " x ", CraftingBookCategory.BUILDING, 'x' to SLIME_BALL, 'l' to SHROOMLIGHT)
+		shapedMaterial("pearlescent_froglight", PEARLESCENT_FROGLIGHT, " x ", "xlx", " x ", CraftingBookCategory.BUILDING, 'x' to AMETHYST_SHARD, 'l' to SHROOMLIGHT)
+		shaped("spore_blossom", SPORE_BLOSSOM, CraftingBookCategory.BUILDING) {
 			shape(" a ", "ctc", " m ")
 
 			setIngredient('a', AMETHYST_SHARD)
@@ -275,75 +375,133 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', MOSS_CARPET)
 			setIngredient('m', MOSS_BLOCK)
 		}
-		shapeless("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), SEA_LANTERN)
-		shapeless("pink_petals", ItemStack(PINK_PETALS, 4), CHERRY_LEAVES)
-		shapeless("nether_warts", ItemStack(NETHER_WART, 9), NETHER_WART_BLOCK)
-		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), HONEYCOMB_BLOCK)
-		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", 's' to STRING)
-		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
-		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapeless("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), CraftingBookCategory.MISC, SEA_LANTERN)
+		shapeless("pink_petals", ItemStack(PINK_PETALS, 4), CraftingBookCategory.BUILDING, CHERRY_LEAVES)
+		shapeless("nether_warts", ItemStack(NETHER_WART, 9), CraftingBookCategory.BUILDING, NETHER_WART_BLOCK)
+		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), CraftingBookCategory.MISC, HONEYCOMB_BLOCK)
+		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", CraftingBookCategory.BUILDING, 's' to STRING)
+		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ", CraftingBookCategory.BUILDING,'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y", CraftingBookCategory.BUILDING, 'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapeless("glowstone_dust", ItemStack(GLOWSTONE_DUST, 4), CraftingBookCategory.MISC, GLOWSTONE)
+		shapeless("resin", ItemStack(RESIN_CLUMP), CraftingBookCategory.MISC, ItemStack(HONEYCOMB, 2), ItemStack(COBBLESTONE, 2))
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
-		shaped("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
-			shape(" y ", " z ")
+		Bukkit.removeRecipe(Material.IRON_CHAIN.key)
+		shaped("chain", ItemStack(Material.IRON_CHAIN, 4), CraftingBookCategory.BUILDING) {
+			shape("n", "i", "n")
 
-			setIngredient('y', LAPIS_LAZULI)
-			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('n', IRON_NUGGET)
+			setIngredient('i', IRON_INGOT)
 		}
-		shaped("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack()) {
-			shape(" y ", " z ")
+		shapeless("Unloaded_Shell", UNLOADED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(LAPIS_LAZULI, 1),
+			TITANIUM_INGOT.getValue().constructItemStack(1)
+		)
+		shapeless("Uncharged_Shell", UNCHARGED_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(PRISMARINE_CRYSTALS, 1),
+			ItemStack.of(COPPER_INGOT, 1)
+		)
+		shapeless("Scanner_Probe", SCANNER_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			IRON_NUGGET,
+			GOLD_NUGGET
+		)
+		shapeless("Combat_Probe", COMBAT_PROBE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(IRON_NUGGET, 1),
+			ALUMINUM_INGOT.getValue().constructItemStack(1)
+		)
+		shapeless("Breacher_Shell_Unloaded", UNLOADED_BREACHER_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(IRON_INGOT, 1),
+			ItemStack.of(LAPIS_LAZULI, 1)
+		)
+		shapeless("Stasis_Charge_Unloaded", UNLOADED_STASIS_CHARGE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(DIAMOND, 1),
+			ItemStack.of(REDSTONE, 1)
+		)
+		shapeless("Entropic_Charge_Unloaded", UNLOADED_ENTROPIC_CHARGE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(GOLD_INGOT, 1),
+			ItemStack.of(REDSTONE, 1)
+		)
+		shapeless("Helix_Shell_Unloaded", UNLOADED_HELIX_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ALUMINUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(LAPIS_LAZULI, 1)
+		)
+		shapeless("Siege_Shell_Unloaded", UNLOADED_SIEGE_SHELL.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			TITANIUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(LAPIS_LAZULI, 1)
+		)
+		shaped("Stellar_Prism_Unloaded", UNLOADED_STELLAR_PRISM.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape("gpg", "sus", "gdg")
 
-			setIngredient('y', PRISMARINE_CRYSTALS)
-			setIngredient('z', COPPER_INGOT)
+			setIngredient('g', GLASS_PANE)
+			setIngredient('p', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(SCORDITE.getValue().constructItemStack()))
+			setIngredient('u', ItemStack.of(DIAMOND_BLOCK, 1))
+			setIngredient('d', ExactChoice(SCORDITE.getValue().constructItemStack()))
 		}
-		shaped("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.constructItemStack()) {
-			shape("aba", "mum", "hlo")
+		shapeless("Unloaded_EMP_Missile", UNLOADED_EMP_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(REDSTONE, 3),
+			ItemStack.of(DIAMOND, 2),
+			ItemStack.of(IRON_INGOT, 2)
+		)
+		shapeless("Unloaded_Light_Missile", UNLOADED_LIGHT_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ALUMINUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(REDSTONE, 1)
+		)
+		shapeless("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			ItemStack.of(IRON_INGOT, 3),
+			ItemStack.of(REDSTONE, 2),
+			ItemStack.of(GOLD_INGOT, 1)
+		)
+		shapeless("Unloaded_Heavy_Missile", UNLOADED_HEAVY_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC,
+			TITANIUM_INGOT.getValue().constructItemStack(2),
+			ItemStack.of(REDSTONE, 1)
+		)
+		shaped("Unloaded_Thermonuclear_Missile", UNLOADED_THERMONUCLEAR_MISSILE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape("gpg", "sus", "gpg")
 
-			setIngredient('a', ExactChoice(REACTIVE_HOUSING.constructItemStack()))
-			setIngredient('b', ExactChoice(STEEL_PLATE.constructItemStack()))
-			setIngredient('m', ExactChoice(CIRCUITRY.constructItemStack()))
-			setIngredient('u', ExactChoice(URANIUM_ROD.constructItemStack()))
-			setIngredient('h', ExactChoice(GAS_CANISTER_HYDROGEN.constructItemStack()))
-			setIngredient('l', LAPIS_BLOCK)
-			setIngredient('o', ExactChoice(GAS_CANISTER_OXYGEN.constructItemStack()))
+			setIngredient('g', GLASS_PANE)
+			setIngredient('p', ExactChoice(SCORDITE.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('u', ItemStack.of(GOLD_BLOCK, 1))
 		}
-		shaped("blaster_barrel", GUN_BARREL.constructItemStack()) {
+
+		shaped("blaster_barrel", GUN_BARREL.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("tct", "ppp", "tct")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('p', PRISMARINE_CRYSTALS)
 		}
-		shaped("pistol_receiver", PISTOL_RECEIVER.constructItemStack()) {
+		shaped("pistol_receiver", PISTOL_RECEIVER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("irt")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 		}
-		shaped("rifle_receiver", RIFLE_RECEIVER.constructItemStack()) {
+		shaped("rifle_receiver", RIFLE_RECEIVER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" t ", "igt", " t ")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 		}
-		shaped("smb_receiver", SMB_RECEIVER.constructItemStack()) {
+		shaped("smb_receiver", SMB_RECEIVER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" t ", "id ", " t ")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('d', DIAMOND_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 		}
-		shaped("sniper_receiver", SNIPER_RECEIVER.constructItemStack()) {
+		shaped("sniper_receiver", SNIPER_RECEIVER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape(" t ", "ieb", " t ")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
-			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
+			setIngredient('b', ExactChoice(TITANIUM_BLOCK.getValue().constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
 		}
-		shaped("shotgun_receiver", SHOTGUN_RECEIVER.constructItemStack()) {
+		shaped("shotgun_receiver", SHOTGUN_RECEIVER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("   ", "icb", " t ")
 
 			setIngredient('t', TITANIUM_INGOT)
@@ -351,220 +509,239 @@ object Crafting : IonServerComponent() {
 			setIngredient('b', TITANIUM_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 		}
-		shaped("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
+		shaped("cannon_receiver", CANNON_RECEIVER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("   ", " ba", "g  ")
 
 			setIngredient('a', ALUMINUM_INGOT)
 			setIngredient('b', ALUMINUM_BLOCK)
 			setIngredient('g', GOLD_INGOT)
 		}
-		shaped("pistol", BLASTER_PISTOL.constructItemStack()) {
+		shaped("pistol", BLASTER_PISTOL.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "apb", "c  ")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
-			setIngredient('p', PISTOL_RECEIVER.constructItemStack())
-			setIngredient('b', GUN_BARREL.constructItemStack())
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', PISTOL_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 
 		}
-		shaped("rifle", BLASTER_RIFLE.constructItemStack()) {
+		shaped("rifle", BLASTER_RIFLE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "apb", "ac ")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
-			setIngredient('p', RIFLE_RECEIVER.constructItemStack())
-			setIngredient('b', GUN_BARREL.constructItemStack())
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', RIFLE_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 
 		}
-		shaped("submachine_blaster", SUBMACHINE_BLASTER.constructItemStack()) {
+		shaped("submachine_blaster", SUBMACHINE_BLASTER.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "apb", "ac ")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
-			setIngredient('p', SMB_RECEIVER.constructItemStack())
-			setIngredient('b', GUN_BARREL.constructItemStack())
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', SMB_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 
 		}
-		shaped("sniper", BLASTER_SNIPER.constructItemStack()) {
+		shaped("sniper", BLASTER_SNIPER.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" g ", "apb", "ac ")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
-			setIngredient('p', SNIPER_RECEIVER.constructItemStack())
-			setIngredient('b', GUN_BARREL.constructItemStack())
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', SNIPER_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 			setIngredient('g', GLASS)
 
 		}
-		shaped("shotgun", BLASTER_SHOTGUN.constructItemStack()) {
+		shaped("shotgun", BLASTER_SHOTGUN.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("  b", "apb", "ac ")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
-			setIngredient('p', SHOTGUN_RECEIVER.constructItemStack())
-			setIngredient('b', GUN_BARREL.constructItemStack())
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', SHOTGUN_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 
 		}
-		shaped("cannon", BLASTER_CANNON.constructItemStack()) {
+		shaped("cannon", BLASTER_CANNON.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" a ", " cb", "p  ")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
-			setIngredient('p', CANNON_RECEIVER.constructItemStack())
-			setIngredient('b', GUN_BARREL.constructItemStack())
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', CANNON_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 		}
-		shaped("power_drill_basic", POWER_DRILL_BASIC.constructItemStack()) {
+		shaped("power_drill_basic", POWER_DRILL_BASIC.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("i  ", " bt", " ts")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
-			setIngredient('b', ExactChoice(BATTERY_M.constructItemStack()))
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('b', ExactChoice(BATTERY_M.getValue().constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('s', STICK)
 
 		}
-		shaped("power_drill_enhanced", POWER_DRILL_ENHANCED.constructItemStack()) {
+		shaped("power_drill_enhanced", POWER_DRILL_ENHANCED.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ii ", "idc", " ts")
 
-			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
-			setIngredient('d', ExactChoice(POWER_DRILL_BASIC.constructItemStack()))
-			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
-			setIngredient('t', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_G.constructItemStack()))
+			setIngredient('i', ExactChoice(TITANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_DRILL_BASIC.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUITRY.getValue().constructItemStack()))
+			setIngredient('t', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(BATTERY_G.getValue().constructItemStack()))
 
 		}
-		shaped("power_drill_advanced", POWER_DRILL_ADVANCED.constructItemStack()) {
+		shaped("power_drill_advanced", POWER_DRILL_ADVANCED.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ii ", "idc", " ts")
 
-			setIngredient('i', ExactChoice(STEEL_PLATE.constructItemStack()))
-			setIngredient('d', ExactChoice(POWER_DRILL_ENHANCED.constructItemStack()))
-			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
-			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
-			setIngredient('s', ExactChoice(STEEL_CHASSIS.constructItemStack()))
+			setIngredient('i', ExactChoice(STEEL_PLATE.getValue().constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_DRILL_ENHANCED.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUIT_BOARD.getValue().constructItemStack()))
+			setIngredient('t', ExactChoice(SUPERCONDUCTOR.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_CHASSIS.getValue().constructItemStack()))
 
 		}
-		shaped("power_chainsaw_basic", POWER_CHAINSAW_BASIC.constructItemStack()) {
+		shaped("power_chainsaw_basic", POWER_CHAINSAW_BASIC.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ii ", "idc", " cs")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
-			setIngredient('d', ExactChoice(BATTERY_M.constructItemStack()))
-			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('d', ExactChoice(BATTERY_M.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('s', STICK)
 
 		}
-		shaped("power_chainsaw_enhanced", POWER_CHAINSAW_ENHANCED.constructItemStack()) {
+		shaped("power_chainsaw_enhanced", POWER_CHAINSAW_ENHANCED.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ii ", "idc", " us")
 
-			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
-			setIngredient('d', ExactChoice(POWER_CHAINSAW_BASIC.constructItemStack()))
-			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
-			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_G.constructItemStack()))
+			setIngredient('i', ExactChoice(TITANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_CHAINSAW_BASIC.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUITRY.getValue().constructItemStack()))
+			setIngredient('u', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(BATTERY_G.getValue().constructItemStack()))
 		}
-		shaped("power_chainsaw_advanced", POWER_CHAINSAW_ADVANCED.constructItemStack()) {
+		shaped("power_chainsaw_advanced", POWER_CHAINSAW_ADVANCED.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("pb ", "bdc", " ts")
 
-			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
-			setIngredient('b', ExactChoice(STEEL_BLOCK.constructItemStack()))
-			setIngredient('d', ExactChoice(POWER_CHAINSAW_ENHANCED.constructItemStack()))
-			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
-			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
-			setIngredient('s', ExactChoice(STEEL_CHASSIS.constructItemStack()))
+			setIngredient('p', ExactChoice(STEEL_PLATE.getValue().constructItemStack()))
+			setIngredient('b', ExactChoice(STEEL_BLOCK.getValue().constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_CHAINSAW_ENHANCED.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUIT_BOARD.getValue().constructItemStack()))
+			setIngredient('t', ExactChoice(SUPERCONDUCTOR.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_CHASSIS.getValue().constructItemStack()))
 		}
-		shaped("power_hoe_basic", POWER_HOE_BASIC.constructItemStack()) {
+		shaped("power_hoe_basic", POWER_HOE_BASIC.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" ib", " si", "cc ")
 
-			setIngredient('b', ExactChoice(BATTERY_M.constructItemStack()))
+			setIngredient('b', ExactChoice(BATTERY_M.getValue().constructItemStack()))
 			setIngredient('i', COPPER_INGOT)
-			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('c', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('s', STICK)
 		}
-		shaped("power_hoe_enhanced", POWER_HOE_ENHANCED.constructItemStack()) {
+		shaped("power_hoe_enhanced", POWER_HOE_ENHANCED.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" us", " dc", "ii ")
 
-			setIngredient('d', ExactChoice(POWER_HOE_BASIC.constructItemStack()))
-			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
-			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
-			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_G.constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_HOE_BASIC.getValue().constructItemStack()))
+			setIngredient('i', ExactChoice(TITANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUITRY.getValue().constructItemStack()))
+			setIngredient('u', ExactChoice(URANIUM_BLOCK.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(BATTERY_G.getValue().constructItemStack()))
 		}
-		shaped("power_hoe_advanced", POWER_HOE_ADVANCED.constructItemStack()) {
+		shaped("power_hoe_advanced", POWER_HOE_ADVANCED.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" tu", " dc", "ss ")
 
-			setIngredient('d', ExactChoice(POWER_HOE_ENHANCED.constructItemStack()))
-			setIngredient('s', ExactChoice(STEEL_BLOCK.constructItemStack()))
-			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
-			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
-			setIngredient('u', ExactChoice(STEEL_CHASSIS.constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_HOE_ENHANCED.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_BLOCK.getValue().constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUIT_BOARD.getValue().constructItemStack()))
+			setIngredient('t', ExactChoice(SUPERCONDUCTOR.getValue().constructItemStack()))
+			setIngredient('u', ExactChoice(STEEL_CHASSIS.getValue().constructItemStack()))
 		}
-		shaped("crate_placer", CRATE_PLACER.constructItemStack()) {
+		shaped("crate_placer", CRATE_PLACER.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" s ", " cd", "t  ")
 
-			setIngredient('s', ExactChoice(STEEL_INGOT.constructItemStack()))
-			setIngredient('t', GAS_CANISTER_EMPTY.constructItemStack())
+			setIngredient('s', ExactChoice(STEEL_INGOT.getValue().constructItemStack()))
+			setIngredient('t', GAS_CANISTER_EMPTY.getValue().constructItemStack())
 			setIngredient('d', DIAMOND)
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 		}
-		shaped("circuitry_1", CIRCUITRY.constructItemStack()) {
+		shaped("circuitry_1", CIRCUITRY.getValue().constructItemStack()) {
 			shape("qdq", "arg", "ccc")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
 			setIngredient('d', GREEN_DYE)
 			setIngredient('r', REDSTONE)
 		}
-		shaped("circuitry_2", CIRCUITRY.constructItemStack()) {
+		shaped("circuitry_2", CIRCUITRY.getValue().constructItemStack()) {
 			shape("qdq", "gra", "ccc")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
 			setIngredient('d', GREEN_DYE)
 			setIngredient('r', REDSTONE)
 		}
-		shaped("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
+		shaped("circuitry_3", CIRCUITRY) {
+			shape("grg", "qqq", "ccc")
+
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('q', QUARTZ)
+			setIngredient('r', REDSTONE)
+		}
+		shaped("assembly_core", ASSEMBLY_CORE.getValue().constructItemStack()) {
+			shape("xxx", "sys", "xsx")
+
+			setIngredient('x', ExactChoice(DATA_CHIP.getValue().constructItemStack()))
+			setIngredient('y', ExactChoice(GUIDANCE_SYSTEM.getValue().constructItemStack()))
+			setIngredient('s', ExactChoice(SUPERCONDUCTOR.getValue().constructItemStack()))
+		}
+		shaped("standard_magazine", STANDARD_MAGAZINE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "rlr", "ttt")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('l', LAPIS_BLOCK)
 			setIngredient('r', REDSTONE)
 
 		}
-		shaped("special_magazine", SPECIAL_MAGAZINE.constructItemStack()) {
+		shaped("special_magazine", SPECIAL_MAGAZINE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "rer", "ttt")
 
-			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('r', REDSTONE)
 
 		}
-		shaped("empty_gas_canister", GAS_CANISTER_EMPTY.constructItemStack()) {
+		shaped("empty_gas_canister", GAS_CANISTER_EMPTY.getValue().constructItemStack()) {
 			shape(" i ", "igi", " i ")
 
-			setIngredient('i', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('i', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 			setIngredient('g', GLASS_PANE)
 
 		}
-		shaped("detonator", DETONATOR.constructItemStack()) {
+		shaped("detonator", DETONATOR.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" r ", "tut", " t ")
 
 			setIngredient('r', REDSTONE)
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('u', URANIUM.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
+			setIngredient('u', URANIUM.getValue().constructItemStack())
 		}
-		shaped("smokeGrenade", SMOKE_GRENADE.constructItemStack()) {
+		shaped("smokeGrenade", SMOKE_GRENADE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(" i ", "tct", " t ")
 
 			setIngredient('i', IRON_INGOT)
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 			setIngredient('c', COAL)
 		}
 		materialBlockRecipes(ALUMINUM_BLOCK, ALUMINUM_INGOT)
 		materialBlockRecipes(RAW_ALUMINUM_BLOCK, RAW_ALUMINUM)
 		materialBlockRecipes(CHETHERITE_BLOCK, CHETHERITE)
+		materialBlockRecipes(SCORDITE_BLOCK, SCORDITE)
+		materialBlockRecipes(VANADIUM_BLOCK, VANADIUM)
+		materialBlockRecipes(ZIRCON_BLOCK, ZIRCON)
+		materialBlockRecipes(ATAVUM_BLOCK, ATAVUM)
 		materialBlockRecipes(TITANIUM_BLOCK, TITANIUM_INGOT)
 		materialBlockRecipes(RAW_TITANIUM_BLOCK, RAW_TITANIUM)
 		materialBlockRecipes(URANIUM_BLOCK, URANIUM)
@@ -572,68 +749,42 @@ object Crafting : IonServerComponent() {
 		materialBlockRecipes(ENRICHED_URANIUM_BLOCK, ENRICHED_URANIUM)
 		materialBlockRecipes(STEEL_BLOCK, STEEL_INGOT)
 
-		shapeless("steelPlate", STEEL_PLATE.constructItemStack(), STEEL_BLOCK.constructItemStack(9))
-		shapeless("steelModule", STEEL_MODULE.constructItemStack(), STEEL_CHASSIS.constructItemStack(9))
-		shapeless("steelAssembly", STEEL_ASSEMBLY.constructItemStack(), STEEL_MODULE.constructItemStack(4))
-		shapeless("reactorFrame", REACTOR_FRAME.constructItemStack(), REINFORCED_FRAME.constructItemStack(4))
-		shapeless("uraniumCore", URANIUM_CORE.constructItemStack(), ENRICHED_URANIUM_BLOCK.constructItemStack(9))
-		shapeless("fuelRodCore", FUEL_ROD_CORE.constructItemStack(), URANIUM_ROD.constructItemStack(9))
-		shapeless("fuelControl", FUEL_CONTROL.constructItemStack(), FUEL_CELL.constructItemStack(9))
-		shapeless("melonToSlices", ItemStack(Material.MELON_SLICE).asQuantity(4), MELON)
+		shapeless("steelPlate", STEEL_PLATE.getValue().constructItemStack(), CraftingBookCategory.MISC, STEEL_BLOCK.getValue().constructItemStack(9))
+		shapeless("steelModule", STEEL_MODULE.getValue().constructItemStack(), CraftingBookCategory.MISC, STEEL_CHASSIS.getValue().constructItemStack(9))
+		shapeless("steelAssembly", STEEL_ASSEMBLY.getValue().constructItemStack(), CraftingBookCategory.MISC, STEEL_MODULE.getValue().constructItemStack(4))
+		shapeless("reactorFrame", REACTOR_FRAME.getValue().constructItemStack(), CraftingBookCategory.MISC, REINFORCED_FRAME.getValue().constructItemStack(4))
+		shapeless("uraniumCore", URANIUM_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, ENRICHED_URANIUM_BLOCK.getValue().constructItemStack(9))
+		shapeless("fuelRodCore", FUEL_ROD_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, URANIUM_ROD.getValue().constructItemStack(9))
+		shapeless("fuelControl", FUEL_CONTROL.getValue().constructItemStack(), CraftingBookCategory.MISC, FUEL_CELL.getValue().constructItemStack(9))
+		shapeless("melonToSlices", ItemStack(Material.MELON_SLICE).asQuantity(4), CraftingBookCategory.MISC, MELON)
 
-		shaped("reactiveComponent", REACTIVE_HOUSING.constructItemStack()) {
+		shaped("reactiveComponent", REACTIVE_HOUSING.getValue().constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
-			setIngredient('x', RecipeChoice.MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
+			setIngredient('x', MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
 			setIngredient('y', SPONGE)
 		}
-		shaped("netheriteCasing", NETHERITE_CASING.constructItemStack()) {
+		shaped("netheriteCasing", NETHERITE_CASING.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
 			shape("xvx", "xyx", "xvx")
 
 			setIngredient('x', NETHERITE_BLOCK)
-			setIngredient('y', STEEL_PLATE.constructItemStack())
-			setIngredient('v', REACTIVE_HOUSING.constructItemStack())
+			setIngredient('y', STEEL_PLATE.getValue().constructItemStack())
+			setIngredient('v', REACTIVE_HOUSING.getValue().constructItemStack())
 		}
-		shaped("reactiveHousing", REACTIVE_COMPONENT.constructItemStack()) {
+		shaped("reactiveHousing", REACTIVE_COMPONENT.getValue().constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
 			setIngredient('x', REDSTONE_BLOCK )
 			setIngredient('y', COPPER_BLOCK)
 		}
-		shapeless("reactivePlating", result = REACTIVE_PLATING.constructItemStack(), REACTIVE_COMPONENT, REACTIVE_HOUSING)
-		shapeless("reactiveMembrane", result = REACTIVE_MEMBRANE.constructItemStack(), REACTIVE_CHASSIS.constructItemStack(7), CIRCUITRY.constructItemStack(), ENRICHED_URANIUM.constructItemStack())
-		shapeless("reactiveAssembly", REACTIVE_ASSEMBLY.constructItemStack(), REACTIVE_MEMBRANE.constructItemStack(9))
-		shapeless("circuitBoard", MOTHERBOARD.constructItemStack(), CIRCUIT_BOARD.constructItemStack(9))
-		shapeless("reactorControl", REACTOR_CONTROL.constructItemStack(), FABRICATED_ASSEMBLY.constructItemStack(6), MOTHERBOARD.constructItemStack(3))
+		shapeless("reactivePlating", result = REACTIVE_PLATING.getValue().constructItemStack(), CraftingBookCategory.MISC, REACTIVE_COMPONENT, REACTIVE_HOUSING)
+		shapeless("reactiveMembrane", result = REACTIVE_MEMBRANE.getValue().constructItemStack(), CraftingBookCategory.MISC, REACTIVE_CHASSIS.getValue().constructItemStack(7), CIRCUITRY.getValue().constructItemStack(), ENRICHED_URANIUM.getValue().constructItemStack())
+		shapeless("reactiveAssembly", REACTIVE_ASSEMBLY.getValue().constructItemStack(), CraftingBookCategory.MISC, REACTIVE_MEMBRANE.getValue().constructItemStack(9))
+		shapeless("circuitBoard", MOTHERBOARD.getValue().constructItemStack(), CraftingBookCategory.MISC, CIRCUIT_BOARD.getValue().constructItemStack(9))
+		shapeless("reactorControl", REACTOR_CONTROL.getValue().constructItemStack(), CraftingBookCategory.MISC, FABRICATED_ASSEMBLY.getValue().constructItemStack(6), MOTHERBOARD.getValue().constructItemStack(3))
 		materialBlockRecipes(SUPERCONDUCTOR_BLOCK, SUPERCONDUCTOR)
-		shapeless("superconductorCore", SUPERCONDUCTOR_CORE.constructItemStack(), SUPERCONDUCTOR_BLOCK.constructItemStack(), MOTHERBOARD.constructItemStack(4))
-		shaped("bcreactorCore", BATTLECRUISER_REACTOR_CORE.constructItemStack()) {
-			shape("wxw", "yzy", "wxw")
-
-			setIngredient('w', REACTOR_FRAME.constructItemStack())
-			setIngredient('x', REACTOR_CONTROL.constructItemStack())
-			setIngredient('y', FUEL_CONTROL.constructItemStack())
-			setIngredient('z', SUPERCONDUCTOR_CORE.constructItemStack())
-		}
-		shaped("bargereactorCore", BARGE_REACTOR_CORE.constructItemStack()) {
-			shape("wxw", "zzz", "vyv")
-
-			setIngredient('w', REACTOR_FRAME.constructItemStack())
-			setIngredient('x', REACTOR_CONTROL.constructItemStack())
-			setIngredient('y', FUEL_CONTROL.constructItemStack())
-			setIngredient('z', SUPERCONDUCTOR.constructItemStack())
-			setIngredient('v', REINFORCED_FRAME.constructItemStack())
-		}
-		shaped("cruiserreactorCore", CRUISER_REACTOR_CORE.constructItemStack()) {
-			shape("wxw", "wyw", "wzw")
-
-			setIngredient('w', REINFORCED_FRAME.constructItemStack())
-			setIngredient('x', REACTOR_CONTROL.constructItemStack())
-			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
-			setIngredient('z', FUEL_CONTROL.constructItemStack())
-		}
-
-		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
+		shapeless("superconductorCore", SUPERCONDUCTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, SUPERCONDUCTOR_BLOCK.getValue().constructItemStack(), MOTHERBOARD.getValue().constructItemStack(4))
+		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("i", "c")
 
 			setIngredient('i', IRON_BLOCK)
@@ -641,139 +792,138 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Tool Mods start
-		shaped("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
+		shaped("silk_touch_modifier", TOOL_MODIFICATION_SILK_TOUCH_MOD.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("gbg", "tst", "ctc")
 
 			setIngredient('g', RAW_GOLD)
-			setIngredient('b', TITANIUM_BLOCK.constructItemStack())
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(Enchantment.SILK_TOUCH to 1), true)))
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('b', TITANIUM_BLOCK.getValue().constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
+			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(Enchantment.SILK_TOUCH to 1))))
+			setIngredient('c', CIRCUIT_BOARD.getValue().constructItemStack())
 		}
 
-		shaped("fortune_1_touch_modifier", FORTUNE_1.constructItemStack()) {
+		shaped("fortune_1_touch_modifier", TOOL_MODIFICATION_FORTUNE_1.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("dgd", "csc", "dgd")
 
 			setIngredient('d', DIAMOND)
 			setIngredient('g', GOLD_BLOCK)
-			setIngredient('c', REACTIVE_COMPONENT.constructItemStack())
-			setIngredient('s', SUPERCONDUCTOR.constructItemStack())
+			setIngredient('c', REACTIVE_COMPONENT.getValue().constructItemStack())
+			setIngredient('s', SUPERCONDUCTOR.getValue().constructItemStack())
 		}
-		shaped("fortune_2_touch_modifier", FORTUNE_2.constructItemStack()) {
+		shaped("fortune_2_touch_modifier", TOOL_MODIFICATION_FORTUNE_2.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("dgd", "csc", "dgd")
 
-			setIngredient('d', STEEL_PLATE.constructItemStack())
-			setIngredient('g', URANIUM_BLOCK.constructItemStack())
-			setIngredient('c', REACTIVE_PLATING.constructItemStack())
-			setIngredient('s', FORTUNE_1.constructItemStack())
+			setIngredient('d', STEEL_PLATE.getValue().constructItemStack())
+			setIngredient('g', URANIUM_BLOCK.getValue().constructItemStack())
+			setIngredient('c', REACTIVE_PLATING.getValue().constructItemStack())
+			setIngredient('s', TOOL_MODIFICATION_FORTUNE_1.getValue().constructItemStack())
 		}
-		shaped("fortune_3_touch_modifier", FORTUNE_3.constructItemStack()) {
+		shaped("fortune_3_touch_modifier", TOOL_MODIFICATION_FORTUNE_3.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("dgd", "csc", "dgd")
 
-			setIngredient('d', STEEL_ASSEMBLY.constructItemStack())
-			setIngredient('g', ENRICHED_URANIUM_BLOCK.constructItemStack())
-			setIngredient('c', REACTIVE_ASSEMBLY.constructItemStack())
-			setIngredient('s', FORTUNE_2.constructItemStack())
+			setIngredient('d', STEEL_ASSEMBLY.getValue().constructItemStack())
+			setIngredient('g', ENRICHED_URANIUM_BLOCK.getValue().constructItemStack())
+			setIngredient('c', REACTIVE_ASSEMBLY.getValue().constructItemStack())
+			setIngredient('s', TOOL_MODIFICATION_FORTUNE_2.getValue().constructItemStack())
 		}
-		shaped("power_capacity_25_modifier", POWER_CAPACITY_25.constructItemStack()) {
+		shaped("power_capacity_25_modifier", TOOL_MODIFICATION_POWER_CAPACITY_25.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("ibi", "brb", "ici")
+
+			setIngredient('i', IRON_INGOT)
+			setIngredient('b', BATTERY_M.getValue().constructItemStack())
+			setIngredient('r', REDSTONE_BLOCK)
+			setIngredient('c', END_ROD)
+		}
+		shaped("power_capacity_50_modifier", TOOL_MODIFICATION_POWER_CAPACITY_50.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("sbs", "brb", "scs")
 
-			setIngredient('s', STEEL_INGOT.constructItemStack())
-			setIngredient('b', BATTERY_M.constructItemStack())
-			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('s', IRON_INGOT)
+			setIngredient('b', BATTERY_G.getValue().constructItemStack())
+			setIngredient('r', TOOL_MODIFICATION_POWER_CAPACITY_25)
+			setIngredient('c', END_ROD)
 		}
-		shaped("power_capacity_50_modifier", POWER_CAPACITY_50.constructItemStack()) {
-			shape("sbs", "brb", "scs")
+		shaped("auto_smelt_modifier", TOOL_MODIFICATION_AUTO_SMELT.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("iri", "bfb", "ici")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
-			setIngredient('b', BATTERY_G.constructItemStack())
-			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
-		}
-		shaped("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
-			shape("srs", "bfb", "scs")
-
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('i', IRON_INGOT)
 			setIngredient('b', GOLD_BLOCK)
 			setIngredient('f', BLAST_FURNACE)
 			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 		}
-		shaped("auto_compost_modifier", AUTO_COMPOST.constructItemStack()) {
+		shaped("auto_compost_modifier", TOOL_MODIFICATION_AUTO_COMPOST.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("tit", "tct", "trt")
 
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 			setIngredient('i', IRON_INGOT)
 			setIngredient('c', COMPOSTER)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
-		shaped("auto_replant_modifier", AUTO_REPLANT.constructItemStack()) {
+		shaped("auto_replant_modifier", TOOL_MODIFICATION_AUTO_REPLANT.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ipi", "tct", "iri")
 
 			setIngredient('i', IRON_INGOT)
 			setIngredient('p', PISTON)
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 			setIngredient('c', DISPENSER)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
-		shaped("auto_fertilizer_modifier", FERTILIZER_DISPENSER.constructItemStack()) {
+		shaped("auto_fertilizer_modifier", TOOL_MODIFICATION_FERTILIZER_DISPENSER.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ipi", "tct", "iri")
 
 			setIngredient('i', IRON_INGOT)
 			setIngredient('p', HOPPER)
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 			setIngredient('c', DISPENSER)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
-		shaped("extended_bar_modifier", EXTENDED_BAR.constructItemStack()) {
-			shape("st ", "tct", " ts")
+		shaped("extended_bar_modifier", TOOL_MODIFICATION_EXTENDED_BAR.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("st ", "tst", " ts")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
-			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('c', STEEL_CHASSIS.constructItemStack())
+			setIngredient('s', STEEL_INGOT.getValue().constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.getValue().constructItemStack())
 		}
-		shaped("aoe_1_modifier", RANGE_1.constructItemStack()) {
+		shaped("aoe_1_modifier", TOOL_MODIFICATION_RANGE_1.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', IRON_BLOCK)
+			setIngredient('i', IRON_INGOT)
 			setIngredient('p', PISTON)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
-		shaped("aoe_2_modifier", RANGE_2.constructItemStack()) {
-			shape("ipi", "prp", "ipi")
+		shaped("aoe_2_modifier", TOOL_MODIFICATION_RANGE_2.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("iii", "prp", "iii")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('i', IRON_BLOCK)
 			setIngredient('p', PISTON)
-			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
+			setIngredient('r', ExactChoice(TOOL_MODIFICATION_RANGE_1.getValue().constructItemStack()))
 		}
 
-		shaped("aoe_3_modifier", RANGE_3.constructItemStack()) {
-			shape("ipi", "prp", "ipi")
+		shaped("aoe_3_modifier", TOOL_MODIFICATION_RANGE_3.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("iii", "prp", "iii")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
-			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
-			setIngredient('r', ExactChoice(RANGE_2.constructItemStack()))
+			setIngredient('i', ExactChoice(STEEL_INGOT.getValue().constructItemStack()))
+			setIngredient('p', PISTON)
+			setIngredient('r', ExactChoice(TOOL_MODIFICATION_RANGE_2.getValue().constructItemStack()))
 		}
-		shaped("vein_miner_modifier", VEIN_MINER_25.constructItemStack()) {
+		shaped("vein_miner_modifier", TOOL_MODIFICATION_VEIN_MINER_25.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
+			setIngredient('i', ALUMINUM_INGOT)
 			setIngredient('p', OBSERVER)
-			setIngredient('r', RANGE_1.constructItemStack())
+			setIngredient('r', TOOL_MODIFICATION_RANGE_1)
 		}
 
 
-		fun registerBatteryRecipe(battery: Battery, material: Material) = shaped(battery.identifier.lowercase(), battery.constructItemStack()) {
+		fun registerBatteryRecipe(battery: IonRegistryKey<CustomItem, out CustomItem>, material: Material) = shaped(battery.key.lowercase(), battery.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("aba", "aba", "aba")
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 			setIngredient('b', material)
 		}
 		registerBatteryRecipe(BATTERY_A, GLOWSTONE_DUST)
 		registerBatteryRecipe(BATTERY_M, REDSTONE)
 		registerBatteryRecipe(BATTERY_G, SEA_LANTERN)
 
-		fun registerArmorRecipe(result: PowerArmorItem, vararg shape: String) = shaped(result.identifier.lowercase(), result.constructItemStack()) {
+		fun registerArmorRecipe(result: IonRegistryKey<CustomItem, out CustomItem>, vararg shape: String) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape(*shape)
 			setIngredient('*', TITANIUM_INGOT)
 			setIngredient('b', BATTERY_G)
@@ -783,21 +933,21 @@ object Crafting : IonServerComponent() {
 		registerArmorRecipe(POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *")
 		registerArmorRecipe(POWER_ARMOR_BOOTS, "* *", "*b*")
 
-		fun registerPowerArmorModule(result: ModificationItem, center: RecipeChoice) = shaped(result.identifier.lowercase(), result.constructItemStack()) {
+		fun registerPowerArmorModule(result: IonRegistryKey<CustomItem, out CustomItem>, center: RecipeChoice) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("aga", "g*g", "aga")
 			setIngredient('a', ALUMINUM_INGOT)
 			setIngredient('g', GLASS_PANE)
 			setIngredient('*', center)
 		}
 
-		registerPowerArmorModule(ARMOR_MODIFICATION_SHOCK_ABSORBING, ExactChoice(TITANIUM_INGOT.constructItemStack()))
-		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, RecipeChoice.MaterialChoice(FEATHER))
-		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, RecipeChoice.MaterialChoice(FIREWORK_ROCKET))
-		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, RecipeChoice.MaterialChoice(SPIDER_EYE))
-		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, RecipeChoice.MaterialChoice(CHAINMAIL_HELMET))
-		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, RecipeChoice.ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
+		registerPowerArmorModule(ARMOR_MODIFICATION_SHOCK_ABSORBING, ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, MaterialChoice(FEATHER))
+		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, MaterialChoice(FIREWORK_ROCKET))
+		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, MaterialChoice(SPIDER_EYE))
+		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, MaterialChoice(CHAINMAIL_HELMET))
+		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, ExactChoice(GAS_CANISTER_EMPTY.getValue().constructItemStack()))
 
-		fun registerSwordRecipes(sword: CustomItem, choice: RecipeChoice) = shaped(sword.identifier.lowercase(), sword) {
+		fun registerSwordRecipes(sword: IonRegistryKey<CustomItem, out CustomItem>, choice: RecipeChoice) = shaped(sword.key.lowercase(), sword, CraftingBookCategory.EQUIPMENT) {
 			shape("aga", "a*a", "ata")
 			setIngredient('a', ALUMINUM_INGOT)
 			setIngredient('g', GLASS_PANE)
@@ -805,35 +955,265 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', TITANIUM_INGOT)
 		}
 
-		registerSwordRecipes(ENERGY_SWORD_BLUE, RecipeChoice.MaterialChoice(DIAMOND))
-		registerSwordRecipes(ENERGY_SWORD_RED, RecipeChoice.MaterialChoice(REDSTONE))
-		registerSwordRecipes(ENERGY_SWORD_YELLOW, RecipeChoice.MaterialChoice(COAL))
-		registerSwordRecipes(ENERGY_SWORD_GREEN, RecipeChoice.MaterialChoice(EMERALD))
-		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.constructItemStack()))
-		registerSwordRecipes(ENERGY_SWORD_ORANGE, RecipeChoice.MaterialChoice(COPPER_INGOT))
-		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
+		registerSwordRecipes(ENERGY_SWORD_BLUE, MaterialChoice(DIAMOND))
+		registerSwordRecipes(ENERGY_SWORD_RED, MaterialChoice(REDSTONE))
+		registerSwordRecipes(ENERGY_SWORD_YELLOW, MaterialChoice(COAL))
+		registerSwordRecipes(ENERGY_SWORD_GREEN, MaterialChoice(EMERALD))
+		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.getValue().constructItemStack()))
+		registerSwordRecipes(ENERGY_SWORD_ORANGE, MaterialChoice(COPPER_INGOT))
+		registerSwordRecipes(ENERGY_SWORD_PINK, MaterialChoice(PINK_TULIP))
+
+		// Food
+		shapeless("cheeseburger", CHEESEBURGER.getValue().constructItemStack(), CraftingBookCategory.MISC, ItemStack(Material.BREAD), TOMATO.getValue().constructItemStack(), LETTUCE.getValue().constructItemStack(), CHEESE.getValue().constructItemStack(), COOKED_GROUND_BEEF.getValue().constructItemStack())
+		shaped("pepperoni_pizza", PEPPERONI_PIZZA.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			shape("sss", "ctc", "www")
+
+			setIngredient('w', WHEAT)
+			setIngredient('c', CHEESE)
+			setIngredient('t', TOMATO)
+			setIngredient('s', SALAMI)
+		}
+		shapeless(
+			"cheese_bucket",
+			CHEESE_BUCKET.getValue().constructItemStack(),
+			CraftingBookCategory.MISC,
+			MILK_BUCKET,
+			Material.WHEAT_SEEDS
+		)
+		shapeless("ice_cream_mixture", ICE_CREAM_MIXTURE.getValue().constructItemStack(), CraftingBookCategory.MISC, MILK_BUCKET, SUGAR, ICE)
+		shapeless("nutrient_cube", NUTRIENT_CUBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(ROTTEN_FLESH))
+			addIngredient(MaterialChoice(ROTTEN_FLESH))
+		}
+		shapeless("vegetarian_nutrient_cube", VEGETARIAN_NUTRIENT_CUBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(WHEAT))
+			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
+			addIngredient(MaterialChoice(SAPLING_TYPES.toList()))
+		}
+		shapeless("salad", result = SALAD.getValue().constructItemStack(), CraftingBookCategory.MISC, LETTUCE.getValue().constructItemStack(4), ItemStack(BOWL))
+		shapeless("mushroom_skewer", MUSHROOM_SKEWER.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(MaterialChoice(STICK))
+			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
+			addIngredient(MaterialChoice(MUSHROOM_TYPES.toList()))
+		}
+		shapeless("tomato_soup", TOMATO_SOUP.getValue().constructItemStack(), CraftingBookCategory.MISC) {
+			addIngredient(ExactChoice(TOMATO.getValue().constructItemStack()))
+			addIngredient(MaterialChoice(BOWL))
+		}
+
+		//Flowers and fauna
+
+		shaped("dandelion", ItemStack(Material.DANDELION, 8), CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.DANDELION)
+	    setIngredient('u', Material.SHORT_GRASS)
+        }
+
+		shaped("poppy", ItemStack(Material.POPPY, 8), CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.POPPY)
+	    setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8), CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.BLUE_ORCHID)
+	    setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("allium", ItemStack(Material.ALLIUM, 8), CraftingBookCategory.BUILDING) {
+	    shape("ppp", "pfp", "pup")
+
+	    setIngredient('p', Material.MANGROVE_PROPAGULE)
+	    setIngredient('f', Material.ALLIUM)
+	    setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.AZURE_BLUET)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("red_tulip", ItemStack(Material.RED_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.RED_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.PINK_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+		shaped("orange_tulip", ItemStack(Material.ORANGE_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.ORANGE_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.WHITE_TULIP)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.OXEYE_DAISY)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("cornflower", ItemStack(Material.CORNFLOWER, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.CORNFLOWER)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.LILY_OF_THE_VALLEY)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("sunflower", ItemStack(Material.SUNFLOWER, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.SUNFLOWER)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("lilac", ItemStack(Material.LILAC, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.LILAC)
+	      setIngredient('u', URANIUM)
+        }
+
+		shaped("rose_bush", ItemStack(Material.ROSE_BUSH, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+          setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.ROSE_BUSH)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("peony", ItemStack(Material.PEONY, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.PEONY)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.HANGING_ROOTS)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.STICK)
+	      setIngredient('f', Material.DEAD_BUSH)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("lily_pad", ItemStack(Material.LILY_PAD, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.LILY_PAD)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.RED_MUSHROOM)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.MANGROVE_PROPAGULE)
+	      setIngredient('f', Material.BROWN_MUSHROOM)
+	      setIngredient('u', Material.SHORT_GRASS)
+        }
+
+        shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8), CraftingBookCategory.BUILDING) {
+	      shape("ppp", "pfp", "pup")
+
+	      setIngredient('p', Material.CRYING_OBSIDIAN)
+	      setIngredient('f', Material.ROSE_BUSH)
+	      setIngredient('u', Material.SHORT_GRASS)
+      }
+	}
+
+	@EventHandler
+	fun onPlayerJoin(event: PlayerJoinEvent) {
+		event.player.discoverRecipes(listOfCustomRecipes)
 	}
 
 	private fun registerOreFurnaceRecipes() {
-		fun registerFurnaceRecipe(smelted: CustomItem, result: CustomItem) {
-			Bukkit.addRecipe(FurnaceRecipe(
-				NamespacedKey(IonServer, "${smelted.identifier.lowercase()}_smelting"),
-				result.constructItemStack(),
-				ExactChoice(smelted.constructItemStack()),
+		fun registerFurnaceRecipe(smelted: IonRegistryKey<CustomItem, out CustomItem>, result: IonRegistryKey<CustomItem, out CustomItem>, category: CookingBookCategory = CookingBookCategory.MISC) {
+			val furnaceRecipe = FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.key.lowercase()}_smelting"),
+				result.getValue().constructItemStack(),
+				ExactChoice(smelted.getValue().constructItemStack()),
 				0.5f,
 				200
-			))
+			)
+			furnaceRecipe.category = category
+			Bukkit.addRecipe(furnaceRecipe)
+			listOfCustomRecipes.add(furnaceRecipe.key)
 
-			Bukkit.addRecipe(BlastingRecipe(
-				NamespacedKey(IonServer, "${smelted.identifier.lowercase()}_blasting"),
-				result.constructItemStack(),
-				ExactChoice(smelted.constructItemStack()),
+			val blastingRecipe = BlastingRecipe(
+				NamespacedKey(IonServer, "${smelted.key.lowercase()}_blasting"),
+				result.getValue().constructItemStack(),
+				ExactChoice(smelted.getValue().constructItemStack()),
 				0.5f,
 				100
-			))
+			)
+			blastingRecipe.category = category
+			Bukkit.addRecipe(blastingRecipe)
+			listOfCustomRecipes.add(blastingRecipe.key)
 		}
 
-		fun registerOreType(rawType: CustomItem, oreType: CustomBlockItem, smeltedType: CustomItem) {
+		fun registerOreType(rawType: IonRegistryKey<CustomItem, out CustomItem>, oreType: IonRegistryKey<CustomItem, out CustomItem>, smeltedType: IonRegistryKey<CustomItem, out CustomItem>) {
 			registerFurnaceRecipe(rawType, smeltedType)
 			registerFurnaceRecipe(oreType, smeltedType)
 		}
@@ -842,115 +1222,214 @@ object Crafting : IonServerComponent() {
 		registerOreType(rawType = RAW_TITANIUM, oreType = TITANIUM_ORE, smeltedType = TITANIUM_INGOT)
 		registerOreType(rawType = RAW_URANIUM, oreType = URANIUM_ORE, smeltedType = URANIUM)
 		registerFurnaceRecipe(smelted = CHETHERITE_BLOCK, result = CHETHERITE)
+		registerFurnaceRecipe(smelted = SCORDITE_BLOCK, result = SCORDITE)
+		registerFurnaceRecipe(smelted = VANADIUM_BLOCK, result = VANADIUM)
+		registerFurnaceRecipe(smelted = ZIRCON_BLOCK, result = ZIRCON)
+		registerFurnaceRecipe(smelted = ATAVUM_BLOCK, result = ATAVUM)
+	}
+
+	private fun registerFoodFurnaceRecipes() {
+		// Custom item to custom item
+		fun registerFurnaceRecipe(smelted: IonRegistryKey<CustomItem, out CustomItem>, result: IonRegistryKey<CustomItem, out CustomItem>, category: CookingBookCategory = CookingBookCategory.FOOD) {
+			val furnaceRecipe = FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.key.lowercase()}_smelting"),
+				result.getValue().constructItemStack(),
+				ExactChoice(smelted.getValue().constructItemStack()),
+				0.5f,
+				200
+			)
+			furnaceRecipe.category = category
+			Bukkit.addRecipe(furnaceRecipe)
+			listOfCustomRecipes.add(furnaceRecipe.key)
+
+			val smokingRecipe = SmokingRecipe(
+				NamespacedKey(IonServer, "${smelted.key.lowercase()}_smoking"),
+				result.getValue().constructItemStack(),
+				ExactChoice(smelted.getValue().constructItemStack()),
+				0.5f,
+				100
+			)
+			smokingRecipe.category = category
+			Bukkit.addRecipe(smokingRecipe)
+			listOfCustomRecipes.add(smokingRecipe.key)
+		}
+
+		// Normal item to custom item
+		fun registerFurnaceRecipe(smelted: Material, result: IonRegistryKey<CustomItem, out CustomItem>, category: CookingBookCategory = CookingBookCategory.FOOD) {
+			val furnaceRecipe = FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.toString().lowercase()}_smelting"),
+				result.getValue().constructItemStack(),
+				MaterialChoice(smelted),
+				0.5f,
+				200
+			)
+			furnaceRecipe.category = category
+			Bukkit.addRecipe(furnaceRecipe)
+			listOfCustomRecipes.add(furnaceRecipe.key)
+
+			val smokingRecipe = SmokingRecipe(
+				NamespacedKey(IonServer, "${smelted.toString().lowercase()}_smoking"),
+				result.getValue().constructItemStack(),
+				MaterialChoice(smelted),
+				0.5f,
+				100
+			)
+			smokingRecipe.category = category
+			Bukkit.addRecipe(smokingRecipe)
+			listOfCustomRecipes.add(smokingRecipe.key)
+		}
+
+		registerFurnaceRecipe(EGG, HORIZON_FRIED_EGG)
+		registerFurnaceRecipe(GROUND_BEEF, COOKED_GROUND_BEEF)
+		registerFurnaceRecipe(PEPPERONI_PIZZA, COOKED_PEPPERONI_PIZZA)
 	}
 
 	private fun registerTools() {
-		shaped("wrench", WRENCH) {
+		shaped("wrench", WRENCH, CraftingBookCategory.EQUIPMENT) {
 			shape("a a", " a ", " a ")
 			setIngredient('a', IRON_INGOT)
+		}
+		shaped("multimeter", MULTIMETER, CraftingBookCategory.EQUIPMENT) {
+			shape("yry", "ycy", "yiy")
+			setIngredient('y', YELLOW_CONCRETE)
+			setIngredient('r', REDSTONE)
+			setIngredient('c', CIRCUITRY)
+			setIngredient('i', COPPER_INGOT)
 		}
 	}
 
 	private fun registerMisc() {
-		shaped("advanced_item_extractor", ADVANCED_ITEM_EXTRACTOR) {
+		shaped("advanced_item_extractor", ADVANCED_ITEM_EXTRACTOR, CraftingBookCategory.BUILDING) {
 			shape(" g ", "rcr", " g ")
 			setIngredient('c', CRAFTING_TABLE)
 			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
 			setIngredient('r', REDSTONE)
 		}
-		shaped("item_filter", ITEM_FILTER) {
+		shaped("item_filter", ITEM_FILTER, CraftingBookCategory.BUILDING) {
 			shape(" g ", "rhr", " g ")
 			setIngredient('h', HOPPER)
 			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
 			setIngredient('r', REDSTONE)
 		}
+		val blackDyeRecipe = FurnaceRecipe(
+			NamespacedKey(IonServer, "black_dye_smelting"),
+			ItemStack(BLACK_DYE),
+			MaterialChoice(CHARCOAL),
+			0.5f,
+			200
+		)
+		blackDyeRecipe.category = CookingBookCategory.MISC
+		Bukkit.addRecipe(blackDyeRecipe)
+		listOfCustomRecipes.add(blackDyeRecipe.key)
 	}
 
 	// Different names due to signature problems from type erasure
-	private fun shapedMaterial(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, Material>) {
+	private fun shapedMaterial(name: String, result: Material, shape1: String, shape2: String, shape3: String, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: Pair<Char, Material>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
+		recipe.category = category
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapedItemStack(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, ItemStack>) {
+	private fun shapedItemStack(name: String, result: Material, shape1: String, shape2: String, shape3: String, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: Pair<Char, ItemStack>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
+		recipe.category = category
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapedCustomItem(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, CustomItem>) {
+	private fun shapedCustomItem(name: String, result: Material, shape1: String, shape2: String, shape3: String, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: Pair<Char, IonRegistryKey<CustomItem, out CustomItem>>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
+		recipe.category = category
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shaped(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
+	private fun shaped(name: String, result: Material, category: CraftingBookCategory = CraftingBookCategory.MISC, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
+		recipe.category = category
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shaped(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit) {
+	private fun shaped(name: String, result: ItemStack, category: CraftingBookCategory = CraftingBookCategory.MISC, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), result)
+		recipe.category = category
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shaped(name: String, result: CustomItem, execute: ShapedRecipe.() -> Unit) {
-		val recipe = ShapedRecipe(NamespacedKeys.key(name), result.constructItemStack())
+	private fun shaped(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, category: CraftingBookCategory = CraftingBookCategory.MISC, execute: ShapedRecipe.() -> Unit) {
+		val recipe = ShapedRecipe(NamespacedKeys.key(name), result.getValue().constructItemStack())
+		recipe.category = category
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapeless(name: String, result: ItemStack, execute: ShapelessRecipe.() -> Unit) {
+	private fun shapeless(name: String, result: ItemStack, category: CraftingBookCategory = CraftingBookCategory.MISC, execute: ShapelessRecipe.() -> Unit) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
+		recipe.category = category
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapeless(name: String, result: CustomItem, execute: ShapelessRecipe.() -> Unit) {
-		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result.constructItemStack())
+	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, category: CraftingBookCategory = CraftingBookCategory.MISC, execute: ShapelessRecipe.() -> Unit) {
+		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result.getValue().constructItemStack())
+		recipe.category = category
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapeless(name: String, result: ItemStack, vararg ingredients: Material) {
+	private fun shapeless(name: String, result: ItemStack, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: Material) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		for (ingreidient in ingredients) {
-			recipe.addIngredient(RecipeChoice.MaterialChoice(ingreidient))
+			recipe.addIngredient(MaterialChoice(ingreidient))
 		}
+		recipe.category = category
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapeless(name: String, result: ItemStack, vararg ingredients: ItemStack) {
+	private fun shapeless(name: String, result: ItemStack, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: ItemStack) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		for (ingreidient in ingredients) {
 			recipe.addIngredient(ingreidient)
 		}
+		recipe.category = category
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun shapeless(name: String, result: ItemStack, vararg ingredients: CustomItem) {
+	private fun shapeless(name: String, result: ItemStack, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: IonRegistryKey<CustomItem, out CustomItem>) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		for (ingreidient in ingredients) {
-			recipe.addIngredient(ingreidient.constructItemStack())
+			recipe.addIngredient(ingreidient.getValue().constructItemStack())
 		}
+		recipe.category = category
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
-	private fun ShapedRecipe.setIngredient(key: Char, customItem: CustomItem) = setIngredient(key, customItem.constructItemStack())
+	private fun ShapedRecipe.setIngredient(key: Char, customItem: IonRegistryKey<CustomItem, out CustomItem>) = setIngredient(key, customItem.getValue().constructItemStack())
 
-	private fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: CustomItem) {
-		shapeless(blockItem.identifier.lowercase(), blockItem.constructItemStack()) {
-			addIngredient(ingotItem.constructItemStack(9))
+	private fun materialBlockRecipes(blockItem: IonRegistryKey<CustomItem, out CustomItem>, ingotItem: IonRegistryKey<CustomItem, out CustomItem>) {
+		shapeless(blockItem.key.lowercase(), blockItem.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
+			addIngredient(ingotItem.getValue().constructItemStack(9))
 		}
 
-		shapeless(ingotItem.identifier.lowercase(), ingotItem.constructItemStack(9)) {
-			addIngredient(blockItem.constructItemStack())
+		shapeless(ingotItem.key.lowercase(), ingotItem.getValue().constructItemStack(9)) {
+			addIngredient(blockItem.getValue().constructItemStack())
 		}
 	}
 }

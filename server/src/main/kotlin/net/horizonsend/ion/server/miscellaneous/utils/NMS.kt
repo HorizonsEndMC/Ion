@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.Block as MinecraftBlock
 import net.minecraft.world.level.block.Blocks
@@ -12,7 +13,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.craftbukkit.CraftChunk
 import org.bukkit.craftbukkit.block.data.CraftBlockData
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
 //region Access Extensions
 inline val BlockData.nms: BlockState get() = (this as CraftBlockData).state

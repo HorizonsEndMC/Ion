@@ -22,7 +22,7 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.util.*
+import java.util.Locale
 
 @CommandAlias("star")
 @CommandPermission("space.star")

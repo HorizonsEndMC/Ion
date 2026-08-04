@@ -45,3 +45,8 @@ fun getRelative(key: BlockKey, direction: BlockFace, distance: Int = 1): BlockKe
 	getY(key) + (direction.modY * distance),
 	getZ(key) + (direction.modZ * distance)
 )
+
+@Suppress("DEPRECATION")
+fun LongArray.toModernBlockKey() = LongArray(size) { val legacy = this[it]; toBlockKey(blockKeyX(legacy), blockKeyY(legacy), blockKeyZ(legacy)) }
+@Suppress("DEPRECATION")
+fun LongArray.toLegacyBlockKey() = LongArray(size) { val modern = this[it]; blockKey(getX(modern), getY(modern), getZ(modern)) }

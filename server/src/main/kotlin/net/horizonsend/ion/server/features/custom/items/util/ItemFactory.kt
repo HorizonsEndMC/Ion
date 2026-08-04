@@ -35,9 +35,10 @@ class ItemFactory private constructor(
 		return base
 	}
 
-	fun construct(modifier: Consumer<ItemStack>) {
+	fun construct(modifier: Consumer<ItemStack>): ItemStack {
 		val base = construct()
 		modifier.accept(base)
+		return base
 	}
 
 	class Builder() {
@@ -91,6 +92,13 @@ class ItemFactory private constructor(
 		fun <T: Any> addData(type: DataComponentType.Valued<T>, data: T): Builder {
 			this.itemModifiers += Consumer<ItemStack> {
 				it.setData(type, data)
+			}
+			return this
+		}
+
+		fun addData(type: DataComponentType.NonValued): Builder {
+			this.itemModifiers += Consumer<ItemStack> {
+				it.setData(type)
 			}
 			return this
 		}

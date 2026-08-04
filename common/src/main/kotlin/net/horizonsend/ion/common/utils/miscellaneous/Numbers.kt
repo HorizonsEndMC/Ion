@@ -54,7 +54,7 @@ inline fun Number.d(): Double = this.toDouble()
 @Suppress("NOTHING_TO_INLINE")
 inline fun Number.i(): Int = this.toInt()
 
-fun getDurationBreakdown(input: Long): String {
+fun getDurationBreakdownString(input: Long): String {
 	var millis: Long = input
 
 	if (millis < 0) {
@@ -73,6 +73,29 @@ fun getDurationBreakdown(input: Long): String {
 	val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(millis)
 
 	return "$days Days $hours Hours $minutes Minutes $seconds Seconds"
+}
+
+data class DurationBreakdown(val days: Long, val hours: Long, val minutes: Long, val seconds: Long)
+
+fun getDurationBreakdown(input: Long): DurationBreakdown {
+	var millis: Long = input
+
+	if (millis < 0) {
+		throw IllegalArgumentException("Duration must be greater than zero!")
+	}
+
+	val days: Long = TimeUnit.MILLISECONDS.toDays(millis)
+	millis -= TimeUnit.DAYS.toMillis(days)
+
+	val hours: Long = TimeUnit.MILLISECONDS.toHours(millis)
+	millis -= TimeUnit.HOURS.toMillis(hours)
+
+	val minutes: Long = TimeUnit.MILLISECONDS.toMinutes(millis)
+	millis -= TimeUnit.MINUTES.toMillis(minutes)
+
+	val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(millis)
+
+	return DurationBreakdown(days, hours, minutes, seconds)
 }
 
 fun testRandom(chance: Double, random: Random = ThreadLocalRandom.current().asKotlinRandom()): Boolean {

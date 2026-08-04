@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.economy.cargotrade
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
+import net.horizonsend.ion.server.core.IonServerComponent
 
 lateinit var balancing: ShipmentBalancing.ShipmentBalancingConfig
 

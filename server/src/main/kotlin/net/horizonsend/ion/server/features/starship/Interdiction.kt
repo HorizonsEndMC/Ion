@@ -3,16 +3,17 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.World
@@ -22,9 +23,9 @@ import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
 	fun toggleGravityWell(starship: ActiveStarship) {
-		if (StarshipCruising.isCruising(starship)) {
+		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 5000) {
 			starship.setIsInterdicting(false)
-			starship.userError("Cannot activate gravity well while cruising")
+			starship.userError("Ships smaller than 5000 blocks cannot activate gravity wells while cruising")
 			return
 		}
 
@@ -85,7 +86,7 @@ object Interdiction : IonServerComponent() {
 
 		val input = GravityWellMultiblock.getInput(sign)
 
-		if (LegacyItemUtils.getTotalItems(input, CHETHERITE.constructItemStack()) < 2) {
+		if (!input.containsAtLeast(CHETHERITE.getValue().constructItemStack(), 2)) {
 			player.userError(
 				"Not enough hypermatter in the dropper. Two chetherite shards are required!"
 			)
@@ -109,7 +110,7 @@ object Interdiction : IonServerComponent() {
 			}
 		}
 
-		input.removeItem(CHETHERITE.constructItemStack().asQuantity(2))
+		input.removeItem(CHETHERITE.getValue().constructItemStack().asQuantity(2))
 		starship.onlinePassengers.forEach { passenger ->
 			passenger.alert("Gravity pulse has been invoked by ${player.name}.")
 		}
@@ -119,13 +120,12 @@ object Interdiction : IonServerComponent() {
 		.filter { it.isIntact() }
 		.lastOrNull()
 
+	fun findDisruptor(starship: ActiveStarship): DisruptorSubsystem? = starship.warpDisruptors.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
+
 	fun starshipInterdictionRangeEquation(starship: Starship): Double {
-		if (starship.type == StarshipType.SPEEDER ||
-			starship.type == StarshipType.STARFIGHTER ||
-			starship.type == StarshipType.INTERCEPTOR ||
-			starship.type == StarshipType.SHUTTLE ||
-			starship.type == StarshipType.PLATFORM) return 10.0
-		return if (starship.type.typeCategory == TypeCategory.WAR_SHIP) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
-		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
+		if (starship.type == StarshipType.PLATFORM) return 1.0
+		return starship.type.balancing.interdictionRange.toDouble()
 	}
 }

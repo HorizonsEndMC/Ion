@@ -21,6 +21,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache.SpaceStationPermission
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.litote.kmongo.Id
@@ -68,6 +69,9 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 	fun rename(newName: String) = companion.rename(databaseId, newName)
 
 	fun changeRadius(newRadius: Int) = companion.setRadius(databaseId, newRadius)
+	fun contains(otherX: Int, otherZ: Int): Boolean {
+		return distanceSquared(x, 0, z, otherX, 0, otherZ) <= radius * radius
+	}
 
 	fun isTrusted(id: SLPlayerId): Boolean = trustedPlayers.contains(id)
 	fun isSettlementTrusted(id: Oid<Settlement>): Boolean = trustedSettlements.contains(id)

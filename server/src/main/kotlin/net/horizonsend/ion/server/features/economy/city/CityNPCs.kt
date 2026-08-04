@@ -7,8 +7,8 @@ import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
@@ -128,10 +128,10 @@ object CityNPCs : IonServerComponent(true) {
 					preCheck@{
 						if (!spawned.add(info.id)) {
 							log.warn("Spawn task called more than once for city NPC $info")
-							return@preCheck true
+							return@preCheck false
 						}
 
-						false
+						true
 					}
 				) { npc ->
 					npc.getOrAddTrait(SkinTrait::class.java).apply {

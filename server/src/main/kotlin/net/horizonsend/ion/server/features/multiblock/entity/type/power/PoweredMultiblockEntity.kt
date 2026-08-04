@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataType
 
@@ -20,7 +20,7 @@ interface PoweredMultiblockEntity {
 	/**
 	 * Registers power inputs on all blocks adjacent to the sign location
 	 **/
-	fun InputsData.Builder.registerSignInputs(): InputsData.Builder {
+	fun IOData.Builder.registerSignInputs(): IOData.Builder {
 		addPowerInput(0, -1, -1)
 		addPowerInput(0, 1, -1)
 		addPowerInput(1, 0, -1)

@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -42,7 +42,7 @@ abstract class SimplePoweredEntity(
 		{ PowerEntityDisplayModule(it, entity) }
 	)
 
-	override val inputsData: InputsData = InputsData.Builder(this)
+	override val ioData: IOData = IOData.Builder(this)
 		.addPowerInput(0, -1, 0)
 		.registerSignInputs()
 		.build()

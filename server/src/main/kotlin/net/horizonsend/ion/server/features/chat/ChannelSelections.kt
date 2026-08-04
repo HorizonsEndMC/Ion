@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.chat
 
-import net.horizonsend.ion.common.utils.Mutes.muteCache
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -33,6 +33,10 @@ object ChannelSelections : IonServerComponent() {
 			localCache[playerId] = get(redisKey(playerId))?.let { enumValueOfOrNull<ChatChannel>(it) } ?: ChatChannel.GLOBAL
 		}
 	}
+
+	private val temporaryChannelSelections: MutableMap<UUID, ChatChannel> = mutableMapOf()
+
+	fun consumeTemporaryChannel(playerID: UUID): ChatChannel? = temporaryChannelSelections.remove(playerID)
 
 	override fun onEnable() {
 		listen<AsyncPlayerPreLoginEvent>(EventPriority.MONITOR, ignoreCancelled = true) { event ->
@@ -63,19 +67,26 @@ object ChannelSelections : IonServerComponent() {
 			ChatChannel.entries.firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true
 
-				val playerID: UUID = player.uniqueId
-
 				val oldChannel = get(player)
 
 				if (args.size > 1) {
-					if (muteCache[playerID]) return@let
+					val playerID: UUID = player.uniqueId
+					ServerMutesHook.checkMute(playerID).whenComplete { muted, exception ->
+						if (exception != null) throw exception
 
-					localCache[playerID] = channel
-					try {
-						player.chat(message.removePrefix("/").removePrefix("$command "))
-					} finally {
-						localCache[playerID] = oldChannel
+						if (muted) return@whenComplete
+
+						Tasks.sync {
+							localCache[playerID] = channel
+							temporaryChannelSelections[playerID] = channel
+							try {
+								player.chat(message.removePrefix("/").removePrefix("$command "))
+							} finally {
+								localCache[playerID] = oldChannel
+							}
+						}
 					}
+
 					return@let
 				}
 

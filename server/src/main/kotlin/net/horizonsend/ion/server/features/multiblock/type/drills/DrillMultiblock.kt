@@ -6,8 +6,9 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -22,7 +23,7 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -136,7 +137,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 		override val userManager: UserManager = UserManager(data, persistent = true)
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
-		override val inputsData: InputsData = InputsData.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			.registerSignInputs()
 			.addPowerInput(if (multiblock.mirrored) -1 else 1, 0, 0)
 			.build()
@@ -160,6 +161,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 			if (CombatTimer.isPvpCombatTagged(player)) {
 				player.userError("Cannot enable drills while in combat")
+				disable()
 				return
 			}
 
@@ -184,23 +186,24 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 			val toDestroy = getBlocksToDestroy()
 
-			// set to 1 block broken per furnace tick in space
-			val maxBroken = if (!inSpace) 10 else 1
+			// set to 5 block broken per furnace tick in space, halving so cobble gens can exist in space,still worse than ML by far.
+			val maxBroken = if (!inSpace) 10 else 5
 
 			val broken = breakBlocks(
-				maxBroken,
-				toDestroy,
-				getInventory(if (multiblock.mirrored) +1 else -1, 0, 0) ?: return run {
+				maxBroken = maxBroken,
+				toDestroy = toDestroy,
+				output = getInventory(if (multiblock.mirrored) +1 else -1, 0, 0) ?: return run {
 					player.userError("Drill output inventory destroyed")
 					disable()
 				},
-				{
+				canBuild = {
 					val testEvent = BlockBreakEvent(it, player)
+					CustomBlockListeners.noDropEvents.add(testEvent)
 					testEvent.isDropItems = false
 
 					return@breakBlocks testEvent.callEvent()
 				},
-				{
+				cancel = {
 					player.userErrorSubtitle("Not enough space.")
 					disable()
 				}
@@ -264,7 +267,8 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 		private val blacklist = EnumSet.of(
 			Material.BARRIER,
 			Material.BEDROCK,
-			Material.VOID_AIR
+			Material.VOID_AIR,
+			Material.REINFORCED_DEEPSLATE
 		)
 
 		fun isBlacklisted(block: Block): Boolean {
@@ -273,10 +277,11 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 		fun breakBlocks(
 			maxBroken: Int,
-			toDestroy: MutableList<Block>,
+			toDestroy: Collection<Block>,
 			output: Inventory,
 			canBuild: (Block) -> Boolean,
-			cancel: () -> Unit
+			cancel: () -> Unit,
+			blockDropConsumer: (Block, Collection<ItemStack>) -> Unit = { _, _ -> }
 		): Int {
 			var broken = 0
 
@@ -285,7 +290,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 					continue
 				}
 
-				val customBlock = CustomBlocks.getByBlock(block)
+				val customBlock = block.customBlock
 				var drops = customBlock?.drops?.getDrops(null, false) ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
 
 				if (block.type.isShulkerBox) drops = listOf()
@@ -301,6 +306,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 						return broken
 					}
 
+					blockDropConsumer.invoke(block, drops)
 					LegacyItemUtils.addToInventory(output, item)
 				}
 

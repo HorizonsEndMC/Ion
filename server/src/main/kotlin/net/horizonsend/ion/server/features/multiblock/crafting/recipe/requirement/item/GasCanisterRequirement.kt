@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
@@ -30,7 +30,7 @@ class GasCanisterRequirement(val gas: Gas, val amount: Int) : ItemRequirement {
 		}
 		else if (environment is GasFurnaceEnviornment) {
 			item.amount = 0
-			environment.discardInventory.addItem(GAS_CANISTER_EMPTY.constructItemStack())
+			environment.discardInventory.addItem(GAS_CANISTER_EMPTY.getValue().constructItemStack())
 		}
 	}
 }

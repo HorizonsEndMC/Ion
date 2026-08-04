@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -17,11 +19,12 @@ abstract class ShieldSubsystem(
 	sign: Sign,
 	multiblock: ShieldMultiblock
 ) : AbstractMultiblockSubsystem<ShieldMultiblock>(starship, sign, multiblock) {
-	val name: String = sign.getLine(2).stripColor()
+	val name: String = sign.front().line(2).plainText()
+	var destroyed: Boolean = false
 
 	open val maxPower: Int = (starship.initialBlockCount.d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 		get() = if (starship.shields.size > starship.maxShields) {
-			(field * ((starship.maxShields / starship.shields.size) * starship.balancing.shieldPowerMultiplier)).toInt()
+			(field * ((starship.maxShields.toDouble() / starship.shields.size) * starship.balancing.shieldPowerMultiplier)).toInt()
 		}
 		else {
 			(field * starship.balancing.shieldPowerMultiplier).toInt()
@@ -29,6 +32,15 @@ abstract class ShieldSubsystem(
 
 	// Abstract so max power can be safely overriden
 	abstract var power: Int
+
+	var pastPower : Int = maxPower
+		set(value) {field = value.coerceIn(0, maxPower)}
+
+
+	var recentDamage : Double = 0.0
+		set(value) {
+			field = value.coerceIn(0.0, maxPower.toDouble())
+		}
 
 	var isReinforcementEnabled = multiblock.isReinforced
 

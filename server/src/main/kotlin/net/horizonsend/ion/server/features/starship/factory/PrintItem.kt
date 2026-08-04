@@ -4,10 +4,11 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.minecraft.world.level.block.WallBannerBlock
 import org.bukkit.Material
+import org.bukkit.block.Banner
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.WallSign
@@ -40,10 +41,10 @@ data class PrintItem(val itemString: String) {
 		}
 
 		private fun findPrintItem(data: BlockData): PrintItem? {
-			val customBlock = CustomBlocks.getByBlockData(data)
+			val customBlock = data.customBlock
 			when {
 				customBlock != null -> {
-					val customItem = CustomItemRegistry.getByIdentifier(customBlock.identifier) ?: return null
+					val customItem = customBlock.customItem
 					return PrintItem(customItem)
 				}
 
@@ -75,6 +76,31 @@ data class PrintItem(val itemString: String) {
 
 				data.material == Material.REDSTONE_WALL_TORCH -> {
 					return PrintItem(Material.REDSTONE_TORCH)
+				}
+
+				data.material == Material.COPPER_WALL_TORCH -> {
+					return PrintItem(Material.COPPER_TORCH)
+				}
+
+				data.material.name.contains("WALL_BANNER") -> {
+					val itemMat = Material.getMaterial(data.material.name.replace("WALL_BANNER", "BANNER"))
+					checkNotNull(itemMat)
+					return PrintItem(itemMat)
+				}
+
+				data.material.name.startsWith("POTTED_") -> {
+					val plantName = data.material.name.removePrefix("POTTED_")
+
+					val itemMat =
+						Material.getMaterial(plantName)
+							?: Material.getMaterial(plantName.removeSuffix("_BUSH"))
+
+					if (itemMat == null) {
+						log.warn("No item material for potted block ${data.material}; tried $plantName")
+						return null
+					}
+
+					return PrintItem(itemMat)
 				}
 
 				else -> {

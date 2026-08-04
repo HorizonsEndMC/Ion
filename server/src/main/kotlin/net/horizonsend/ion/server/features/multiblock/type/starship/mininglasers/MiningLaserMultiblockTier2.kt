@@ -21,9 +21,9 @@ sealed class MiningLaserMultiblockTier2 : MiningLaserMultiblock() {
 	override val maxPower: Int = 300000
 	override val beamOrigin = Triple(0, 3, 1)
 	final override val range: Double = 110.0
-	final override val mineRadius = 5
+	final override val mineRadius = 7
 	override val beamCount: Int = 3
-	override val maxBroken: Int = 13
+	override val maxBroken: Int = 15
 	override val sound: String = "horizonsend:starship.weapon.mining_laser.t2_loop"
 
 	override val tier: Int = 2
@@ -270,6 +270,7 @@ object MiningLaserMultiblockTier2Bottom : MiningLaserMultiblockTier2() {
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -5, +1)
 	override val outputOffset: Vec3i = Vec3i(-1, +1, 0)
+	override val isBottom: Boolean = true
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -386,6 +387,7 @@ object MiningLaserMultiblockTier2BottomMirrored : MiningLaserMultiblockTier2() {
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -5, -2)
 	override val outputOffset: Vec3i = Vec3i(+1, +1, 0)
+	override val isBottom: Boolean = true
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -622,7 +624,7 @@ object MiningLaserMultiblockTier2SideMirrored : MiningLaserMultiblockTier2() {
 
 	override val outputOffset: Vec3i = Vec3i(+1, -1, 0)
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, -7)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +7)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

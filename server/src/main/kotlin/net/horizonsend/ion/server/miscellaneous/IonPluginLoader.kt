@@ -11,7 +11,7 @@ class IonPluginLoader : PluginLoader {
 	override fun classloader(classpathBuilder: PluginClasspathBuilder) {
 		val resolver = MavenLibraryResolver()
 		resolver.addRepository(RemoteRepository.Builder("xenondevs", "default", "https://repo.xenondevs.xyz/releases/").build())
-		resolver.addDependency(Dependency(DefaultArtifact("xyz.xenondevs.invui:invui:pom:1.43"), null))
+		resolver.addDependency(Dependency(DefaultArtifact("xyz.xenondevs.invui:invui:pom:1.49"), null))
 
 		classpathBuilder.addLibrary(resolver)
 	}

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.player
 
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.damager.damager
@@ -20,8 +21,6 @@ abstract class PlayerController(
 	val player: Player,
 	starship: ActiveStarship, name: String
 ) : Controller(player.damager(), starship, name) {
-	override val yaw: Float get() = player.location.yaw
-	override val pitch: Float get() = player.location.pitch
 
 	override fun getColor(): Color {
 		if (starship.rainbowToggle) {
@@ -32,16 +31,20 @@ abstract class PlayerController(
 		return PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.getColor()
 	}
 
-	override fun canDestroyBlock(block: Block): Boolean = BlockBreakEvent(block, player).callEvent()
+	override fun canDestroyBlock(block: Block): Boolean {
+		val event = BlockBreakEvent(block, player)
+		CustomBlockListeners.noDropEvents.add(event)
+		return event.callEvent()
+	}
 
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block) =
 		BlockPlaceEvent(block, block.state, placedAgainst, player.activeItem, player, true, EquipmentSlot.HAND).callEvent()
 
 	override fun audience(): Audience = player
 
+	override val pilotName: Component get() = player.displayName()
+
 	override fun toString(): String {
 		return "$name [${player.name}]"
 	}
-
-	override fun getPilotName(): Component = player.displayName()
 }

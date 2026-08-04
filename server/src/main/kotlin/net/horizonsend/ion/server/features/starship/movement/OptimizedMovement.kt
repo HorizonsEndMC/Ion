@@ -1,8 +1,14 @@
 package net.horizonsend.ion.server.features.starship.movement
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet
+import it.unimi.dsi.fastutil.shorts.ShortSet
+import net.horizonsend.ion.server.features.starship.BlockingBypass
 import net.horizonsend.ion.server.features.starship.Hangars
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -14,21 +20,28 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
+import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.level.ChunkHolder
+import net.minecraft.world.entity.ai.village.poi.PoiTypes
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
-import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.BushBlock
+import net.minecraft.world.level.block.VegetationBlock
+import net.minecraft.world.level.block.CropBlock
 import net.minecraft.world.level.block.DoublePlantBlock
+import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.FungusBlock
 import net.minecraft.world.level.block.GlowLichenBlock
 import net.minecraft.world.level.block.GrowingPlantBlock
 import net.minecraft.world.level.block.LeavesBlock
 import net.minecraft.world.level.block.LiquidBlock
 import net.minecraft.world.level.block.NetherPortalBlock
+import net.minecraft.world.level.block.SeaPickleBlock
 import net.minecraft.world.level.block.StainedGlassBlock
+import net.minecraft.world.level.block.SugarCaneBlock
 import net.minecraft.world.level.block.VineBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
@@ -39,22 +52,79 @@ import org.bukkit.Material
 import org.bukkit.World
 import java.util.LinkedList
 import java.util.concurrent.ExecutionException
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
+/**
+ * High-performance starship block movement pipeline.
+ *
+ * This utility moves large sets of blocks by working directly with chunk sections
+ * and NMS block state data instead of using Bukkit's normal per-block mutation
+ * APIs. The movement flow is:
+ *
+ * 1. Group source and destination positions by chunk section.
+ * 2. Check destination-only positions for collisions.
+ * 3. Capture source block states and block entities.
+ * 4. Remove source blocks.
+ * 5. Dissipate any hangar-like obstructing blocks in the destination.
+ * 6. Place transformed block states at their new positions.
+ * 7. Restore moved block entities.
+ * 8. Relight affected chunks and broadcast section deltas to players.
+ *
+ * This class is intentionally low-level and version-sensitive. It relies on NMS
+ * chunk internals and manual chunk-holder dirty tracking in order to avoid the
+ * cost of ordinary block placement for large starship moves.
+ *
+ * Version note:
+ * This implementation depends on Paper/NMS chunk internals and may require
+ * maintenance when Mojang mappings or Paper chunk-holder internals change.
+ */
 object OptimizedMovement {
-	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW)
-		.map { it.createBlockData().nms }
-		.toSet()
+	/**
+	 * Block states that are ignored during collision checks.
+	 *
+	 * These are destination contents that a moving starship may safely overwrite
+	 * without being considered blocked.
+	 */
+	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW).mapTo(ObjectOpenHashSet()) { it.createBlockData().nms }
 
+	/**
+	 * Moves a starship's blocks from one position set to another.
+	 *
+	 * The caller supplies matching source and destination position arrays where each
+	 * index represents one moved block. The source block state at index `i` is read,
+	 * optionally transformed, and placed at destination index `i`.
+	 *
+	 * This method performs the move synchronously on the main thread through
+	 * [Tasks.syncBlocking], because chunk mutation, lighting, and block entity
+	 * registration must occur in the live world thread.
+	 *
+	 * The move pipeline is:
+	 * - build source, destination, and collision chunk maps
+	 * - validate destination collisions
+	 * - capture and remove source blocks
+	 * - dissipate hangar-like destination blocks
+	 * - place transformed destination blocks
+	 * - invoke the supplied callback
+	 * - broadcast the recorded chunk changes to players
+	 *
+	 * @param executionCheck guard used to abort the move immediately before mutation
+	 * @param currentWorld world containing the source blocks
+	 * @param newWorld world containing the destination blocks
+	 * @param oldPositionArray packed source block positions
+	 * @param newPositionArray packed destination block positions
+	 * @param blockStateTransform transformation applied to each captured source block state before placement
+	 * @param chunkCache reusable chunk cache for repeated NMS chunk lookups
+	 * @param callback invoked after block placement and before client update broadcasting
+	 *
+	 * @throws StarshipBlockedException if a destination block cannot be overwritten
+	 */
 	fun moveStarship(
-		starship: ActiveStarship,
-		world1: World,
-		world2: World,
+		executionCheck: () -> Boolean,
+		currentWorld: World,
+		newWorld: World,
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
-		blockDataTransform: (BlockState) -> BlockState,
+		blockStateTransform: (BlockState) -> BlockState,
+		chunkCache: ChunkCache = Object2ObjectOpenHashMap(),
 		callback: () -> Unit
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -68,50 +138,62 @@ object OptimizedMovement {
 
 		try {
 			Tasks.syncBlocking {
-				if (!ActiveStarships.isActive(starship)) {
+				if (!executionCheck.invoke()) {
 					return@syncBlocking
 				}
 
-				checkForCollision(world2, collisionChunkMap, hangars, newPositionArray)
+				checkForCollision(newWorld, collisionChunkMap, chunkCache, hangars, oldPositionArray, newPositionArray)
 
 				processOldBlocks(
 					oldChunkMap,
-					world1,
-					world2,
+					currentWorld,
+					chunkCache,
 					capturedStates,
 					capturedTiles
 				)
 
-				dissipateHangarBlocks(world2, hangars)
+				dissipateHangarBlocks(newWorld, hangars)
 
 				processNewBlocks(
 					newPositionArray,
 					newChunkMap,
-					world1,
-					world2,
+					newWorld,
+					chunkCache,
 					capturedStates,
 					capturedTiles,
-					blockDataTransform
+					blockStateTransform
 				)
 
 				callback()
 
-				sendChunkUpdatesToPlayers(world1, world2, oldChunkMap, newChunkMap)
+				sendChunkUpdatesToPlayers(currentWorld, newWorld, chunkCache, oldChunkMap, newChunkMap)
 			}
 		} catch (e: ExecutionException) {
 			throw e.cause ?: e
 		}
 	}
 
+	/**
+	 * Validates destination positions that are not already occupied by the moving ship.
+	 *
+	 * Only positions present in the destination map but absent from the source map are
+	 * checked here. If a destination block is not pass-through, not a dissipatable
+	 * hangar block, and not allowed by [BlockingBypass], the move is aborted with a
+	 * [StarshipBlockedException].
+	 *
+	 * Hangar-like blocks that can be cleared are collected into [hangars] for later
+	 * dissipation after the source blocks have been removed.
+	 */
 	private fun checkForCollision(
 		world: World,
 		collisionChunkMap: ChunkMap,
+		chunkCache: ChunkCache,
 		hangars: LinkedList<Long>,
+		oldPositionArray: LongArray,
 		newPositionArray: LongArray
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
-			val chunk = world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.minecraft
+			val nmsChunk = getNMSChunk(world, chunkKey, chunkCache)
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.sections[sectionKey]
@@ -130,7 +212,7 @@ object OptimizedMovement {
 					val blockData = section.getBlockState(localX, localY, localZ)
 
 					if (!passThroughBlocks.contains(blockData)) {
-						if (!isHangar(blockData)) {
+						if (!isHangar(blockData) && !BlockingBypass.objectIsSmallEnough(oldPositionArray, blockKey, world)) {
 							throw StarshipBlockedException(Vec3i(x, y, z), blockData)
 						}
 
@@ -141,41 +223,76 @@ object OptimizedMovement {
 		}
 	}
 
+	/**
+	 * Returns whether a destination block should be treated as a dissipatable hangar-style obstruction
+	 * rather than a hard collision.
+	 *
+	 * These are generally fragile or soft world blocks that starships are allowed to
+	 * clear during movement instead of treating them as blocking terrain.
+	 */
 	private fun isHangar(newBlockData: BlockState) =
-		newBlockData.block is StainedGlassBlock ||
-			newBlockData.block is NetherPortalBlock ||
-			newBlockData.block is LiquidBlock ||
-			newBlockData.block is BushBlock || // most types of crop/grass blocks
-			newBlockData.block is VineBlock || // normal vines
-			newBlockData.block is GrowingPlantBlock || // twisted vines on Luxiterna, kelp, etc.
-			newBlockData.block is LeavesBlock ||
-			newBlockData.block is BaseCoralPlantTypeBlock ||
-			newBlockData.block is BambooSaplingBlock ||
-			newBlockData.block is BambooStalkBlock ||
-			newBlockData.block is FungusBlock ||
-			newBlockData.block is DoublePlantBlock ||
-			newBlockData.block is GlowLichenBlock
+		newBlockData.block is StainedGlassBlock
+		|| newBlockData.block is NetherPortalBlock
+		|| newBlockData.block is LiquidBlock
+		|| newBlockData.block is VegetationBlock // flowers, grass, ferns, sweet berry bushes, etc. It probably covers/overlaps some that are stated individually.
+		|| newBlockData.block is VineBlock // normal vines
+		|| newBlockData.block is GrowingPlantBlock // twisted vines on Luxiterna, kelp, etc.
+		|| newBlockData.block is LeavesBlock
+		|| newBlockData.block is BaseCoralPlantTypeBlock
+		|| newBlockData.block is BambooSaplingBlock
+		|| newBlockData.block is BambooStalkBlock
+		|| newBlockData.block is FungusBlock
+		|| newBlockData.block is DoublePlantBlock
+		|| newBlockData.block is GlowLichenBlock
+		|| newBlockData.block is CropBlock
+		|| newBlockData.block is SugarCaneBlock
 
-	private fun dissipateHangarBlocks(world2: World, hangars: LinkedList<Long>) {
+	/**
+	 * Removes hangar-style destination obstructions collected during collision checks.
+	 *
+	 * This is performed after source blocks have been captured and removed, but before
+	 * the moved blocks are placed into their destination positions.
+	 */
+	private fun dissipateHangarBlocks(newWorld: World, hangars: LinkedList<Long>) {
 		for (blockKey in hangars.iterator()) {
-			Hangars.dissipateBlock(world2, blockKey)
+			Hangars.dissipateBlock(newWorld, blockKey)
 		}
 	}
 
+	/**
+	 * Shared NMS air state used when clearing source positions.
+	 */
 	val AIR: BlockState = Blocks.AIR.defaultBlockState()
 
+	/**
+	 * Captures and removes all source blocks from their original positions.
+	 *
+	 * For each source position this method:
+	 * - reads the current block state into [capturedStates]
+	 * - captures block entity data when the block owns a tile entity
+	 * - marks the block position as changed for later chunk-holder broadcasting
+	 * - emits a world block-update notification
+	 * - writes air directly into the backing chunk section
+	 *
+	 * After section edits are complete, the affected chunks are re-primed for
+	 * heightmaps, marked unsaved, and queued for relighting.
+	 *
+	 * This method intentionally edits chunk sections directly for speed instead of
+	 * using ordinary Bukkit block placement.
+	 */
 	private fun processOldBlocks(
 		oldChunkMap: ChunkMap,
-		world1: World,
-		world2: World,
+		currentWorld: World,
+		chunkCache: ChunkCache,
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>
 	) {
-		val lightModule = world1.minecraft.lightEngine
+		val lightModule = currentWorld.minecraft.lightEngine
+		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
-			val chunk = world1.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.minecraft
+			val nmsChunk = getNMSChunk(currentWorld, chunkKey, chunkCache)
+			relightChunks.add(nmsChunk.pos)
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.getSection(sectionKey)
@@ -193,38 +310,65 @@ object OptimizedMovement {
 					capturedStates[index] = type
 
 					val blockPos = BlockPos(x, y, z)
-					if (type.block is BaseEntityBlock) {
+					if (type.block is EntityBlock) {
 						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
-					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
-					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
+					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
 
+					// The "POI data mismatch" error may originate from this part of the code (along with the similar
+					// section in processNewBlocks()). Claude says that it was because sendBlockUpdated() was called
+					// before setBlockState(), and that the POI manager is called somewhere in sendBlockUpdated().
+					// Supposedly, setting the block state before broadcasting the update, and updating the
+					// POI manager of any changed block entities would fix the issue. I get that this is vibe coded
+					// to hell, but I'm not being paid to understand NMS code. This will be tested thoroughly on non-prod.
 					section.setBlockState(localX, localY, localZ, AIR, false)
-
-					lightModule.checkBlock(BlockPos(x, y, z)) // Lighting is not cringe
+					PoiTypes.forState(type).ifPresent { _ ->
+						nmsChunk.level.poiManager.remove(blockPos)
+					}
+					//nmsChunk.level.sendBlockUpdated(blockPos, type, AIR, Block.UPDATE_ALL)
+//					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
+
+//				lightModule.updateSectionStatus(SectionPos.of(chunk.x, sectionKey, chunk.z), false)
 			}
 
 			updateHeightMaps(nmsChunk)
 			nmsChunk.markUnsaved()
 		}
+
+		lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
 	}
 
+	/**
+	 * Places the moved blocks into their destination positions and restores block entities.
+	 *
+	 * For each destination position this method:
+	 * - takes the captured source block state at the same array index
+	 * - applies [blockDataTransform]
+	 * - marks the destination position as changed for later chunk-holder broadcasting
+	 * - emits a world block-update notification
+	 * - writes the transformed state directly into the destination chunk section
+	 *
+	 * After block placement, affected chunks are re-primed for heightmaps, marked
+	 * unsaved, relit, and any captured block entities are reloaded and registered
+	 * at their new positions.
+	 */
 	private fun processNewBlocks(
 		newPositionArray: LongArray,
 		newChunkMap: ChunkMap,
-		world1: World,
-		world2: World,
+		newWorld: World,
+		chunkCache: ChunkCache,
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		blockDataTransform: (BlockState) -> BlockState
 	) {
-		val lightModule = world2.minecraft.lightEngine
+		val lightModule = newWorld.minecraft.lightEngine
+		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
-			val chunk = world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.minecraft
+			val nmsChunk = getNMSChunk(newWorld, chunkKey, chunkCache)
+			relightChunks.add(nmsChunk.pos)
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.getSection(sectionKey)
@@ -242,17 +386,26 @@ object OptimizedMovement {
 					val data = blockDataTransform(capturedStates[index])
 
 					val blockPos = BlockPos(x, y, z)
-					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
-					nmsChunk.level.onBlockStateChange(blockPos, AIR /*TODO hangars */, data)
+					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
 
 					section.setBlockState(localX, localY, localZ, data, false)
-					lightModule.checkBlock(BlockPos(x, y, z))
+					PoiTypes.forState(data).ifPresent { poiTypeHolder ->
+						nmsChunk.level.poiManager.add(blockPos, poiTypeHolder)
+					}
+
+					//nmsChunk.level.sendBlockUpdated(blockPos, AIR /*TODO hangars */, data, Block.UPDATE_ALL)
+
+//					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
 				}
+
+//				lightModule.updateSectionStatus(SectionPos.of(chunk.x, sectionKey, chunk.z), false)
 			}
 
 			updateHeightMaps(nmsChunk)
 			nmsChunk.markUnsaved()
 		}
+
+		lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
 
 		for ((index, tile) in capturedTiles) {
 			val blockKey = newPositionArray[index]
@@ -261,19 +414,35 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 
 			val newPos = BlockPos(x, y, z)
-			val chunk = world2.getChunkAt(x shr 4, z shr 4)
+			val chunk = newWorld.getChunkAt(x shr 4, z shr 4)
 
 			val data = blockDataTransform(tile.first)
 
-			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second, world2.minecraft.registryAccess()) ?: continue
+			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second, newWorld.minecraft.registryAccess()) ?: continue
 			chunk.minecraft.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
 
+	/**
+	 * Rebuilds all existing heightmaps for a chunk after direct section edits.
+	 *
+	 * This is required because OptimizedMovement bypasses the normal block placement
+	 * pipeline and therefore must refresh chunk-derived height data manually.
+	 */
 	fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
 		Heightmap.primeHeightmaps(nmsLevelChunk, nmsLevelChunk.heightmaps.keys)
 	}
 
+	/**
+	 * Captures block entity state for a moved source block and removes the original block entity.
+	 *
+	 * The saved pair contains:
+	 * - the block state originally associated with the block entity
+	 * - the full serialized NBT required to recreate it later
+	 *
+	 * Captured entries are keyed by the movement array index so they can be restored
+	 * at the matching destination position after block placement.
+	 */
 	private fun processOldTile(
 		blockPos: BlockPos,
 		chunk: LevelChunk,
@@ -286,8 +455,19 @@ object OptimizedMovement {
 		chunk.removeBlockEntity(blockPos)
 	}
 
+	/**
+	 * Groups packed block positions into a three-level lookup:
+	 *
+	 * chunk key -> section Y -> block key -> original array index
+	 *
+	 * This layout allows movement code to iterate block edits in chunk/section order,
+	 * which is substantially more efficient than random per-block world access.
+	 *
+	 * The stored array index preserves the positional correspondence between
+	 * [oldPositionArray], [newPositionArray], [capturedStates], and [capturedTiles].
+	 */
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
-		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
+		val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
 
 		for (index in positionArray.indices) {
 			val blockKey = positionArray[index]
@@ -296,19 +476,24 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 			val chunkKey = chunkKey(x shr 4, z shr 4)
 			val sectionKey = y shr 4
-			val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
-			val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+			val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
+			val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
 			positionMap[blockKey] = index
 		}
 
 		return chunkMap
 	}
 
-	/* Chunk map containing only positions
-		from the new chunk map that
-		are not in the old chunk map */
+	/**
+	 * Builds a chunk map containing only destination positions that are not already
+	 * occupied by the moving ship's current source positions.
+	 *
+	 * These are the only positions that require collision checks, because blocks that
+	 * are simply moving from one owned position to another do not count as external
+	 * obstructions.
+	 */
 	private fun getCollisionChunkMap(oldChunkMap: ChunkMap, newChunkMap: ChunkMap): ChunkMap {
-		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
+		val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
 
 		for ((chunkKey, newSectionMap) in newChunkMap) {
 			val oldSectionMap = oldChunkMap[chunkKey]
@@ -321,8 +506,8 @@ object OptimizedMovement {
 						continue
 					}
 
-					val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
-					val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+					val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
+					val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
 					positionMap[blockKey] = index
 				}
 			}
@@ -331,14 +516,81 @@ object OptimizedMovement {
 		return chunkMap
 	}
 
-	fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
-		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
+	/**
+	 * Broadcasts recorded block changes for all affected chunks to nearby players.
+	 *
+	 * OptimizedMovement writes directly into chunk sections, so it cannot rely on the
+	 * normal per-block server update pipeline to accumulate and flush client deltas.
+	 * Instead, changed positions are recorded manually through [pseudoBlockChanged],
+	 * then each affected chunk holder is asked to broadcast its accumulated changes.
+	 *
+	 * Both the source-world and destination-world chunk maps are broadcast because a
+	 * move may affect different chunks in each world.
+	 */
+	fun sendChunkUpdatesToPlayers(
+		currentWorld: World,
+		newWorld: World,
+		chunkCache: ChunkCache,
+		oldChunkMap: ChunkMap,
+		newChunkMap: ChunkMap,
+	) {
+		for ((chunkMap, world) in listOf(oldChunkMap to currentWorld.uid, newChunkMap to newWorld.uid)) {
 			for ((chunkKey, _) in chunkMap) {
-				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft
-				nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
+				val nmsChunk = getNMSChunk(Bukkit.getWorld(world)!!, chunkKey, chunkCache)
+				nmsChunk.`moonrise$getChunkHolder`().vanillaChunkHolder.broadcastChanges(nmsChunk)
 			}
 		}
 	}
+
+	private val blocksChangedPersection = ChunkHolder::class.java.getDeclaredField("changedBlocksPerSection").apply { isAccessible = true }
+	private val hasChangedSections = ChunkHolder::class.java.getDeclaredField("hasChangedSections").apply { isAccessible = true }
+
+	/**
+	 * Manually records a changed block position into the chunk holder's per-section
+	 * delta sets so [ChunkHolder.broadcastChanges] will send the change to players.
+	 *
+	 * This exists because OptimizedMovement mutates chunk sections directly via
+	 * [net.minecraft.world.level.chunk.LevelChunkSection.setBlockState] instead of
+	 * going through the normal server block mutation pipeline. Without this manual
+	 * dirty tracking, later chunk broadcasts may miss the changed blocks.
+	 *
+	 * @param chunk the owning chunk
+	 * @param sectionIndex section Y index within the chunk
+	 * @param blockPos absolute world block position that changed
+	 */
+	fun pseudoBlockChanged(chunk: LevelChunk, sectionIndex: Int, blockPos: BlockPos) {
+		val holder = chunk.`moonrise$getChunkHolder`().vanillaChunkHolder
+
+		@Suppress("UNCHECKED_CAST") val changedBlockSets: Array<ShortSet?> = blocksChangedPersection.get(holder) as Array<ShortSet?>
+
+		if (changedBlockSets[sectionIndex] == null) {
+			hasChangedSections.set(holder, true)
+			changedBlockSets[sectionIndex] = ShortOpenHashSet(4096)
+		}
+
+		changedBlockSets[sectionIndex]?.add(SectionPos.sectionRelativePos(blockPos))
+	}
+
+	/**
+	 * Returns a cached NMS chunk for the given world and packed chunk key.
+	 *
+	 * Chunk lookups are memoized per-world for the duration of a movement operation
+	 * to reduce repeated Bukkit-to-NMS conversion costs.
+	 */
+	private fun getNMSChunk(world: World, chunkKey: Long, chunkCache: ChunkCache): LevelChunk {
+		val worldCaches = chunkCache.getOrPut(world) { Long2ObjectOpenHashMap<LevelChunk>() }
+		return worldCaches.getOrPut(chunkKey) { world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+	}
 }
 
+/**
+ * Grouped block positions keyed by chunk and then by vertical section.
+ *
+ * Structure:
+ * chunk key -> section Y -> packed block key -> movement array index
+ */
 private typealias ChunkMap = Map<Long, Map<Int, Map<Long, Int>>>
+/**
+ * Per-world cache of resolved NMS chunks used during one movement operation.
+ */
+private typealias ChunkCache = MutableMap<World, Long2ObjectOpenHashMap<LevelChunk>>

@@ -14,15 +14,17 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -43,7 +45,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 	override val world get() = starship.world
 
-	override fun getInputManager(): InputManager {
+	override fun getInputManager(): IOManager {
 		return starship.transportManager.getInputProvider()
 	}
 
@@ -54,7 +56,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	}
 
 	override fun save() {}
-	override fun getSignUnsavedTime(): Long = 0
+	override fun getSignUnsavedTime(time: Long?): Long = 0
 	override fun markChanged() {}
 
 	override fun getNetwork(type: CacheType): TransportCache {
@@ -120,8 +122,6 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			val entity = entry.value
 			entity.displace(movement)
 		}
-
-		multiblockLinkageManager.displace(movement)
 	}
 
 	/** Mostly to be used with blueprint load or loadship, loads entities from their sign data */
@@ -142,7 +142,11 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			val multiblock = MultiblockAccess.getFast(state)
 			if (multiblock !is EntityMultiblock<*>) return@iterateBlocks
 
-			val data = state.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return MultiblockEntities.migrateFromSign(state, multiblock)
+			val data = state.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)
+			if (data == null) {
+				MultiblockEntities.migrateFromSign(state, multiblock)
+				return
+			}
 
 			// In case it moved
 			data.x = origin.x - starship.centerOfMass.x
@@ -173,8 +177,9 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	 * Multiblock entities are stored on the block the sign is placed on.
 	 **/
 	override operator fun get(sign: Sign): MultiblockEntity? {
-		val local = getLocalCoordinate(Vec3i(sign.x, sign.y, sign.z))
-		return multiblockEntities[getRelative(toBlockKey(local), sign.getFacing().oppositeFace)]
+		val origin = getRelative(Vec3i(sign.x, sign.y, sign.z), sign.getFacing().oppositeFace, 0, 0, 1)
+		val local = getLocalCoordinate(origin)
+		return multiblockEntities[toBlockKey(local)]
 	}
 
 	fun clearData() {
@@ -182,4 +187,6 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			removeMultiblockEntity(key)
 		}
 	}
+
+	fun getFromGlobalKey(key: BlockKey): MultiblockEntity? = get(toBlockKey(getLocalCoordinate(toVec3i(key))))
 }

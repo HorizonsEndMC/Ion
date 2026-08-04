@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
 class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> private constructor(val storageType: ComponentType, val componentName: String) {
@@ -57,6 +58,11 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val MULTIBLOCK_TYPE = newComponentType<StoredMultiblock, OnlyOne<StoredMultiblock>>(ComponentType.ONLY_ONE)
 
 		/**
+		 * Gives this item lore
+		 */
+		val FLAVOR_TEXT = newComponentType<FlavorText, OnlyOne<FlavorText>>(ComponentType.ONLY_ONE)
+
+		/**
 		 * General interact listener
 		 **/
 		val LISTENER_PLAYER_INTERACT = newComponentType<Listener<PlayerInteractEvent, *>, AllowMultiple<Listener<PlayerInteractEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
@@ -87,12 +93,17 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val LISTENER_DAMAGED_HOLDING = newComponentType<Listener<EntityDamageByEntityEvent, *>, AllowMultiple<Listener<EntityDamageByEntityEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
+		 * Called when someone consumes this item
+		 */
+		val LISTENER_PLAYER_CONSUME = newComponentType<Listener<PlayerItemConsumeEvent, *>, AllowMultiple<Listener<PlayerItemConsumeEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
+
+		/**
 		 * General interact listener
 		 **/
 		val LISTENER_ENTITY_SHOOT_BOW = newComponentType<Listener<EntityShootBowEvent, *>, AllowMultiple<Listener<EntityShootBowEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
-		 * Recieves ticks, idk what else to say
+		 * Recieves ticks, when held by a player
 		 **/
 		val TICK_RECIEVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
 	}

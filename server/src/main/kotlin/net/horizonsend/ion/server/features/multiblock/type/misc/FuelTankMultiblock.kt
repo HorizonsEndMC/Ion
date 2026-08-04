@@ -14,8 +14,8 @@ object FuelTankMultiblock : Multiblock(), DisplayNameMultilblock {
 	override val name: String = "tank"
 	override val signText = createSignText(
 			"&7-=[&c==&a==&b==&7]=-",
-			"&0Supercapital",
-			"&6Fuel Tank",
+			"&6Fuel",
+			"&6Tank",
 			"&7-=[&c==&a==&b==&7]=-"
 	)
 

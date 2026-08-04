@@ -1,0 +1,315 @@
+﻿package net.horizonsend.ion.server.core.registration.keys
+
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.custom.items.misc.Wrench
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
+import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
+import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
+import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
+import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
+import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
+import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
+
+object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, CustomItem::class) {
+	val DETONATOR = registerTypedKey<ThrowableCustomItem>("DETONATOR")
+	val SMOKE_GRENADE = registerTypedKey<ThrowableCustomItem>("SMOKE_GRENADE")
+	val PUMPKIN_GRENADE = registerTypedKey<ThrowableCustomItem>("PUMPKIN_GRENADE")
+
+	val STANDARD_MAGAZINE = registerTypedKey<Magazine>("STANDARD_MAGAZINE")
+	val SPECIAL_MAGAZINE = registerTypedKey<Magazine>("SPECIAL_MAGAZINE")
+
+	val BLASTER_PISTOL = registerTypedKey<Blaster<Singleshot>>("BLASTER_PISTOL")
+	val BLASTER_RIFLE = registerTypedKey<Blaster<Singleshot>>("BLASTER_RIFLE")
+	val SUBMACHINE_BLASTER = registerTypedKey<Blaster<Singleshot>>("SUBMACHINE_BLASTER")
+	val BLASTER_SHOTGUN = registerTypedKey<Blaster<Multishot>>("BLASTER_SHOTGUN")
+	val BLASTER_SNIPER = registerTypedKey<Blaster<Singleshot>>("BLASTER_SNIPER")
+	val BLASTER_CANNON = registerTypedKey<Blaster<Singleshot>>("BLASTER_CANNON")
+
+	val GUN_BARREL = registerKey("GUN_BARREL")
+	val CIRCUITRY = registerKey("CIRCUITRY")
+	val DATA_CHIP = registerKey("DATA_CHIP")
+	val GUIDANCE_SYSTEM = registerKey("GUIDANCE_SYSTEM")
+
+	val PISTOL_RECEIVER = registerKey("PISTOL_RECEIVER")
+	val RIFLE_RECEIVER = registerKey("RIFLE_RECEIVER")
+	val SMB_RECEIVER = registerKey("SMB_RECEIVER")
+	val SNIPER_RECEIVER = registerKey("SNIPER_RECEIVER")
+	val SHOTGUN_RECEIVER = registerKey("SHOTGUN_RECEIVER")
+	val CANNON_RECEIVER = registerKey("CANNON_RECEIVER")
+
+	val ALUMINUM_INGOT = registerKey("ALUMINUM_INGOT")
+	val RAW_ALUMINUM = registerKey("RAW_ALUMINUM")
+	val ALUMINUM_ORE = registerTypedKey<CustomBlockItem>("ALUMINUM_ORE")
+	val ALUMINUM_BLOCK = registerTypedKey<CustomBlockItem>("ALUMINUM_BLOCK")
+	val RAW_ALUMINUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_ALUMINUM_BLOCK")
+
+	val CHETHERITE = registerKey("CHETHERITE")
+	val CHETHERITE_ORE = registerTypedKey<CustomBlockItem>("CHETHERITE_ORE")
+	val CHETHERITE_BLOCK = registerTypedKey<CustomBlockItem>("CHETHERITE_BLOCK")
+
+	val TITANIUM_INGOT = registerKey("TITANIUM_INGOT")
+	val RAW_TITANIUM = registerKey("RAW_TITANIUM")
+	val TITANIUM_ORE = registerTypedKey<CustomBlockItem>("TITANIUM_ORE")
+	val TITANIUM_BLOCK = registerTypedKey<CustomBlockItem>("TITANIUM_BLOCK")
+	val RAW_TITANIUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_TITANIUM_BLOCK")
+
+	val URANIUM = registerKey("URANIUM")
+	val RAW_URANIUM = registerKey("RAW_URANIUM")
+	val URANIUM_ORE = registerTypedKey<CustomBlockItem>("URANIUM_ORE")
+	val URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("URANIUM_BLOCK")
+	val RAW_URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_URANIUM_BLOCK")
+
+	val SCORDITE_ORE = registerKey("SCORDITE_ORE")
+	val SCORDITE = registerKey("SCORDITE")
+	val SCORDITE_BLOCK = registerKey("SCORDITE_BLOCK")
+
+	val VANADIUM_ORE = registerKey("VANADIUM_ORE")
+	val VANADIUM = registerKey("VANADIUM")
+	val VANADIUM_BLOCK = registerKey("VANADIUM_BLOCK")
+
+	val ZIRCON_ORE = registerKey("ZIRCON_ORE")
+	val ZIRCON = registerKey("ZIRCON")
+	val ZIRCON_BLOCK = registerKey("ZIRCON_BLOCK")
+
+	val ATAVUM_ORE = registerKey("ATAVUM_ORE")
+	val ATAVUM = registerKey("ATAVUM")
+	val ATAVUM_BLOCK = registerKey("ATAVUM_BLOCK")
+
+	val ASSEMBLY_CORE = registerKey("ASSEMBLY_CORE")
+
+	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")
+	val ENRICHED_URANIUM = registerKey("ENRICHED_URANIUM")
+	val ENRICHED_URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("ENRICHED_URANIUM_BLOCK")
+	val URANIUM_CORE = registerKey("URANIUM_CORE")
+	val URANIUM_ROD = registerKey("URANIUM_ROD")
+	val FUEL_ROD_CORE = registerKey("FUEL_ROD_CORE")
+	val FUEL_CELL = registerKey("FUEL_CELL")
+	val FUEL_CONTROL = registerKey("FUEL_CONTROL")
+
+	val REACTIVE_COMPONENT = registerKey("REACTIVE_COMPONENT")
+	val REACTIVE_HOUSING = registerKey("REACTIVE_HOUSING")
+	val REACTIVE_PLATING = registerKey("REACTIVE_PLATING")
+	val REACTIVE_CHASSIS = registerKey("REACTIVE_CHASSIS")
+	val REACTIVE_MEMBRANE = registerKey("REACTIVE_MEMBRANE")
+	val REACTIVE_ASSEMBLY = registerKey("REACTIVE_ASSEMBLY")
+	val FABRICATED_ASSEMBLY = registerKey("FABRICATED_ASSEMBLY")
+
+	val CIRCUIT_BOARD = registerKey("CIRCUIT_BOARD")
+	val MOTHERBOARD = registerKey("MOTHERBOARD")
+	val REACTOR_CONTROL = registerKey("REACTOR_CONTROL")
+
+	val SUPERCONDUCTOR = registerKey("SUPERCONDUCTOR")
+	val SUPERCONDUCTOR_BLOCK = registerKey("SUPERCONDUCTOR_BLOCK")
+	val SUPERCONDUCTOR_CORE = registerKey("SUPERCONDUCTOR_CORE")
+
+	val STEEL_INGOT = registerKey("STEEL_INGOT")
+	val STEEL_BLOCK = registerTypedKey<CustomBlockItem>("STEEL_BLOCK")
+	val STEEL_PLATE = registerKey("STEEL_PLATE")
+	val STEEL_CHASSIS = registerKey("STEEL_CHASSIS")
+	val STEEL_MODULE = registerKey("STEEL_MODULE")
+	val STEEL_ASSEMBLY = registerKey("STEEL_ASSEMBLY")
+	val REINFORCED_FRAME = registerKey("REINFORCED_FRAME")
+	val REACTOR_FRAME = registerKey("REACTOR_FRAME")
+
+	val UNLOADED_SHELL = registerKey("UNLOADED_SHELL")
+	val LOADED_SHELL = registerKey("LOADED_SHELL")
+	val UNCHARGED_SHELL = registerKey("UNCHARGED_SHELL")
+	val CHARGED_SHELL = registerKey("CHARGED_SHELL")
+
+	val UNLOADED_BREACHER_SHELL = registerKey("UNLOADED_BREACHER_SHELL")	// Gauss Cannon
+	val LOADED_BREACHER_SHELL = registerKey("LOADED_BREACHER_SHELL")
+	val UNLOADED_STASIS_CHARGE = registerKey("UNLOADED_STASIS_CHARGE")	// Webifier
+	val LOADED_STASIS_CHARGE = registerKey("LOADED_STASIS_CHARGE")
+	val UNLOADED_ENTROPIC_CHARGE = registerKey("UNLOADED_ENTROPIC_CHARGE")// Neutralizer + Heavy Neutralizer
+	val LOADED_ENTROPIC_CHARGE = registerKey("LOADED_ENTROPIC_CHARGE")
+	val UNLOADED_HELIX_SHELL = registerKey("UNLOADED_HELIX_SHELL")		// Assault Turret
+	val LOADED_HELIX_SHELL = registerKey("LOADED_HELIX_SHELL")
+	val UNLOADED_SIEGE_SHELL = registerKey("UNLOADED_SIEGE_SHELL")		// ACAP Turret
+	val LOADED_SIEGE_SHELL = registerKey("LOADED_SIEGE_SHELL")
+	val UNLOADED_STELLAR_PRISM = registerKey("UNLOADED_STELLAR_PRISM")    // Doomsday Laser
+	val LOADED_STELLAR_PRISM = registerKey("LOADED_STELLAR_PRISM")
+
+	val ARSENAL_MISSILE = registerKey("ARSENAL_MISSILE")
+	val UNLOADED_ARSENAL_MISSILE = registerKey("UNLOADED_ARSENAL_MISSILE")
+	val ACTIVATED_ARSENAL_MISSILE = registerKey("ACTIVATED_ARSENAL_MISSILE")
+	val LIGHT_MISSILE = registerKey("LIGHT_MISSILE")
+	val HEAVY_MISSILE = registerKey("HEAVY_MISSILE")
+	val THERMONUCLEAR_MISSILE = registerKey("THERMONUCLEAR_MISSILE")
+	val SCANNER_PROBE = registerKey("SCANNER_PROBE")
+	val COMBAT_PROBE = registerKey("COMBAT_PROBE")
+	val UNLOADED_LIGHT_MISSILE = registerKey("UNLOADED_LIGHT_MISSILE")
+	val UNLOADED_HEAVY_MISSILE = registerKey("UNLOADED_HEAVY_MISSILE")
+	val UNLOADED_THERMONUCLEAR_MISSILE = registerKey("UNLOADED_THERMONUCLEAR_MISSILE")
+	val UNLOADED_EMP_MISSILE = registerKey("UNLOADED_EMP_MISSILE")
+	val EMP_MISSILE = registerKey("EMP_MISSILE")
+
+	val PROGRESS_HOLDER = registerKey("PROGRESS_HOLDER")
+
+	val BATTLECRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BATTLECRUISER_REACTOR_CORE")
+	val BARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BARGE_REACTOR_CORE")
+	val CRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("CRUISER_REACTOR_CORE")
+	val MINI_REACTOR_CORE = registerTypedKey<CustomBlockItem>("MINI_REACTOR_CORE")
+	val SMALL_REACTOR_CORE = registerTypedKey<CustomBlockItem>("SMALL_REACTOR_CORE")
+	val MEDIUM_REACTOR_CORE = registerTypedKey<CustomBlockItem>("MEDIUM_REACTOR_CORE")
+	val LARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("LARGE_REACTOR_CORE")
+
+	val GAS_CANISTER_EMPTY = registerKey("GAS_CANISTER_EMPTY")
+	val GAS_CANISTER_XENON = registerTypedKey<GasCanister>("GAS_CANISTER_XENON")
+	val GAS_CANISTER_HYDROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_HYDROGEN")
+	val GAS_CANISTER_NITROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_NITROGEN")
+	val GAS_CANISTER_METHANE = registerTypedKey<GasCanister>("GAS_CANISTER_METHANE")
+	val GAS_CANISTER_OXYGEN = registerTypedKey<GasCanister>("GAS_CANISTER_OXYGEN")
+	val GAS_CANISTER_CHLORINE = registerTypedKey<GasCanister>("GAS_CANISTER_CHLORINE")
+	val GAS_CANISTER_FLUORINE = registerTypedKey<GasCanister>("GAS_CANISTER_FLUORINE")
+	val GAS_CANISTER_HELIUM = registerTypedKey<GasCanister>("GAS_CANISTER_HELIUM")
+	val GAS_CANISTER_CARBON_DIOXIDE = registerTypedKey<GasCanister>("GAS_CANISTER_CARBON_DIOXIDE")
+
+	val BATTERY_A = registerTypedKey<Battery>("BATTERY_A")
+	val BATTERY_M = registerTypedKey<Battery>("BATTERY_M")
+	val BATTERY_G = registerTypedKey<Battery>("BATTERY_G")
+
+	val CRATE_PLACER = registerTypedKey<CratePlacer>("CRATE_PLACER")
+
+	val MULTIMETER = registerKey("MULTIMETER")
+
+	val MULTIBLOCK_TOKEN = registerTypedKey<MultiblockToken>("MULTIBLOCK_TOKEN")
+	val PACKAGED_MULTIBLOCK = registerTypedKey<PackagedMultiblock>("PACKAGED_MULTIBLOCK")
+	val MULTIBLOCK_WORKBENCH = registerTypedKey<CustomBlockItem>("MULTIBLOCK_WORKBENCH")
+	val WRENCH = registerTypedKey<Wrench>("WRENCH")
+
+	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<CustomBlockItem>("ADVANCED_ITEM_EXTRACTOR")
+	val ITEM_FILTER = registerTypedKey<CustomBlockItem>("ITEM_FILTER")
+
+	val POWER_DRILL_BASIC = registerTypedKey<PowerDrill>("POWER_DRILL_BASIC")
+	val POWER_DRILL_ENHANCED = registerTypedKey<PowerDrill>("POWER_DRILL_ENHANCED")
+	val POWER_DRILL_ADVANCED = registerTypedKey<PowerDrill>("POWER_DRILL_ADVANCED")
+
+	val POWER_CHAINSAW_BASIC = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_BASIC")
+	val POWER_CHAINSAW_ENHANCED = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_ENHANCED")
+	val POWER_CHAINSAW_ADVANCED = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_ADVANCED")
+
+	val POWER_HOE_BASIC = registerTypedKey<PowerHoe>("POWER_HOE_BASIC")
+	val POWER_HOE_ENHANCED = registerTypedKey<PowerHoe>("POWER_HOE_ENHANCED")
+	val POWER_HOE_ADVANCED = registerTypedKey<PowerHoe>("POWER_HOE_ADVANCED")
+
+	val POWER_ARMOR_HELMET = registerTypedKey<PowerArmorItem>("POWER_ARMOR_HELMET")
+	val POWER_ARMOR_CHESTPLATE = registerTypedKey<PowerArmorItem>("POWER_ARMOR_CHESTPLATE")
+	val POWER_ARMOR_LEGGINGS = registerTypedKey<PowerArmorItem>("POWER_ARMOR_LEGGINGS")
+	val POWER_ARMOR_BOOTS = registerTypedKey<PowerArmorItem>("POWER_ARMOR_BOOTS")
+
+	val ENERGY_SWORD_BLUE = registerTypedKey<EnergySword>("ENERGY_SWORD_BLUE")
+	val ENERGY_SWORD_RED = registerTypedKey<EnergySword>("ENERGY_SWORD_RED")
+	val ENERGY_SWORD_YELLOW = registerTypedKey<EnergySword>("ENERGY_SWORD_YELLOW")
+	val ENERGY_SWORD_GREEN = registerTypedKey<EnergySword>("ENERGY_SWORD_GREEN")
+	val ENERGY_SWORD_PURPLE = registerTypedKey<EnergySword>("ENERGY_SWORD_PURPLE")
+	val ENERGY_SWORD_ORANGE = registerTypedKey<EnergySword>("ENERGY_SWORD_ORANGE")
+	val ENERGY_SWORD_PINK = registerTypedKey<EnergySword>("ENERGY_SWORD_PINK")
+	val ENERGY_SWORD_BLACK = registerTypedKey<EnergySword>("ENERGY_SWORD_BLACK")
+
+	val ARMOR_MODIFICATION_ENVIRONMENT = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ENVIRONMENT")
+	val ARMOR_MODIFICATION_NIGHT_VISION = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_NIGHT_VISION")
+	val ARMOR_MODIFICATION_PRESSURE_FIELD = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_PRESSURE_FIELD")
+	val ARMOR_MODIFICATION_ROCKET_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ROCKET_BOOSTING")
+	val ARMOR_MODIFICATION_SHOCK_ABSORBING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SHOCK_ABSORBING")
+	val ARMOR_MODIFICATION_SPEED_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SPEED_BOOSTING")
+
+	val TOOL_MODIFICATION_RANGE_1 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_1")
+	val TOOL_MODIFICATION_RANGE_2 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_2")
+	val TOOL_MODIFICATION_VEIN_MINER_25 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_VEIN_MINER_25")
+	val TOOL_MODIFICATION_SILK_TOUCH_MOD = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_SILK_TOUCH_MOD")
+	val TOOL_MODIFICATION_AUTO_SMELT = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_AUTO_SMELT")
+	val TOOL_MODIFICATION_FORTUNE_1 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FORTUNE_1")
+	val TOOL_MODIFICATION_FORTUNE_2 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FORTUNE_2")
+	val TOOL_MODIFICATION_FORTUNE_3 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FORTUNE_3")
+	val TOOL_MODIFICATION_POWER_CAPACITY_25 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_POWER_CAPACITY_25")
+	val TOOL_MODIFICATION_POWER_CAPACITY_50 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_POWER_CAPACITY_50")
+	val TOOL_MODIFICATION_AUTO_REPLANT = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_AUTO_REPLANT")
+	val TOOL_MODIFICATION_AUTO_COMPOST = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_AUTO_COMPOST")
+	val TOOL_MODIFICATION_RANGE_3 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_3")
+	val TOOL_MODIFICATION_EXTENDED_BAR = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_EXTENDED_BAR")
+	val TOOL_MODIFICATION_FERTILIZER_DISPENSER = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FERTILIZER_DISPENSER")
+	val TOOL_MODIFICATION_COLLECTOR = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FERTILIZER_DISPENSER")
+
+	val PERSONAL_TRANSPORTER = registerTypedKey<PersonalTransporter>("PERSONAL_TRANSPORTER")
+
+	val AERACH = registerKey("AERACH")
+	val ARET = registerKey("ARET")
+	val CHANDRA = registerKey("CHANDRA")
+	val CHIMGARA = registerKey("CHIMGARA")
+	val DAMKOTH = registerKey("DAMKOTH")
+	val DISTERRA = registerKey("DISTERRA")
+	val EDEN = registerKey("EDEN")
+	val GAHARA = registerKey("GAHARA")
+	val HERDOLI = registerKey("HERDOLI")
+	val ILIUS = registerKey("ILIUS")
+	val ISIK = registerKey("ISIK")
+	val KOVFEFE = registerKey("KOVFEFE")
+	val KRIO = registerKey("KRIO")
+	val LIODA = registerKey("LIODA")
+	val LUXITERNA = registerKey("LUXITERNA")
+	val QATRA = registerKey("QATRA")
+	val RUBACIEA = registerKey("RUBACIEA")
+	val TURMS = registerKey("TURMS")
+	val VASK = registerKey("VASK")
+	val ASTERI = registerKey("ASTERI")
+	val HORIZON = registerKey("HORIZON")
+	val ILIOS = registerKey("ILIOS")
+	val REGULUS = registerKey("REGULUS")
+	val SIRIUS = registerKey("SIRIUS")
+	val PLANET_SELECTOR = registerKey("PLANET_SELECTOR")
+
+	/*
+	val SHIELD_RESISTANCE_BUFF = registerKey("SHIELD_RESISTANCE_BUFF")
+	val TURRET_DAMAGE_BUFF = registerKey("TURRET_DAMAGE_BUFF")
+	val SHIELD_REGENERATION_BUFF = registerKey("SHIELD_REGENERATION_BUFF")
+	val CRUISE_SPEED_BUFF = registerKey("CRUISE_SPEED_BUFF")
+	val DIRECT_CONTROL_SPEED_BUFF = registerKey("DIRECT_CONTROL_SPEED_BUFF")
+	val ACCELERATION_BUFF = registerKey("ACCELERATION_BUFF")
+	val JUMP_WARMUP_BUFF = registerKey("JUMP_WARMUP_BUFF")
+	val CONTACT_RANGE_BUFF = registerKey("CONTACT_RANGE_BUFF")
+	 */
+
+	val DEBUG_LINE_RED = registerKey("DEBUG_LINE_RED")
+	val DEBUG_LINE_GREEN = registerKey("DEBUG_LINE_GREEN")
+	val DEBUG_LINE_BLUE = registerKey("DEBUG_LINE_BLUE")
+	val DEBUG_LINE = registerKey("DEBUG_LINE")
+
+	val FLUID_INPUT = registerTypedKey<CustomBlockItem>("FLUID_INPUT")
+	val FLUID_VALVE = registerTypedKey<CustomBlockItem>("FLUID_VALVE")
+	val FLUID_PIPE = registerTypedKey<CustomBlockItem>("FLUID_PIPE")
+	val FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("FLUID_PIPE_JUNCTION")
+	val REINFORCED_FLUID_PIPE = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE")
+	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE_JUNCTION")
+
+	val HORIZON_FRIED_EGG = registerTypedKey<FoodItem>("HORIZON_FRIED_EGG")
+	val TOMATO = registerTypedKey<FoodItem>("TOMATO")
+	val LETTUCE = registerTypedKey<FoodItem>("LETTUCE")
+	val CHEESE = registerTypedKey<FoodItem>("CHEESE")
+	val CHEESE_BUCKET = registerKey("CHEESE_BUCKET")
+	val GROUND_BEEF = registerTypedKey<FoodItem>("GROUND_BEEF")
+	val COOKED_GROUND_BEEF = registerTypedKey<FoodItem>("COOKED_GROUND_BEEF")
+	val CHEESEBURGER = registerTypedKey<FoodItem>("CHEESEBURGER")
+	val SALAMI = registerTypedKey<FoodItem>("SALAMI")
+	val PEPPERONI_PIZZA = registerTypedKey<FoodItem>("PEPPERONI_PIZZA")
+	val COOKED_PEPPERONI_PIZZA = registerTypedKey<FoodItem>("COOKED_PEPPERONI_PIZZA")
+	val ICE_CREAM_MIXTURE = registerKey("ICE_CREAM_MIXTURE")
+	val ICE_CREAM = registerTypedKey<FoodItem>("ICE_CREAM")
+	val ASTRONAUT_ICE_CREAM = registerTypedKey<FoodItem>("ASTRONAUT_ICE_CREAM")
+	val NUTRIENT_CUBE = registerTypedKey<FoodItem>("NUTRIENT_CUBE")
+	val VEGETARIAN_NUTRIENT_CUBE = registerTypedKey<FoodItem>("VEGETARIAN_NUTRIENT_CUBE")
+	val SALAD = registerTypedKey<FoodItem>("SALAD")
+	val MUSHROOM_SKEWER = registerTypedKey<FoodItem>("MUSHROOM_SKEWER")
+	val TOMATO_SOUP = registerTypedKey<FoodItem>("TOMATO_SOUP")
+}

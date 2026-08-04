@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.database.schema.starships
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import org.litote.kmongo.contains
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -36,7 +37,11 @@ data class PlayerStarshipData(
 	override var lastUsed: Long = System.currentTimeMillis(),
 	override var isLockEnabled: Boolean = false,
 
-	var shipDealerInformation: ShipDealerInformation? = null
+	var disallowBlueprinting: Boolean = false,
+
+	var shipDealerInformation: ShipDealerInformation? = null,
+
+	var nations: MutableSet<Oid<Nation>>? = mutableSetOf(),
 ) : StarshipData {
 	companion object : StarshipDataCompanion<PlayerStarshipData>(
 		PlayerStarshipData::class,
@@ -53,12 +58,16 @@ data class PlayerStarshipData(
 			ensureIndex(PlayerStarshipData::serverName)
 			ensureIndex(PlayerStarshipData::serverName)
 			ensureUniqueIndex(PlayerStarshipData::levelName, PlayerStarshipData::blockKey)
+			ensureIndex(PlayerStarshipData::nations)
 		}
 	) {
 		const val LOCK_TIME_MS = 1_000 * 60 * 5
 
 		fun findByPilot(playerId: SLPlayerId) =
 			find(or(PlayerStarshipData::captain eq playerId, PlayerStarshipData::pilots contains playerId))
+
+		fun findByNation(nationId: Oid<Nation>) =
+			find(PlayerStarshipData::nations contains nationId)
 	}
 
 	data class ShipDealerInformation(

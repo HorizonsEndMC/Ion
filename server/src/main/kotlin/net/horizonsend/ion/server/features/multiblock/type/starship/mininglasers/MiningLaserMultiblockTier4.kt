@@ -22,7 +22,7 @@ sealed class MiningLaserMultiblockTier4 : MiningLaserMultiblock() {
     final override val range: Double = 245.0
     final override val mineRadius = 11
     override val beamCount: Int = 10
-    override val maxBroken: Int = 11
+    override val maxBroken: Int = 19
     override val sound: String = "horizonsend:starship.weapon.mining_laser.t4_loop"
 
     override val tier: Int = 4
@@ -524,6 +524,7 @@ object MiningLaserMultiblockTier4Bottom : MiningLaserMultiblockTier4() {
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, +2)
 	override val outputOffset: Vec3i = Vec3i(-1, +1, 0)
+	override val isBottom: Boolean = true
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {
@@ -768,6 +769,7 @@ object MiningLaserMultiblockTier4BottomMirrored : MiningLaserMultiblockTier4() {
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, +2)
 	override val outputOffset: Vec3i = Vec3i(+1, +1, 0)
+	override val isBottom: Boolean = true
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {

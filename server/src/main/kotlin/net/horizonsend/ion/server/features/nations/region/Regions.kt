@@ -8,28 +8,38 @@ import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
+import net.horizonsend.ion.common.database.schema.nations.StationZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
+import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionParent
+import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionStationZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -44,7 +54,6 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.litote.kmongo.id.WrappedObjectId
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 import kotlin.reflect.KClass
 
 object Regions : IonServerComponent() {
@@ -59,6 +68,8 @@ object Regions : IonServerComponent() {
 
 		registerRegionType(SettlementZone.Companion) { RegionSettlementZone(it) }
 
+		registerRegionType(StationZone.Companion) { RegionStationZone(it) }
+
 		registerRegionType(CapturableStation.Companion) { RegionCapturableStation(it) }
 
 		registerRegionType(NationSpaceStation.Companion) { RegionSpaceStation(it) }
@@ -68,6 +79,14 @@ object Regions : IonServerComponent() {
 		registerRegionType(PlayerSpaceStation.Companion) { RegionSpaceStation(it) }
 
 		registerRegionType(SolarSiegeZone.Companion) { RegionSolarSiegeZone(it) }
+
+		registerRegionType(NPCSpaceStation.Companion) { RegionNPCSpaceStation(it) }
+
+		registerRegionType(StationRentalZone.Companion) { RegionRentalZone(it) }
+
+		registerRegionType(DominionTerritory.Companion) { RegionDominionTerritory(it) }
+
+		registerRegionType(RegionalObjective.Companion) { RegionRegionalObjective(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 
@@ -296,7 +315,7 @@ private class RegionCache {
 
 		classMap[region.javaClass].remove(region)
 
-		if (region is RegionTerritory) {
+		if (region is RegionTopLevel) {
 			worldRegions[region.world].remove(region)
 		}
 	}

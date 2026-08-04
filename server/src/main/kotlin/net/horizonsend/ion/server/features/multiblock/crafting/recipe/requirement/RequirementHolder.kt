@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement
 
+import net.horizonsend.ion.server.features.multiblock.crafting.input.InventoryResultEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
@@ -36,6 +37,19 @@ open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequire
 		}
 	}
 
+	class AnySlotRequirementHolder<T: RecipeEnviornment>(
+		requirement: ItemRequirement,
+	) : RequirementHolder<T, ItemStack?, ItemRequirement>(
+		(ItemStack::class.java as Class<ItemStack?>),
+		{ it.getInputItems().firstOrNull { inputItem -> requirement.matches(inputItem) } },
+		requirement
+	) {
+		override fun consume(environment: T) {
+			val item = getter.invoke(environment) ?: return
+			requirement.consume(item, environment)
+		}
+	}
+
 	companion object {
 		inline fun <T: RecipeEnviornment, reified V: Any?, R: Consumable<V, T>> simpleConsumable(
 			noinline getter: (T) -> V,
@@ -47,5 +61,9 @@ open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequire
 			requirement: R,
 			noinline slotModificationWrapper: (T) -> SlotModificationWrapper,
 		): RequirementHolder<T, V, R> = BundledRequirementHolder(V::class.java, getter, requirement, slotModificationWrapper)
+
+		fun <T: InventoryResultEnviornment> anySlot(
+			requirement: ItemRequirement,
+		): AnySlotRequirementHolder<T> = AnySlotRequirementHolder(requirement)
 	}
 }

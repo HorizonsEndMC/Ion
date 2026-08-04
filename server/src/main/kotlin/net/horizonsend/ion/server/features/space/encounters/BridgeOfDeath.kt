@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -77,18 +77,18 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			failed = true
 		}
 
-		event.player.anvilInputText(
+		event.player.openInputMenu(
 			prompt = "What is your name?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
-		) { _, (response, _) ->
-			if (response != event.player.name) return@anvilInputText fail()
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }
+		) { _, response ->
+			if (response.result != event.player.name) return@openInputMenu fail()
 		}
 
 		if (failed) return
 
-		event.player.anvilInputText(
+		event.player.openInputMenu(
 			prompt = "What is your quest?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }
 		) { _, _ -> }
 
 		var promptNation: NationCache.NationData? = null
@@ -104,22 +104,23 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			else -> 0 to "What is your favorite color?"
 		}
 
-		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }) { _, (answer, _) ->
+		event.player.openInputMenu(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }) { _, validator ->
+			val answer = validator.result
 			when (id) {
 				2 ->
-					if (answer.contains("august", true) || answer.contains("2021", true)) return@anvilInputText
+					if (answer.contains("august", true) || answer.contains("2021", true)) return@openInputMenu
 				1 -> {
-					val data = promptNation ?: return@anvilInputText
+					val data = promptNation ?: return@openInputMenu
 					val settlementName = SettlementCache[data.capital].name
 
-					if (answer.contains(settlementName, true)) return@anvilInputText
+					if (answer.contains(settlementName, true)) return@openInputMenu
 				}
 
 				0 -> {
 					val filteredSpace = answer.substringBefore(" ")
 
 					val names = NamedTextColor.NAMES.keys().map { it.lowercase() }
-					if (names.any { it.contains(filteredSpace, true) }) return@anvilInputText
+					if (names.any { it.contains(filteredSpace, true) }) return@openInputMenu
 				}
 			}
 

@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -12,6 +14,8 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCon
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.rightClickTimes
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
@@ -53,7 +57,11 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		player.debug("player is rclicking")
 
-		if (event.action.isRightClick) {
+		val setting = player.getSetting(PlayerSettings::alternateFireButtons)
+		val firingLightWeapons = if (setting == true && event.action.isRightClick) true else if (setting == false && event.action.isLeftClick) true else false
+		val firingHeavyWeapons = if (setting == true && event.action.isLeftClick) true else if (setting == false && event.action.isRightClick) true else false
+
+		if (firingHeavyWeapons) {
 			val damager = player.damager()
 			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
 
@@ -69,11 +77,14 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 			rightClickTimes.remove(damager)
 		}
 
+		if (event.player.world.hasFlag(WorldFlag.PLANET_SIEGE_WORLD)) return
+
 		if (event.clickedBlock?.type?.isSign == true) return
 
 		player.debug("Didn't click sign, trying to fire")
 
-		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
+		manualFire(player, starship, firingLightWeapons, player.inventory.itemInMainHand)
+		activateCommandBursts(player, starship, firingLightWeapons)
 
 		player.debugBanner("END")
 	}
@@ -152,7 +163,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 	fun manualFire(
 		player: Player,
 		starship: ActiveStarship,
-		leftClick: Boolean,
+		lightWeapons: Boolean,
 		clock: ItemStack
 	) {
 		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
@@ -185,11 +196,20 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		manualFire(
 			damager,
 			starship,
-			leftClick,
+			lightWeapons,
 			playerFacing,
 			dir,
 			target,
 			weaponSet
 		)
+	}
+
+	fun activateCommandBursts(
+		player: Player,
+		starship: ActiveStarship,
+		lightWeapons: Boolean,
+	) {
+		val shooter = player.damager()
+		StarshipWeaponry.activateCommandBursts(shooter, starship, lightWeapons)
 	}
 }

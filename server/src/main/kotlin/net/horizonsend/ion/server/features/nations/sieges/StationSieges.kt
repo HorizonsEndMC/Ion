@@ -15,25 +15,25 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
-import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -61,6 +61,8 @@ object StationSieges : IonServerComponent() {
 	private val siegeMinTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMinDuration)
 	private val siegeMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMaxDuration)
 
+	private const val MINIMUM_SIEGE_SIZE = 6500
+
 	private fun currentHour() = ZonedDateTime.now().hour
 
 	override fun onEnable() {
@@ -83,6 +85,7 @@ object StationSieges : IonServerComponent() {
 				else -> {
 					val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(siegeMinTimeMillis - elapsed) / 60.0
 					player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
+					CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_SIEGE_STATION)
 				}
 			}
 		}
@@ -166,6 +169,30 @@ object StationSieges : IonServerComponent() {
 		val nation = PlayerCache[player].nationOid
 			?: return@asyncLocked player.userError("You need to be in a nation to siege a station.")
 
+		// only allow nations to siege multiple times within the time period if it's simultaneous
+		if (sieges.none { Bukkit.getPlayer(it.siegerId.uuid)?.let(PlayerCache::get)?.nationOid == nation }) {
+			val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
+			val duration = (TimeUnit.DAYS.toMillis(1) * daysPerSiege).toLong()
+			val date = Date(currentTimeMillis() - duration)
+
+			val lastSiege: CapturableStationSiege? = CapturableStationSiege
+				.find(and(CapturableStationSiege::nation eq nation, CapturableStationSiege::time gt date))
+				.maxBy { it.time }
+
+			if (lastSiege != null) {
+				val remainingTime = lastSiege.time.time + duration - currentTimeMillis()
+				player.information(
+					"Your nation has already besieged stations in the past $daysPerSiege day(s)!" +
+						" Time until next siege: ${getDurationBreakdownString(remainingTime)}"
+				)
+				player.information(
+					"Note: Please do not try to bypass this restriction using " +
+						"exploits such as splitting into multiple nations. This would be considered exploiting and against the rules."
+				)
+				return@asyncLocked
+			}
+		}
+
 		val station = Regions.findFirstOf<RegionCapturableStation>(player.location)
 			?: return@asyncLocked player.userError("You must be within a station's area to siege it.")
 
@@ -204,32 +231,8 @@ object StationSieges : IonServerComponent() {
 		}
 
 		if (!isInBigShip(player)) {
-			player.userError("You cannot siege in a ship smaller then 2000 blocks.")
+			player.userError("You cannot siege in a ship smaller then $MINIMUM_SIEGE_SIZE blocks.")
 			return@asyncLocked
-		}
-
-		// only allow nations to siege multiple times within the time period if it's simultaneous
-		if (sieges.none { Bukkit.getPlayer(it.siegerId.uuid)?.let(PlayerCache::get)?.nationOid == nation }) {
-			val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
-			val duration = (TimeUnit.DAYS.toMillis(1) * daysPerSiege).toLong()
-			val date = Date(currentTimeMillis() - duration)
-
-			val lastSiege: CapturableStationSiege? = CapturableStationSiege
-				.find(and(CapturableStationSiege::nation eq nation, CapturableStationSiege::time gt date))
-				.maxBy { it.time }
-
-			if (lastSiege != null) {
-				val remainingTime = lastSiege.time.time + duration - currentTimeMillis()
-				player.information(
-					"Your nation has already besieged stations in the past $daysPerSiege day(s)!" +
-						" Time until next siege: ${getDurationBreakdown(remainingTime)}"
-				)
-				player.information(
-					"Note: Please do not try to bypass this restriction using " +
-						"exploits such as splitting into multiple nations. This would be considered exploiting and against the rules."
-				)
-				return@asyncLocked
-			}
 		}
 
 		if (ConfigurationFiles.featureFlags().economy) {
@@ -357,7 +360,7 @@ object StationSieges : IonServerComponent() {
 
 	private fun isInBigShip(player: Player): Boolean {
 		val starship = ActiveStarships.findByPilot(player) ?: return false
-		return starship.initialBlockCount >= StarshipType.CORVETTE.minSize
+		return starship.initialBlockCount >= MINIMUM_SIEGE_SIZE
 	}
 
 	fun getAllies(sieger: Player, stationId: Oid<CapturableStation>): List<Player> {
@@ -411,7 +414,7 @@ object StationSieges : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onStarshipUnpilot(event: StarshipUnpilotedEvent) {
+	fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
 		val player = (event.starship.controller as? PlayerController)?.player ?: return
 		tryEndSiege(player)
 	}

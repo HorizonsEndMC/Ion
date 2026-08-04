@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
@@ -39,7 +40,10 @@ class DecomposeTask(
 		taskEntity.userManager.clear()
 	}
 
+	override var isDisabled: Boolean = false
+
 	override fun onDisable() {
+		isDisabled = true
 		taskEntity.userManager.getUserPlayer()?.information("Decomposer broke $totalBlocksBroken blocks.")
 		taskEntity.userManager.clear()
 	}
@@ -136,14 +140,15 @@ class DecomposeTask(
 	private fun breakBlock(block: Block, storage: Inventory, player: Player): Boolean {
 		val event = BlockBreakEvent(block, player)
 		event.isDropItems = false
+		CustomBlockListeners.noDropEvents.add(event)
 
 		if (!event.callEvent()) {
 			totalBlocksSkiped++
-			return false
+			return true
 		}
 
 		val blockData = block.blockData
-		val customBlock = CustomBlocks.getByBlockData(blockData)
+		val customBlock = blockData.customBlock
 
 		// get drops BEFORE breaking
 		var drops: List<ItemStack> = block.drops.toList()

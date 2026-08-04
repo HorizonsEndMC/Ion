@@ -7,7 +7,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import org.bukkit.Bukkit
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser

@@ -1,17 +1,19 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
-import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMaps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyBlockUtils.getRotatedBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
+import net.starlegacy.javautil.BannerUtils
+import net.starlegacy.javautil.BannerUtils.BannerData
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
-import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.minecraft.world.level.block.Rotation
@@ -27,15 +29,16 @@ import kotlin.math.sin
 abstract class ShipFactoryBlockProcessor(
 	protected val blueprint: Blueprint,
 	protected val settings: ShipFactorySettings,
-	protected open val entity: ShipFactoryEntity
+	val entity: ShipFactoryEntity
 ) {
 	protected val clipboard: Clipboard by lazy { blueprint.loadClipboard() }
 
 	// Use a RB tree map for key ordering.
-	protected val blockMap = Object2ObjectRBTreeMap<BlockKey, BlockData>()
-	protected val signMap = Object2ObjectRBTreeMap<BlockKey, SignData>()
+	val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
+	protected val signMap: MutableMap<BlockKey, SignData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
+	protected val bannerMap: MutableMap<BlockKey, BannerData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 
-	protected val blockQueue = ConcurrentLinkedQueue<Long>()
+	var blockQueue = ConcurrentLinkedQueue<Long>()
 
 	protected open val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
 	protected open val target = calculateTarget()
@@ -58,6 +61,10 @@ abstract class ShipFactoryBlockProcessor(
 
 			if (data.material.isSign) {
 				signMap[worldKey] = SignUtils.readSignData(baseBlock.nbt)
+			}
+
+			if (data.material.name.endsWith("_BANNER")) {
+				bannerMap[worldKey] = BannerUtils.readBannerData(baseBlock.nbt)
 			}
 
 			blockQueue.add(worldKey)
@@ -120,13 +127,6 @@ abstract class ShipFactoryBlockProcessor(
 	}
 
 	protected fun getRotatedBlockData(data: BlockData): BlockState {
-		val nms = data.nms
-		val customBlock = CustomBlocks.getByBlockState(nms)
-		if (customBlock != null) {
-			return CustomBlocks.getRotated(customBlock, nms, getNMSRotation())
-		}
-
-		val rotation = getNMSRotation()
-		return nms.rotate(rotation)
+		return getRotatedBlockData(data, getNMSRotation())
 	}
 }

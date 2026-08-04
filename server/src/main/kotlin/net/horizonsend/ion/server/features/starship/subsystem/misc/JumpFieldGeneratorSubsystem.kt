@@ -1,0 +1,10 @@
+package net.horizonsend.ion.server.features.starship.subsystem.misc
+
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
+import org.bukkit.block.Sign
+
+class JumpFieldGeneratorSubsystem(starship: ActiveStarship, sign: Sign, multiblock: JumpFieldGeneratorMultiblock) :
+	AbstractMultiblockSubsystem<JumpFieldGeneratorMultiblock>(starship, sign, multiblock)

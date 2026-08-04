@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -18,13 +19,10 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
-class NavigationGalacticMapGui(val player: Player) {
-
-    private var currentWindow: Window? = null
+class NavigationGalacticMapGui(viewer: Player) : InvUIWindowWrapper(viewer) {
     private val gui = Gui.empty(9, 6)
 
     companion object {
@@ -66,16 +64,16 @@ class NavigationGalacticMapGui(val player: Player) {
             GuiItem.EMPTY_STAR
         ))
 
-        gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(player))
+        gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(viewer))
 
         gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem(Component.text("Search For Destination"), GuiItem.MAGNIFYING_GLASS) {
                 _: ClickType, player: Player, _: InventoryClickEvent ->
             NavigationGuiCommon.openSearchMenu(player, player.world, gui) {
-                NavigationGalacticMapGui(player).openMainWindow()
+                NavigationGalacticMapGui(player).openGui()
             }
         })
 
-        NavigationGuiCommon.updateGuiRoute(gui, player)
+        NavigationGuiCommon.updateGuiRoute(gui, viewer)
 
         return gui
     }
@@ -92,11 +90,11 @@ class NavigationGalacticMapGui(val player: Player) {
         _: ClickType, _: Player, _: InventoryClickEvent ->
         val world = Bukkit.getWorld(worldName)
         if (world == null) {
-            player.serverError("World '${worldName}' not found")
+            viewer.serverError("World '${worldName}' not found")
             return@CustomControlItem
         }
 
-        NavigationSystemMapGui(player, world).openMainWindow()
+        NavigationSystemMapGui(viewer, world).openGui()
     }
 
     private fun enterSystemComponent(): Component = template(
@@ -107,7 +105,7 @@ class NavigationGalacticMapGui(val player: Player) {
         "Click"
     ).decoration(TextDecoration.ITALIC, false)
 
-    private fun createText(): Component {
+	override fun buildTitle(): Component {
         val header = "Galactic Map"
         val guiText = GuiText(header)
 
@@ -119,15 +117,5 @@ class NavigationGalacticMapGui(val player: Player) {
         return guiText.build()
     }
 
-    fun openMainWindow() {
-        val gui = createGui()
-
-        val window = Window.single()
-            .setViewer(player)
-            .setGui(gui)
-            .setTitle(AdventureComponentWrapper(createText()))
-            .build()
-
-        currentWindow = window.apply { open() }
-    }
+	override fun buildWindow(): Window = normalWindow(createGui())
 }

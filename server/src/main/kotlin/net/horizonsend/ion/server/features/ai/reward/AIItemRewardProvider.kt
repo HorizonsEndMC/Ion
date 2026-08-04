@@ -28,14 +28,16 @@ class AIItemRewardProvider(
 
 		Tasks.sync {
 			items.keys.forEach {
-				Bazaars.dropItems(it, it.amount, damager.player)
+				Bazaars.giveOrDropItems(it, it.amount, damager.player)
 
-				damager.sendMessage(template(
-					message = Component.text("Received {0}x {1} for defeating {2}", NamedTextColor.GREEN),
-					it.amount,
-					it.displayName(),
-					starship.getDisplayName()
-				))
+				damager.sendMessage(
+					template(
+						message = Component.text("Received {0}x {1} for defeating {2}", NamedTextColor.GREEN),
+						it.amount,
+						it.displayName(),
+						starship.getDisplayName()
+					)
+				)
 			}
 		}
 	}

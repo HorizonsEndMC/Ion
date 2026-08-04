@@ -9,13 +9,18 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.TradeWorldTerritory
 import net.horizonsend.ion.common.database.string
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.CityContext
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 
 object TradeCities : IonServerComponent() {
 	private val cities: MutableMap<Oid<Territory>, TradeCityData> = ConcurrentHashMap()
+	val scheduledHours = mutableMapOf<Int, Oid<Territory>>()
 
 	override fun onEnable() {
 		val settlementType = TradeCityType.SETTLEMENT
@@ -78,15 +83,39 @@ object TradeCities : IonServerComponent() {
 			val oid = change.oid
 			cities.filter { it.value.cityOid == oid }.forEach { cities.remove(it.value.territoryId) }
 		}
+
+		TradeWorldTerritory.all().forEach { tradeWorld ->
+			// Mark the backing territory's city entry as a trade world type
+			cities[tradeWorld.backingTerritory]?.let { cityData ->
+				// The NPC loading already added it, just update the type
+				cities[tradeWorld.backingTerritory] = cityData.copy(type = TradeCityType.TRADE_WORLD)
+			}
+		}
 	}
 
 	fun getAll(): List<TradeCityData> = cities.values.toList()
 
-	fun isCity(territory: RegionTerritory): Boolean {
-		return cities.containsKey(territory.id)
+	fun isCity(territory: RegionTerritory): Boolean = cities.containsKey(territory.id)
+	fun getIfCity(territory: RegionTerritory): TradeCityData? = cities[territory.id]
+
+	fun applyConvoySchedule(city: TradeCityData, hour: Int, template: AIConvoyTemplate<CityContext>): Boolean {
+		if (hour !in 0..23) return false
+
+		val currentHolder = scheduledHours[hour]
+		if (currentHolder != null && currentHolder != city.territoryId) return false
+
+		val now = System.currentTimeMillis()
+		city.scheduledHour = hour
+		city.convoyTemplate = template
+		city.configEffectiveAfter = now + 7 * 24 * 60 * 60 * 1000L
+		scheduledHours[hour] = city.territoryId
+		return true
 	}
 
-	fun getIfCity(territory: RegionTerritory): TradeCityData? {
-		return cities[territory.id]
+	fun getRemainingDays(city: TradeCityData): Long {
+		val now = System.currentTimeMillis()
+		val future = city.configEffectiveAfter ?: return 0
+		val delta = (future - now).coerceAtLeast(0)
+		return delta / (24 * 60 * 60 * 1000L)
 	}
 }

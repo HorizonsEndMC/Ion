@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
-import java.util.*
+import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -122,8 +122,53 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 		PlayerXPLevelCache.setLevel(playerId, newLevel)
 
 		sender.success("Changed $player's Level from $oldLevel to $newLevel.")
-		sender.success("Changed $player's SLXP from $oldXP to $newXp.")
+		sender.success("Changed $player's HEXP from $oldXP to $newXp.")
 		sender.success("Subtracted $amount from ${sender.name}.")
+	}
+
+	@Subcommand("power get")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.power")
+	fun onPowerGet(sender: CommandSender, player: String) = asyncCommand(sender) {
+		val playerId: UUID = resolveOfflinePlayer(player)
+
+		val power: Int = SLPlayer.getPower(playerId.slPlayerId) ?: throw InvalidCommandArgument("Player not stored")
+
+		sender.information("$player has $power power")
+
+		Bukkit.getPlayer(playerId)?.let {
+			val cached: PlayerXPLevelCache.CachedAdvancePlayer = PlayerXPLevelCache[playerId]
+				?: throw ConditionFailedException("$player has no cache!")
+
+			if (cached.power != power) {
+				throw ConditionFailedException("$player's cached power is ${cached.power} instead of $power")
+			}
+		}
+	}
+
+	@Subcommand("power give")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.power")
+	fun onPowerGive(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
+		val playerId: UUID = resolveOfflinePlayer(player)
+
+		val currentPower = SLPlayer.getPower(playerId.slPlayerId) ?: throw InvalidCommandArgument("Player not stored")
+		val powerToAdd = (currentPower + amount).coerceIn(-20, 20) - currentPower // ensure that power cannot go below -20 or above 20
+
+		PlayerXPLevelCache.addPower(playerId, powerToAdd)
+
+		val newPower: Int = PlayerXPLevelCache.fetchPower(playerId)
+		sender.success("Gave $powerToAdd power to $player. Now they have $newPower XP.")
+	}
+
+	@Subcommand("power set")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.power")
+	fun onPowerSet(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
+		val playerId = resolveOfflinePlayer(player)
+		val oldPower = PlayerXPLevelCache.fetchPower(playerId)
+		SLXP.setPowerAsync(playerId, amount.coerceIn(-20, 20))
+		sender.success("Changed $player's power from $oldPower to $amount.")
 	}
 
 	@Suppress("Unused")
@@ -197,6 +242,16 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 			sender.information(
 				"${SLPlayer.getName(key)} has ${extraCredits.toCreditsString()} extra money from $extraCrates"
 			)
+		}
+	}
+
+	@Suppress
+	@Subcommand("powerfixer")
+	fun onPowerFixer(sender: CommandSender) = asyncCommand(sender) {
+		for (player in SLPlayer.all()) {
+			if (SLPlayer.getPower(player._id) == null) {
+				SLPlayer.setPower(player._id, 20)
+			}
 		}
 	}
 }

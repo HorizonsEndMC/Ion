@@ -1,20 +1,38 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
-import net.horizonsend.ion.server.features.starship.BoardingRamps
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import java.util.Locale
 import java.util.UUID
 
-enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String?>) {
-	CRUISE("[cruise]", arrayOf("&3Cruise".colorize(), "&8Control".colorize(), "&c- Look Direction".colorize(), "&c- /cruise ".colorize())) {
+enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
+	CRUISE("[cruise]", arrayOf(
+		text("Cruise", AQUA),
+		text("Control", DARK_GRAY),
+		text("- Look Direction", RED),
+		text("- /cruise ", RED))) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
 			val controller = ActiveStarships.findByPilot(player)?.controller ?: return
@@ -28,22 +46,25 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 			}
 		}
 	},
-	HELM("[helm]", arrayOf("\\  ||  /", "==      ==", "/  ||  \\", "&cPress Q or F".colorize())) {
+	HELM("[helm]", arrayOf(
+		text("\\  ||  /"),
+		text("==      =="),
+		text("/  ||  \\"),
+		text("Press Q or F", RED))) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
 
 			starship.tryRotate(rightClick)
 		}
 	},
-	NODE("[node]", arrayOf("&6Node".colorize(), null, null, null)),
-	WEAPON_SET("[weaponset]", arrayOf("&4Weapon Set".colorize(), null, null, null)) {
+	NODE("[node]", arrayOf(text("Node", GOLD), null, null, null)),
+	WEAPON_SET("[weaponset]", arrayOf(text("Weapon Set", DARK_RED), null, null, null)) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPlayerStarship(player) ?: return
-			val lines = sign.lines
-			val set = lines[1].lowercase(Locale.getDefault())
+			val set = sign.front().line(1).plainText().lowercase(Locale.getDefault())
 
 			if (!starship.weaponSets.containsKey(set)) {
-				player msg "&cNo nodes for $set"
+				player.userError("No nodes for $set")
 				return
 			}
 
@@ -51,7 +72,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 
 			if (current != null) {
 				if (current == player.uniqueId) {
-					player msg "&7Released weapon set &b$set"
+					player.information("Released weapon set $set")
 					return
 				}
 
@@ -60,58 +81,65 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 
 			starship.weaponSetSelections[player.uniqueId] = set
 
-			player msg "&7Took control of weapon set &b$set"
+			player.information("Took control of weapon set $set")
 		}
 	},
-	POWER_MODE("[powermode]", arrayOf("&c<&a<&1<&dPower Mode&1>&a>&c>".colorize(), null, null, null)) {
+	POWER_MODE("[powermode]", arrayOf(
+		text("<", RED)
+			.append(text("<", GREEN))
+			.append(text("<", DARK_BLUE))
+			.append(text("Power Mode", LIGHT_PURPLE))
+			.append(text(">", DARK_BLUE))
+			.append(text(">", GREEN))
+			.append(text(">", RED)),
+		null, null, null)) {
 		private fun getPower(line: String): Int = line.split(" ")[1].toInt()
 
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
-			val lines = sign.lines
-
-			val shield = getPower(lines[1])
-			val weapon = getPower(lines[2])
-			val thruster = getPower(lines[3])
+			val shield = getPower(sign.front().line(1).plainText())
+			val weapon = getPower(sign.front().line(2).plainText())
+			val thruster = getPower(sign.front().line(3).plainText())
 
 			player.performCommand("powermode $shield $weapon $thruster")
 		}
 
 		private val prefixes = arrayOf(
-			"n/a",
-			"&3Shield&8:&b ".colorize(),
-			"&4Weapon&8:&c ".colorize(),
-			"&6Thruster&8:&e ".colorize()
+			text("n/a"),
+			text("Shield", DARK_AQUA).append(text(":", DARK_GRAY)).append(text(" ", AQUA)),
+			text("Weapon", DARK_RED).append(text(":", DARK_GRAY)).append(text(" ", RED)),
+			text("Thruster", GOLD).append(text(":", DARK_GRAY)).append(text(" ", YELLOW))
 		)
 
 		override fun onDetect(player: Player, sign: Sign): Boolean {
 			var total = 0
 
 			for (i in 1..3) {
-				val text = sign.getLine(i)
+				val lineText = sign.front().line(i).plainText()
 				try {
-					val number = Integer.parseInt(text)
+					val number = Integer.parseInt(lineText)
 					if (number < 10) {
-						player.msg("Percentage must be at least 10")
+						player.userError("Percentage must be at least 10")
 						return false
 					} else if (number > 50) {
-						player.msg("Percentage must be no more than 50")
+						player.userError("Percentage must be no more than 50")
 						return false
 					}
 					total += number
-					sign.setLine(i, prefixes[i] + number)
-				} catch (e: NumberFormatException) {
-					player.msg("$text isn't a number")
+					sign.front().line(i, prefixes[i].append(text(number)))
+				} catch (_: NumberFormatException) {
+					player.userError("$lineText isn't a number")
 					return false
 				}
 			}
 
 			if (total != 100) {
-				player.msg("Total is $total, but it needs to be 100")
+				player.userError("Total is $total, but it needs to be 100")
 				return false
 			}
 			return true
 		}
 	},
+	/*
 	BOARDING_RAMP("[boardingramp]", arrayOf(BoardingRamps.FIRST_LINE, null, null, null)) {
 		override fun onDetect(player: Player, sign: Sign): Boolean {
 			return BoardingRamps.shut(player, sign)
@@ -121,13 +149,14 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 			BoardingRamps.toggle(player, sign)
 		}
 	},
-	DIRECT_CONTROL("[directcontrol]", arrayOf("&2Direct".colorize(), "&8Control".colorize(), null, null)) {
+	 */
+	DIRECT_CONTROL("[directcontrol]", arrayOf(text("Direct", DARK_GREEN), text("Control", DARK_GRAY), null, null)) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			MiscStarshipCommands.onDirectControl(player)
 		}
 	},
 	// Because I couldn't figure out how to make the original enum accept a [dc]
-	DIRECT_CONTROL_2("[dc]", arrayOf("&2Direct".colorize(), "&8Control".colorize(), null, null)) {
+	DIRECT_CONTROL_2("[dc]", arrayOf(text("Direct", DARK_GREEN), text("Control", DARK_GRAY), null, null)) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			MiscStarshipCommands.onDirectControl(player)
 		}
@@ -141,7 +170,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 		val activeStarship = ActiveStarships.findByPassenger(player)
 
 		if (activeStarship == null) {
-			player msg "&cYou can only use this in an active player starship"
+			player.userError("You can only use this in an active player starship")
 			return null
 		}
 
@@ -152,12 +181,12 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 		val starship = ActiveStarships.findByPassenger(player)
 
 		if (starship == null) {
-			player msg "&cYou can only use this in an active player starship"
+			player.userError("You can only use this in an active player starship")
 			return null
 		}
 
 		if (starship.playerPilot != player) {
-			player msg "&cYou must be the pilot of the starship to do this!"
+			player.userError("You must be the pilot of the starship to do this!")
 			return null
 		}
 
@@ -169,8 +198,8 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 			// only message if the player is still online
 			val currentPlayer = Bukkit.getPlayer(current)
 			if (currentPlayer != null && starship.isPassenger(current)) {
-				currentPlayer msg "&e${player.name} took over weapon set $set from you"
-				player msg "&eTook weapon set $set from ${currentPlayer.name}"
+				currentPlayer.information("${player.name} took over weapon set $set from you")
+				player.information("Took weapon set $set from ${currentPlayer.name}")
 			}
 		}
 	}

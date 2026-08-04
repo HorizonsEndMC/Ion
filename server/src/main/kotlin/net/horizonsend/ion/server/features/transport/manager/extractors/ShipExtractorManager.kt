@@ -5,13 +5,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 
 class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager() {
@@ -64,7 +58,8 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 		// We can disregard the extractor data
 		// Its more so a convenience thing
 		val byChunk = extractors.keys.groupBy { key ->
-			chunkKey((getX(key) + manager.starship.centerOfMass.x).shr(4), (getZ(key) + manager.starship.centerOfMass.z).shr(4))
+			val (worldX, _, worldZ) = manager.getGlobalCoordinate(toVec3i(key))
+			chunkKey(worldX.shr(4), worldZ.shr(4))
 		}
 
 		for ((chunkKey, entries) in byChunk) {
@@ -72,7 +67,9 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 
 			for (entry in entries) {
 				if (!verifyExtractor(manager.starship.world, entry)) continue
+
 				val worldCoord = toBlockKey(manager.getGlobalCoordinate(toVec3i(entry)))
+
 				ionChunk.transportNetwork.extractorManager.registerExtractor(worldCoord)
 			}
 		}

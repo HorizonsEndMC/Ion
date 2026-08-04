@@ -1,19 +1,18 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.HeavyTurretBalancing.HeavyTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
-sealed class HeavyTurretMultiblock : TurretMultiblock() {
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
+sealed class HeavyTurretMultiblock : TurretMultiblock<HeavyTurretProjectileBalancing>() {
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): HeavyTurretWeaponSubsystem {
 		return HeavyTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
 
@@ -22,7 +21,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getSign(): Int
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.heavyTurret
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<HeavyTurretProjectileBalancing> = starship.balancingManager.getWeapon(HeavyTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
@@ -83,7 +82,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
-				x(+0).type(IRON_TRAPDOOR)
+				x(+0).anyTrapdoor()
 				x(+1).endRod()
 			}
 		}

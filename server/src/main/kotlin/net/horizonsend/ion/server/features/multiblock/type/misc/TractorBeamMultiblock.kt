@@ -5,6 +5,7 @@ import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.event.multiblock.PlayerUseTractorBeamEvent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
@@ -23,10 +24,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor.color
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.world.phys.shapes.VoxelShape
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound as SoundType
@@ -111,7 +117,10 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 				if (type.isAir) continue
 				if (!type.isCollidable) continue
 
-				val newLocation = Location(player.world, player.location.x, block.y + 1.0, player.location.z)
+				val blockShape: VoxelShape = block.blockData.nms.getCollisionShape(world.minecraft, BlockPos(block.x, block.y, block.z))
+				val top = blockShape.max(Direction.Axis.Y)
+
+				val newLocation = Location(player.world, player.location.x, block.y + top, player.location.z)
 
 				finishTeleport(player, newLocation, event, SoundType.BLOCK_PISTON_CONTRACT, "Descending")
 				break
@@ -124,16 +133,21 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 
 			for (y in originY + 1..<player.world.maxHeight) {
 				val block = getBlockIfLoaded(world, x, y, z) ?: return player.debug("Block not loaded, cancelled")
+				val blockType = block.getTypeSafe() ?: return player.debug("Block type could not be obtained, cancelled")
 
-				if (block.getTypeSafe()?.isAir == true) {
-					continue
-				}
+				if (blockType.isAir) continue
+				if (!blockType.isCollidable) continue
 
 				if (!checkMultiblock(block)) {
-					if (block.getTypeSafe()?.isAir == false) break // obstructed
+					if (!blockType.isAir && blockType.isCollidable) break // obstructed
 
 					continue
 				}
+
+				val above = getBlockIfLoaded(world, x, y + 1, z) ?: return player.debug("Block above not loaded, cancelled")
+				val aboveType = above.getTypeSafe() ?: return player.debug("Block above type could not be obtained, cancelled")
+
+				if (!aboveType.isAir && aboveType.isCollidable) break // obstructed
 
 				val newLocation = Location(player.world, player.location.x, block.y + 1.0, player.location.z)
 
@@ -142,12 +156,14 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 			}
 		}
 
-		private fun finishTeleport(player: Player, location: Location, event: Cancellable?, soundType: SoundType, verb: String) {
-			location.pitch = player.location.pitch
-			location.yaw = player.location.yaw
+		private fun finishTeleport(player: Player, destination: Location, event: Cancellable?, soundType: SoundType, verb: String) {
+			if (!PlayerUseTractorBeamEvent(player, destination).callEvent()) return
+
+			destination.pitch = player.location.pitch
+			destination.yaw = player.location.yaw
 
 			player.teleport(
-				location,
+				destination,
 				TeleportCause.PLUGIN,
 				TeleportFlag.Relative.VELOCITY_ROTATION
 			)

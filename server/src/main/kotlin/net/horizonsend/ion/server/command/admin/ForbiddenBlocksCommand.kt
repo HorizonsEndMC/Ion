@@ -30,7 +30,7 @@ object ForbiddenBlocksCommand : SLCommand() {
 		val chunk = sender.world.ion
 		val blocks = chunk.detectionForbiddenBlocks
 
-		val mask = WorldEdit.getInstance().maskFactory.parseFromInput(maskInput ?: "", ParserContext()) ?: Masks.alwaysTrue()
+		val mask = WorldEdit.getInstance().maskFactory.parseFromInput(maskInput ?: "!air", ParserContext()) ?: Masks.alwaysTrue()
 		(mask as? AbstractExtentMask)?.extent = BukkitAdapter.adapt(sender.world)
 
 		val new = LongOpenHashSet()

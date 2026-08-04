@@ -8,6 +8,6 @@ data class TradeConfiguration(
 ) {
 	@Serializable
 	data class CollectionConfiguration(
-		val maxProfitPerStationPerDay: Double = 30_000.0
+		val maxProfitPerStationPerDay: Double = 100_000.0
 	)
 }

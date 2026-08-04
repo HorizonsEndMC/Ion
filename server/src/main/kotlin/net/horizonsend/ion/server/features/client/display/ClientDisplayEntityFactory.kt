@@ -2,9 +2,11 @@ package net.horizonsend.ion.server.features.client.display
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.level.Level
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftBlockDisplay
 import org.bukkit.craftbukkit.entity.CraftItemDisplay
@@ -27,8 +29,8 @@ object ClientDisplayEntityFactory {
      * @return the TextDisplay entity object
      * @param player the player that the entity will be visible to
      */
-    fun createTextDisplay(player: Player): CraftTextDisplay =
-        CraftTextDisplay(player.minecraft.server.server, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
+	fun createTextDisplay(player: Player): CraftTextDisplay =
+		CraftTextDisplay(IonServer.server as CraftServer, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
 
     /**
      * Converts a Bukkit TextDisplay to a NMS TextDisplay.
@@ -83,8 +85,8 @@ object ClientDisplayEntityFactory {
      * @return the ItemDisplay entity object
      * @param player the player that the entity will be visible to
      */
-    fun createItemDisplay(player: Player): CraftItemDisplay =
-        CraftItemDisplay(player.minecraft.server.server, Display.ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()))
+    fun createItemDisplay(level: Level): CraftItemDisplay =
+        CraftItemDisplay(MinecraftServer.getServer().server, Display.ItemDisplay(EntityType.ITEM_DISPLAY, level))
 
     fun ItemDisplay.getNMSData(): Display.ItemDisplay = (this as CraftItemDisplay).handle
 

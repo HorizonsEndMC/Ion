@@ -24,7 +24,7 @@ object CompoundTagType : PersistentDataType<PersistentDataContainer, CompoundTag
 	override fun toPrimitive(complex: CompoundTag, context: PersistentDataAdapterContext): PersistentDataContainer {
 		val primitive = context.newPersistentDataContainer() as CraftPersistentDataContainer
 
-		for (key in complex.allKeys) {
+		for (key in complex.keySet()) {
 			val tag = complex.get(key)
 			primitive.raw
 

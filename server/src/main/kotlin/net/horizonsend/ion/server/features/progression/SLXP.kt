@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.progression
 
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.progression.SLXP.getCached
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -36,10 +37,26 @@ object SLXP : IonServerComponent() {
 		val player = Bukkit.getPlayer(uuid) ?: return@async
 
 		if (message) {
-			player msg "&5Received &b$amount&5 SL XP!"
+			player.success("Received $amount HEXP!")
 		}
 
 		Levels.markForCheck(uuid)
+	}
+
+	/**
+	 * Gives [amount] of power to the specified player's [uuid], then sends them a [message] if online.
+	 * Not guaranteed to update instantly.
+	 */
+	fun addPowerAsync(uuid: UUID, amount: Int, message: Boolean = true): Future<*> = PlayerXPLevelCache.async {
+		val currentPower = fetchPower(uuid)
+		val powerToAdd = (currentPower + amount).coerceIn(-20, 20) - currentPower // ensure that power cannot go below -20 or above 20
+		addPower(uuid, powerToAdd)
+
+		val player = Bukkit.getPlayer(uuid) ?: return@async
+
+		if (message) {
+			player.success("${if(amount > 0) ("Gained") else ("Lost")} $amount power")
+		}
 	}
 
 	/**
@@ -60,6 +77,10 @@ object SLXP : IonServerComponent() {
 	 * @param newValue What to set the XP to
 	 */
 	fun setAsync(uuid: UUID, newValue: Int): Future<*> = PlayerXPLevelCache.async { setSLXP(uuid, newValue) }
+
+	fun setPowerAsync(uuid: UUID, newValue: Int): Future<*> = PlayerXPLevelCache.async {
+		setPower(uuid, newValue)
+	}
 
 	/**
 	 * Get cached XP of an online player.

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.progression
 
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.player.CombatNPCKillEvent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -59,7 +59,7 @@ object ShipKillXP : IonServerComponent() {
 	private fun onShipKill(starship: ActiveStarship) {
 		log.info(
 			"""
-				ship "${starship.getDisplayNamePlain()}" killed at ${starship.centerOfMass}.
+				ship "${starship.getDisplayNamePlain()}" killed at ${starship.centerOfMass}, ${starship.world.name}.
 				Pilot: ${starship.controller}.
 				Damagers: ${starship.damagers.entries.joinToString { "(Damager: ${it.key}, Points: ${it.value.points})" }}
 				Rewards provider: ${starship.rewardsProviders.joinToString { it.javaClass.simpleName }}

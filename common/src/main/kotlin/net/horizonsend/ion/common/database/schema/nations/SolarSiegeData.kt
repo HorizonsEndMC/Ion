@@ -30,7 +30,9 @@ data class SolarSiegeData(
 
 	val declareTime: Date = Date(System.currentTimeMillis()),
 
-	val complete: Boolean = false
+	val complete: Boolean = false,
+
+	val availableRewards: MutableMap<String, Int> = mutableMapOf()
 ) : DbObject {
 	companion object : OidDbObjectCompanion<SolarSiegeData>(SolarSiegeData::class, setup = {
 		ensureIndex(SolarSiegeData::declareTime)

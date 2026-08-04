@@ -45,8 +45,6 @@ sealed class Role<Parent : DbObject, Permission : Enum<Permission>> :
 	abstract var weight: Int
 	abstract val permissions: MutableSet<Permission>
 	abstract val members: MutableSet<SLPlayerId>
-
-	val coloredName get() = "$color$name"
 }
 
 abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>>(
@@ -162,7 +160,9 @@ data class SettlementRole(
 		CREATE_STATION,
 		MANAGE_STATION,
 		DELETE_STATION,
-		TAKE_SHIP_OWNERSHIP
+		TAKE_SHIP_OWNERSHIP,
+		BRODCAST,
+		MANAGE_NPCS,
 	}
 }
 
@@ -208,6 +208,7 @@ data class NationRole(
 		MANAGE_STATION,
 		DELETE_STATION,
 		TAKE_SHIP_OWNERSHIP,
-		START_NATION_SIEGE
+		START_NATION_SIEGE,
+		BRODCAST,
 	}
 }

@@ -9,11 +9,13 @@ import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toText
+import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.GuiItems.createButton
+import net.horizonsend.ion.server.features.gui.custom.starship.pilots.ManageNationsMenu
 import net.horizonsend.ion.server.features.gui.custom.starship.pilots.ManagePilotsMenu
 import net.horizonsend.ion.server.features.gui.custom.starship.type.ChangeTypeButton
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -27,6 +29,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -53,7 +56,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	fun open() {
 		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 		val title = if (state != null)
-			(data as? PlayerStarshipData)?.name?.miniMessage() ?: data.starshipType.actualType.displayNameComponent
+			data.name?.miniMessage() ?: data.starshipType.actualType.displayNameComponent
 			else text("Starship Computer")
 
 		Window.single()
@@ -66,7 +69,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 	private fun formatGui(): Gui {
 		val gui = Gui.normal()
-			.setStructure("1 2 3 4 . . . 5 6")
+			.setStructure("1 2 7 3 4 . . 5 6")
 			.addIngredient('1', reDetectButton)
 			.addIngredient('2', changePilotsButton)
 			.addIngredient('3', changeTypeButton)
@@ -75,6 +78,10 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 		if (canTakeOwnership(player, data)) {
 			gui.addIngredient('5', takeOwnershipButton)
+		}
+
+		if (data.captain == player.slPlayerId) {
+			gui.addIngredient('7', changeNationsButton)
 		}
 
 		return gui.build()
@@ -112,6 +119,8 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	}
 
 	private val changePilotsButton = ManagePilotsMenu(this)
+
+	private val changeNationsButton = ManageNationsMenu(this)
 
 	private val changeTypeButton = ChangeTypeButton(this)
 
@@ -196,6 +205,8 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 				} catch (e: Exception) {
 					e.printStackTrace()
 					player.serverErrorActionMessage("An error occurred while detecting")
+					player.sendMessage(formatException(e))
+
 					future.complete(DetectionResult(listOf(
 						text("There was an unknown error during detection.").itemName
 							.hoverEvent(text(e.message ?: "NULL")),

@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.economy.chestshops.ChestShops
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
@@ -13,62 +14,78 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazine
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.IndustrialInvulnerabilityUnitMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.FauxReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.DisruptorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpBeaconMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AbstractCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ShieldCommandBurstMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.LargeReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.ShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.DisruptorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityUnitSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.shield.BubbleShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.EventShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterType
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
+import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.EAST
 import org.bukkit.block.BlockFace.NORTH
-import org.bukkit.block.BlockFace.NORTH_EAST
-import org.bukkit.block.BlockFace.NORTH_WEST
-import org.bukkit.block.BlockFace.SOUTH
-import org.bukkit.block.BlockFace.SOUTH_EAST
-import org.bukkit.block.BlockFace.SOUTH_WEST
-import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.HangingSign
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
-import java.util.EnumSet
 import java.util.LinkedList
 import java.util.Locale
 
@@ -80,7 +97,7 @@ object SubsystemDetector {
 		val potentialWeaponBlocks = LinkedList<Block>()
 		val potentialSignBlocks = LinkedList<Block>()
 		val potentialLandingGearBlocks = LinkedList<Block>()
-		val potentialTurretBases = LinkedList<Block>()
+		val potentialDirectionBlocks = LinkedList<Block>()
 
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.world.getBlockAt(x, y, z)
@@ -95,14 +112,14 @@ object SubsystemDetector {
 				type == Material.REDSTONE_LAMP ||
 				type == Material.SEA_LANTERN ||
 				type == Material.MAGMA_BLOCK ||
-				type.isFroglight
+				type.isFroglight ||
+				type == Material.SHROOMLIGHT
 			) {
 				potentialThrusterBlocks += block
 			}
 
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
-
-			if (type == Material.LOOM) potentialTurretBases.add(block)
+			if (type == Material.LECTERN) potentialDirectionBlocks.add(block)
 		}
 
 		val oversizeModifier = if (starship.initialBlockCount > starship.type.maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
@@ -118,9 +135,9 @@ object SubsystemDetector {
 		for (block in potentialLandingGearBlocks) {
 			detectLandingGear(starship, block)
 		}
-//		for (block in potentialTurretBases) {
-//			detectCustomTurretBase(starship, block)
-//		}
+		for (block in potentialDirectionBlocks) {
+			detectDirectionOverride(starship, block)
+		}
 
 		// Create entities for the subsystems before the nodes are checked
 		processMultiblockEntities(starship)
@@ -137,13 +154,25 @@ object SubsystemDetector {
 		filterSubsystems(starship)
 
 		// Do this after all subsystems are detected so that they can be captured
-		starship.customTurrets.forEach { it.detectTurret() }
+		if (ConfigurationFiles.featureFlags().customTurrets) {
+			starship.customTurrets.forEach { it.detectTurret() }
+
+			// Detect if any turrets share blocks
+			if (starship.customTurrets.any { turret1 -> starship.customTurrets.minus(turret1).any { turret2 -> turret1.blocks.intersect(LongOpenHashSet(turret2.blocks)).isNotEmpty() } }) {
+				throw ActiveStarshipFactory.StarshipActivationException("Custom turrets share blocks!")
+			}
+		}
 	}
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
 
-		if (MultiblockAccess.getFast(sign) is AreaShield) {
+		if (ChestShops.getShop(sign) != null) {
+			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with chest shops!")
+		}
+
+		val multiblock = MultiblockAccess.getFast(sign)
+		if (multiblock is AreaShield) {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
 		}
 
@@ -152,7 +181,7 @@ object SubsystemDetector {
 			val location = sign.block.getRelative(inwardFace).location
 			val pos = Vec3i(location)
 			val weaponSubsystems = starship.subsystems
-				.filterIsInstance<WeaponSubsystem>()
+				.filterIsInstance<FiredSubsystem>()
 				.filter { it.pos == pos }
 
 			for (weaponSubsystem in weaponSubsystems) {
@@ -167,7 +196,9 @@ object SubsystemDetector {
 			return
 		}
 
-		val multiblock = MultiblockAccess.getFast(sign) ?: return
+		if (multiblock == null) return
+
+		if (!multiblock.signMatchesStructure(sign)) return
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
@@ -179,8 +210,20 @@ object SubsystemDetector {
 				starship.subsystems += EventShieldSubsystem(starship, sign)
 			}
 
+			is JumpFieldGeneratorMultiblock -> {
+				starship.subsystems += JumpFieldGeneratorSubsystem(starship,sign, multiblock)
+			}
+
+			is JumpBeaconMultiblock -> {
+				starship.subsystems += JumpBeaconSubsystem(starship, sign, multiblock)
+			}
+
 			is BoxShieldMultiblock -> {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
+			}
+
+			is BubbleShieldMultiblock -> {
+				starship.subsystems += BubbleShieldSubsystem(starship, sign, multiblock)
 			}
 
 			is BattleCruiserReactorMultiblock -> {
@@ -191,8 +234,28 @@ object SubsystemDetector {
 				starship.subsystems += CruiserReactorSubsystem(starship, sign, multiblock)
 			}
 
+			is MiniReactorMultiblock -> {
+				starship.subsystems += MiniReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is SmallReactorMultiblock -> {
+				starship.subsystems += SmallReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is MediumReactorMultiblock -> {
+				starship.subsystems += MediumReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is LargeReactorMultiblock -> {
+				starship.subsystems += LargeReactorSubsystem(starship, sign, multiblock)
+			}
+
 			is BargeReactorMultiBlock -> {
 				starship.subsystems += BargeReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is FauxReactorMultiblock -> {
+				starship.subsystems += FauxReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is FuelTankMultiblock -> {
@@ -221,8 +284,24 @@ object SubsystemDetector {
 				starship.subsystems += CryopodSubsystem(starship, sign, multiblock, cryo)
 			}
 
+			is DisruptorMultiblock -> {
+				starship.subsystems += DisruptorSubsystem(starship, sign, multiblock)
+			}
+
 			is GravityWellMultiblock -> {
 				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
+			}
+
+			is IndustrialInvulnerabilityUnitMultiblock -> {
+				starship.subsystems += IndustrialInvulnerabilityUnitSubsystem(starship, sign, multiblock)
+			}
+
+			is ShieldCommandBurstMultiblock -> {
+				starship.subsystems += ShieldCommandBurstSubsystem(starship, sign, multiblock)
+			}
+
+			is AbstractCommandBurstMultiblock -> {
+				detectCommandBurst(starship, sign, multiblock)
 			}
 		}
 	}
@@ -263,13 +342,22 @@ object SubsystemDetector {
 				continue
 			}
 
-			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) {
+			if (subsystem is BalancedWeaponSubsystem<*> && !subsystem.canCreateSubsystem()) {
 //				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!") TODO wait for preference system
 				continue
 			}
 
 			starship.subsystems += subsystem
 		}
+	}
+
+	private fun detectCommandBurst(starship: ActiveStarship, sign: Sign, multiblock: AbstractCommandBurstMultiblock) {
+		val subsystem = multiblock.createSubsystem(starship, sign, multiblock)
+
+		if (isDuplicate(starship, subsystem)) return
+		if (!subsystem.canCreateSubsystem()) return
+
+		starship.subsystems += subsystem
 	}
 
 	private fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {
@@ -280,21 +368,17 @@ object SubsystemDetector {
 		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), NORTH)
 	}
 
-	fun detectCustomTurretBase(starship: ActiveControlledStarship, block: Block) {
-		val matches = EnumSet.of(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST).map { block.getRelative(it) }.all {
-			it.customBlock == CustomBlocks.TITANIUM_BLOCK
+	private fun detectDirectionOverride(starship: ActiveControlledStarship, block: Block) {
+		// lectern "facing" is the direction that the book faces
+		if (block.getRelative(BlockFace.DOWN).type == Material.JUKEBOX) {
+			val data = block.blockData as? Directional ?: return
+			starship.forwardOverride = data.facing.oppositeFace
 		}
-
-		if (!matches) return
-
-		val facing = (block.blockData as Directional).facing
-
-		starship.subsystems += TurretBaseMultiblock.createSubsystem(starship, Vec3i(block.x, block.y, block.z), facing)
 	}
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
 		return subsystem is DirectionalSubsystem && starship.subsystems
-			.filterIsInstance<WeaponSubsystem>()
+			.filterIsInstance<FiredSubsystem>()
 			.filter { it.pos == subsystem.pos }
 			.filterIsInstance<DirectionalSubsystem>()
 			.any { it.face == subsystem.face }
@@ -302,7 +386,8 @@ object SubsystemDetector {
 
 	private fun getWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		return when {
-			block.state is Sign && block.state !is HangingSign -> getSignWeaponMultiblock(block, face)
+			// Don't check the state unless necessary
+			block.type.isSign && block.state is Sign && block.state !is HangingSign -> getSignWeaponMultiblock(block, face)
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}
@@ -339,8 +424,13 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.thrusters)
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
+		starship.subsystems.filterIsInstanceTo(starship.industrialInvulnerabilityUnits)
+		starship.subsystems.filterIsInstanceTo(starship.warpDisruptors)
+		starship.subsystems.filterIsInstanceTo(starship.jumpBeacons)
+		starship.subsystems.filterIsInstanceTo(starship.jumpFieldGenerators)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 		starship.subsystems.filterIsInstanceTo(starship.customTurrets)
+		starship.subsystems.filterIsInstanceTo(starship.commandBursts)
 	}
 }

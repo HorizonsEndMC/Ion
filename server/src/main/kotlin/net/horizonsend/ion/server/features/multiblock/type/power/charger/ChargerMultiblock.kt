@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.type.power.charger
 
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -146,9 +146,15 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 			if (itemPowerStorage.getMaxPower(customItem, item) == itemPowerStorage.getPower(item)) {
 				val result = inventory.result
 				if (result != null && result.type != Material.AIR) return
-				inventory.result = inventory.fuel
-				inventory.fuel = null
-				return
+				if (inventory.smelting != null) {
+					inventory.result = inventory.smelting
+					inventory.smelting = null
+					return
+				} else {
+					inventory.result = inventory.fuel
+					inventory.fuel = null
+					return
+				}
 			}
 
 			var multiplier = multiblock.powerPerSecond

@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
+import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -15,11 +16,11 @@ import kotlin.reflect.KClass
 class MappedDestinationCache<K : Any>(parentCache: TransportCache) : DestinationCache(parentCache) {
 	private val rawCache: ConcurrentHashMap<KClass<out Node>, ConcurrentHashMap<K, ConcurrentHashMap<BlockKey, CachedDestinations>>> = ConcurrentHashMap()
 
-	private fun getCache(nodeType: KClass<out Node>, mapKey: K): ConcurrentHashMap<BlockKey, CachedDestinations> {
+	fun getCache(nodeType: KClass<out Node>, mapKey: K): ConcurrentHashMap<BlockKey, CachedDestinations> {
 		return rawCache.computeIfAbsent(nodeType) { ConcurrentHashMap() }.computeIfAbsent(mapKey) { ConcurrentHashMap() }
 	}
 
-	private fun getCache(nodeType: KClass<out Node>): ConcurrentHashMap<K, ConcurrentHashMap<BlockKey, CachedDestinations>> {
+	fun getCache(nodeType: KClass<out Node>): ConcurrentHashMap<K, ConcurrentHashMap<BlockKey, CachedDestinations>> {
 		return rawCache.computeIfAbsent(nodeType) { ConcurrentHashMap() }
 	}
 
@@ -72,8 +73,12 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 
 			// Remove all the paths after being found
 			for (removePos in toRemove.iterator()) {
-				val rawNodeCache = getCache(nodeType)
-				debugAudience.highlightBlock(toVec3i(removePos), 120L)
+				val (containingCache, nodeAtLoc) = parentCache.holder.globalNodeLookup.invoke(parentCache, world, removePos) ?: continue
+				if (nodeAtLoc == null) continue
+				if (nodeAtLoc::class != nodeType) continue
+
+				val rawNodeCache = ((containingCache as DestinationCacheHolder).destinationCache as MappedDestinationCache<K>).getCache(nodeType)
+
 				rawNodeCache.keys.forEach { key -> rawNodeCache[key]?.remove(removePos) }
 			}
 		}

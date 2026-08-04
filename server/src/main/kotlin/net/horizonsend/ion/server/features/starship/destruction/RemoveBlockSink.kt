@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
@@ -54,9 +54,9 @@ class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Remo
 		sealed interface BlockWrapper {
 			fun matches(block: Block): Boolean
 
-			class CustomBlockWrapper(val customBlock: CustomBlock) : BlockWrapper {
+			class CustomBlockWrapper(val customBlock: IonRegistryKey<CustomBlock, out CustomBlock>) : BlockWrapper {
 				override fun matches(block: Block): Boolean {
-					return block.customBlock?.identifier == customBlock.identifier
+					return block.customBlock?.key == customBlock
 				}
 
 				override fun equals(other: Any?): Boolean {
@@ -94,7 +94,7 @@ class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Remo
 
 			companion object {
 				fun getWrapper(blockData: BlockData): BlockWrapper {
-					val customBlock = CustomBlocks.getByBlockData(blockData)
+					val customBlock = blockData.customBlock?.key
 					if (customBlock != null) return CustomBlockWrapper(customBlock)
 
 					return MaterialWrapper(blockData.material)

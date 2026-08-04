@@ -57,6 +57,7 @@ class IonChunk(val inner: Chunk) {
 	 **/
 	fun onLoad() {
 		transportNetwork.setup()
+		world.ion.transportManager.fluidGraphManager.onChunkLoad(this)
 	}
 
 	/**
@@ -66,6 +67,7 @@ class IonChunk(val inner: Chunk) {
 		save()
 		multiblockManager.onUnload()
 		transportNetwork.onUnload()
+		world.ion.transportManager.fluidGraphManager.handleChunkUnload(this)
 	}
 
 	/**
@@ -74,6 +76,7 @@ class IonChunk(val inner: Chunk) {
 	fun save() {
 		multiblockManager.save()
 		transportNetwork.extractorManager.save()
+		world.ion.transportManager.fluidGraphManager.saveChunk(this)
 	}
 
 	/**
@@ -81,7 +84,7 @@ class IonChunk(val inner: Chunk) {
 	 **/
 	fun tick() {
 		transportNetwork.markReady()
-		transportNetwork.tick()
+		transportNetwork.tickExtractors()
 	}
 
 	/**

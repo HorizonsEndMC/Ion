@@ -1,10 +1,14 @@
 package net.horizonsend.ion.server.listener.gear
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.FluidCollisionMode
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
@@ -27,7 +31,11 @@ object DoubleJumpListener : SLEventListener() {
 
 	@EventHandler
 	fun onToggleFlight(event: PlayerToggleFlightEvent) {
+		// player is trying to stop flying
 		if (!event.isFlying) {
+			if (ActiveStarships.findByPilot(event.player)?.isDirectControlEnabled == true && event.player.getSetting(PlayerSettings::floatWhileDc) == true) {
+				event.isCancelled = true
+			}
 			return
 		}
 
@@ -49,11 +57,20 @@ object DoubleJumpListener : SLEventListener() {
 	}
 
 	private fun isGrounded(player: Player): Boolean {
-		return player.world.rayTraceBlocks(
-			player.location,
-			Vector(0.0, -1.0, 0.0),
-			0.1,
-			FluidCollisionMode.ALWAYS
-		)?.hitBlock?.isCollidable == true
+		val points = mutableListOf<Location>()
+
+		points.add(Location(player.world, player.boundingBox.maxX, player.boundingBox.minY, player.boundingBox.minZ))
+		points.add(Location(player.world, player.boundingBox.minX, player.boundingBox.minY, player.boundingBox.minZ))
+		points.add(Location(player.world, player.boundingBox.minX, player.boundingBox.minY, player.boundingBox.maxZ))
+		points.add(Location(player.world, player.boundingBox.maxX, player.boundingBox.minY, player.boundingBox.maxZ))
+
+		return points.any { location ->
+			player.world.rayTraceBlocks(
+				location,
+				Vector(0.0, -1.0, 0.0),
+				0.1,
+				FluidCollisionMode.ALWAYS
+			)?.hitBlock?.isCollidable == true
+		}
 	}
 }

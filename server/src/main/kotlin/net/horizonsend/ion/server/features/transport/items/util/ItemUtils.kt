@@ -1,11 +1,17 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
+import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.inventory.AbstractFurnaceMenu
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -13,7 +19,9 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace
 import org.bukkit.inventory.FurnaceInventory
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.atomic.AtomicInteger
 
 fun getTransferSpaceFor(inventory: Collection<CraftInventory>, itemStack: ItemStack): Int = inventory.sumOf {
 	getTransferSpaceFor(it, itemStack)
@@ -46,6 +54,9 @@ fun getTransferSpaceFor(inventory: CraftInventory, itemStack: ItemStack): Int {
 	return LegacyItemUtils.getSpaceFor(inventory, itemStack)
 }
 
+/**
+ * Returns an interable of item indexes and the item contained at that index
+ **/
 fun getRemovableItems(inventory: CraftInventory): Iterable<Pair<Int, ItemStack>> {
 	val items = inventory.contents.withIndex()
 	val filtered = mutableListOf<Pair<Int, ItemStack>>()
@@ -87,8 +98,25 @@ fun addToInventory(inventory: CraftInventory, itemStack: ItemStack): Int {
 	return inventory.addItem(itemStack).entries.firstOrNull()?.value?.amount ?: 0
 }
 
+fun getSpecialFurnaceInputSlot(destination: FurnaceInventory, itemStack: ItemStack): Int? {
+	val entity = destination.holder?.location?.block?.let(MultiblockEntities::getMultiblockEntity) ?: return null
+
+	return when (entity) {
+		is PlanterMultiblock.PlanterEntity ->
+			if (Crop.findBySeed(itemStack.type) != null) AbstractFurnaceMenu.FUEL_SLOT else null
+
+		is GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity -> when ((itemStack.customItem as? GasCanister)?.gas) {
+			is GasFuel -> AbstractFurnaceMenu.INGREDIENT_SLOT
+			is GasOxidizer -> AbstractFurnaceMenu.FUEL_SLOT
+			else -> null
+		}
+
+		else -> null
+	}
+}
+
 fun addToFurnace(destination: FurnaceInventory, itemStack: ItemStack): Int {
-	val toSlot = when {
+	val toSlot = getSpecialFurnaceInputSlot(destination, itemStack) ?: when {
 		destination.smelting?.type == Material.PRISMARINE_CRYSTALS -> 1 // Smelting has crystals, put it in fuel
 		destination.fuel?.type == Material.PRISMARINE_CRYSTALS -> 0 // Fuel has crystals, put it in smelting
 		itemStack.type.isFuel || GeneratorFuel.getFuel(itemStack) != null -> 1 // slot 1 - fuel
@@ -148,3 +176,61 @@ fun getAdditionSlots(inventory: CraftInventory): Array<Int> {
 	var index = -1
 	return Array(inventory.size) { index++ }
 }
+
+fun canAddAll(inventory: Inventory, stacks: Collection<ItemStack>): Boolean {
+	val slots = inventory.storageContents
+	val slotCount = slots.size
+
+	// Store available empty slots
+	var emptySlots = slots.count { it == null }
+
+	val availableRoomInPartialStacks = multimapOf<ItemStack, AtomicInteger>()
+	// Store how much room is available in different slots that are partially occupied
+	slots.filterNotNull().filter { it.amount != it.maxStackSize }.forEach { availableRoomInPartialStacks[it.asOne()].add(AtomicInteger(it.maxStackSize - it.amount)) }
+
+	for (stack in stacks) {
+		val asOne = stack.asOne()
+
+		var remining = stack.amount
+
+		val availableInPartial = availableRoomInPartialStacks[asOne]
+		if (availableInPartial.isNotEmpty()) {
+			val iterator = availableInPartial.iterator()
+
+			while (iterator.hasNext()) {
+				val remainingCount = iterator.next()
+				val toRemove = minOf(remainingCount.get(), remining)
+				remainingCount.addAndGet(-toRemove)
+
+				remining -= toRemove
+
+				if (remainingCount.get() == 0) {
+					iterator.remove()
+				}
+			}
+		}
+
+		if (remining == 0) continue
+
+		// If there are still items remaining that could not be filled by partial stacks, and no empty slots remaining, then the items cannot fit
+		if (emptySlots == 0) return false
+		val maxStackSize = stack.maxStackSize
+
+		// Handle the condition of amount > max stack size
+		var neededSlots = remining / maxStackSize
+		val remainder = remining % maxStackSize
+		if (remainder > 0) {
+			neededSlots++
+		}
+
+		if (neededSlots > emptySlots) return false
+
+		emptySlots -= neededSlots
+		availableInPartial.add(AtomicInteger(maxStackSize - remainder))
+	}
+
+	return true
+}
+
+val DYEABLE_CUBE_MONO = ItemFactory.unStackableCustomItem("misc/dyeable_cube")
+val EXPLOSION_RING = ItemFactory.unStackableCustomItem("effect/explosion_ring")

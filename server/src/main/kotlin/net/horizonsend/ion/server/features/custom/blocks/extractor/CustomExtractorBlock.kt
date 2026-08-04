@@ -2,11 +2,12 @@ package net.horizonsend.ion.server.features.custom.blocks.extractor
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
-import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -26,14 +27,13 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 abstract class CustomExtractorBlock<T: ExtractorData>(
-    identifier: String,
-    blockData: BlockData,
-    drops: BlockLoot,
-    customBlockItem: Supplier<CustomBlockItem>,
+	identifier: IonRegistryKey<CustomBlock, out CustomBlock>,
+	blockData: BlockData,
+	drops: BlockLoot,
+	customBlockItem: IonRegistryKey<CustomItem, out CustomItem>,
 	val extractorDataType: KClass<T>
 ) : CustomBlock(identifier, blockData, drops, customBlockItem), InteractableCustomBlock, WrenchRemovable  {
 	val cooldown = PerPlayerCooldown(5L)

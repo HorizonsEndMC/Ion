@@ -52,7 +52,7 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 	}
 
 	private fun sendSinkMessage(killerDamager: Damager, sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>) {
-		val arena = sunkShip.world.ion.hasFlag(WorldFlag.ARENA)
+		val arena = sunkShip.world.ion.hasFlag(WorldFlag.ARENA) || sunkShip.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS)
 		val assistsData = getAssists(sortedByTime)
 
 		val message = template(
@@ -167,7 +167,7 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 
 		val newName = when (val controller = starship.controller) {
 			is PlayerController -> text(controller.player.name)
-			else -> controller.getPilotName()
+			else -> controller.pilotName
 		}
 
 		return ofChildren(shipNameFormat, text(", piloted by ", RED), newName).hoverEvent(hover)

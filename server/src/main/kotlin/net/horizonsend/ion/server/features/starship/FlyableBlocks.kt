@@ -13,7 +13,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.FENCE_GATE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.FENCE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.GLAZED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.LIGHTNING_ROD_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.PRESSURE_PLATE_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.SHELF_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SHULKER_BOX_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SIGN_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SLAB_TYPES
@@ -36,19 +38,23 @@ import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BOOKSHELF
 import org.bukkit.Material.BREWING_STAND
 import org.bukkit.Material.BROWN_MUSHROOM_BLOCK
+import org.bukkit.Material.RED_MUSHROOM_BLOCK
 import org.bukkit.Material.CAMPFIRE
 import org.bukkit.Material.CARROTS
 import org.bukkit.Material.CARTOGRAPHY_TABLE
 import org.bukkit.Material.CAULDRON
-import org.bukkit.Material.CHAIN
+import org.bukkit.Material.IRON_CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
 import org.bukkit.Material.COAL_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
+import org.bukkit.Material.COPPER_BARS
 import org.bukkit.Material.COPPER_BLOCK
-import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.COPPER_BULB
+import org.bukkit.Material.COPPER_TORCH
+import org.bukkit.Material.COPPER_WALL_TORCH
+import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
@@ -66,8 +72,8 @@ import org.bukkit.Material.ENDER_CHEST
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.EXPOSED_COPPER
-import org.bukkit.Material.EXPOSED_COPPER_GRATE
 import org.bukkit.Material.EXPOSED_COPPER_BULB
+import org.bukkit.Material.EXPOSED_COPPER_GRATE
 import org.bukkit.Material.FARMLAND
 import org.bukkit.Material.FLETCHING_TABLE
 import org.bukkit.Material.FLOWER_POT
@@ -167,20 +173,20 @@ import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
 import org.bukkit.Material.WATER_CAULDRON
 import org.bukkit.Material.WAXED_COPPER_BLOCK
-import org.bukkit.Material.WAXED_COPPER_GRATE
 import org.bukkit.Material.WAXED_COPPER_BULB
+import org.bukkit.Material.WAXED_COPPER_GRATE
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
-import org.bukkit.Material.WAXED_EXPOSED_COPPER_GRATE
 import org.bukkit.Material.WAXED_EXPOSED_COPPER_BULB
+import org.bukkit.Material.WAXED_EXPOSED_COPPER_GRATE
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
-import org.bukkit.Material.WAXED_OXIDIZED_COPPER_GRATE
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER_BULB
+import org.bukkit.Material.WAXED_OXIDIZED_COPPER_GRATE
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
-import org.bukkit.Material.WAXED_WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WAXED_WEATHERED_COPPER_BULB
+import org.bukkit.Material.WAXED_WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WEATHERED_COPPER
-import org.bukkit.Material.WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WEATHERED_COPPER_BULB
+import org.bukkit.Material.WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WET_SPONGE
 import org.bukkit.Material.WHEAT
 import org.bukkit.Material.WITHER_SKELETON_SKULL
@@ -197,6 +203,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 
 	SPONGE, // used for lots of ship subsystems, esp. weapons
 	WET_SPONGE,
+	Material.POLISHED_BASALT,
 
 	GLASS,
 	GLASS_PANE,
@@ -216,6 +223,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	EMERALD_BLOCK,
 	COAL_BLOCK,
 	BROWN_MUSHROOM_BLOCK, // custom ores
+	RED_MUSHROOM_BLOCK, // custom ores
 	VAULT, // custom blocks
 
 	// used for landing gears
@@ -274,7 +282,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	GRINDSTONE,
 	BARREL,
 	SCAFFOLDING,
-	CHAIN,
+	IRON_CHAIN,
 
 	COPPER_BLOCK,
 	EXPOSED_COPPER,
@@ -302,6 +310,55 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	WAXED_EXPOSED_COPPER_GRATE,
 	WAXED_WEATHERED_COPPER_GRATE,
 	WAXED_OXIDIZED_COPPER_GRATE,
+
+	COPPER_TORCH,
+	COPPER_WALL_TORCH,
+
+	Material.COPPER_BARS,
+	Material.EXPOSED_COPPER_BARS,
+	Material.WEATHERED_COPPER_BARS,
+	Material.OXIDIZED_COPPER_BARS,
+	Material.WAXED_COPPER_BARS,
+	Material.WAXED_EXPOSED_COPPER_BARS,
+	Material.WAXED_WEATHERED_COPPER_BARS,
+	Material.WAXED_OXIDIZED_COPPER_BARS,
+
+	Material.COPPER_CHEST,
+	Material.EXPOSED_COPPER_CHEST,
+	Material.WEATHERED_COPPER_CHEST,
+	Material.OXIDIZED_COPPER_CHEST,
+	Material.WAXED_COPPER_CHEST,
+	Material.WAXED_EXPOSED_COPPER_CHEST,
+	Material.WAXED_WEATHERED_COPPER_CHEST,
+	Material.WAXED_OXIDIZED_COPPER_CHEST,
+
+	Material.COPPER_CHAIN,
+	Material.EXPOSED_COPPER_CHAIN,
+	Material.WEATHERED_COPPER_CHAIN,
+	Material.OXIDIZED_COPPER_CHAIN,
+	Material.WAXED_COPPER_CHAIN,
+	Material.WAXED_EXPOSED_COPPER_CHAIN,
+	Material.WAXED_WEATHERED_COPPER_CHAIN,
+	Material.WAXED_OXIDIZED_COPPER_CHAIN,
+
+	Material.COPPER_LANTERN,
+	Material.EXPOSED_COPPER_LANTERN,
+	Material.WEATHERED_COPPER_LANTERN,
+	Material.OXIDIZED_COPPER_LANTERN,
+	Material.WAXED_COPPER_LANTERN,
+	Material.WAXED_EXPOSED_COPPER_LANTERN,
+	Material.WAXED_WEATHERED_COPPER_LANTERN,
+	Material.WAXED_OXIDIZED_COPPER_LANTERN,
+
+	Material.COPPER_GOLEM_STATUE,
+	Material.EXPOSED_COPPER_GOLEM_STATUE,
+	Material.WEATHERED_COPPER_GOLEM_STATUE,
+	Material.OXIDIZED_COPPER_GOLEM_STATUE,
+	Material.WAXED_COPPER_GOLEM_STATUE,
+	Material.WAXED_EXPOSED_COPPER_GOLEM_STATUE,
+	Material.WAXED_WEATHERED_COPPER_GOLEM_STATUE,
+	Material.WAXED_OXIDIZED_COPPER_GOLEM_STATUE,
+
 
 	POTTED_AZURE_BLUET,
 	POTTED_BAMBOO,
@@ -399,16 +456,16 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	it.addAll(BED_TYPES)
 	it.addAll(FENCE_TYPES)
 	it.addAll(FENCE_GATE_TYPES)
+	it.addAll(SHELF_TYPES)
+	it.addAll(LIGHTNING_ROD_TYPES)
 	it.addAll(WALL_TYPES)
 	it.addAll(CANDLE_TYPES)
 	it.addAll(CAKE_TYPES)
 }.filter { it.isBlock }.toCollection(EnumSet.noneOf(Material::class.java))
 
 private val FLYABLE_BLOCK_DATA_CACHE = CacheBuilder.newBuilder()
-	.build<BlockState, Boolean>(
-		CacheLoader.from { blockData ->
-			return@from blockData != null && FLYABLE_BLOCKS.contains(blockData.bukkitMaterial)
-		}
-	)
+	.build(CacheLoader.from { blockData: BlockState? ->
+		return@from blockData != null && FLYABLE_BLOCKS.contains(blockData.bukkitMaterial)
+	})
 
-fun isFlyable(blockData: BlockState) = FLYABLE_BLOCK_DATA_CACHE[blockData]
+fun isFlyable(blockData: BlockState): Boolean = FLYABLE_BLOCK_DATA_CACHE[blockData]

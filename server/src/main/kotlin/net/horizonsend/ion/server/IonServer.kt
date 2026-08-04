@@ -6,15 +6,18 @@ import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.getUpdateMessage
+import net.horizonsend.ion.common.utils.text.bootstrapCustomTranslations
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.misc.WorldReset
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.DelegatedChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
@@ -69,6 +72,10 @@ object IonServer : JavaPlugin() {
 			}
 		}
 
+		bootstrapCustomTranslations()
+
+		IonRegistries.onEnable()
+
 		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 		// such as reloading or other plugins doing things they probably shouldn't.
 		for (world in server.worlds) IonWorld.register(world)
@@ -110,6 +117,8 @@ object IonServer : JavaPlugin() {
 			if (it is Listener) {
 				server.pluginManager.registerEvents(it, this)
 			}
+
+			it.registerExceptionHandler()
 		}
 
 		ShipData.enable()
@@ -136,11 +145,8 @@ object IonServer : JavaPlugin() {
 		return SpaceBiomeProvider()
 	}
 
-	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
-		return EmptyChunkGenerator
+	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {
+		return DelegatedChunkGenerator(worldName)
 	}
 }
 
-abstract class IonServerComponent(
-	val runAfterTick: Boolean = false
-) : Listener, IonComponent()

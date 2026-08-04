@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turr
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -74,7 +74,7 @@ abstract class RotatingMultiblock : Multiblock() {
 			val block = world.getBlockAt(x, y, z)
 			val data = block.blockData
 
-			val newData = if (CustomBlocks.getByBlockData(data) == null) data.nms.rotate(nmsRotation).createCraftBlockData() else data
+			val newData = if (data.customBlock == null) data.nms.rotate(nmsRotation).createCraftBlockData() else data
 
 			val nx0 = (x0.toDouble() * cosFactor - z0.toDouble() * sinFactor).roundToInt()
 			val nz0 = (x0.toDouble() * sinFactor + z0.toDouble() * cosFactor).roundToInt()

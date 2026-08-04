@@ -1,23 +1,21 @@
 package net.horizonsend.ion.server.configuration
 
-import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import net.horizonsend.ion.common.database.StarshipTypeDB
+import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.common.utils.NavigationObject
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip.SerializableDealerShipInformation
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.time.DayOfWeek
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class ServerConfiguration(
@@ -25,15 +23,37 @@ data class ServerConfiguration(
 	val crossServerDeathMessages: Boolean = false,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
-	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<Ship> = listOf(),
+	val soldShips: List<SerializableDealerShipInformation> = listOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
-	val getPosMaxRange: Double = 600.0,
-	val nearMaxRange: Double = 1200.0,
+	val getPosMaxRange: Double = 300.0,
+	val nearMaxRange: Double = 500.0,
 	val restartHour: Int = 8,
 	val globalCustomSpawns: List<WorldSettings.SpawnedMob> = listOf(),
-	val worldResetSettings: AutoWorldReset = AutoWorldReset()
+	val worldResetSettings: AutoWorldReset = AutoWorldReset(),
+	val rentalZoneCollectionDay: DayOfWeek = DayOfWeek.SUNDAY,
+	val deleteInvalidMultiblockData: Boolean = false,
+	val pastebinApiDevKey: String? = null,
+
+	@SerialName("waypoint_transmit_range")
+	val waypointTransmitRange: Double = 200.0,
+
+	@SerialName("waypoint_receive_range")
+	val waypointReceiveRange: Double = 200.0,
+
+	val tutorialEscapePodShip: SerializableDealerShipInformation = SerializableDealerShipInformation(
+		price = 0.0,
+		schematicName = "TutorialEscapePod",
+		guiMaterial = Material.SPONGE,
+		displayName = "",
+		cooldown = 0L,
+		protectionCanBypass = true,
+		shipClass = StarshipType.SHUTTLE.name,
+		lore = listOf(),
+		pilotOffset = Vec3i(0, 0, 5)
+	),
+	val tutorialOrigin: DBVec3i = Vec3i(1250, 192, 2000),
+	val tutorialTransitHubOrigin: DBVec3i = Vec3i(1000, 192, 1000)
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -55,7 +75,7 @@ data class ServerConfiguration(
 		/**
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
-		 * @param ores:  list of Palettes used for ore placement
+		 * @param ores: list of Palettes used for ore placement
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */
@@ -183,30 +203,9 @@ data class ServerConfiguration(
 		val destination: Pos,
 		val destinationName: String? = null,
 		val exits: ArrayList<Pos>? = null,
-		val prompt: String? = null
+		val prompt: String? = null,
+		val proximityReveal: Boolean? = false
 	) : NavigationObject
-
-	/**
-	 * @param cooldown in ms
-	 **/
-	@Serializable
-	data class Ship(
-		val price: Double,
-		val displayName: String,
-		val schematicName: String,
-		val guiMaterial: Material,
-		val cooldown: Long,
-		val protectionCanBypass: Boolean,
-		private val shipClass: StarshipTypeDB,
-		val lore: List<String>
-	) {
-		val shipType: StarshipType get() = shipClass.actualType
-
-		@Transient
-		val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
-
-		fun schematic(): Clipboard = readSchematic(schematicFile)!!
-	}
 
 	@Serializable
 	data class AutoWorldReset(

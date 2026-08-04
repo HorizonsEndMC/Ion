@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.misc
 
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -9,9 +9,11 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -26,10 +28,11 @@ import java.util.concurrent.TimeUnit
 object UnusedSoldShipPurge : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.asyncAtHour(8, ::purgeNoobShuttles)
+		Tasks.async(::purgeTutorialShuttles)
 	}
 
 	// Inactive for 7 days
-	private val clearBeforeData get() = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
+	private val clearBeforeData get() = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)
 
 	fun purgeNoobShuttles() = Tasks.async {
 		val unused = PlayerStarshipData.find(and(
@@ -55,6 +58,31 @@ object UnusedSoldShipPurge : IonServerComponent() {
 			val failures = results.count { !it }
 
 			log.info("Finished clearing sold ships! There were $successes successes, and $failures failures.")
+		}
+	}
+
+	fun purgeTutorialShuttles() = Tasks.async {
+		val unused = PlayerStarshipData.find(
+			PlayerStarshipData::shipDealerInformation ne null, // Sold by ship dealer
+		)
+
+		val tasks = mutableListOf<CompletableFuture<Boolean>>()
+
+		val tutorialWorlds = IonWorld.all().filter { ionWorld -> ionWorld.hasFlag(WorldFlag.TUTORIAL_WORLD) }
+		for (data in unused) {
+			// starship is inside a world with the tutorial flag
+			if (tutorialWorlds.none { ionWorld -> ionWorld.world.name == data.levelName }) continue
+
+			tasks += clearShip(data)
+		}
+
+		CompletableFuture.allOf(*tasks.toTypedArray()).thenAccept {
+			val results = tasks.map { it.get() }
+
+			val successes = results.count { it }
+			val failures = results.count { !it }
+
+			log.info("Finished clearing tutorial ships! There were $successes successes, and $failures failures.")
 		}
 	}
 
@@ -89,10 +117,25 @@ object UnusedSoldShipPurge : IonServerComponent() {
 
 		true
 	} catch (e: StarshipDetection.DetectionFailedException) {
-		log.warn("Could not delete abandoned sold ship! $data")
+		log.warn("Could not delete abandoned sold ship as it could not detect! $data")
+		log.warn("Attempting to pilot anyways!")
+
+		try {
+			Tasks.sync {
+				PilotedStarships.activateWithoutPilot(
+					debugAudience,
+					data,
+					createController = {
+						GarbageCollectorController(it)
+					}
+				)
+			}
+		} catch (e: SpawningException) {
+			log.warn("Could not delete abandoned sold ship even after attempting to pilot! $data")
+		}
 		false
 	} catch (e: SpawningException) {
-		log.warn("Could not delete abandoned sold ship! $data")
+		log.warn("Could not delete abandoned sold ship as it could not pilot! $data")
 		false
 	}
 
@@ -110,7 +153,7 @@ object UnusedSoldShipPurge : IonServerComponent() {
 		return toLoad
 	}
 
-	private class GarbageCollectorController(starship: ActiveStarship): NoOpController(starship, null) {
+	class GarbageCollectorController(starship: ActiveStarship): NoOpController(starship, null) {
 		override fun tick() {
 			StarshipDestruction.vanish(starship)
 		}

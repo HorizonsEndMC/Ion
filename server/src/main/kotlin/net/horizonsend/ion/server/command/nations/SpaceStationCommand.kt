@@ -91,6 +91,10 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		return lastTime != null && System.currentTimeMillis() < lastTime + STATION_FORMATION_COOLDOWN.toMillis()
 	}
 
+	private fun checkStationNameUnique(name: String): Boolean {
+		return SpaceStationCache[name] == null
+	}
+
 	/**
 	 * Records the time that a player created a station
 	 * @param player the player to set the station creation cooldown
@@ -244,7 +248,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("create nation")
     fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
 		if (checkStationCreationCooldown(sender)) {
-			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() -
 					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
 			return
 		}
@@ -290,7 +294,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("create personal")
     fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
 		if (checkStationCreationCooldown(sender)) {
-			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() -
 					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
 			return
 		}
@@ -321,7 +325,16 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"You can't create space stations here!"
 		}
 
+		failIf(!checkStationNameUnique(name)) {
+			"A space station with the name $name already exists!"
+		}
+
 		failIf(!sender.world.ion.hasFlag(WorldFlag.ALLOW_SPACE_STATIONS)) { "You can't create space stations in this world!" }
+
+		failIf(
+			sender.world.ion.hasFlag(WorldFlag.DOMINION_WORLD) ||
+			sender.world.ion.hasFlag(WorldFlag.DOMINION_TRADE_WORLD)
+		) { "You can't create space stations in dominion worlds!" }
 
 		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
@@ -355,11 +368,11 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 	}
 
-	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
+	fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
 		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own ${station.name}" }
 	}
 
-	private fun requirePermission(
+	fun requirePermission(
         player: SLPlayerId,
         station: CachedSpaceStation<*, *, *>,
         permission: SpaceStationCache.SpaceStationPermission
@@ -582,7 +595,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 * @param sender the player to check
 	 * @param clazz the type of space station to check for (Any for default)
 	 */
-	private fun <T : Any> getOwnedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
+	fun <T : Any> getOwnedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
 		return SpaceStationCache.all().filter { station ->
 			station.hasOwnershipContext(sender.slPlayerId) &&
 			if (clazz != Any::class) station::class == clazz else true
@@ -787,11 +800,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
     fun onRename(sender: Player, station: CachedSpaceStation<*, *, *>, newName: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 
+		val oldName = station.name
 		validateName(newName)
 		station.rename(newName)
 
-		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", station.name, newName))
-		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0}  has been renamed to  {1} by {2}", station.name, newName, sender.name))
+		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", oldName, newName))
+		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0} has been renamed to {1} by {2}", oldName, newName, sender.name))
 	}
 
 	@Subcommand("info")

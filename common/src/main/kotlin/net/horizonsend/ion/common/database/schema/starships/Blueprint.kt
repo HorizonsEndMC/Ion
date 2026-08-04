@@ -23,10 +23,10 @@ data class Blueprint(
 	var type: StarshipTypeDB,
 	var pilotLoc: DBVec3i,
 	var size: Int,
-	var blockData: String, // base64 representation of the schematic
+	override var blockData: String, // base64 representation of the schematic
 	var trustedPlayers: MutableSet<SLPlayerId> = mutableSetOf(),
 	var trustedNations: MutableSet<Oid<Nation>> = mutableSetOf()
-) : DbObject {
+) : DbObject, BlueprintLike {
 	companion object : OidDbObjectCompanion<Blueprint>(Blueprint::class, setup = {
 		ensureIndex(Blueprint::owner)
 		ensureIndex(Blueprint::name)

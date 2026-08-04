@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -8,6 +9,8 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.gui.custom.item.PersonalTransporterGui
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.sequences.SequenceKeys
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -18,7 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object PersonalTransporter : CustomItem(
-	"PERSONAL_TRANSPORTER",
+	CustomItemKeys.PERSONAL_TRANSPORTER,
 	text("Personal Transporter", GOLD).itemName,
 	ItemFactory.unStackableCustomItem("throwables/personal_transporter")
 ) {
@@ -34,6 +37,13 @@ object PersonalTransporter : CustomItem(
 
     private fun onRightClick(livingEntity: LivingEntity) {
         if (livingEntity is Player) {
+            val activeSequenceKeys = SequenceManager.getCurrentSequences(livingEntity)
+            for (sequenceKey in activeSequenceKeys) {
+                if (sequenceKey == SequenceKeys.TUTORIAL || sequenceKey == SequenceKeys.TUTORIAL_TRANSIT_HUB) {
+                    livingEntity.userError("You cannot use a personal transporter while in the tutorial!")
+                    return
+                }
+            }
             openTeleportMenu(livingEntity)
         }
     }
@@ -44,7 +54,7 @@ object PersonalTransporter : CustomItem(
 			PersonalTransporterManager.removeItemFromPlayer(player)
             return
         } else {
-            PersonalTransporterGui(player).openMainWindow()
+            PersonalTransporterGui(player).openGui()
         }
     }
 }

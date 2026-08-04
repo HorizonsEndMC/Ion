@@ -7,27 +7,30 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.reflect.KClass
 
 object StarshipWeapons {
 	interface QueuedShot {
-		val weapon: WeaponSubsystem
+		val weapon: FiredSubsystem
 
 		fun shoot()
 	}
 
 	data class ManualQueuedShot(
-        override val weapon: WeaponSubsystem,
-        val shooter: Damager,
-        val direction: Vector,
-        val target: Vector
+		override val weapon: FiredSubsystem,
+		val shooter: Damager,
+		val direction: Vector,
+		val target: Vector
 	) : QueuedShot {
 		override fun shoot() {
 			check(weapon is ManualWeaponSubsystem)
@@ -37,7 +40,7 @@ object StarshipWeapons {
 	}
 
 	data class AutoQueuedShot(
-		override val weapon: WeaponSubsystem,
+		override val weapon: FiredSubsystem,
 		val target: AutoTurretTargeting.AutoTurretTarget<*>,
 		val dir: Vector,
 	) : QueuedShot {
@@ -49,13 +52,22 @@ object StarshipWeapons {
 		}
 	}
 
+	data class QueuedCommandBurstActivation(
+		val commandBurst: AbstractCommandBurstSubsystem<*>
+	) {
+		fun activate() {
+			commandBurst.activate()
+			commandBurst.postActivate()
+		}
+	}
+
 	fun fireQueuedShots(queuedShots: List<QueuedShot>, ship: ActiveStarship) {
 		val boostPower = AtomicDouble(0.0)
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
 			ship.debug("we have heavy weapons")
 
-			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
+			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.javaClass.simpleName }.distinct()
 
 			ship.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
 
@@ -66,10 +78,9 @@ object StarshipWeapons {
 					Types: ${heavyWeaponTypes.joinToString()}
 					""".trimIndent()
 				)
+
 				ship.onlinePassengers.forEach { player ->
-					player.userErrorActionMessage(
-						"You can only fire one type of heavy weapon at a time!"
-					)
+					player.userErrorActionMessage("You can only fire one type of heavy weapon at a time!")
 				}
 
 				return
@@ -87,10 +98,12 @@ object StarshipWeapons {
 			boostPower.set(output)
 		}
 
-		val firedCounts = HashMultimap.create<String, WeaponSubsystem>()
+		val firedCounts = HashMultimap.create<KClass<out FiredSubsystem>, FiredSubsystem>()
 
 		for (shot in queuedShots.shuffled(ThreadLocalRandom.current())) {
-			if (shot.weapon.balancing.applyCooldownToAll) {
+			val weapon = shot.weapon
+
+			if (weapon is BalancedWeaponSubsystem<*> && weapon.balancing.applyCooldownToAll) {
 				val clazz = shot.weapon::class.java
 
 				for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
@@ -98,12 +111,10 @@ object StarshipWeapons {
 				}
 			}
 
-			val weapon = shot.weapon
-
 			val maxPerShot = weapon.getMaxPerShot()
 			ship.debug("iterating shots, $weapon, $maxPerShot")
 
-			val firedSet = firedCounts[weapon.name]
+			val firedSet = firedCounts[weapon::class]
 			ship.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
 				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
@@ -130,11 +141,64 @@ object StarshipWeapons {
 		ship.reactor.heavyWeaponBooster.reduceWarmup(boostPower.get())
 	}
 
+	fun activateQueuedCommandBursts(queuedCommandBursts: List<QueuedCommandBurstActivation>, ship: Starship) {
+		val commandBurstTypes = queuedCommandBursts.map { it.commandBurst.javaClass.simpleName }.distinct()
+
+		ship.debug("commandBurstTypes = ${commandBurstTypes.joinToString(", ")}")
+
+		if (commandBurstTypes.count() > 1) {
+			ship.debug(
+				""""
+					CANNOT ACTIVATE MORE THAN 1 TYPE OF COMMAND BURST
+					Types: ${commandBurstTypes.joinToString()}
+					""".trimIndent()
+			)
+
+			ship.onlinePassengers.forEach { player ->
+				player.userErrorActionMessage("You can only activate one type of command burst at a time!")
+			}
+
+			return
+		}
+
+		val commandBurstType = if (commandBurstTypes.isNotEmpty()) commandBurstTypes.single() else ""
+		ship.debug("commandBurstType = $commandBurstType")
+
+		val activatedCounts = HashMultimap.create<KClass<out AbstractCommandBurstSubsystem<*>>, AbstractCommandBurstSubsystem<*>>()
+
+		for (burst in queuedCommandBursts.shuffled(ThreadLocalRandom.current())) {
+			val commandBurst = burst.commandBurst
+
+			val clazz = burst.commandBurst::class.java
+
+			for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
+				subsystem.lastActivated = System.nanoTime()
+			}
+
+			val activatedSet = activatedCounts[commandBurst::class]
+			ship.debug("have we activated those already?")
+			if (activatedSet.size >= 1) {
+				ship.debug("we did, goodbye (${activatedSet.size})")
+
+				continue
+			}
+
+			ship.debugRed("activating")
+			burst.activate()
+
+			ship.debug("adding to fired")
+			activatedSet.add(commandBurst)
+		}
+	}
+
 	private fun resourcesUnavailable(
-		weapon: WeaponSubsystem,
+		weapon: FiredSubsystem,
 		ship: ActiveStarship,
 		boostPower: AtomicDouble
 	): Boolean {
+		// Don't check resources on unbalanced weapons, they will have their own implementation of checks
+		if (weapon !is BalancedWeaponSubsystem<*>) return false
+
 		if (weapon is AmmoConsumingWeaponSubsystem && ship.magazines.none { it.isAmmoAvailable(weapon) }) {
 			ship.onlinePassengers.forEach { player ->
 				player.alertActionMessage(
@@ -154,7 +218,7 @@ object StarshipWeapons {
 	}
 
 	private fun consumeResources(
-		weapon: WeaponSubsystem,
+		weapon: FiredSubsystem,
 		boostPower: AtomicDouble,
 		ship: ActiveStarship
 	) {
@@ -165,19 +229,22 @@ object StarshipWeapons {
 		}
 	}
 
-	private fun isPowerAvailable(weapon: WeaponSubsystem, boostPower: AtomicDouble): Boolean {
+	private fun isPowerAvailable(weapon: BalancedWeaponSubsystem<*>, boostPower: AtomicDouble): Boolean {
 		val reactor = weapon.starship.reactor
-		val powerUsage = weapon.powerUsage.toDouble()
+		val powerUsage = weapon.firePowerConsumption.toDouble()
 		return when (weapon) {
 			is HeavyWeaponSubsystem -> boostPower.get() >= powerUsage
 			else -> reactor.weaponCapacitor.isAvailable(powerUsage)
 		}
 	}
 
-	private fun tryConsumePower(weapon: WeaponSubsystem, boostPower: AtomicDouble): Boolean {
+	private fun tryConsumePower(weapon: FiredSubsystem, boostPower: AtomicDouble): Boolean {
+		// Don't check resources on unbalanced weapons, they will have their own implementation of checks
+		if (weapon !is BalancedWeaponSubsystem<*>) return true
+
 		val reactor = weapon.starship.reactor
 
-		val powerUsage = weapon.powerUsage.toDouble()
+		val powerUsage = weapon.firePowerConsumption.toDouble()
 
 		if (weapon is HeavyWeaponSubsystem) {
 			if (boostPower.get() < powerUsage) {

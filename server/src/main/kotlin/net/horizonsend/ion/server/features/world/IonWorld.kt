@@ -4,20 +4,24 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
+import net.horizonsend.ion.server.features.transport.inputs.WorldIOManager
+import net.horizonsend.ion.server.features.transport.manager.WorldTransportManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
+import net.horizonsend.ion.server.features.world.environment.WorldEnvironmentManager
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
+import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -41,7 +45,8 @@ class IonWorld private constructor(
 		}
 
 	val multiblockManager = WorldMultiblockManager(this)
-	val inputManager = WorldInputManager(this)
+	val inputManager = WorldIOManager(this)
+	val transportManager = WorldTransportManager(this).apply { load() }
 
 	/**
 	 * Key: The location of the chunk packed into a long
@@ -55,6 +60,15 @@ class IonWorld private constructor(
 	 **/
 	fun getChunk(x: Int, z: Int): IonChunk? {
 		val key = Chunk.getChunkKey(x, z)
+
+		return chunks[key]
+	}
+
+	/**
+	 * Gets the IonChunk at the specified coordinates if it is loaded
+	 **/
+	fun getChunkFromWorldcoordinates(x: Int, z: Int): IonChunk? {
+		val key = Chunk.getChunkKey(x.shr(4), z.shr(4))
 
 		return chunks[key]
 	}
@@ -105,8 +119,12 @@ class IonWorld private constructor(
 	 * @see Environment
 	 * @see WorldSettings
 	 **/
-	val configuration: WorldSettings by lazy {
-		Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+	var configuration: WorldSettings = loadConfiguration()
+
+	fun reloadConfiguration() {
+		configuration = loadConfiguration()
+		terrainGenerator = configuration.terrainGenerationSettings?.buildGenerator(this)
+		enviornmentManager.reloadConfiguration()
 	}
 
 	/** Write the configuration to the disk */
@@ -115,19 +133,40 @@ class IonWorld private constructor(
 	/** Check if the world's configuration contains the flag */
 	fun hasFlag(flag: WorldFlag): Boolean = configuration.flags.contains(flag)
 
+	/** Find what region a world is in */
+	fun getSpaceRegion(): SpaceRegion {
+		return when {
+			hasFlag(WorldFlag.REGION_WORLD_WARD) -> SpaceRegion.WARD
+			hasFlag(WorldFlag.REGION_WORLD_BREACH) -> SpaceRegion.BREACH
+			hasFlag(WorldFlag.REGION_WORLD_MONOLITH) -> SpaceRegion.MONOLITH
+			hasFlag(WorldFlag.REGION_WORLD_FRACTURE) -> SpaceRegion.FRACTURE
+			hasFlag(WorldFlag.REGION_WORLD_SPINE) -> SpaceRegion.SPINE
+			else -> SpaceRegion.NONE
+		}
+	}
+
+	fun getSpaceRegionName() = when (getSpaceRegion()) {
+		SpaceRegion.WARD -> "Ward"
+		SpaceRegion.BREACH -> "Breach"
+		SpaceRegion.MONOLITH -> "Monolith"
+		SpaceRegion.FRACTURE -> "Fracture"
+		SpaceRegion.SPINE -> "Spine"
+		SpaceRegion.NONE -> "Unknown"
+	}
+
 	/** Get all environments applied to this world */
 	val environments get() = configuration.environments
 
-	/** Get all players on the inner world */
-	val players: List<Player> get() = world.players
+	val enviornmentManager = WorldEnvironmentManager(this)
 
+	/** List of blocks that cannot be detected by starships */
 	val detectionForbiddenBlocks = loadForbiddenBlocks()
 
+	/** Contains custom mob spawning behavior */
 	val customMonSpawner = CustomMobSpawner(this, configuration.customMobSpawns)
 
-	//TODO
-	// - Terrain Generator
-	// - Worldborder injection
+	/** Custom terrain generation handling, including asteroids, wrecks, or nebulas */
+	var terrainGenerator: IonWorldGenerator<*>? = configuration.terrainGenerationSettings?.buildGenerator(this); private set
 
 	companion object : IonServerComponent() {
 		private val WORLD_CONFIGURATION_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("worlds").apply { mkdirs() }
@@ -137,8 +176,9 @@ class IonWorld private constructor(
 		fun all() = ionWorlds.values
 
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
+		fun getIfLoaded(world: World): IonWorld? = ionWorlds[world]
 
-		fun register(world: World) {
+		fun register(world: World) = kotlin.runCatching {
 			mainThreadCheck()
 
 			if (ionWorlds.contains(world)) {
@@ -149,9 +189,10 @@ class IonWorld private constructor(
 			ionWorlds[world] = ionWorld
 
 			DataFixers.handleWorldInit(ionWorld)
-
-			ionWorld.configuration.environments.forEach { it.setup() }
-			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)
+		}.onFailure {
+			log.error("There was an error loading an Ion World [${world.key}]. The server will now shut down to prevent undefined behavior.")
+			it.printStackTrace()
+			Bukkit.shutdown()
 		}
 
 		fun unregisterAll() {
@@ -162,7 +203,7 @@ class IonWorld private constructor(
 			while (iterator.hasNext()) {
 				val (_, ionWorld) = iterator.next()
 
-				saveAllChunks(ionWorld)
+				saveAll(ionWorld)
 				iterator.remove()
 			}
 		}
@@ -183,7 +224,8 @@ class IonWorld private constructor(
 			val bukkitWorld = event.world
 			val ionWorld = ionWorlds[bukkitWorld]!!
 
-			saveAllChunks(ionWorld)
+			saveAll(ionWorld)
+			ionWorld.transportManager.unload()
 			ionWorlds.remove(bukkitWorld)
 		}
 
@@ -207,16 +249,18 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-			saveAllChunks(event.world.ion)
+			saveAll(event.world.ion)
 		}
 
 		override fun onDisable() {
 			for (world in ionWorlds.values) {
-				saveAllChunks(world)
+				saveAll(world)
 			}
 		}
 
-		private fun saveAllChunks(world: IonWorld) {
+		private fun saveAll(world: IonWorld) {
+			world.transportManager.save()
+
 			for ((_, chunk) in world.chunks) {
 				chunk.save()
 			}
@@ -225,13 +269,9 @@ class IonWorld private constructor(
 		/** Gets the world's Ion counterpart */
 		val World.ion: IonWorld get() = get(this)
 		fun World.hasFlag(flag: WorldFlag): Boolean = ion.hasFlag(flag)
-		fun World.environments(): Set<Environment> = ion.environments
-	}
+//		fun World.environments(): Set<Environment> = ion.environments
 
-	private fun tickEnvironments() {
-		for (environment in environments) {
-			players.forEach(environment::tickPlayer)
-		}
+		fun getPlayersInRegion(region: SpaceRegion): List<Player> = Bukkit.getOnlinePlayers().filter { it.location.world.ion.getSpaceRegion() == region }
 	}
 
 	private fun loadForbiddenBlocks(): LongOpenHashSet {
@@ -243,5 +283,19 @@ class IonWorld private constructor(
 		world.persistentDataContainer.set(FORBIDDEN_BLOCKS, LONG_ARRAY, detectionForbiddenBlocks.toLongArray())
 	}
 
+	fun loadConfiguration(): WorldSettings {
+		return runCatching {
+			Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+		}.onFailure { exception ->
+			IonServer.slF4JLogger.error("There was an error loading the world configuration for ${world.key.asString()}. To prevent undefiend behavior the server will now shut down.")
+			exception.printStackTrace()
+			Bukkit.shutdown()
+		}.getOrThrow()
+	}
+
 	fun getAllChunks() = chunks.values
+
+	override fun toString(): String {
+		return "IonWorld[${world.key}]"
+	}
 }

@@ -56,6 +56,11 @@ object Configuration {
 		return json.decodeFromString<T>(text)
 	}
 
+	fun <T : Any> parse(clazz: KClass<T>, text: String): T {
+		@Suppress("UNCHECKED_CAST")
+		return json.decodeFromString(json.serializersModule.serializer(clazz.starProjectedType), text) as T
+	}
+
 	@OptIn(ExperimentalSerializationApi::class)
 	inline fun <reified T> save(clazz: T, directory: File, fileName: String) {
 		directory.mkdirs()
@@ -74,5 +79,9 @@ object Configuration {
 
 	inline fun <reified T> write(clazz: T): String {
 		return json.encodeToString(clazz)
+	}
+
+	fun <T : Any> write(clazz: KClass<T>, serialized: T): String {
+		return json.encodeToString(json.serializersModule.serializer(clazz.starProjectedType), serialized)
 	}
 }

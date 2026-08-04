@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
@@ -47,7 +47,7 @@ abstract class CacheHolder<T: TransportCache>(open val transportManager: Transpo
 
 	abstract fun getFilterManager(): FilterCache
 
-	abstract fun getInputManager(): InputManager
+	abstract fun getInputManager(): IOManager
 
 	abstract fun getCacheHolderAt(key: BlockKey): CacheHolder<T>?
 

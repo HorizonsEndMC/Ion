@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
@@ -24,7 +24,9 @@ object MultiblockTicking : IonServerComponent() {
 	private fun tickSyncMultiblocks() {
 		if (!IonServer.isEnabled) return
 
-		iterateManagers { manager ->
+		iterateManagers { manager: MultiblockManager? ->
+			if (manager == null) return@iterateManagers
+
 			var multiblock: SyncTickingMultiblockEntity? = null
 
 			for (key in manager.syncTickingMultiblockEntities.keys) runCatching {
@@ -44,7 +46,9 @@ object MultiblockTicking : IonServerComponent() {
 	private fun tickAsyncMultiblocks() {
 		if (!IonServer.isEnabled) return
 
-		iterateManagers { manager ->
+		iterateManagers { manager: MultiblockManager? ->
+			if (manager == null) return@iterateManagers
+
 			var multiblock: AsyncTickingMultiblockEntity? = null
 
 			for (key in manager.asyncTickingMultiblockEntities.keys) runCatching {

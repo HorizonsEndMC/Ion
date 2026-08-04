@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -11,7 +12,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import java.util.function.Supplier
 
-class MultiTargetFrigateCombatModule(controller: AIController, private val toggleRandomTargeting: Boolean = true, targetingSupplier: Supplier<List<AITarget>>) : MultiTargetCombatModule(controller, targetingSupplier) {
+class MultiTargetFrigateCombatModule(
+	controller: AIController,
+	difficulty: DifficultyModule,
+	private val toggleRandomTargeting: Boolean = true,
+	aiming: AimingModule,
+	targetingSupplier: Supplier<List<AITarget>>
+) : MultiTargetCombatModule(controller, difficulty, aiming, targetingSupplier) {
 	var leftFace: Boolean = false
 	var ticks = 0
 	private var aimAtRandom = false
@@ -19,22 +26,22 @@ class MultiTargetFrigateCombatModule(controller: AIController, private val toggl
 	override fun tick() {
 		ticks++
 		val targets = targetingSupplier.get()
-        val numTargets = targets.size
+		val numTargets = targets.size
 		if (targets.isEmpty()) return // prevent divide by zero
 		val target = targets[ticks % numTargets]
 
 		// Get the closest axis
 		starship.speedLimit = -1
 
-		if (shouldFaceTarget) handleRotation(target)
+		//if (false) handleRotation(target)
 
-		val direction = getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
+		getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
 
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(
 			origin = starship.centerOfMass,
-			target = target.getVec3i(aimAtRandom).toVector(),
-			direction = direction
+			target = target,
+			aimAtRandom
 		)
 
 		if (toggleRandomTargeting && ticks % 40 == 0) {

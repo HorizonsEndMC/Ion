@@ -1,18 +1,25 @@
 package net.horizonsend.ion.server.command.misc
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.text.button
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
@@ -26,13 +33,18 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
+import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent.callback
+import net.minecraft.world.level.ChunkPos
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -43,6 +55,12 @@ import java.lang.management.ThreadInfo
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
 object TransportDebugCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerCompletion("inputType") { IOType.byName.keys.map(String::lowercase) }
+		manager.commandContexts.registerContext(IOType::class.java) { IOType[it.popFirstArg()] }
+		manager.commandCompletions.setDefaultCompletion("inputType", IOType::class.java)
+	}
+
 	@Subcommand("threaddump")
 	fun forceDump(sender: Player) {
 		log.error("Entire Thread Dump:")
@@ -77,7 +95,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs chunk")
-	fun dumpInputsChunk(sender: Player, type: CacheType) {
+	fun dumpInputsChunk(sender: Player, type: IOType<*>) {
 		val inputManager = sender.world.ion.inputManager
 		val loc = Vec3i(sender.location)
 		val inputs = inputManager.getLocations(type)
@@ -89,9 +107,9 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs starship")
-	fun dumpInputsShip(sender: Player, type: CacheType) {
+	fun dumpInputsShip(sender: Player, type: IOType<*>) {
 		val ship = getStarshipRiding(sender)
-		val inputManager = ship.transportManager.inputManager
+		val inputManager = ship.transportManager.ioManager
 
 		val inputs = inputManager
 			.getLocations(type)
@@ -179,6 +197,38 @@ object TransportDebugCommand : SLCommand() {
 
 		filters.getFilters().forEach { filterData ->
 			sender.highlightBlock(toVec3i(filterData.position), 50L)
+		}
+	}
+
+	@Subcommand("dump merges chunk")
+	fun dumpMergePointsChunk(sender: Player, network: CacheType) {
+		val ionChunk = sender.chunk.ion()
+		val mergePoints = network.get(ionChunk).holder.getMultiblockManager().getLinkageManager().getAll()
+
+		sender.information("${mergePoints.size} linkages(s).")
+
+		mergePoints.forEach {
+			sender.highlightBlock(toVec3i(it.key), 50L)
+		}
+	}
+
+	@Subcommand("dump merges ship")
+	fun dumpMergePointsShip(sender: Player, network: CacheType) {
+		val ship = getStarshipRiding(sender)
+		val manager = network.get(ship).holder.getMultiblockManager()
+		val mergePoints = manager.getLinkageManager().getAll()
+
+		sender.information("${mergePoints.size} linkages(s).")
+
+		mergePoints.forEach {
+			val global = manager.getGlobalCoordinate(toVec3i(it.key))
+
+			val holder = it.value
+
+			 holder.getLinkages().forEach { multiblockLinkage: MultiblockLinkage ->
+				sender.information("Linkage facing ${multiblockLinkage.linkDirection} (${multiblockLinkage.linkDirection[multiblockLinkage.owner.structureDirection]} at ${toVec3i(multiblockLinkage.location)} (${multiblockLinkage.owner.manager.getGlobalCoordinate(toVec3i(multiblockLinkage.location))}) to ${toVec3i(multiblockLinkage.getLinkLocation())}")
+				sender.highlightBlock(global, 50L)
+			}
 		}
 	}
 
@@ -344,5 +394,65 @@ object TransportDebugCommand : SLCommand() {
 		cache.combinedSolarPanelPositions[location]?.getPositions()?.forEach {
 			sender.highlightBlock(toVec3i(it), 50L)
 		}
+	}
+
+	@Subcommand("get chunk grids")
+	fun getChunkGrids(sender: Player, @Optional pageNumber: Int?) {
+		val transportManager = sender.world.ion.transportManager
+		val fluidManager = transportManager.fluidGraphManager
+
+//		sender.information("Grid ID at ${toVec3i(key)}: ${fluidManager.getGraphAtLocation(key)?.uuid}")
+
+		val grids = fluidManager.getByChunkKey(sender.chunk.chunkKey).toList()
+		sender.information("Grids: ${grids.size}")
+
+		fluidManager.allLocations().forEach { t -> sender.highlightBlock(toVec3i(t), 50L) }
+
+		val menu = formatPaginatedMenu(
+			grids,
+			"/transportdebug get chunk grids",
+			pageNumber ?: 1,
+			10
+		) { grid, _ ->
+
+			val uuid = button(Component.text("show uuid")) { it.sendMessage(grid.uuid.toComponent()) }
+			val highlight = button(Component.text("highlight")) { grid.getGraphNodes().forEach { t -> it.highlightBlock(toVec3i(t.location), 30L) } }
+
+			listOf<Component>(
+				Component.text("Grid $grid "),
+				uuid,
+				highlight,
+				if (grid is FluidNetwork) grid.getVolume().toComponent() else Component.empty()
+			).join(separator = Component.space())
+		}
+
+		sender.sendMessage(menu)
+	}
+
+	@Subcommand("network reset fluid")
+	fun networkReset(sender: Player) {
+		val chunk = sender.chunk.minecraft
+		sender.information("Chunk references: ${
+			chunk.getReferencesForStructure(WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.getValue().ionStructure.value()).mapNotNull { lng ->
+				val chunkPos = ChunkPos(lng)
+				val start = chunk.level.getChunk(chunkPos.x, chunkPos.z).getStartForStructure(WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.getValue().ionStructure.value()) ?: return@mapNotNull null
+				val ionStart = FeatureStart.fromNMS(start)
+				"${WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.key}: ${ionStart.metaData} @ $chunkPos"
+			}.joinToString(separator = "\n")
+		}")
+
+		val config = AsteroidPlacementConfiguration()
+
+		val samplePointX = chunk.locX.shl(4).toDouble()
+		val samplePointZ = chunk.locZ.shl(4).toDouble()
+
+		sender.information("Chunk density: ${
+			config.getDensityProvider(sender.world).getValue(samplePointX, 1.0, samplePointZ, Vec3i(0, 0, 0))
+		}")
+
+		val transportManager = sender.world.ion.transportManager
+		val fluidManager = transportManager.fluidGraphManager
+		fluidManager.clear()
+		sender.information("Reset world's fluid grids")
 	}
 }

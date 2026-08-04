@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.gui.custom.starship
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -18,9 +19,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.kyori.adventure.util.HSVLike
 import org.bukkit.Material
 import org.bukkit.Material.EMERALD_BLOCK
@@ -37,27 +35,6 @@ import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.window.AnvilWindow
 
 class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
-	companion object {
-		val starshipNameSerializer = MiniMessage.builder()
-			.preProcessor { enteredText ->
-				enteredText
-					.replace("\uE032", "")
-					.replace("\uE033", "")
-			}
-			.tags(TagResolver.resolver(
-				StandardTags.font(),
-				StandardTags.decorations(TextDecoration.ITALIC),
-				StandardTags.decorations(TextDecoration.BOLD),
-				StandardTags.decorations(TextDecoration.STRIKETHROUGH),
-				StandardTags.decorations(TextDecoration.UNDERLINED),
-				StandardTags.reset(),
-				StandardTags.color(),
-				StandardTags.rainbow(),
-				StandardTags.transition(),
-				StandardTags.gradient()
-			)).build()
-	}
-
 	private var newName = ""
 		set(value) {
 			field = value
@@ -102,13 +79,13 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 		ItemStack(PAPER)
 			.updateDisplayName((name?.toComponent() ?: empty()).itemName)
-			.updateLore(listOf(ofChildren(text("Formatted: ", GRAY), starshipNameSerializer.deserialize(name ?: "")).itemName))
+			.updateLore(listOf(ofChildren(text("Formatted: ", GRAY), restrictedMiniMessageSerializer.deserialize(name ?: "")).itemName))
 	}
 
 	class RenameConfirmationButton(val parent: RenameButton) : AbstractItem() {
 		private val provider = ItemProvider {
 			val serialized: Component = runCatching {
-				starshipNameSerializer.deserialize(parent.newName)
+				restrictedMiniMessageSerializer.deserialize(parent.newName)
 			}.getOrElse {
 				text("Error: ${it.message}", RED).itemName
 			}
@@ -136,7 +113,7 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 		}
 
 		private fun checkName(player: Player, newName: String): Boolean {
-			val serialized = starshipNameSerializer.deserializeOrNull(newName) ?: return false
+			val serialized = restrictedMiniMessageSerializer.deserializeOrNull(newName) ?: return false
 
 			val length = serialized.plainText().length
 			if (length > 24 || length < 3) {

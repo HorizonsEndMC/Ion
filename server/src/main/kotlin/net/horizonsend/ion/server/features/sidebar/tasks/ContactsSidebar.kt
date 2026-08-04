@@ -3,16 +3,19 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
+import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
@@ -35,6 +38,8 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -45,6 +50,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.A
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -56,7 +63,6 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
-import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -71,33 +77,53 @@ import kotlin.math.abs
 
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
-        return PlayerCache.getIfOnline(player)?.contactsDistance?.squared() ?: 0
+        val settingValue = player
+            .takeIf { it.isOnline }
+            ?.getSettingOrThrow(PlayerSettings::contactsDistance)
+            // Needed clamping as part off a legacy db bug fix also changed the calculation re ordering because the divisor needs to go before the dominion bonus.
+            ?.coerceIn(0, PlayerSettings.MAX_CONTACTS_DISTANCE)
+            ?: return 0
+
+        val dominionContactRangeModifier =
+            if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.CONTACT_RANGE)) {
+                DominionTerritoryBuffTypes.CONTACT_RANGE.value
+            } else {
+                0.0
+            }
+
+        val effectiveDistance = if (player.world.hasFlag(WorldFlag.DOMINION_WORLD)) {
+            settingValue * 0.5 + dominionContactRangeModifier
+        } else {
+            settingValue + dominionContactRangeModifier
+        }
+
+        return effectiveDistance.squared().toInt()
     }
 
     private fun priorityColorChange(): Boolean {
         return (Bukkit.getCurrentTick() / 2) % 2 == 0
     }
 
-    private fun distanceColor(distance: Int): NamedTextColor {
+    fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
-            distance < 1500 -> GOLD
-            distance < 2500 -> YELLOW
-            distance < 3500 -> DARK_GREEN
-            distance < 6000 -> GREEN
+            distance < 1500 -> YELLOW
+            distance < 2500 -> GREEN
+ //           distance < 3500 -> DARK_GREEN unneeded as max contacts is 2500
+ //           distance < 6000 -> GREEN
             else -> GREEN
         }
     }
 
     private fun isRelationEnabled(player: Player, otherController: Controller): Boolean {
-        val relationAiEnabled = PlayerCache[player].relationAiEnabled
-        val relationNoneEnabled = PlayerCache[player].relationNoneEnabled
-        val relationEnemyEnabled = PlayerCache[player].relationEnemyEnabled
-        val relationUnfriendlyEnabled = PlayerCache[player].relationUnfriendlyEnabled
-        val relationNeutralEnabled = PlayerCache[player].relationNeutralEnabled
-        val relationFriendlyEnabled = PlayerCache[player].relationFriendlyEnabled
-        val relationAllyEnabled = PlayerCache[player].relationAllyEnabled
-        val relationNationEnabled = PlayerCache[player].relationNationEnabled
+        val relationAiEnabled = player.getSettingOrThrow(PlayerSettings::relationAiEnabled)
+        val relationNoneEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneEnabled)
+        val relationEnemyEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyEnabled)
+        val relationUnfriendlyEnabled = player.getSettingOrThrow(PlayerSettings::relationUnfriendlyEnabled)
+        val relationNeutralEnabled = player.getSettingOrThrow(PlayerSettings::relationNeutralEnabled)
+        val relationFriendlyEnabled = player.getSettingOrThrow(PlayerSettings::relationFriendlyEnabled)
+        val relationAllyEnabled = player.getSettingOrThrow(PlayerSettings::relationAllyEnabled)
+        val relationNationEnabled = player.getSettingOrThrow(PlayerSettings::relationNationEnabled)
 
         when (otherController) {
             is NoOpController -> return relationNoneEnabled
@@ -132,7 +158,8 @@ object ContactsSidebar {
         }
     }
 
-    private fun playerRelationColor(player: Player, otherController: Controller): NamedTextColor {
+    fun playerRelationColor(player: Player, otherController: Controller, inFleet: Boolean): NamedTextColor {
+        if (inFleet) return BLUE
         when (otherController) {
             is NoOpController -> return GRAY
             is AIController -> return GRAY
@@ -145,15 +172,28 @@ object ContactsSidebar {
         }
     }
 
+    private fun shieldStatusColor(percent: Double): NamedTextColor {
+        return when {
+            percent <= 0.05 -> RED
+            percent <= 0.10 -> GOLD
+            percent <= 0.25 -> YELLOW
+            percent <= 0.40 -> GREEN
+            percent <= 0.55 -> DARK_GREEN
+            percent <= 0.70 -> AQUA
+            percent <= 0.85 -> DARK_AQUA
+            else -> BLUE
+        }
+    }
+
     private fun isStationRelationEnabled(player: Player, station: CachedSpaceStation<*, *, *>): Boolean {
-        // val relationAiStationEnabled = PlayerCache[player].relationAiStationEnabled
-        val relationNoneStationEnabled = PlayerCache[player].relationNoneStationEnabled
-        val relationEnemyStationEnabled = PlayerCache[player].relationEnemyStationEnabled
-        val relationUnfriendlyStationEnabled = PlayerCache[player].relationUnfriendlyStationEnabled
-        val relationNeutralStationEnabled = PlayerCache[player].relationNeutralStationEnabled
-        val relationFriendlyStationEnabled = PlayerCache[player].relationFriendlyStationEnabled
-        val relationAllyStationEnabled = PlayerCache[player].relationAllyStationEnabled
-        val relationNationStationEnabled = PlayerCache[player].relationNationStationEnabled
+        // val relationAiStationEnabled = player.getSetting(PlayerSettings::relationAiStationEnabled
+        val relationNoneStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneStationEnabled)
+        val relationEnemyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyStationEnabled)
+        val relationUnfriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationUnfriendlyStationEnabled)
+        val relationNeutralStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNeutralStationEnabled)
+        val relationFriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationFriendlyStationEnabled)
+        val relationAllyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationAllyStationEnabled)
+        val relationNationStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNationStationEnabled)
 
         when (station) {
             is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId))
@@ -204,14 +244,14 @@ object ContactsSidebar {
     }
 
     private fun isCapturableStationRelationEnabled(player: Player, station: CachedCapturableStation): Boolean {
-        // val relationAiStationEnabled = PlayerCache[player].relationAiStationEnabled
-        val relationNoneStationEnabled = PlayerCache[player].relationNoneStationEnabled
-        val relationEnemyStationEnabled = PlayerCache[player].relationEnemyStationEnabled
-        val relationUnfriendlyStationEnabled = PlayerCache[player].relationUnfriendlyStationEnabled
-        val relationNeutralStationEnabled = PlayerCache[player].relationNeutralStationEnabled
-        val relationFriendlyStationEnabled = PlayerCache[player].relationFriendlyStationEnabled
-        val relationAllyStationEnabled = PlayerCache[player].relationAllyStationEnabled
-        val relationNationStationEnabled = PlayerCache[player].relationNationStationEnabled
+        // val relationAiStationEnabled = player.getSetting(PlayerSettings::relationAiStationEnabled
+        val relationNoneStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneStationEnabled)
+        val relationEnemyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyStationEnabled)
+        val relationUnfriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationUnfriendlyStationEnabled)
+        val relationNeutralStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNeutralStationEnabled)
+        val relationFriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationFriendlyStationEnabled)
+        val relationAllyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationAllyStationEnabled)
+        val relationNationStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNationStationEnabled)
 
         val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return relationNoneStationEnabled
         val otherNation = station.nation ?: return relationNoneStationEnabled
@@ -257,19 +297,20 @@ object ContactsSidebar {
         val sourceVector = PilotedStarships[player]?.centerOfMass?.toVector() ?: player.location.toVector()
         val playerVector = player.location.toVector()
 
-        val starshipsEnabled = PlayerCache.getIfOnline(player)?.contactsStarships ?: true
-        val lastStarshipEnabled = PlayerCache.getIfOnline(player)?.lastStarshipEnabled ?: true
-        val planetsEnabled = PlayerCache.getIfOnline(player)?.planetsEnabled ?: true
-        val starsEnabled = PlayerCache.getIfOnline(player)?.starsEnabled ?: true
-        val beaconsEnabled = PlayerCache.getIfOnline(player)?.beaconsEnabled ?: true
-        val stationsEnabled = PlayerCache.getIfOnline(player)?.stationsEnabled ?: true
-        val bookmarksEnabled = PlayerCache.getIfOnline(player)?.bookmarksEnabled ?: true
+        val starshipsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsStarships) ?: true
+        val lastStarshipEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::lastStarshipEnabled) ?: true
+        val planetsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::planetsEnabled) ?: true
+        val starsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::starsEnabled) ?: true
+        val beaconsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::beaconsEnabled) ?: true
+        val stationsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::stationsEnabled) ?: true
+        val bookmarksEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::bookmarksEnabled) ?: true
 
         // identify contacts that should be displayed (enabled and in range)
-        val starships: List<ActiveStarship> = if (starshipsEnabled) {
+        val starships: List<ActiveStarship> = if (starshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
-                        it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
+					if (it.type == StarshipType.BLACK_OPS_FRIGATE || it.type == StarshipType.RECON_STARFIGHTER) {it.centerOfMass.toVector().distanceSquared(sourceVector) <= (700.squared())}
+                    else{it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)} &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
                         isRelationEnabled(player, it.controller) &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
@@ -369,8 +410,8 @@ object ContactsSidebar {
     ) {
         val currentStarship = PilotedStarships[player]
         val interdictionLocation = currentStarship?.centerOfMass?.toVector() ?: playerVector
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (starship in starships) {
             val otherController = starship.controller
@@ -384,31 +425,32 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
 
+            val fleet = Fleets.findByMember(player)
+            val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
+            val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
+            val fleetStatusEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::fleetStatus) ?: true
+
             val nameString = starship.identifier.take(maxLength)
             val priority = getPriority(player, nameString)
             val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
-                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController, inFleet)
                 ContactsColoring.MIXED.ordinal -> distanceColor(distance)
                 else -> distanceColor(distance)
             }
             val prefixColor = when (colorSetting) {
-                ContactsColoring.BY_DISTANCE.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_DISTANCE.ordinal -> playerRelationColor(player, otherController, inFleet)
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
-                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController)
-                else -> playerRelationColor(player, otherController)
+                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController, inFleet)
+                else -> playerRelationColor(player, otherController, inFleet)
             }
             val nameColor = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
-                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController)
-                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController, inFleet)
+                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController, inFleet)
                 else -> distanceColor(distance)
             }
             val name = text(nameString, nameColor)
-
-            val fleet = Fleets.findByMember(player)
-            val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
-            val inFleet = otherPlayer?.let { fleet?.get(it) } ?: false
 
             contactsList.add(
                 ContactsData(
@@ -424,10 +466,19 @@ object ContactsSidebar {
                         if (starship.isInterdicting) {
                             interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
                         } else empty(),
+						if (starship.disruptorTarget == player) {
+							interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
+						} else empty(),
                         if (inFleet) {
-                            if (fleet != null && otherPlayer != null && fleet.leaderId == otherPlayer.uniqueId) {
-                                fleetCommanderTextComponent()
-                            } else fleetTextComponent()
+                            ofChildren(
+                                if (fleet != null && fleet.leader == otherPlayer.uniqueId) {
+                                    fleetCommanderTextComponent()
+                                } else fleetTextComponent(),
+                                if (fleetStatusEnabled) ofChildren(
+                                    Component.space(),
+                                    fleetStatusTextComponent(starship)
+                                ) else empty(),
+                            )
                         } else empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
@@ -442,13 +493,13 @@ object ContactsSidebar {
 
     fun createJammedStarshipContact(contactsData: ContactsData): ContactsData {
         return ContactsData(
-            name = text("########", DARK_RED),
+            name = contactsData.name,
             type = contactsData.type,
-            relation = null,
-            priority = false,
-            prefix = constructPrefixTextComponent(SidebarIcon.X_CROSS_ICON.text, DARK_RED),
-            suffix = empty(),
-            heading = constructHeadingTextComponent("XX", GRAY),
+            relation = contactsData.relation,
+            priority = contactsData.priority,
+            prefix = contactsData.prefix,
+            suffix = contactsData.suffix,
+            heading = contactsData.heading,
             height = constructHeightTextComponent("XXX", GRAY),
             distance = constructDistanceTextComponent("XXXX", GRAY),
             distanceInt = contactsData.distanceInt,
@@ -463,8 +514,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>
     ) {
         val lastStarship = LastPilotedStarship.map[player.uniqueId]
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         if (lastStarship != null &&
             lastStarship.world == player.world &&
@@ -521,8 +572,8 @@ object ContactsSidebar {
 		contactsList: MutableList<ContactsData>,
 		player: Player
     ) {
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (planet in planets) {
             val vector = planet.location.toVector()
@@ -582,8 +633,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (star in stars) {
             val vector = star.location.toVector()
@@ -643,8 +694,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (beacon in beacons) {
             val vector = beacon.spaceLocation.toVector()
@@ -698,8 +749,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (station in stations) {
             val vector = Vector(station.x, 192, station.z)
@@ -753,8 +804,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (station in capturableStations) {
             val vector = station.loc.toVector()
@@ -808,8 +859,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
-        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (bookmark in bookmarks) {
             val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
@@ -857,7 +908,7 @@ object ContactsSidebar {
     private fun constructPrefixTextComponent(icon: String, color: NamedTextColor) =
         text(icon)
             .font(fontKey)
-            .color(color) as TextComponent
+            .color(color)
 
     private fun constructSuffixTextComponent(vararg components: Component): TextComponent {
         val returnComponent = text()
@@ -900,6 +951,23 @@ object ContactsSidebar {
 
     private fun fleetCommanderTextComponent() = text(FLEET_COMMANDER_ICON.text, GOLD).font(fontKey)
 
+    private fun fleetStatusTextComponent(starship: Starship): Component {
+        val totalShieldPercent = starship.shields.sumOf { it.power }.toDouble() / starship.shields.sumOf { it.maxPower }.toDouble()
+        val lowestShield = starship.shields.minByOrNull { it.power }
+        val lowestShieldName = lowestShield?.name ?: "NONE"
+        val lowestShieldPercent = if (lowestShield == null) 0.0 else lowestShield.power.toDouble() / lowestShield.maxPower.toDouble()
+
+        return ofChildren(
+            text((totalShieldPercent * 100).toInt(), shieldStatusColor(totalShieldPercent)),
+            text("/", GRAY),
+            text(lowestShieldName, shieldStatusColor(lowestShieldPercent)),
+            Component.space(),
+            text((lowestShieldPercent * 100).toInt(), shieldStatusColor(lowestShieldPercent)),
+            text("/", GRAY),
+            StarshipsSidebar.hullIntegrityComponent((starship.hullIntegrity * 100).toInt()),
+        )
+    }
+
     private fun beaconTextComponent(text: String?) =
         if (text?.contains("⚠") == true) text("⚠", RED)
         else empty()
@@ -937,7 +1005,6 @@ object ContactsSidebar {
             NationRelation.Level.ALLY -> ContactsRelation.ALLY
             NationRelation.Level.NATION -> ContactsRelation.NATION
             NationRelation.Level.NONE -> ContactsRelation.NONE
-            else -> ContactsRelation.AI
         }
     }
 
@@ -948,7 +1015,7 @@ object ContactsSidebar {
 
 
     private fun sortContacts(contactsList: MutableList<ContactsData>, player: Player) {
-        val sortOrder = ContactsSorting.entries[PlayerCache[player.uniqueId].contactsSort]
+        val sortOrder = ContactsSorting.entries[player.getSettingOrThrow(PlayerSettings::contactsSort)]
 
         when (sortOrder) {
             // Sort by distance ascending

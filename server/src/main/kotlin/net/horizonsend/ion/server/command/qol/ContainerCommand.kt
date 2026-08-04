@@ -43,7 +43,7 @@ object ContainerCommand : SLCommand() {
 				for(block in containerList) {
 					if (!block.inventory.isEmpty) {
 						count++
-						block.inventory.clear()
+						Tasks.sync { block.inventory.clear() }
 					}
 				}
 				sender.success("Cleared $count containers")

@@ -4,10 +4,10 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -46,14 +46,14 @@ interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, Interactab
 				@Suppress("UNCHECKED_CAST")
 				val gui = getGui(event.player, block, filterData as FilterData<T, M>) { block.state as TileState }
 
-				gui.open()
+				gui.openGui()
 			}
 		}
 	}
 
 	fun createData(pos: BlockKey): FilterData<T, M>
 
-	fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, tileState: Supplier<TileState>) : GuiWrapper
+	fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, tileState: Supplier<TileState>) : CommonGuiWrapper
 
 	override fun decorateItem(itemStack: ItemStack, block: Block) {
 		val state = block.state

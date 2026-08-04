@@ -116,10 +116,14 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return sleepWithStatus(text("No Furnace"), 250)
 			val outputInventory = getInventory(0, 0, 2) ?: return sleepWithStatus(text("No Output Inventory", NamedTextColor.RED), 250)
 
-			val fuel = furnaceInventory.fuel
-
 			if (powerStorage.getPower() < 100) return sleepWithStatus(text("No Power", NamedTextColor.RED), 100)
-			if (fuel?.type?.isConcretePowder != true) return sleepWithStatus(text("Out of Powder", NamedTextColor.RED), 100)
+
+			val topFuel = furnaceInventory.smelting
+			val bottomFuel = furnaceInventory.fuel
+
+			val fuel = if (topFuel?.type?.isConcretePowder == true) topFuel
+			else if (bottomFuel?.type?.isConcretePowder == true) bottomFuel
+			else return sleepWithStatus(text("Out of Powder", NamedTextColor.RED), 100)
 
 			val output = getOutput(fuel)
 

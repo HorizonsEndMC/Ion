@@ -1,13 +1,15 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import io.papermc.paper.event.player.PlayerPickItemEvent
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.minecraft.server.network.ServerGamePacketListenerImpl
 import org.bukkit.GameMode
@@ -52,13 +54,30 @@ object CustomBlockListeners : SLEventListener() {
 			}
 
 			event.block.location.block.setBlockData(data, true)
-		} else {
+		}
+		else if (block is OrientableCustomBlock) {
+			val placedAgainst = BlockFace.entries.first {
+				it.modX == (event.blockAgainst.x - event.blockPlaced.x) &&
+				it.modY == (event.blockAgainst.y - event.blockPlaced.y) &&
+				it.modZ == (event.blockAgainst.z - event.blockPlaced.z)
+			}.axis
+
+			val data = when {
+				block.axisData.containsKey(placedAgainst) -> block.axisData[placedAgainst]!!
+				else -> block.blockData
+			}
+
+			event.block.location.block.setBlockData(data, true)
+		}
+		else {
 			event.block.location.block.setBlockData(block.blockData, true)
 		}
 
 		block.placeCallback(itemStack, event.block)
     }
 
+	// EVERY NEW INSTANCE OF BlockBreakEvent NEEDS TO BE ADDED TO THIS SET. BlockBreakEvents HAVE BEEN THE CAUSE OF
+	// MULTIPLE DUPE BUGS AND I AM SICK AND TIRED OF HAVING TO FIX THE EXACT SAME BUG APPEARING OVER AND OVER AGAIN!
 	val noDropEvents: ConcurrentHashMap.KeySetView<BlockBreakEvent, Boolean> = ConcurrentHashMap.newKeySet()
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -80,21 +99,18 @@ object CustomBlockListeners : SLEventListener() {
         val itemUsed = event.player.inventory.itemInMainHand
         val location = block.location.toCenterLocation()
 
-        if (itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH)) Tasks.sync {
-			// Make sure future custom blocks use the same identifier as its custom block identifier
-			for (drop in customBlock.drops.getDrops(itemUsed, true)) {
+		// Make sure future custom blocks use the same identifier as its custom block identifier
+		Tasks.sync {
+			for (drop in customBlock.drops.getDrops(tool = itemUsed, silkTouch = itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH))) {
 				block.world.dropItem(location, drop)
 			}
-        } else Tasks.sync {
-			for (drop in customBlock.drops.getDrops(itemUsed, false)) {
-				block.world.dropItem(location, drop)
-			}
-        }
+		}
+
 
 		customBlock.removeCallback(block)
     }
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onPlayerInteract(event: PlayerInteractEvent) {
 		val clickedBlock = event.clickedBlock ?: return
 		val customBlock = clickedBlock.customBlock ?: return
@@ -117,7 +133,7 @@ object CustomBlockListeners : SLEventListener() {
 		val player = event.player
 
 		val targetedBlock = player.getTargetBlockExact(player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE)?.value?.roundToInt() ?: 5) ?: return
-		val customBlock = CustomBlocks.getByBlockData(targetedBlock.blockData) ?: return
+		val customBlock = targetedBlock.blockData.customBlock ?: return
 		val customBlockItem = customBlock.customItem.constructItemStack()
 
 		// Source slot is for survival, when taking the item from the slot in the inventory, -1 if it is not present, e.g. creative mode
@@ -137,6 +153,7 @@ object CustomBlockListeners : SLEventListener() {
 			} else {
 				event.isCancelled = true
 				event.player.inventory.setItem(event.targetSlot, customBlockItem)
+				event.player.inventory.heldItemSlot = event.targetSlot
 			}
 		}
 

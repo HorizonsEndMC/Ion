@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -26,8 +26,8 @@ import org.dynmap.markers.MarkerIcon
 import org.dynmap.markers.MarkerSet
 
 object StarshipDisplay : IonServerComponent(true) {
-	private lateinit var starshipMarkers: MarkerSet
 	private lateinit var walk: MarkerIcon
+	private lateinit var starshipMarkers: MarkerSet
 	private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 	private val starshipsIcons: MutableMap<String, StarshipIcon> = mutableMapOf()
 
@@ -60,6 +60,13 @@ object StarshipDisplay : IonServerComponent(true) {
 	private fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
 		val charIdentifier = starship.charIdentifier
 		val displayName = starship.identifier
+		val controller = starship.controller
+		if (controller is PlayerController) {
+			if (!DynmapPlugin.plugin.getPlayerVisbility(controller.player)) {
+				removeMarkersInSet(starship.charIdentifier, starshipsIcons.get(starship.charIdentifier), starshipMarkers)
+				return
+			}
+		}
 
 		val markerIcon = marker
 			?: markerAPI.getMarkerIcon(starship.type.dynmapIcon)
@@ -80,11 +87,10 @@ object StarshipDisplay : IonServerComponent(true) {
 		}
 
 		val starshipIcon = if (isInHyperspace) {
-			if (starship !is ActiveControlledStarship) return
 			val movement = Hyperspace.getHyperspaceMovement(starship)!!
 
 			if (movement.originWorld != movement.dest.world) {
-				starshipsIcons.remove(charIdentifier)
+				removeMarkersInSet(charIdentifier, null,starshipMarkers)
 				return
 			}
 
@@ -103,7 +109,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	private fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
 		val starshipDisplayName = starship.getDisplayNamePlain()
 
-		val pilotNamePlain = starship.controller.getPilotName().plainText()
+		val pilotNamePlain = starship.controller.pilotName.plainText()
 
 		val type = starship.type.displayNameComponent.plainText()
 		val blockCount = starship.initialBlockCount
@@ -173,17 +179,27 @@ object StarshipDisplay : IonServerComponent(true) {
 		while (iterator.hasNext()) {
 			val (identifier, icon) = iterator.next()
 
-			if (ActiveStarships[identifier] != null) continue
+			val starship = ActiveStarships.getByCharIdentifier(identifier)
+			val playerPilot = starship?.playerPilot
+			// the starship is still actively piloted, AND
+			// (the starship is not controlled by a player, OR
+			// the starship is controlled by a player and the player is visible on Dynmap):
+			// Do not remove the marker from the set
+			if (starship != null && (starship.controller !is PlayerController || (playerPilot != null && DynmapPlugin.plugin.getPlayerVisbility(playerPilot)))) continue
 
-			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
-			gravityWellCircleMarker?.deleteMarker()
-
-			markerSet.findMarker(identifier)?.deleteMarker()
-			for (circle in icon.circles) {
-				markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
-			}
+			removeMarkersInSet(identifier, icon, markerSet)
 
 			iterator.remove()
+		}
+	}
+
+	private fun removeMarkersInSet(identifier: String, icon: StarshipIcon?, markerSet: MarkerSet) {
+		markerSet.findMarker(identifier)?.deleteMarker()
+		markerSet.findCircleMarker("${identifier}_gravity_well")?.deleteMarker()
+
+		icon ?: return
+		for (circle in icon.circles) {
+			markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
 		}
 	}
 

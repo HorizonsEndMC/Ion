@@ -4,9 +4,10 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.control.input.PlayerMovementInputHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
-import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
+import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -18,50 +19,47 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
 class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerController(player, starship, "Player") {
-	override fun isSneakFlying(): Boolean = player.isSneaking && PlayerStarshipControl.isHoldingController(player)
-	override val selectedDirectControlSpeed: Int get() = player.inventory.heldItemSlot
 
-	var inputHandler: PlayerMovementInputHandler = ShiftFlightHandler(this)
+	override var movementHandler: MovementHandler = ShiftFlightHandler(this, PlayerShiftFlightInput(this))
 		set(value) {
-			field.destroy(value)
+			field.destroy()
 			field = value
 			value.create()
 			information("Updated control mode to ${value.name}")
 		}
 
 	override fun tick() {
-		if (!starship.isTeleporting) inputHandler.tick()
+		if (!starship.isTeleporting) movementHandler.tick()
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
-		inputHandler.onBlocked(reason)
+		movementHandler.onBlocked(reason)
 	}
 
 	companion object : SLEventListener() {
-		private fun getInputHandler(player: Player): PlayerMovementInputHandler? {
+		private fun getMovementHandler(player: Player): MovementHandler? {
 			val ship = PilotedStarships[player] ?: return null
-			return (ship.controller as? ActivePlayerController)?.inputHandler
+			return (ship.controller as? ActivePlayerController)?.movementHandler
 		}
 
 		@EventHandler
 		fun onPlayerMove(event: PlayerMoveEvent) {
-			getInputHandler(event.player)?.handleMove(event)
+			(getMovementHandler(event.player)?.input as? PlayerInput)?.handleMove(event)
 		}
 
 		@EventHandler
 		fun onPlayerSneak(event: PlayerToggleSneakEvent) {
-			getInputHandler(event.player)?.handleSneak(event)
+			(getMovementHandler(event.player)?.input as? PlayerInput)?.handleSneak(event)
 		}
 
 		@EventHandler
 		fun onPlayerJump(event: PlayerJumpEvent) {
-			getInputHandler(event.player)?.handleJump(event)
+			(getMovementHandler(event.player)?.input as? PlayerInput)?.handleJump(event)
 		}
-
 
 		@EventHandler
 		fun onPlayerHoldItem(event: PlayerItemHeldEvent) {
-			getInputHandler(event.player)?.handlePlayerHoldItem(event)
+			(getMovementHandler(event.player)?.input as? PlayerInput)?.handlePlayerHoldItem(event)
 		}
 	}
 }

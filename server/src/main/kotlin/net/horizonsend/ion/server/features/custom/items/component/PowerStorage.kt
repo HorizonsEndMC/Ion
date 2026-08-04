@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.component
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerStorage
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.util.StoredValues
@@ -69,11 +70,11 @@ class PowerStorage(private val basePowerCapacity: Int, private val basePowerUsag
 
 	fun getPowerUse(itemStack: ItemStack, customItem: CustomItem): Int {
 		var usage = basePowerUsage.toDouble()
-		val attributes = customItem.getAttributes(itemStack).filterIsInstance<net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.PowerUsageIncrease>()
+		val attributes = customItem.getAttributes(itemStack).filterIsInstance<AdditionalPowerConsumption>()
 
 		if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) {
 			for (increase in attributes) {
-				usage *= increase.usageMultiplier
+				usage *= increase.multiplier
 			}
 		}
 

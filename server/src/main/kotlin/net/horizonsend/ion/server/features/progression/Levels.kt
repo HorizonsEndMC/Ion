@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.progression.Levels.getCached
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -34,6 +35,8 @@ data class LevelsConfig(val creditsPerXP: Double = 2.5, val cost: CostSection = 
 
 /** Maximum attainable level */
 internal const val MAX_LEVEL = 100
+const val MAX_POWER = 20
+const val MIN_POWER = -20
 
 object Levels : IonServerComponent() {
 	private val queue = ConcurrentLinkedQueue<UUID>()
@@ -92,7 +95,7 @@ object Levels : IonServerComponent() {
 		if (!doLevelUp(newLevel, currentXP - cost, playerID, player, name, previousCost + cost)) {
 			Tasks.sync {
 				player.showTitle(Title.title(text("LEVEL UP!", DARK_PURPLE, TextDecoration.BOLD), text("Level $newLevel", GOLD, TextDecoration.ITALIC)))
-				player.sendMessage(template(text("Leveled up to level {0} for {1} SLXP", DARK_PURPLE), GOLD, newLevel, previousCost + cost))
+				player.sendMessage(template(text("Leveled up to level {0} for {1} HEXP", DARK_PURPLE), GOLD, newLevel, previousCost + cost))
 
 				val message = template(
 					text("{0} leveled up to {1}!", GREEN),

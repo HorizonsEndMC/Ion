@@ -1,16 +1,17 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
@@ -179,7 +180,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, GasPowerPlantMultiblock, manager, x, y, z, world, structureDirection, 500000), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
+	) : SimplePoweredEntity(data, GasPowerPlantMultiblock, manager, x, y, z, world, structureDirection, 500000), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity, FurnaceBasedMultiblockEntity {
 		override val multiblock: GasPowerPlantMultiblock = GasPowerPlantMultiblock
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
@@ -191,6 +192,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		).register()
 
 		override fun tick() {
+			if (powerStorage.isFull()) return
 			val inventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return
 
 			val fuelItem = inventory.smelting ?: return
@@ -208,6 +210,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 
 			if (powerStorage.getPower() < maxPower) {
 				tickingManager.sleepForTicks(fuelType.cooldown)
+				setBurningForTicks(fuelType.cooldown)
 
 				inventory.holder?.burnTime = fuelType.cooldown.toShort()
 				inventory.holder?.update()
@@ -262,8 +265,8 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		/** Returns whether the process should be aborted due to a problem **/
 		private fun clearEmpty(furnaceInventory: Inventory, itemStack: ItemStack): Boolean {
 			val discardChest = getInventory(0, 0, 6) ?: return true
-			if (!LegacyItemUtils.canFit(discardChest, EMPTY_CANISTER)) return true
-			discardChest.addItem(EMPTY_CANISTER.clone())
+			if (!LegacyItemUtils.canFit(discardChest, CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack())) return true
+			discardChest.addItem(CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack().clone())
 
 			furnaceInventory.remove(itemStack)
 			return false

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ores.storage
 
+import net.horizonsend.ion.server.features.ores.storage.Ore.entries
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
@@ -34,6 +35,32 @@ enum class Ore(val blockData: BlockData, private val deepslateVariant: BlockData
 		it as MultipleFacing
 		it.setFace(BlockFace.DOWN, false)
 		it.setFace(BlockFace.EAST, false)
+		it.setFace(BlockFace.NORTH, false)
+		it.setFace(BlockFace.SOUTH, false)
+		it.setFace(BlockFace.WEST, false)
+	}, null),
+	VANADIUM(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.UP, false)
+		it.setFace(BlockFace.EAST, false)
+		it.setFace(BlockFace.NORTH, false)
+		it.setFace(BlockFace.SOUTH, false)
+		it.setFace(BlockFace.WEST, false)
+	}, null),
+	SCORDITE(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.UP, false)
+		it.setFace(BlockFace.EAST, false)
+		it.setFace(BlockFace.DOWN, false)
+		it.setFace(BlockFace.WEST, false)
+	}, null),
+	ATAVUM(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
+		it.setFace(BlockFace.NORTH, false)
+		it.setFace(BlockFace.SOUTH, false)
+	}, null),
+	ZIRCON(Material.RED_MUSHROOM_BLOCK.createBlockData {
+		it as MultipleFacing
 		it.setFace(BlockFace.NORTH, false)
 		it.setFace(BlockFace.SOUTH, false)
 		it.setFace(BlockFace.WEST, false)

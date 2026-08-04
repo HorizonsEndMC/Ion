@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
@@ -16,10 +17,11 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -32,8 +34,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
@@ -41,8 +43,11 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -68,15 +73,22 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Locale
 import java.util.UUID
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object PilotedStarships : IonServerComponent() {
 	internal val map = mutableMapOf<Controller, ActiveControlledStarship>()
 
+	private const val RELEASE_VERIFICATION_TIMEOUT_MILLIS = 5_000L
+	private val releaseVerifications = mutableMapOf<UUID, PendingReleaseVerification>()
+
+	private data class PendingReleaseVerification(
+		val starship: ActiveControlledStarship,
+		val expiresAt: Long
+	)
+
 	override fun onEnable() {
 		listen<PlayerQuitEvent> { event ->
+			releaseVerifications.remove(event.player.uniqueId)
+
 			val loc = Vec3i(event.player.location)
 			val controller = ActiveStarships.findByPilot(event.player)?.controller ?: return@listen
 
@@ -131,6 +143,7 @@ object PilotedStarships : IonServerComponent() {
 			saveLoadshipData(ship, player)
 			StarshipPilotedEvent(ship, player).callEvent()
 		}
+		log.info("${player.name} piloted ${starship.getDisplayNamePlain()} (${starship.initialBlockCount}) at ${starship.world.name}, ${starship.centerOfMass}")
 	}
 
 	fun changeController(starship: ActiveControlledStarship, newController: Controller) {
@@ -195,7 +208,7 @@ object PilotedStarships : IonServerComponent() {
 		return (starship.controller as? PlayerController)?.player?.uniqueId == player.uniqueId
 	}
 
-	fun unpilot(starship: ActiveControlledStarship) {
+	fun unpilot(starship: ActiveControlledStarship, cancellable: Boolean = false): Boolean {
 		Tasks.checkMainThread()
 		val controller = starship.controller
 
@@ -205,6 +218,8 @@ object PilotedStarships : IonServerComponent() {
 			is PlayerController -> UnpilotedController(controller)
 			else -> NoOpController(starship, starship.controller.damager)
 		}
+
+		if (!StarshipUnpilotEvent(starship, controller, unpilotedController, cancellable).callEvent()) return false
 
 		map.remove(starship.controller)
 
@@ -216,7 +231,7 @@ object PilotedStarships : IonServerComponent() {
 		starship.shieldBars.values.forEach { it.removeAll() }
 		starship.shieldBars.clear()
 
-		StarshipUnpilotedEvent(starship, controller, unpilotedController).callEvent()
+		return true
 	}
 
 	operator fun get(player: Player): ActiveControlledStarship? = get(player.uniqueId)
@@ -422,6 +437,36 @@ object PilotedStarships : IonServerComponent() {
 						return@activateAsync
 					}
 				}
+
+				// Check forbidden subsystems
+				for (forbiddenSubsystem in activePlayerStarship.balancing.forbiddenMultiblocks) {
+					if (!forbiddenSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Forbidden subsystem detected! ${forbiddenSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
+			}
+
+			for (subsystem in activePlayerStarship.weapons) {
+				if (subsystem !is BalancedWeaponSubsystem<*>) continue
+				for (incompatibleSubsystem in subsystem.balancing.fireRestrictions.incompatibleMultiblocks) {
+					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
+			}
+
+			for (subsystem in activePlayerStarship.commandBursts) {
+				for (incompatibleSubsystem in subsystem.balancing.activateRestrictions.incompatibleMultiblocks) {
+					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
 			}
 
 			// Limit mining laser tiers and counts
@@ -444,6 +489,8 @@ object PilotedStarships : IonServerComponent() {
 					.append(activePlayerStarship.getDisplayName())
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
+			log.info("${player.displayName().plainText()} piloted ${activePlayerStarship.getDisplayName().plainText()}" +
+					" with ${activePlayerStarship.initialBlockCount} blocks, at ${player.world.name}, ${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ}")
 
 			if (activePlayerStarship.isOversized()) {
 				player.userError("Ship is over max block count! Power output reduced by ${(ReactorSubsystem.OVERSIZE_POWER_PENALTY * 100).toInt()}%!")
@@ -455,7 +502,7 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
-			val pilotSound = data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound
+			val pilotSound = data.starshipType.actualType.balancing.shipSounds.pilot.sound
 			if (activePlayerStarship.rewardsProviders.filterIsInstance<StandardRewardsProvider>().isEmpty()) {
 				activePlayerStarship.rewardsProviders.add(StandardRewardsProvider(activePlayerStarship))
 			}
@@ -471,7 +518,9 @@ object PilotedStarships : IonServerComponent() {
 	fun tryRelease(starship: ActiveControlledStarship, bypassCombatTag: Boolean = false): Boolean {
 		val controller = starship.controller
 
-		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
+		if (!StarshipReleaseEvent(starship, controller).callEvent()) return false
+		log.info("${starship.controller.name} unpiloted ${starship.getDisplayNamePlain()} (${starship.initialBlockCount}) at ${starship.world.name}, ${starship.centerOfMass}")
+
 		if (Hyperspace.isMoving(starship)) {
 			starship.alertSubtitle("Cannot release while in hyperspace!")
 			return false
@@ -480,26 +529,98 @@ object PilotedStarships : IonServerComponent() {
 		// Keep pilot for info even after unpilot
 		val oldController = starship.controller
 
-		unpilot(starship)
+		if (oldController is PlayerController) {
+			val player = oldController.player
+			val touching = player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
+				starship.isTouchingExternalBlock()
 
-		// Combat tag check
-		if (!bypassCombatTag && oldController is PlayerController &&
-			(CombatTimer.isNpcCombatTagged(oldController.player) || CombatTimer.isPvpCombatTagged(oldController.player))) {
-			oldController.alert("Your starship is in combat! It will be unpiloted instead!")
+			// A touching ship in a protected safezone may not release or unpilot, including while combat tagged.
+			if (touching && ProtectionListener.isProtectedCity(player.location)) {
+				releaseVerifications.remove(player.uniqueId)
+				player.userError("You can't release here your ship is touching something nearby")
+				return false
+			}
 
-			return false
+			//The pre existing combat unpiloting
+			if (!bypassCombatTag && isCombatTagged(player)) {
+				releaseVerifications.remove(player.uniqueId)
+				unpilot(starship)
+				oldController.alert("Your starship is in combat! It will be unpiloted instead!")
+
+				return false
+			}
+
+			if (touching && !hasConfirmedRelease(player, starship)) {
+				player.userError(
+					"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
+				)
+				return false
+			}
+
+			releaseVerifications.remove(player.uniqueId)
 		}
+
+		unpilot(starship)
 
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
 		playSoundInRadius(
 			starship.centerOfMass.toLocation(starship.world),
 			10_000.0,
-			starship.balancing.sounds.release.sound
+			starship.balancing.shipSounds.release.sound
 		)
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true
+	}
+
+	private fun isCombatTagged(player: Player): Boolean {
+		return CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player)
+	}
+
+	private fun hasConfirmedRelease(player: Player, starship: ActiveControlledStarship): Boolean {
+		val now = System.currentTimeMillis()
+		val pending = releaseVerifications[player.uniqueId]
+
+		if (pending?.starship === starship && now <= pending.expiresAt) {
+			releaseVerifications.remove(player.uniqueId)
+			return true
+		}
+
+		releaseVerifications[player.uniqueId] = PendingReleaseVerification(
+			starship = starship,
+			expiresAt = now + RELEASE_VERIFICATION_TIMEOUT_MILLIS
+		)
+		return false
+	}
+
+	private fun ActiveControlledStarship.isTouchingExternalBlock(): Boolean {
+		for (key in blocks) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
+
+						val nearbyX = x + offsetX
+						val nearbyY = y + offsetY
+						val nearbyZ = z + offsetZ
+
+						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
+						if (contains(nearbyX, nearbyY, nearbyZ)) continue
+
+						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+							return true
+						}
+					}
+				}
+			}
+		}
+
+		return false
 	}
 
 	/**

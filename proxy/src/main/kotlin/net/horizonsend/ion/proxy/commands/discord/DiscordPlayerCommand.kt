@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.features.discord.DiscordCommand
 import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand.Companion.subcommand
@@ -87,7 +87,7 @@ object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to pla
 		}
 		val onlineField = MessageEmbed.Field(
 			"Last Seen:",
-			"$prefix for ${getDurationBreakdown(time)}",
+			"$prefix for ${getDurationBreakdownString(time)}",
 			false
 		)
 

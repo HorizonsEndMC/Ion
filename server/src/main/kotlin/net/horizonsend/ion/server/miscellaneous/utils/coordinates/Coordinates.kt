@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 
+import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.minecraft.core.BlockPos
@@ -166,6 +167,34 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
 		return@getOrPut circleBlocks
 	}
 
+fun getPointsBetween(one: Vector, two: Vector, points: Int): List<Vector> {
+    val connecting = two.clone().subtract(one)
+
+    val locationList = mutableListOf<Vector>()
+
+    for (count in 0..points) {
+        val progression = one.clone().add(connecting.clone().multiply(count.toDouble() / points.toDouble()))
+
+        locationList.add(progression)
+    }
+
+    return locationList
+}
+
+fun Location.alongVector(vector: Vector, points: Int): List<Location> {
+	val locationList = mutableListOf<Location>()
+
+	for (count in 0..points) {
+		val progression = this.clone().add(
+			vector.clone().multiply(count.toDouble() / points.toDouble())
+		)
+
+		locationList.add(progression)
+	}
+
+	return locationList
+}
+
 /**
  * Returns a list of equally spaced locations along a vector
  *
@@ -173,8 +202,8 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
  * @param points: number of locations
  **/
 
-fun Location.alongVector(vector: Vector, points: Int): List<Location> {
-	val locationList = mutableListOf<Location>()
+fun Vector.alongVector(vector: Vector, points: Int): List<Vector> {
+	val locationList = mutableListOf<Vector>()
 
 	for (count in 0..points) {
 		val progression = this.clone().add(
@@ -212,6 +241,29 @@ fun rectangle(minLoc: Location, maxLoc: Location): List<Location> {
 	return (northList + eastList + southList + westList).distinct()
 }
 
+/**
+ * Returns a list of Locations forming a 2D rectangle bounded by two corner Locations
+ *
+ * @param minLoc: The northwestern corner of the rectangle
+ * @param maxLoc: The southeastern corner of the rectangle
+ */
+fun rectangle(minLoc: Vector, maxLoc: Vector): List<Vector> {
+	val zAxisLength = (maxLoc.z - minLoc.z)
+	val xAxisLength = (maxLoc.x - minLoc.x)
+
+	val northVector = Vector(0.0, 0.0, -zAxisLength)
+	val eastVector = Vector(xAxisLength, 0.0, 0.0)
+	val southVector = Vector(0.0, 0.0, zAxisLength)
+	val westVector = Vector(-xAxisLength, 0.0, 0.0)
+
+	val northList = minLoc.alongVector(southVector, zAxisLength.toInt())
+	val eastList = maxLoc.alongVector(westVector, xAxisLength.toInt())
+	val southList = maxLoc.alongVector(northVector, zAxisLength.toInt())
+	val westList = minLoc.alongVector(eastVector, xAxisLength.toInt())
+
+	return (northList + eastList + southList + westList).distinct()
+}
+
 fun cube(minLoc: Location, maxLoc: Location): List<Location> {
 	val bottom = rectangle(minLoc, Location(maxLoc.world, maxLoc.x, minLoc.y, maxLoc.z))
 	val top = rectangle(Location(minLoc.world, minLoc.x, maxLoc.y, minLoc.z), maxLoc)
@@ -223,6 +275,21 @@ fun cube(minLoc: Location, maxLoc: Location): List<Location> {
 	val minMaxList = Location(maxLoc.world, minLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
 	val maxMinList = Location(maxLoc.world, maxLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
 	val maxList = Location(maxLoc.world, maxLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
+
+	return (top + bottom + minList + minMaxList + maxMinList + maxList).distinct()
+}
+
+fun cube(minLoc: Vector, maxLoc: Vector): List<Vector> {
+	val bottom = rectangle(minLoc, maxLoc)
+	val top = rectangle(minLoc, maxLoc)
+
+	val height = maxLoc.y - minLoc.y
+	val verticalVector = Vector(0.0, height, 0.0)
+
+	val minList = Vector(minLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
+	val minMaxList = Vector(minLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
+	val maxMinList = Vector(maxLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
+	val maxList = Vector(maxLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
 
 	return (top + bottom + minList + minMaxList + maxMinList + maxList).distinct()
 }
@@ -249,6 +316,24 @@ fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 		val z = cos(phi) * radius
 
 		coordinates.add(Location(this.world, x, y, z).add(this))
+	}
+
+	return coordinates
+}
+
+fun Location.circlePoints(radius: Double, points: Int, axis: Vector): List<Location> {
+	// Get an orthogonal vector to axis
+	val radiusVector = axis.getCrossProduct(Vector(0, 1, 0)).normalize().multiply(radius)
+	val angle = 2 * Math.PI / points
+	val coordinates = mutableListOf<Location>()
+
+	for (count in 0..points) {
+		val x = radiusVector.x
+		val y = radiusVector.y
+		val z = radiusVector.z
+
+		coordinates.add(Location(this.world, x, y, z).add(this))
+		radiusVector.rotateAroundAxis(axis, angle)
 	}
 
 	return coordinates
@@ -395,6 +480,10 @@ fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), t
 
 fun Location.toVector3f(): Vector3f = Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
 
+fun Vector.isNan() :Boolean {
+	return this.x.isNaN() || this.y.isNaN() || this.z.isNaN()
+}
+
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x
 	val z = vector.z
@@ -438,26 +527,39 @@ fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
 	else -> throw IllegalArgumentException("yaw $yawDegrees isn't within 0..360!")
 }
 
-fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
+fun vectorToPitchYaw(vector: Vector, radians : Boolean= false): Pair<Float, Float> {
 	val pitch: Float
 	val yaw: Float
 
-	val twoPi = 2 * Math.PI
 	val x = vector.x
 	val z = vector.z
 
 	if (x == 0.0 && z == 0.0) {
+		if (radians) {
+			pitch = (if (vector.y > 0) -Math.PI else Math.PI).toFloat()
+			return pitch to 0F
+		}
 		pitch = if (vector.y > 0) -90F else 90F
 		return pitch to 0F
 	}
 
 	val theta = atan2(-x, z)
-	yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
 
 	val x2 = NumberConversions.square(x)
 	val z2 = NumberConversions.square(z)
 	val xz = sqrt(x2 + z2)
-	pitch = Math.toDegrees(atan(-vector.y / xz)).toFloat()
+
+	val phi = atan(-vector.y / xz)
+
+	val twoPi = 2 * Math.PI
+
+	if (radians) {
+		yaw = theta.toFloat()
+		pitch = phi.toFloat()
+	} else {
+		yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
+		pitch = Math.toDegrees(phi).toFloat()
+	}
 
 	return pitch to yaw
 }
@@ -503,6 +605,15 @@ fun Vector.orthogonalThird(other: Vector): Vector {
 	val ox = other.x; val oy = other.y; val oz = other.z
 
 	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
+}
+
+/**
+ * Linearly interpolates [this] vector with the [other] vector based on a [percentage], where 0.0 is this vector and
+ * 1.0 is the [other] vector
+ */
+fun Vector.lerp(other: Vector, percentage: Double): Vector {
+	val coercedPercentage = percentage.coerceIn(0.0, 1.0)
+	return this.multiply(1 - coercedPercentage).add(other.clone().multiply(coercedPercentage))
 }
 
 fun helixAroundVector(
@@ -701,3 +812,5 @@ fun lightning(startLocation: Location, endLocation: Location, maxGenerations: In
 	return finalLocations
 	 */
 }
+
+fun BlockVector3.toVec3i(): Vec3i = Vec3i(x(), y(), z())

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.misc
 
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.miscellaneous.utils.ANVIL_TYPES
@@ -11,22 +11,30 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.state.BlockBehaviour
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.util.CraftMagicNumbers
+import org.bukkit.damage.DamageSource
+import org.bukkit.damage.DamageType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.world.PortalCreateEvent
 
 object GameplayTweaks : IonServerComponent() {
@@ -37,6 +45,18 @@ object GameplayTweaks : IonServerComponent() {
 
 		listen<BlockPhysicsEvent> { event -> if (physicsDisabled) event.isCancelled = true }
 		listen<ItemSpawnEvent> { event -> event.entity.isInvulnerable = true }
+
+		Tasks.syncRepeat(0L, 10L) {
+			damagePlayersAboveMaxHeight()
+		}
+	}
+
+	private fun damagePlayersAboveMaxHeight() {
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (player.y < player.world.maxHeight + 64) continue
+
+			player.damage(4.0, DamageSource.builder(DamageType.OUT_OF_WORLD).build())
+		}
 	}
 
 	@EventHandler
@@ -50,7 +70,7 @@ object GameplayTweaks : IonServerComponent() {
 
 	@EventHandler
 	fun onMushroomianPhysics(event: BlockPhysicsEvent) {
-		if (event.block.type != Material.BROWN_MUSHROOM_BLOCK) {
+		if (event.block.type != Material.BROWN_MUSHROOM_BLOCK && event.block.type != Material.RED_MUSHROOM_BLOCK) {
 			return
 		}
 
@@ -80,6 +100,16 @@ object GameplayTweaks : IonServerComponent() {
 		event.isCancelled = true
 	}
 
+	@EventHandler
+	fun onPlaceEyeOfEnderInEndPortal(event: PlayerInteractEvent) {
+		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+		if (event.clickedBlock?.type != Material.END_PORTAL_FRAME) return
+		if (event.item?.type != Material.ENDER_EYE) return
+
+		event.isCancelled = true
+		event.player.kick(Component.text("You thought you'd be sent to the End, but you got sent to the lobby!", NamedTextColor.RED), PlayerKickEvent.Cause.SPAM)
+	}
+
 	private var physicsDisabled = false
 
 	/** Runs the code with all physics events cancelled during its execution. Must be on the main thread. */
@@ -100,12 +130,13 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.CRYING_OBSIDIAN, 8.0f)
 		setBlastResistance(Material.NETHERITE_BLOCK, 8.0f)
 		setBlastResistance(Material.BROWN_MUSHROOM_BLOCK, 6.0f)
+		setBlastResistance(Material.RED_MUSHROOM_BLOCK, 6.0f)
 		setBlastResistance(Material.LAPIS_BLOCK, 6.0f)
 		setBlastResistance(Material.FURNACE, 6.0f)
 		setBlastResistance(Material.DISPENSER, 6.0f)
 		setBlastResistance(Material.IRON_TRAPDOOR, 6.0f)
 		setBlastResistance(Material.VAULT, 6.0f)
-		STAINED_GLASS_TYPES.forEach { setBlastResistance(it, 5.0f) }
+		STAINED_GLASS_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		setBlastResistance(Material.END_STONE, 5.0f)
 		setBlastResistance(Material.END_PORTAL_FRAME, 5.0f)
 		setBlastResistance(Material.END_STONE_BRICKS, 6.0f)
@@ -117,7 +148,7 @@ object GameplayTweaks : IonServerComponent() {
 		TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }
-		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 5.0f) }
+		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		TRAPDOOR_TYPES.forEach { setBlastResistance(it, 6.0f)}
 		WALL_TYPES.forEach { setBlastResistance(it, 6.0f)}
 		ANVIL_TYPES.forEach { setBlastResistance(it, 6.0f)}

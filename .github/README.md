@@ -50,6 +50,3 @@ Contributions must follow the following rules:
 
 6) Don't go out of your way to resolve deprecations in older code, however if you are working with deprecated code, you
    are expected to update it.
-
-7) Within the server plugin coordinates should be handled internally as 3 separate numbers, or when returning from a
-    function, a `Triple<T, T, T>` should be used.

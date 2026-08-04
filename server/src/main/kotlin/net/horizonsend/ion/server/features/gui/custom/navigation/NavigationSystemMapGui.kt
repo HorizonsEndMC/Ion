@@ -11,20 +11,18 @@ import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
-class NavigationSystemMapGui(val player: Player, val world: World) {
-
-	private var currentWindow: Window? = null
+class NavigationSystemMapGui(viewer: Player, val world: World): InvUIWindowWrapper(viewer) {
 	private val gui = Gui.empty(9, 6)
 
 	// stores amount of shift per horizontal scroller
@@ -101,67 +99,52 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
-		val starItem = if (star != null) NavigationGuiCommon.createStarCustomControlItem(star, player, world, gui) { NavigationSystemMapGui(player, world).openMainWindow() } else null
+		val starItem = if (star != null) NavigationGuiCommon.createStarCustomControlItem(star, viewer, world, gui) { NavigationSystemMapGui(viewer, world).openGui() } else null
 
 		planetItems.addAll(Space.getOrbitingPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
-			.map { planet -> NavigationGuiCommon.createPlanetCustomControlItem(planet, player, world, gui) { NavigationSystemMapGui(player, world).openMainWindow() } }
+			.map { planet -> NavigationGuiCommon.createPlanetCustomControlItem(planet, viewer, world, gui) { NavigationSystemMapGui(viewer, world).openGui() } }
 		)
 		planetsInWorld = planetItems.size
 
 		beaconItems.addAll(ConfigurationFiles.serverConfiguration().beacons
 			.filter { beacon -> beacon.spaceLocation.bukkitWorld() == world }
 			.sortedBy { beacon -> beacon.name }
-			.map { beacon -> NavigationGuiCommon.createBeaconCustomControlItem(beacon, player, world, gui) }
+			.map { beacon -> NavigationGuiCommon.createBeaconCustomControlItem(beacon, viewer, world, gui) }
 		)
 		beaconsInWorld = beaconItems.size
 
-		bookmarkItems.addAll(BookmarkCommand.getBookmarks(player)
+		bookmarkItems.addAll(BookmarkCommand.getBookmarks(viewer)
 			.filter { bookmark -> bookmark.worldName == world.name }
 			.sortedBy { bookmark -> bookmark.name }
-			.map { bookmark -> NavigationGuiCommon.createBookmarkCustomControlItem(bookmark, player, world, gui) }
+			.map { bookmark -> NavigationGuiCommon.createBookmarkCustomControlItem(bookmark, viewer, world, gui) }
 		)
 		bookmarkCount = bookmarkItems.size
 
 		if (starItem != null) gui.setItem(MIDDLE_COLUMN, 0, starItem)
 
-		gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(player))
+		gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(viewer))
 
 		gui.setItem(1, MENU_ROW, GuiItems.CustomControlItem(Component.text("Return To Galactic Menu").decoration(TextDecoration.ITALIC, false), GuiItem.DOWN) {
-			_: ClickType, _: Player, _: InventoryClickEvent -> NavigationGalacticMapGui(player).openMainWindow()
+			_: ClickType, _: Player, _: InventoryClickEvent -> NavigationGalacticMapGui(viewer).openGui()
 		})
 
 		gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem(Component.text("Search For Destination").decoration(TextDecoration.ITALIC, false), GuiItem.MAGNIFYING_GLASS) {
 			_: ClickType, player: Player, _: InventoryClickEvent ->
 			NavigationGuiCommon.openSearchMenu(player, world, gui) {
 				// create a new instance and do not use this old instance
-				NavigationSystemMapGui(player, world).openMainWindow()
+				NavigationSystemMapGui(player, world).openGui()
 			}
 		})
 
 		updateGuiShift()
-		NavigationGuiCommon.updateGuiRoute(gui, player)
+		NavigationGuiCommon.updateGuiRoute(gui, viewer)
 
 		return gui
 	}
 
-	private fun open(player: Player): Window {
-		val gui = createGui()
-
-		val window = Window.single()
-				.setViewer(player)
-				.setGui(gui)
-				.setTitle(AdventureComponentWrapper(createText()))
-				.build()
-
-		return window
-	}
-
-	fun openMainWindow() {
-		currentWindow = open(player).apply { open() }
-	}
-
+	override fun buildWindow(): Window = normalWindow(createGui())
 
 	/**
 	 * Updates the GUI shifts every time something changes (such as the player clicking a button)
@@ -195,10 +178,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		}
 	}
 
-	/**
-	 * Creates the GUI text and background
-	 */
-	private fun createText(): Component {
+	override fun buildTitle(): Component {
 		val header = "${world.name} System Map"
 		val guiText = GuiText(header)
 

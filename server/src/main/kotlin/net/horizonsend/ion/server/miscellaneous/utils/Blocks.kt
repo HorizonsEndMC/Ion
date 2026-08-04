@@ -143,7 +143,6 @@ val Axis.faces: Pair<BlockFace, BlockFace>
 		Axis.Z -> BlockFace.NORTH to BlockFace.SOUTH
 		Axis.X -> BlockFace.EAST to BlockFace.WEST
 		Axis.Y -> BlockFace.UP to BlockFace.DOWN
-		else -> error("Unsupported axis for BlockFace: $this")
 	}
 
 fun BlockFace.matchesAxis(other: BlockFace) = this.axis == other.axis

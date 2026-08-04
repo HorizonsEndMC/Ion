@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.space
 
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -14,8 +14,10 @@ import org.dynmap.markers.MarkerSet
 import kotlin.random.Random
 
 object SpaceMap : IonServerComponent(true) {
-	private lateinit var markerSet: MarkerSet
+	lateinit var spaceMarkerSet: MarkerSet
 	private lateinit var gravityWellMarkerSet: MarkerSet
+	// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+	//private lateinit var debugWaypointMarkerSet: MarkerSet
 
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("dynmap")) {
@@ -32,14 +34,17 @@ object SpaceMap : IonServerComponent(true) {
 		val markerAPI = DynmapPlugin.plugin.markerAPI
 
 		markerAPI.getMarkerSet("space")?.deleteMarkerSet()
-		markerSet = markerAPI.createMarkerSet("space", "Space", null, false)
+		spaceMarkerSet = markerAPI.createMarkerSet("space", "Space", null, false)
 		markerAPI.getMarkerSet("gravity_well")?.deleteMarkerSet()
 		gravityWellMarkerSet = markerAPI.createMarkerSet("gravity_well", "Gravity Wells", null, false)
+		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+		//markerAPI.getMarkerSet("debug_waypoints")?.deleteMarkerSet()
+		//debugWaypointMarkerSet = markerAPI.createMarkerSet("debug_waypoints", "DEBUG: Waypoints", null, false)
 
 		for (star in Space.getStars()) {
 			if (star.name == "EdenHack") continue
 
-			markerSet.createMarker(
+			spaceMarkerSet.createMarker(
 				star.id,
 				star.name,
 				star.spaceWorldName,
@@ -74,7 +79,7 @@ object SpaceMap : IonServerComponent(true) {
 			val planetDescription = "${planet.name} \n \n ${planet.description}"
 
 			// planet icon
-			val planetMarker = markerSet.createMarker(
+			val planetMarker = spaceMarkerSet.createMarker(
 				planet.id, // Marker ID
 				wrapStyle(createHtmlLink(planet.name, link, "#FFFFFF"), "h3", "font-size:30"), // Markup icon name
 				true, // use HTML markup
@@ -92,7 +97,7 @@ object SpaceMap : IonServerComponent(true) {
 				val parent = planet.getParentLocation()
 
 				// planet ring
-				markerSet.createCircleMarker(
+				spaceMarkerSet.createCircleMarker(
 					"${planet.id}_orbit",
 					"${planet.name}'s orbit path",
 					false, // Allow html markup in icon labels
@@ -135,7 +140,7 @@ object SpaceMap : IonServerComponent(true) {
 			// Create a marker to escape the planet view
 			val escapeLink = "https://$serverName.horizonsend.net/?worldname=${planet.spaceWorldName}"
 
-			markerSet.createMarker(
+			spaceMarkerSet.createMarker(
 				"${planet.id}_escape",
 				wrapStyle(createHtmlLink("View Space", escapeLink, "#FFFFFF"), "h3", "font-size:50"),
 				true,
@@ -147,6 +152,39 @@ object SpaceMap : IonServerComponent(true) {
 				false
 			)
 		}
+
+		/**
+		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+		for (waypoint in WaypointManager.mainGraph.vertexSet()) {
+			debugWaypointMarkerSet.createMarker(
+				waypoint.name,
+				waypoint.name,
+				false,
+				waypoint.loc.world.name,
+				waypoint.loc.x,
+				waypoint.loc.y,
+				waypoint.loc.z,
+				markerAPI.getMarkerIcon("pin"),
+				false
+			)
+		}
+
+		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+		for (edge in WaypointManager.mainGraph.edgeSet()) {
+			if (edge.source.loc.world == edge.target.loc.world) {
+				debugWaypointMarkerSet.createPolyLineMarker(
+					edge.source.name + "_to_" + edge.target.name,
+					edge.source.name + " to " + edge.target.name,
+					false,
+					edge.source.loc.world.name,
+					listOf(edge.source.loc.x, edge.target.loc.x).toDoubleArray(),
+					listOf(edge.source.loc.y, edge.target.loc.y).toDoubleArray(),
+					listOf(edge.source.loc.z, edge.target.loc.z).toDoubleArray(),
+					false
+				)
+			}
+		}
+		*/
 	}
 
 }

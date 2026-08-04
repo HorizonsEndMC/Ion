@@ -11,6 +11,7 @@ data class TransportConfiguration(
 	val extractorConfiguration: ExtractorConfiguration = ExtractorConfiguration(),
 	val generalConfiguration: GeneralTransportConfiguration = GeneralTransportConfiguration(),
 	val powerConfiguration: PowerTransportConfiguration = PowerTransportConfiguration(),
+	val graphBasedConfiguration: GraphBasedConfiguration = GraphBasedConfiguration(),
 ) {
 	@Serializable
 	data class ExtractorConfiguration(
@@ -27,5 +28,10 @@ data class TransportConfiguration(
 		val powerTransferRate: Int = 1000,
 		val solarPanelTickPower: Int = 5,
 		val solarPanelTickInterval: Int = 10,
+	)
+
+	@Serializable
+	data class GraphBasedConfiguration(
+		val tickIntervalMS: Long = 10
 	)
 }

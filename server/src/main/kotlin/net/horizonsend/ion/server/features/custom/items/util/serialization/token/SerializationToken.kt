@@ -4,4 +4,6 @@ abstract class SerializationToken<T> {
 	abstract fun deserialize(serialized: String): T
 	abstract fun storeValue(value: T): String
 	abstract fun validateValue(value: String): ValidationResult
+
+	abstract fun getValueRange(string: String): IntRange
 }

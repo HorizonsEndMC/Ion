@@ -4,11 +4,13 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.entity.LivingEntity
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class PotionEffectAttribute(
+	val requiredSlot: Set<EquipmentSlot>,
 	val effect: PotionEffectType,
 	val duration: Int,
 	val amplifier: Int,

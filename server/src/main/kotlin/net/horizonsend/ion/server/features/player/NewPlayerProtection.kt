@@ -13,9 +13,12 @@ import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
+import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -30,10 +33,13 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import java.time.Duration
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
-object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
+object NewPlayerProtection : SLCommand(), Listener {
 	private val lpUserManager = luckPerms.userManager
 
 	private val oldProtectionIndicator = SuffixNode.builder("&6★&r", 0).build()
@@ -121,14 +127,22 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.hasProtection(): Boolean {
-		if (hasMetadata("NPC")) return false
+		return this.protectionTime() > 0L // If playtime is less then 48^((100-x)*0.001) hours
+	}
 
-		val player = PlayerCache[this]
-		val playerLevel = PlayerXPLevelCache[this]
+	fun Player.protectionTime(): Long {
+		if (hasMetadata("NPC")) return 0L
 
-		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
-		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
-		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+		val player = PlayerCache.getIfOnline(this) ?: return 0L
+		val playerLevel = PlayerXPLevelCache[this].level
+
+		if (hasPermission("ion.core.protection.removed")) return 0L // If protection has been removed by staff.
+		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return 0L // If owns a nation
+
+		val playTime = this.getStatistic(PLAY_ONE_MINUTE) / 72000.0
+		val protectionTime = 48.0.pow((100.0 - playerLevel) * 0.01)
+
+		return Duration.ofHours((protectionTime - playTime).coerceAtLeast(0.0).toLong()).toHours() // If playtime is less then 48^((100-x)*0.001) hours
 	}
 
 //	fun UUID.hasProtection(): CompletableFuture<Boolean?> {
@@ -175,10 +189,48 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	@EventHandler
 	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player || event.damager !is Player) return
+		if (event.entity.world.hasFlag(WorldFlag.NOT_SECURE)) return
 
-		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) event.damager.alertAction(
-			"The player you are attacking has new player protection!\n" +
-				"Attacking them for any reason other than self defense is against the rules"
-		)
+		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
+			event.damager.alertAction(
+				"The player you are attacking has new player protection! " +
+						"Attacking them for any reason other than self defense is against the rules"
+			)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onNoobHurtPlayer(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player || event.damager !is Player) return
+		if (event.entity.world.hasFlag(WorldFlag.NOT_SECURE)) return
+
+		if ((event.damager as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) {
+			event.damager.alertAction(
+				"You have new player protection and cannot attack other players! " +
+						"Use /removeprotection to remove your protection and enable attacking"
+			)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onPlayerHurtInSafezone(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player || event.damager !is Player) return
+
+		if (event.entity.world.hasFlag(WorldFlag.SAFE_WORLD)) {
+			event.damager.alertAction("Combat is disabled in this region!")
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onStarshipAttackInSafezone(event: ImpactStarshipEvent) {
+		if (event.starship.world.hasFlag(WorldFlag.SAFE_WORLD)) {
+			if (event.damager !is AIShipDamager) {
+				event.damager.alertAction("Combat is disabled in this region!")
+				event.isCancelled = true
+			}
+		}
 	}
 }

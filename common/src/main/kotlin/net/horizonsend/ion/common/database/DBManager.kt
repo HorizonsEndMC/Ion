@@ -8,19 +8,29 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.database.schema.economy.BankedItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.common.database.schema.economy.ChestShop
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
-import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
+import net.horizonsend.ion.common.database.schema.misc.Message
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
+import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
+import net.horizonsend.ion.common.database.schema.nations.DominionTerritorySiegeData
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -30,7 +40,10 @@ import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
+import net.horizonsend.ion.common.database.schema.nations.StationZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.TradeWorldTerritory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
@@ -40,6 +53,7 @@ import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import org.bson.BsonDocument
@@ -60,6 +74,7 @@ import java.util.concurrent.ThreadFactory
 import kotlin.reflect.KClass
 
 object DBManager : IonComponent() {
+	private const val MAX_POOL_SIZE = 1000
 	var INITIALIZATION_COMPLETE: Boolean = false
 
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
@@ -96,7 +111,7 @@ object DBManager : IonComponent() {
 		val host = CommonConfig.db.host
 		val port = CommonConfig.db.port
 		val authDb = CommonConfig.db.database
-		val connectionString = ConnectionString("mongodb://$username:$password@$host:$port/$authDb")
+		val connectionString = ConnectionString("mongodb://$username:$password@$host:$port/$authDb?maxPoolSize=$MAX_POOL_SIZE")
 		client = KMongo.createClient(connectionString)
 
 		database = client.getDatabase(CommonConfig.db.database)
@@ -105,26 +120,35 @@ object DBManager : IonComponent() {
 
 		// misc
 		SLPlayer.init()
+		PlayerSettings.init()
 		Shuttle.init()
 		Bookmark.init()
+		Message.init()
 
 		// nations
 		CapturableStation.init()
+		RegionalObjectiveSiegeData.init()
+		RegionalObjective.init()
+
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
 		SolarSiegeData.init()
 		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
+		NPCSpaceStation.init()
 		SettlementRole.init()
 		NationRole.init()
 		Settlement.init()
 		SettlementZone.init()
+		StationZone.init()
 		Territory.init()
-
 		NationSpaceStation.init()
 		SettlementSpaceStation.init()
 		PlayerSpaceStation.init()
+		DominionTerritory.init()
+		DominionTerritorySiegeData.init()
+		TradeWorldTerritory.init()
 
 		// space
 		Planet.init()
@@ -136,19 +160,25 @@ object DBManager : IonComponent() {
 		CargoCrate.init()
 		CargoCrateShipment.init()
 		CityNPC.init()
+		UniversalNPC.init()
 		CollectedItem.init()
 		EcoStation.init()
 		CompletedCollectionMission.init()
+		StationRentalZone.init()
 		BazaarItem.init()
+		BazaarOrder.init()
+		ChestShop.init()
 
 		// starships
 		PlayerStarshipData.init()
 		AIStarshipData.init()
 		Blueprint.init()
+		PlayerSoldShip.init()
 
 		Cryopod.init()
-		ClaimedBounty.init()
 		Bookmark.init()
+
+		BankedItem.init()
 	}
 
 	override fun onDisable() {

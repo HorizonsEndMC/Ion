@@ -19,7 +19,9 @@ import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.i
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.miscellaneous.toText
+import net.horizonsend.ion.common.utils.text.deserializeComponent
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.gui.item
@@ -27,15 +29,17 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
-import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.Material
@@ -333,54 +337,52 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 	fun onList(sender: Player) = asyncCommand(sender) {
 		val settlement: Oid<Settlement> = requireSettlementWithPermission(sender)
 
-		MenuHelper.apply {
-			val items = getZones(settlement).map { zone ->
-				val owner = zone.owner
+		val items = getZones(settlement).map { zone ->
+			val owner = zone.owner
 
-				val price = zone.cachedPrice
-				val rent = zone.cachedRent
+			val price = zone.cachedPrice
+			val rent = zone.cachedRent
 
-				val item: ItemStack = when {
-					owner != null -> {
-						skullItem(owner.uuid, getPlayerName(owner))
-					}
-
-					price != null && rent != null -> {
-						item(Material.GREEN_WOOL)
-					}
-
-					price != null -> {
-						item(Material.LIME_WOOL)
-					}
-
-					rent != null -> {
-						item(Material.RED_WOOL)
-					}
-
-					else -> item(Material.COBWEB)
+			val item: ItemStack = when {
+				owner != null -> {
+					skullItem(owner.uuid, getPlayerName(owner))
 				}
 
-				item.updateDisplayName(zone.name)
+				price != null && rent != null -> {
+					item(Material.GREEN_WOOL)
+				}
 
-				item.lore = listOf(
-					"&7Owner:&d ${if (owner == null) "None" else getPlayerName(owner)}",
-					"&7Price: ${if (price == null) "&cNot for sale" else "&e${price.toCreditsString()}"}",
-					"&7Rent: ${if (rent == null) "&cNo rent" else "&a${rent.toCreditsString()}"}",
-					"&7Horizontal Area:&b ${((zone.maxPoint.x - zone.minPoint.x) * (zone.maxPoint.z - zone.minPoint.z)).toText()}",
-					"&7Bounds:&3 ${zone.minPoint} &8->&3 ${zone.maxPoint}",
-					"Dimensions &8(&cx&7, &ay&7, &9z&8): " +
+				price != null -> {
+					item(Material.LIME_WOOL)
+				}
+
+				rent != null -> {
+					item(Material.RED_WOOL)
+				}
+
+				else -> item(Material.COBWEB)
+			}
+
+			item.updateDisplayName(deserializeComponent(zone.name, legacyAmpersand))
+				.updateLore(listOf(
+					deserializeComponent("&7Owner:&d ${if (owner == null) "None" else getPlayerName(owner)}", legacyAmpersand),
+					deserializeComponent("&7Price: ${if (price == null) "&cNot for sale" else "&e${price.toCreditsString()}"}", legacyAmpersand),
+					deserializeComponent("&7Rent: ${if (rent == null) "&cNo rent" else "&a${rent.toCreditsString()}"}", legacyAmpersand),
+					deserializeComponent("&7Horizontal Area:&b ${((zone.maxPoint.x - zone.minPoint.x) * (zone.maxPoint.z - zone.minPoint.z)).toText()}", legacyAmpersand),
+					deserializeComponent("&7Bounds:&3 ${zone.minPoint} &8->&3 ${zone.maxPoint}", legacyAmpersand),
+					deserializeComponent("Dimensions &8(&cx&7, &ay&7, &9z&8): " +
 						"&c${zone.maxPoint.x - zone.minPoint.x}&7, " +
 						"&a${zone.maxPoint.y - zone.minPoint.y}&7, " +
-						"&9${zone.maxPoint.z - zone.minPoint.z}"
-				).map { it.colorize() }
-
-				return@map guiButton(item)
-			}
-
-			Tasks.sync {
-				sender.openPaginatedMenu("${getSettlementName(settlement)} Zones", items)
-			}
+						"&9${zone.maxPoint.z - zone.minPoint.z}", legacyAmpersand)
+				)).makeGuiButton { _, _ -> }
 		}
+
+		ItemMenu(
+			title = Component.text("${getSettlementName(settlement)} Zones"),
+			viewer = sender,
+			guiItems = items,
+			backButtonHandler = { sender.closeInventory() }
+		).openGui()
 	}
 
 	/** This should theoretically be handled by the context resolver, but.. just in case ;)*/

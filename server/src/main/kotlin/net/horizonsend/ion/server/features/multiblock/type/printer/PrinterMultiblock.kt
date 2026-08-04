@@ -158,10 +158,14 @@ abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultibl
 			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return sleepWithStatus(text("No Furnace"), 250)
 			val outputInventory = getInventory(0, 0, 4) ?: return sleepWithStatus(text("No Output Inventory", RED), 250)
 
-			val fuel = furnaceInventory.fuel
-
 			if (powerStorage.getPower() < 250) return sleepWithStatus(text("No Power", RED), 100)
-			if (fuel?.type != Material.COBBLESTONE) return sleepWithStatus(text("Out of Cobblestone", RED), 100)
+
+			val topFuel = furnaceInventory.smelting
+			val bottomFuel = furnaceInventory.fuel
+
+			val usingFuel = if (topFuel?.type == Material.COBBLESTONE) topFuel
+			else if (bottomFuel?.type == Material.COBBLESTONE) bottomFuel
+			else return sleepWithStatus(text("Out of Cobblestone", RED), 100)
 
 			val product = getBlockRelative(0, 0, 2).type
 			val output = multiblock.getOutput(product)
@@ -169,7 +173,7 @@ abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultibl
 			if (!LegacyItemUtils.canFit(outputInventory, output)) return sleepWithStatus(text("No Space", RED), 100)
 			LegacyItemUtils.addToInventory(outputInventory, output)
 
-			fuel.amount--
+			usingFuel.amount--
 
 			powerStorage.removePower(250)
 

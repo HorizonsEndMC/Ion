@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
@@ -10,8 +11,9 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
@@ -19,11 +21,15 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
+import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.litote.kmongo.addToSet
@@ -200,6 +206,17 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 		listen<WorldUnloadEvent> { event ->
 			DEACTIVATED_SHIP_WORLD_CACHES.remove(event.world)
+		}
+
+		listen<ChunkLoadEvent> { event ->
+			for (starshipData in getInChunk(event.chunk)) {
+				if (starshipData !is PlayerStarshipData) continue
+
+				Tasks.async {
+					val slPlayer = SLPlayer[starshipData.captain] ?: return@async
+					if (isInactive(slPlayer.lastSeen)) starshipData.isLockEnabled = false
+				}
+			}
 		}
 	}
 
@@ -384,6 +401,11 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		val cache: DeactivatedShipWorldCache = getCache(world)
 		cache.remove(data)
 		getSaveFile(world, data).delete()
+
+		@Suppress("DEPRECATION") val x = blockKeyX(data.blockKey)
+		@Suppress("DEPRECATION") val y = blockKeyY(data.blockKey)
+		@Suppress("DEPRECATION") val z = blockKeyZ(data.blockKey)
+		IonServer.logger.info("Starship destroyed at ${world.name}, $x, $y, $z")
 
 		data.companion().remove(data._id)
 	}

@@ -15,7 +15,7 @@ import java.util.UUID
 
 object XPCommand : SLCommand() {
 	@Suppress("Unused")
-	@CommandAlias("slxp|xp")
+	@CommandAlias("hexp|xp")
 	fun execute(sender: CommandSender, @Optional player: String?) = asyncCommand(sender) {
 		val playerID: UUID = player?.let { resolveOfflinePlayer(it) }
 			?: (sender as? Player)?.uniqueId

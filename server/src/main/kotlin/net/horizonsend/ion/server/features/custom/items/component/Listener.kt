@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.component
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Event
@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
@@ -94,7 +95,7 @@ class Listener<E: Event, T: CustomItem>(
 			preCheck = { event, customItem, itemStack ->
 				val damager = event.damager as? LivingEntity ?: return@Listener false
 				val itemInHand = damager.equipment?.itemInMainHand ?: return@Listener false
-				itemInHand.customItem == customItem
+				itemInHand.customItem?.key == customItem.key
 			},
 			eventReceiver =  handleEvent
 		)
@@ -117,6 +118,15 @@ class Listener<E: Event, T: CustomItem>(
 				(itemInOffHand != null && offHandcustomItem != null) || (itemInMainHand != null && mainHandcustomItem != null)
 			},
 			eventReceiver =  handleEvent
+		)
+
+		inline fun <reified T: CustomItem> playerConsumeListener(
+			customItem: T,
+			noinline handleEvent: (PlayerItemConsumeEvent, T, ItemStack) -> Unit
+		): Listener<PlayerItemConsumeEvent, T> = Listener(
+			customItem,
+			PlayerItemConsumeEvent::class,
+			eventReceiver = handleEvent
 		)
 	}
 }

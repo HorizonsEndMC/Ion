@@ -53,4 +53,12 @@ interface FurnaceBasedMultiblockEntity {
 		furnace.burnTime = 0.toShort()
 		furnace.update()
 	}
+
+	fun stopCooking() {
+		Tasks.checkMainThread()
+
+		val furnace = getFurnace() ?: return
+		furnace.cookTime = 0.toShort()
+		furnace.update()
+	}
 }

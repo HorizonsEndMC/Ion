@@ -7,17 +7,31 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
+import net.horizonsend.ion.common.utils.text.deserializeComponent
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import java.util.UUID
 
 @CommandAlias("settlementplot|splot")
 internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -41,6 +55,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 			?: fail { "You're not standing in a settlement zone." }
 
 		val realPrice = zone.cachedPrice ?: fail { "Zone ${zone.name} is not for sale" }
+		if(zone.owner != null) fail {"Zone ${zone.name} is not for sale"}
 
 		requireMoney(sender, realPrice, "purchase zone ${zone.name}")
 
@@ -54,6 +69,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		SettlementZone.setOwner(zone.id, sender.slPlayerId)
 
 		VAULT_ECO.withdrawPlayer(sender, realPrice.toDouble())
+		Settlement.deposit(zone.settlement, realPrice);
 		sender msg "&aPurchased zone ${zone.name} for ${realPrice.toCreditsString()}"
 	}
 
@@ -64,47 +80,46 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 		failIf(zones.none()) { "You don't have any plots! Go to a settlement zone and use /s plot buy to get one." }
 
-		MenuHelper.apply {
-			val senderId = sender.slPlayerId
+		val items = zones.filter { it.owner == sender.slPlayerId }.map { zone: RegionSettlementZone ->
+			val centerX = (zone.maxPoint.x - zone.minPoint.x) / 2 + zone.minPoint.x
+			val centerY = (zone.maxPoint.y - zone.minPoint.y) / 2 + zone.minPoint.y
+			val centerZ = (zone.maxPoint.z - zone.minPoint.z) / 2 + zone.minPoint.z
 
-			val items = zones.filter { it.owner == senderId }.map { zone: RegionSettlementZone ->
-				val centerX = (zone.maxPoint.x - zone.minPoint.x) / 2 + zone.minPoint.x
-				val centerY = (zone.maxPoint.y - zone.minPoint.y) / 2 + zone.minPoint.y
-				val centerZ = (zone.maxPoint.z - zone.minPoint.z) / 2 + zone.minPoint.z
-
-				val coordinatesString = (
-					"&6'${zone.name}' Coordinates&8: " +
-						"&b${zone.world}&e@&8[&c$centerX&7,&a$centerY&7,&9$centerZ&8]"
-					)
-					.colorize().intern()
-
-				val trustedPlayers = zone.trustedPlayers?.joinToString { getPlayerName(it) }
-					?: "None"
-				val trustedNations = zone.trustedNations?.joinToString { getNationName(it) }
-					?: "None"
-				val trustedSettlements = zone.trustedSettlements?.joinToString { getSettlementName(it) }
-					?: "None"
-
-				return@map guiButton(Material.KNOWLEDGE_BOOK) {
-					playerClicker.apply {
-						sendMessage(coordinatesString)
-						closeInventory()
-					}
-				}.setName(zone.name).setLore(
-					"&7Settlement&8:&b ${getSettlementName(zone.settlement)}",
-					"&7World&8:&2 ${zone.world}",
-					"&7Coordinates&8:&a $centerX, $centerY, $centerZ",
-					"&7Trusted Players&8:&d $trustedPlayers",
-					"&7Trusted Nations&8:&c $trustedNations",
-					"&7Trusted Settlements&8:&3 $trustedSettlements",
-					"&7Min Build Access&8:&5 ${zone.minBuildAccess ?: Settlement.ForeignRelation.STRICT}"
+			val coordinatesString = (
+				"&6'${zone.name}' Coordinates&8: " +
+					"&b${zone.world}&e@&8[&c$centerX&7,&a$centerY&7,&9$centerZ&8]"
 				)
-			}
+				.colorize().intern()
 
-			Tasks.sync {
-				sender.openPaginatedMenu("Settlement Zone Plots", items)
-			}
+			val trustedPlayers = zone.trustedPlayers?.joinToString { getPlayerName(it) }
+				?: "None"
+			val trustedNations = zone.trustedNations?.joinToString { getNationName(it) }
+				?: "None"
+			val trustedSettlements = zone.trustedSettlements?.joinToString { getSettlementName(it) }
+				?: "None"
+
+			ItemStack(Material.KNOWLEDGE_BOOK)
+				.updateDisplayName(Component.text(zone.name))
+				.updateLore(listOf(
+					deserializeComponent("&7Settlement&8:&b ${getSettlementName(zone.settlement)}", legacyAmpersand),
+					deserializeComponent("&7World&8:&2 ${zone.world}", legacyAmpersand),
+					deserializeComponent("&7Coordinates&8:&a $centerX, $centerY, $centerZ", legacyAmpersand),
+					deserializeComponent("&7Trusted Players&8:&d $trustedPlayers", legacyAmpersand),
+					deserializeComponent("&7Trusted Nations&8:&c $trustedNations", legacyAmpersand),
+					deserializeComponent("&7Trusted Settlements&8:&3 $trustedSettlements", legacyAmpersand),
+					deserializeComponent("&7Min Build Access&8:&5 ${zone.minBuildAccess ?: Settlement.ForeignRelation.STRICT}", legacyAmpersand)
+				)).makeGuiButton { _, _ ->
+					sender.sendMessage(deserializeComponent(coordinatesString, legacyAmpersand))
+					sender.closeInventory()
+				}
 		}
+
+		ItemMenu(
+			title = Component.text("Settlement Zone Plots"),
+			viewer = sender,
+			guiItems = items,
+			backButtonHandler = { sender.closeInventory() }
+		).openGui()
 	}
 
 	private fun requireOwnsZone(sender: Player, zone: RegionSettlementZone) {

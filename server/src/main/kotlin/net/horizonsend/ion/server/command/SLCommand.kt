@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.CommandHelp
+import co.aikar.commands.ExceptionHandler
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.HelpCommand
@@ -22,11 +23,16 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.formatException
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -70,6 +76,22 @@ abstract class SLCommand : BaseCommand() {
 		manager.commandCompletions.registerAsyncCompletion(key, value)
 	}
 
+	open fun registerExceptionHandler() {
+		exceptionHandler = ExceptionHandler { _, registeredCommand, sender, args, t ->
+			if (sender.isPlayer) {
+				(sender.getIssuer<CommandSender>() as? Player)?.serverError("There was an unhandled exception while running command " +
+						"\"${registeredCommand.command}\" with arguments ${args.joinToString(", ")}! " +
+						"Please forward this to staff.")
+				(sender.getIssuer<CommandSender>() as? Player)?.sendMessage(formatException(t))
+			} else {
+				sender.sendMessage("Error while running command \"${registeredCommand.command}\" with arguments " +
+						"${args.joinToString(", ")}!")
+				sender.sendMessage(formatException(t).plainText())
+			}
+			true
+		}
+	}
+
 	/**
 	 * Run this block of code async. Also, no two blocks passed to this method will run at the same time,
 	 * because it runs them all on a single thread. This prevents exploits from multiple people running
@@ -95,7 +117,8 @@ abstract class SLCommand : BaseCommand() {
 
 				val uuid = UUID.randomUUID()
 				log.error("Command Error for ${sender.name}, id: $uuid", e)
-				sender.serverError("Something went wrong with that command, please tell staff.\nError ID: $uuid")
+				sender.serverError("Something went wrong with that command, please forward this to staff.\nError ID: $uuid")
+				sender.sendMessage(formatException(e))
 			}
 		}
 	}
@@ -179,6 +202,10 @@ abstract class SLCommand : BaseCommand() {
 		territory.nation?.fail { "${territory.name} is an outpost of ${getNationName(it)}" }
 
 		territory.npcOwner?.fail { "${territory.name} is the NPC territory ${getNPCOwnerName(it)}" }
+	}
+
+	protected fun requireDominionUnclaimed(territory: RegionDominionTerritory) {
+		territory.nation?.let { fail { "${territory.world} is already claimed" } }
 	}
 
 	protected fun requireSettlementIn(sender: Player): Oid<Settlement> = PlayerCache[sender].settlementOid
@@ -278,13 +305,27 @@ abstract class SLCommand : BaseCommand() {
 		return Regions[territoryId]
 	}
 
-	protected fun getStarshipRiding(sender: Player) = ActiveStarships.findByPassenger(sender)
+	protected fun getStarshipRiding(sender: Player): Starship = ActiveStarships.findByPassenger(sender)
 		?: fail { "You must be riding a starship" }
 
-	protected fun getStarshipPiloting(sender: Player) = ActiveStarships.findByPilot(sender)
+	protected fun getStarshipPiloting(sender: Player): Starship = ActiveStarships.findByPilot(sender)
 		?: fail { "You must be piloting a starship" }
 
 	protected fun requireSelection(sender: Player) = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must have a worldedit selection!" }
 
+	protected fun requireNotInCombat(sender: Player) = failIf(CombatTimer.isPvpCombatTagged(sender) || CombatTimer.isNpcCombatTagged(sender)) { "You can't do that while in combat!" }
+
 	open fun supportsVanilla(): Boolean = false
+
+	protected fun requireMoney(nationId: Oid<Nation>, amount: Number, text: String = "do that") {
+		requireEconomyEnabled()
+
+		val nation = Nation.findById(nationId) ?: fail { "You are not in a nation!" }
+		val balance = nation.balance
+
+		failIf(balance < amount.toDouble()) {
+			"Your nation doesn't have enough money to $text! It requires ${amount.toCreditsString()}, " +
+				"but your nation only has ${balance.toCreditsString()}"
+		}
+	}
 }

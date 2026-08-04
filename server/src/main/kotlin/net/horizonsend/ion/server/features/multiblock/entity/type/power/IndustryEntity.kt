@@ -39,7 +39,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	override val statusManager: StatusManager = StatusManager()
 
 	@Suppress("LeakingThis")
-	final override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+	override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 		this,
 		{ PowerEntityDisplayModule(it, this) },
 		{ StatusDisplayModule(it, statusManager) }
@@ -49,7 +49,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 		migrateLegacyPower(sign)
 	}
 
-	override fun buildRecipeEnviornment(): FurnaceEnviornment {
+	override fun buildRecipeEnviornment(): FurnaceEnviornment? {
 		return FurnaceEnviornment(this)
 	}
 
@@ -62,6 +62,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 			return
 		}
 		furnaceActive = true
+		stopCooking() // prevents actual furnace recipes from cooking
 	}
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {

@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
@@ -60,7 +60,7 @@ object DyeCommand : net.horizonsend.ion.server.command.SLCommand() {
 	private fun dyeDyedItem(itemStack: ItemStack, color: Int): Pair<String, String> {
 		val bukkitColor = Color.fromRGB(color)
 		val oldColor = itemStack.getData(DataComponentTypes.DYED_COLOR)?.color()?.asRGB()?.let { Integer.toHexString(it) } ?: "None"
-		val dyedItemColor = DyedItemColor.dyedItemColor(bukkitColor, true)
+		val dyedItemColor = DyedItemColor.dyedItemColor(bukkitColor)
 		itemStack.setData(DataComponentTypes.DYED_COLOR, dyedItemColor)
 		return oldColor to "#${Integer.toHexString(color)}"
 	}
@@ -155,9 +155,8 @@ object DyeCommand : net.horizonsend.ion.server.command.SLCommand() {
 		finalG = (finalG * f / f1).toInt()
 
 		val final = ARGB.color(0, finalR, finalB, finalG)
-		val flag = dyedItemColor == null || dyedItemColor.showInTooltip()
 
-		itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.fromRGB(final), flag))
+		itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.fromRGB(final)))
 		return itemStack
 	}
 }
