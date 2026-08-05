@@ -33,17 +33,6 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 	override fun calculateTarget(): Vector {
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
-
-		val ignoreBlockList = mutableSetOf(Material.AIR, Material.GLASS).apply {
-			addAll(STAINED_GLASS_TYPES)
-			addAll(STAINED_GLASS_PANE_TYPES)
-			add(Material.IRON_BARS)
-			add(Material.GLASS_PANE)
-		}
-
-		// Get blocks in the line of sight
-		val hitPoints = player.getLineOfSight(ignoreBlockList, 600)
-		val detectedBlock = hitPoints.lastOrNull()
 		val sphereRadius = player.location.distance(location).plus(speed * delta).coerceIn(minimumSphereRadius,10000.0)
 
 		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(randomOffset)
