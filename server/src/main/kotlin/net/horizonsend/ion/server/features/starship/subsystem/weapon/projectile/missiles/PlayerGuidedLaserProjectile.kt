@@ -4,8 +4,11 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProject
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
@@ -31,7 +34,18 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
 		val player = (shooter as? PlayerDamager)?.player ?: return initialDir.add(location.toVector())
 
-		val sphereRadius = player.location.distance(location).plus(speed * delta).coerceIn(minimumSphereRadius,10000.0)
+		val ignoreBlockList = mutableSetOf(Material.AIR, Material.GLASS).apply {
+			addAll(STAINED_GLASS_TYPES)
+			addAll(STAINED_GLASS_PANE_TYPES)
+			add(Material.IRON_BARS)
+			add(Material.GLASS_PANE)
+		}
+
+		// Get blocks in the line of sight
+		val hitPoints = player.getLineOfSight(ignoreBlockList, 600)
+		val detectedBlock = hitPoints.lastOrNull()
+		val sphereRadius = detectedBlock?.location?.distance(player.location) ?: player.location.distance(location).plus(speed * delta).coerceIn(minimumSphereRadius,10000.0)
+
 		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(randomOffset)
 
 		return intercept
