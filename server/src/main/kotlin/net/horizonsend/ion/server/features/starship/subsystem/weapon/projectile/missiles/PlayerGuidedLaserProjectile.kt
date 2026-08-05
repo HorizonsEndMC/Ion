@@ -25,7 +25,7 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 	val random = Random(System.currentTimeMillis())
 	val randomOffset = Vector(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0)).normalize().multiply(Math.random()*10.0)
 
-	open val minimumSphereRadius = 60.0
+	open val minimumSphereRadius = 15.0
 
 	override fun calculateTarget(): Vector {
 		//shooter should always be PlayerDamager here. However, in the case the player logs out, we continue in the same direction.
