@@ -77,11 +77,11 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 			However, removes their perfect tracking of the core of larger ships.
 		*/
 		val blockCount = targetShip?.currentBlockCount ?: 0
-		if (blockCount > 3000) {
-			targetBase = originalTarget.clone().add(getTargetOrigin())
+		targetBase = if (blockCount > 3000) {
+			originalTarget.clone().subtract(getTargetOrigin())
 		}
 		//The zero vector here denotes no change from center of weight.
-		else targetBase = Vector()
+		else Vector()
 	}
 
 	override fun tick() {
