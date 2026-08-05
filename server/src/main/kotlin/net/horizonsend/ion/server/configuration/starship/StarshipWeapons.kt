@@ -174,7 +174,10 @@ data class TorpedoBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 1.0,
-        override var maxDegrees: Double = 45.0
+        override var maxDegrees: Double = 45.0,
+		override val detonationRange: Double = 2.5,
+		override val turnRate: Double = 0.6,
+		override val acceleration: Double = 2.5
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TorpedoProjectile::class
@@ -218,7 +221,10 @@ data class HeavyLaserBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.15,
-		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L)
+		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L),
+		override val detonationRange: Double = 2.25,
+		override val turnRate: Double = 6.7,
+		override val acceleration: Double = 2.0
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = HeavyLaserProjectile::class
@@ -263,7 +269,10 @@ data class HeavyNeutralizerBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.70,
-		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(30L)
+		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(30L),
+		override val detonationRange: Double = 2.25,
+		override val turnRate: Double = 0.67,
+		override val acceleration: Double = 10.0
 
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
@@ -308,7 +317,10 @@ data class NeutralizerBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.40,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L),
-		override val maxDegrees: Double = 45.0
+		override val maxDegrees: Double = 45.0,
+		override val detonationRange: Double = 2.25,
+		override val turnRate: Double = 0.67,
+		override val acceleration: Double = 10.0
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = NeutralizerProjectile::class
@@ -475,6 +487,9 @@ data class WebifierBalancing(
 		override var effectStrength: Double = 0.45,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(4L),
 		override val maxDegrees: Double = 45.0,
+		override val detonationRange: Double = 2.25,
+		override val turnRate: Double = 0.2,
+		override val acceleration: Double = 15.0
 	) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = WebifierProjectile::class
@@ -509,6 +524,9 @@ data class ArsenalRocketBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override var maxDegrees: Double = 180.0 ,
 		override var particleThickness: Double = 0.1,
+		override val detonationRange: Double = 7.5,
+		override val turnRate: Double = 0.35,
+		override val acceleration: Double = 4.0
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
@@ -545,6 +563,9 @@ data class EMPMissileBalancing(
 		override var particleThickness: Double = 0.1,
 		override var effectStrength: Double = 0.10,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(10L),
+		override val detonationRange: Double = 4.5,
+		override val turnRate: Double = 0.67,
+		override val acceleration: Double = 10.0
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = EMPMissileProjectile::class
@@ -581,6 +602,9 @@ data class ThermonuclearMissileBalancing(
 		override var maxDegrees: Double = 180.0 ,
 		override var particleThickness: Double = 0.1,
 		//override var proximityRange: Double = 75.0,
+		override val detonationRange: Double = 12.25,
+		override val turnRate: Double = 0.4,
+		override val acceleration: Double = 7.5
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
@@ -672,7 +696,9 @@ data class LightMissileLauncherBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var maxDegrees: Double = 90.0,
 		override var particleThickness: Double = 2.0,
-		override val detonationRange: Double = 3.5,
+		override val detonationRange: Double = 7.5,
+		override val turnRate: Double = 0.67,
+		override val acceleration: Double = 10.0,
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
@@ -720,6 +746,9 @@ data class RapidHeavyMissileLauncherBalancing(
 		override var maxDegrees: Double = 90.0,
 		override var particleThickness: Double = 2.0,
 		var delayMillis: Int = 450,
+		override val detonationRange: Double = 5.0,
+		override val turnRate: Double = 0.67,
+		override val acceleration: Double = 10.0
 		) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
