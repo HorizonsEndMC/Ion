@@ -173,10 +173,10 @@ data class TorpedoBalancing(
         override val entityDamage: EntityDamage = RegularDamage(15.0),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
-		override var maxDegrees: Double = 45.0,
+		override var maxDegrees: Double = 360.0,
 		override var detonationRange: Double = 2.5,
-		override var turnRate: Double = 0.6,
-		override var acceleration: Double = 2.5,
+		override var turnRate: Double = 1.0,
+		override var acceleration: Double = 10.0,
         override var particleThickness: Double = 1.0
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
@@ -217,10 +217,10 @@ data class HeavyLaserBalancing(
 		override var areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 1.0,
-		override var maxDegrees: Double = 25.0,
+		override var maxDegrees: Double = 210.0,
 		override var detonationRange: Double = 2.25,
-		override var turnRate: Double = 6.7,
-		override var acceleration: Double = 2.0,
+		override var turnRate: Double = 1.0,
+		override var acceleration: Double = 10.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.15,
@@ -265,7 +265,7 @@ data class HeavyNeutralizerBalancing(
 		override var areaShieldDamageMultiplier: Double = 2.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var particleThickness: Double = 1.0,
-		override var maxDegrees: Double = 25.0,
+		override var maxDegrees: Double = 145.0,
 		override var detonationRange: Double = 2.25,
 		override var turnRate: Double = 0.67,
 		override var acceleration: Double = 10.0,
@@ -316,9 +316,9 @@ data class NeutralizerBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.40,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(20L),
-		override var maxDegrees: Double = 45.0,
+		override var maxDegrees: Double = 210.0,
 		override var detonationRange: Double = 2.25,
-		override var turnRate: Double = 0.67,
+		override var turnRate: Double = 1.0,
 		override var acceleration: Double = 10.0,
 		override var particleThickness: Double = 4.0
 		) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -485,9 +485,9 @@ data class WebifierBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var effectStrength: Double = 0.45,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(4L),
-		override var maxDegrees: Double = 45.0,
+		override var maxDegrees: Double = 210.0,
 		override var detonationRange: Double = 2.25,
-		override var turnRate: Double = 0.2,
+		override var turnRate: Double = 1.0,
 		override var acceleration: Double = 15.0,
 		override var particleThickness: Double = 2.0
 		) : StarshipParticleProjectileBalancing, StarshipStatusEffectProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -524,8 +524,8 @@ data class ArsenalRocketBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override var maxDegrees: Double = 180.0,
 		override var detonationRange: Double = 7.5,
-		override var turnRate: Double = 0.35,
-		override var acceleration: Double = 4.0,
+		override var turnRate: Double = 0.5,
+		override var acceleration: Double = 5.0,
 		override var particleThickness: Double = 0.1,
 
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -560,9 +560,9 @@ data class EMPMissileBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
-		override var maxDegrees: Double = 180.0,
+		override var maxDegrees: Double = 270.0,
 		override var detonationRange: Double = 4.5,
-		override var turnRate: Double = 0.67,
+		override var turnRate: Double = 1.0,
 		override var acceleration: Double = 10.0,
 		override var particleThickness: Double = 0.1,
 		override var effectStrength: Double = 0.10,
@@ -601,9 +601,9 @@ data class ThermonuclearMissileBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.thermonuclear_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.thermonuclear_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override var maxDegrees: Double = 180.0 ,
-		override var detonationRange: Double = 12.25,
+		override var detonationRange: Double = 5.0,
 		override var turnRate: Double = 0.4,
-		override var acceleration: Double = 7.5,
+		override var acceleration: Double = 10.0,
 		override var particleThickness: Double = 0.1,
 		//override var proximityRange: Double = 75.0,
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -687,18 +687,18 @@ data class LightMissileLauncherBalancing(
 
 	@Serializable
 	data class LightMissileLauncherProjectileBalancing(
-		override var range: Double = 285.0,
-		override var speed: Double = 85.0,
+		override var range: Double = 290.0,
+		override var speed: Double = 80.0,
 		override var explosionPower: Float = 5.50f,
-		override var starshipShieldDamageMultiplier: Double = 4.8,
+		override var starshipShieldDamageMultiplier: Double = 5.5,
 		override var areaShieldDamageMultiplier: Double = 4.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
-		override var maxDegrees: Double = 90.0,
-		override var detonationRange: Double = 7.5,
-		override var turnRate: Double = 0.67,
-		override var acceleration: Double = 2.0,
+		override var maxDegrees: Double = 240.0,
+		override var detonationRange: Double = 12.0,
+		override var turnRate: Double = 0.9,
+		override var acceleration: Double = 6.0,
 		override var particleThickness: Double = 2.0,
 
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
@@ -747,8 +747,8 @@ data class RapidHeavyMissileLauncherBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override var maxDegrees: Double = 90.0,
 		override var detonationRange: Double = 7.5,
-		override var turnRate: Double = 0.67,
-		override var acceleration: Double = 2.0,
+		override var turnRate: Double = 0.65,
+		override var acceleration: Double = 3.5,
 		override var particleThickness: Double = 2.0,
 		var delayMillis: Int = 450,
 		) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
