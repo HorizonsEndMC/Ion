@@ -1577,16 +1577,19 @@ data class AbyssalGazeBalancing(
 
 	@Serializable
 	data class AbyssalGazeProjectileBalancing(
-        override var range: Double = 500.0,
-        override var speed: Double = 50.0,
-        override var explosionPower: Float = 2.5f,
-        override var starshipShieldDamageMultiplier: Double =  1.25,
-        override var areaShieldDamageMultiplier: Double = 1.0,
-        override val entityDamage: EntityDamage = RegularDamage(10.0),
-        override val fireSoundNear: SoundInfo = SoundInfo(key = "item.trident.riptide_1", volume = 10f, pitch = 2f),
-        override val fireSoundFar: SoundInfo = SoundInfo(key = "item.trident.riptide_1", volume = 10f, pitch = 2f),
-        override var particleThickness: Double = 0.0,
-        override var maxDegrees: Double = 10.0
+		override var range: Double = 500.0,
+		override var speed: Double = 50.0,
+		override var explosionPower: Float = 2.5f,
+		override var starshipShieldDamageMultiplier: Double =  1.25,
+		override var areaShieldDamageMultiplier: Double = 1.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo(key = "item.trident.riptide_1", volume = 10f, pitch = 2f),
+		override val fireSoundFar: SoundInfo = SoundInfo(key = "item.trident.riptide_1", volume = 10f, pitch = 2f),
+		override var particleThickness: Double = 0.0,
+		override var maxDegrees: Double = 10.0,
+		override val detonationRange: Double = 2.25,
+		override val acceleration: Double = 10.0,
+		override val turnRate: Double = 1.0,
 	) : StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = AbyssalGazeProjectile::class
@@ -1704,6 +1707,10 @@ data class FlamingSkullCannonBalancing(
         override val fireSoundFar: SoundInfo = SoundInfo(key = "entity.warden.sonic_boom", volume = 10f, pitch = 2f),
         override var particleThickness: Double = 0.0,
         override var maxDegrees: Double = 0.0,
+		override val detonationRange: Double = 2.25,
+		override val acceleration: Double = 10.0,
+		override val turnRate: Double = 1.0,
+
 	) : StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = FlamingSkullProjectile::class
