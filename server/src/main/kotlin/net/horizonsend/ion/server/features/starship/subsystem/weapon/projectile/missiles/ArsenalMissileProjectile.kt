@@ -23,7 +23,7 @@ class ArsenalMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	face: BlockFace, //Up = true, down = false
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : PlayerGuidedLaserProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
+) : TrackingMissileProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
 	override val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
 	override val color: Color = Color.ORANGE
 	override val container by lazy {
