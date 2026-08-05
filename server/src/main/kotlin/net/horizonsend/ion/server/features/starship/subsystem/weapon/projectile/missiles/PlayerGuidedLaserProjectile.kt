@@ -44,7 +44,7 @@ abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalanci
 		// Get blocks in the line of sight
 		val hitPoints = player.getLineOfSight(ignoreBlockList, 600)
 		val detectedBlock = hitPoints.lastOrNull()
-		val sphereRadius = detectedBlock?.location?.distance(player.location) ?: player.location.distance(location).plus(speed * delta).coerceIn(minimumSphereRadius,10000.0)
+		val sphereRadius = player.location.distance(location).plus(speed * delta).coerceIn(minimumSphereRadius,10000.0)
 
 		val intercept = player.location.direction.multiply(sphereRadius).add(player.location.toVector()).add(randomOffset)
 
