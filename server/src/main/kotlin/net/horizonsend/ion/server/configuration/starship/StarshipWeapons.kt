@@ -698,7 +698,7 @@ data class LightMissileLauncherBalancing(
 		override var particleThickness: Double = 2.0,
 		override val detonationRange: Double = 7.5,
 		override val turnRate: Double = 0.67,
-		override val acceleration: Double = 10.0,
+		override val acceleration: Double = 2.0,
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TrackingMissileProjectile::class
