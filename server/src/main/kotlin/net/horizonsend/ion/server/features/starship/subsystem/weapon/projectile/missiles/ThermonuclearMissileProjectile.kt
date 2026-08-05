@@ -29,7 +29,7 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	face: BlockFace, //Up = true, down = false
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : PlayerGuidedLaserProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
+) : TrackingMissileProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
 	private val explosionParticleData = Particle.DustTransition(
 		Color.AQUA,
 		Color.WHITE,
