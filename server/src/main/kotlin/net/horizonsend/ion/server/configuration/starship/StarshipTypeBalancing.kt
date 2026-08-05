@@ -1993,11 +1993,9 @@ sealed interface StarshipTrackingProjectileBalancing : StarshipParticleProjectil
 	val maxDegrees: Double
 	//default set to 1.5.squared(). This is the original detonation range factor.
 	val detonationRange: Double
-		get() = 2.25
 	val turnRate: Double
-		get() = 0.67
 	val acceleration: Double
-		get() = 10.0
+
 }
 
 @Serializable
