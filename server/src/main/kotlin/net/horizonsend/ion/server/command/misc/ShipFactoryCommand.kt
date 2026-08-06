@@ -72,7 +72,7 @@ fun listMaterialsCostPaginated(sender: Player, @Optional page: Int?) {
 
 	sender.sendMessage(formatPaginatedMenu(
 		entries = items.size,
-		command = "/shipfactory remaining cost",
+		command = "/shipfactory remainingcost",
 		currentPage = page ?: 1,
 	) { index ->
 		val (item, price) = items[index]
