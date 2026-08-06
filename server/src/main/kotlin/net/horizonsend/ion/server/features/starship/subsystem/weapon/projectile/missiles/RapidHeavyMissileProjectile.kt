@@ -6,16 +6,13 @@ import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayCon
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
-import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
@@ -29,7 +26,7 @@ class RapidHeavyMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	face: BlockFace, //Up = true, down = false
     originalTarget: Vector,
     baseAimDistance: Int
-) : PlayerGuidedLaserProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
+) : PlayerGuidedMissileProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
 
 	override val item by lazy { ItemFactory.Preset.unStackableCustomItem("projectile/activated_heavy_missile").construct()}
 	override val color: Color = Color.ORANGE

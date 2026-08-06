@@ -4,16 +4,13 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProject
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-abstract class PlayerGuidedLaserProjectile<B : StarshipTrackingProjectileBalancing>(
+abstract class PlayerGuidedMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
