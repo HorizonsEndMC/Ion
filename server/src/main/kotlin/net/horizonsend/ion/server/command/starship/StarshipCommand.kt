@@ -8,9 +8,15 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.AbstractCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.kyori.adventure.text.Component
@@ -18,6 +24,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
+import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -172,4 +179,68 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("sell")
 	fun onSell(sender: Player, className: String, shipName: String, price: Double, @Optional priceConfirm: Double?, @Optional description: String?) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, priceConfirm, description)
+
+	@Subcommand("coverage")
+	fun onHullInfo(sender: Player){
+		val ship = getStarshipPiloting(sender)
+		val mapOfBlockPosToShields = mutableMapOf<BlockPos, MutableList<ShieldSubsystem>>()
+		ship.blocks.forEach{
+			val pos = BlockPos(blockKeyX(it), blockKeyY(it), blockKeyZ(it))
+			val vec3iPos = pos.toVec3i()
+			mapOfBlockPosToShields[pos] = mutableListOf()
+			for(shield in ship.shields) {
+				if(shield.isIntact() && shield.containsPosition(ship.world, vec3iPos)) {
+					val newList =
+						mapOfBlockPosToShields[pos]
+					newList?.add(shield)
+					mapOfBlockPosToShields[pos] = newList ?: mutableListOf(shield)
+				}
+			}
+		}
+
+		/*
+		tally of shield to number of blocks that are
+		A. Without shield
+		B. Overlapping
+		C. Total Block count singular.
+		 */
+
+		val mapOfShieldToBlocksItOnlyContains = mutableMapOf<ShieldSubsystem, Int>()
+		val mapOfShieldToBlocksItOverlapsWith = mutableMapOf<ShieldSubsystem, Int>()
+		val totalBlocksNotShielded = mapOfBlockPosToShields.count {it.value.isEmpty()}
+
+		for((block, shields) in mapOfBlockPosToShields) {
+			if (shields.count() == 1) {
+				mapOfShieldToBlocksItOnlyContains[shields.first()] = (mapOfShieldToBlocksItOnlyContains[shields.first()] ?: 0) + 1
+			}
+			else {
+				for (shield in shields) {
+					mapOfShieldToBlocksItOverlapsWith[shield] = (mapOfShieldToBlocksItOverlapsWith[shield] ?: 0) + 1
+				}
+			}
+		}
+
+		sender.sendRichMessage("<dark_gray><bold>=====================================")
+		sender.sendRichMessage("<gray><bold>Shield Coverage:")
+		if (totalBlocksNotShielded != 0) {
+			sender.sendRichMessage("<red><bold>Total Blocks not shielded: $totalBlocksNotShielded</red>")
+		}
+		else{
+			sender.sendRichMessage("<green><bold>All Blocks Shielded!")
+		}
+		for(shield in ship.shields) {
+			if (!shield.isIntact()) {
+				sender.sendRichMessage("<red><bold>Shield: ${shield.name},Not Intact!</bold><dark_gray>[${shield.pos.x}, ${shield.pos.y}, ${shield.pos.z}]")
+				continue
+			}
+			val totalBlocksCovered = (mapOfShieldToBlocksItOverlapsWith[shield]?:0).plus(mapOfShieldToBlocksItOnlyContains[shield]?:0)
+			sender.sendRichMessage("<gray>Shield: <aqua>${shield.name} <dark_gray>[${shield.pos.x}, ${shield.pos.y}, ${shield.pos.z}]")
+			sender.sendRichMessage("<gray>   Total Blocks Covered: <white>$totalBlocksCovered")
+			sender.sendRichMessage("<gray>   Total Overlapped Blocks: <white>${mapOfShieldToBlocksItOverlapsWith[shield] ?: 0}")
+			sender.sendRichMessage("<gray>   Total Blocks covered only by this shield: <white>${mapOfShieldToBlocksItOnlyContains[shield] ?: 0}")
+			sender.sendRichMessage("<gray>   Total Hull Percentage Covered: <white>${(totalBlocksCovered/ship.initialBlockCount)}")
+
+		}
+		sender.sendRichMessage("<dark_gray><bold>=====================================")
+	}
 }

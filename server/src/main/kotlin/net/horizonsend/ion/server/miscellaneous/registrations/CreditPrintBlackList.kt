@@ -111,6 +111,7 @@ object CreditPrintBlackList {
 		Material.OCHRE_FROGLIGHT,
 		Material.VERDANT_FROGLIGHT,
 		Material.PEARLESCENT_FROGLIGHT,
+		Material.JACK_O_LANTERN,
 		Material.SHROOMLIGHT,
 		Material.IRON_TRAPDOOR,
 		Material.NOTE_BLOCK,
