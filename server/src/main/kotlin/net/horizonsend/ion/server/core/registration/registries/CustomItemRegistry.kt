@@ -920,7 +920,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		)
 		unStackable(
 			key = CustomItemKeys.CHEESE_BUCKET,
-			model = "food/ice_cream_mixture",
+			model = "food/cheese_bucket",
 			displayName = Component.text("Cheese Bucket")
 		)
 		register(
