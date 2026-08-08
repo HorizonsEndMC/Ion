@@ -64,7 +64,7 @@ fun listMaterialsCostPaginated(sender: Player, @Optional page: Int?) {
 	}
 
 	val items = missing.entries.mapNotNull { (item, count) ->
-		val material = Material.matchMaterial(item.itemString)!!
+		val material = Material.matchMaterial(item.itemString) ?: return@mapNotNull null
 		val blockData = material.createBlockData()
 		val price = ShipFactoryMaterialCosts.getPrice(blockData) * count
 		item to price
