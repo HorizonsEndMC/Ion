@@ -15,11 +15,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.BlockInventoryHolder
 
 abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name = "hyperdrive"
@@ -29,28 +29,30 @@ abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock, Disp
 
 	override val description: Component get() = text("Allows a starship to enter and exit hyperspace. Consumes chetherite.")
 
-	protected abstract fun buildHopperOffsets(): List<Vec3i>
+	open val chetheritePerInventory = 2;
 
-	private val hopperOffsets: Map<BlockFace, List<Vec3i>> =
+	protected abstract fun buildFuelInventoryOffsets(): List<Vec3i>
+
+	private val fuelInventoryOffsets: Map<BlockFace, List<Vec3i>> =
 		CARDINAL_BLOCK_FACES.associate { inward ->
 			val right = inward.rightFace
-			val offsets: List<Vec3i> = buildHopperOffsets().map { (x, y, z) ->
+			val offsets: List<Vec3i> = buildFuelInventoryOffsets().map { (x, y, z) ->
 				Vec3i(x = right.modX * x + inward.modX * z, y = y, z = right.modZ * x + inward.modZ * z)
 			}
 			return@associate inward to offsets
 		}
 
-	protected fun addHoppers(multiblockShape: MultiblockShape) = buildHopperOffsets().forEach { (x, y, z) ->
+	open fun addFuelInventories(multiblockShape: MultiblockShape) = buildFuelInventoryOffsets().forEach { (x, y, z) ->
 		multiblockShape.at(x, y, z).hopper()
 	}
 
-	fun getHoppers(sign: Sign): Set<Hopper> {
+	fun getFuelInventories(sign: Sign): Set<BlockInventoryHolder> {
 		val inwards = sign.getFacing().oppositeFace
-		val offsets = hopperOffsets[inwards] ?: error("Unhandled sign direction $inwards")
+		val offsets = fuelInventoryOffsets[inwards] ?: error("Unhandled sign direction $inwards")
 
 		val origin = sign.location.add(inwards)
 
-		return offsets.map { origin.clone().add(it).block.getState(false) as Hopper }.toSet()
+		return offsets.map { origin.clone().add(it).block.state as BlockInventoryHolder }.toSet()
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {

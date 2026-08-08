@@ -8,30 +8,30 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.H
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
-import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 open class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: HyperdriveMultiblock) :
 	AbstractMultiblockSubsystem<HyperdriveMultiblock>(starship, sign, multiblock) {
-	fun getHoppers(): Set<Hopper> {
+	fun getFuelInventories(): Set<InventoryHolder> {
 		val sign = starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign ?: return emptySet()
-		return multiblock.getHoppers(sign)
+		return multiblock.getFuelInventories(sign)
 	}
 
-	open fun hasFuel(): Boolean = getHoppers().all { hopper ->
-		hopper.inventory.asSequence()
+	open fun hasFuel(): Boolean = getFuelInventories().all { inventory ->
+		inventory.inventory.asSequence()
 			.filterNotNull()
 			.filter(::isHypermatter)
 			.sumOf { it.amount } >= Hyperspace.getHyperMatterAmount(starship)
 	}
 
-	open fun useFuel(): Unit = getHoppers().forEach { hopper ->
+	open fun useFuel(): Unit = getFuelInventories().forEach { inventory ->
 		var remaining = Hyperspace.getHyperMatterAmount(starship)
-		migrateInventory(hopper.inventory, DataMigrators.getVersions(0))
+		migrateInventory(inventory.inventory, DataMigrators.getVersions(0))
 
-		for (item: ItemStack? in hopper.inventory) {
+		for (item: ItemStack? in inventory.inventory) {
 			if (item == null) {
 				continue
 			}
@@ -46,7 +46,7 @@ open class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock:
 				break
 			}
 		}
-		check(remaining == 0) { "Hopper at ${hopper.location} did not have ${Hyperspace.getHyperMatterAmount(starship)} chetherite!" }
+		check(remaining == 0) { "Inventory at ${inventory.inventory.location} did not have ${Hyperspace.getHyperMatterAmount(starship)} chetherite!" }
 	}
 
 	private fun isHypermatter(item: ItemStack) = item.customItem?.key == CHETHERITE
