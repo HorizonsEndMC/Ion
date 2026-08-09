@@ -64,7 +64,12 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 
 		val assistsMessage = formatAssists(assistsData)
 
-		if (arena) return IonServer.server.sendMessage(ofChildren(ARENA_PREFIX, message, assistsMessage))
+		if (arena){
+			sunkShip.centerOfMass.toLocation(sunkShip.world).getNearbyPlayers(1000.0).forEach {
+				it.sendMessage(ofChildren(ofChildren(ARENA_PREFIX, message, assistsMessage)))
+			}
+			return
+		}
 		// The rest is necessary
 
 		Notify.chatAndGlobal(ofChildren(message, assistsMessage))
