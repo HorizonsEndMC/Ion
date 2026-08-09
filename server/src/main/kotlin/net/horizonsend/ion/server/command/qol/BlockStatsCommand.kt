@@ -19,8 +19,11 @@ import org.bukkit.entity.Player
 @CommandAlias("blastresistance|blockstats|blockinfo")
 object BlockStatsCommand : SLCommand() {
 	@Default
-	@CommandCompletion("")
-	fun command(player: Player, material: Material) {
+	@CommandCompletion("@anyBlock")
+	fun command(player: Player, block: String) = asyncCommand(player) {
+		val material = Material.entries.firstOrNull { it.name.equals(block, ignoreCase = true) } ?: fail { "$block not found" }
+		failIf(!material.isBlock) { "$block is not an item" }
+
 		player.sendMessage(ofChildren(
 			text("Flyable", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(FLYABLE_BLOCKS.contains(material), AQUA), newline(),
 			text("Blast Resistance", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(CraftMagicNumbers.getBlock(material).explosionResistance, AQUA), newline(),

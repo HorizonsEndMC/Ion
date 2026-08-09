@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFol
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -53,6 +54,9 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object CollectionMissions : IonServerComponent() {
+	//Absolute hard limit for any eco station config
+	private const val ABSOLUTE_MAX_PROFIT_PER_STATION_PER_DAY = 100_000.0
+
 	@Serializable
 	data class Config(val generateAmount: Int = 27, val xpPerCreditRoot: Double = 0.5, val buyMultiplier: Double = 2.0)
 
@@ -123,6 +127,32 @@ object CollectionMissions : IonServerComponent() {
 
 	private fun randomItem(station: EcoStation) = itemCache[station._id].random()
 
+	private fun getMaxProfitPerStationPerDay(player: Player, ecoStation: EcoStation): Double {
+		val configuration = ConfigurationFiles.tradeConfiguration().ecoStationConfiguration
+
+		val stationType = configuration.stationTypeByEcoStationName.entries
+			.firstOrNull { (stationName, _) -> stationName.equals(ecoStation.name, ignoreCase = true) }
+			?.value
+
+		val stationTypeConfiguration = stationType?.let { type ->
+			configuration.stationTypeConfigurations.entries
+				.firstOrNull { (typeName, _) -> typeName.equals(type, ignoreCase = true) }
+				?.value
+		}
+
+		val profitCapPerLevel = stationTypeConfiguration?.profitCapPerLevel
+			?: configuration.profitCapPerLevel
+		val configuredMaximum = stationTypeConfiguration?.maxProfitPerStationPerDay
+			?: configuration.maxProfitPerStationPerDay
+		val playerLevel = PlayerXPLevelCache[player].level.coerceAtLeast(1)
+
+		return minOf(
+			profitCapPerLevel * playerLevel,
+			configuredMaximum,
+			ABSOLUTE_MAX_PROFIT_PER_STATION_PER_DAY
+		)
+	}
+
 	private fun openSellMenu(player: Player, ecoStation: EcoStation) = Tasks.async {
 		val stationId = ecoStation._id
 		val available: List<CollectionMission> = missions[stationId]
@@ -135,7 +165,7 @@ object CollectionMissions : IonServerComponent() {
 
 		val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-		if (profitLastDay >= ConfigurationFiles.tradeConfiguration().ecoStationConfiguration.maxProfitPerStationPerDay) {
+		if (profitLastDay >= getMaxProfitPerStationPerDay(player, ecoStation)) {
 			player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
 			return@async
 		}
@@ -258,7 +288,7 @@ object CollectionMissions : IonServerComponent() {
 		Tasks.async {
 			val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-			if (profitLastDay >= ConfigurationFiles.tradeConfiguration().ecoStationConfiguration.maxProfitPerStationPerDay) {
+			if (profitLastDay >= getMaxProfitPerStationPerDay(player, EcoStations[stationId])) {
 				player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
 				return@async
 			}
@@ -401,7 +431,7 @@ object CollectionMissions : IonServerComponent() {
 			return
 		}
 
-		val itemStack: ItemStack = getPurchasedItem(collectedItem, stationId, costPerStack)
+		val itemStack: ItemStack = getPurchasedItem(collectedItem)
 
 		val totalCost: Double = takeMoney(costPerStack, buyAmount, player)
 		giveItems(buyAmount, player, itemStack)
@@ -422,14 +452,8 @@ object CollectionMissions : IonServerComponent() {
 		))
 	}
 
-	private fun getPurchasedItem(collectedItem: CollectedItem, stationId: Oid<EcoStation>, costPerStack: Double) =
-		createItem(collectedItem).apply {
-			amount = maxStackSize
-			lore(mutableListOf(
-				textOfChildren(text("Purchased from ", NamedTextColor.GOLD), text(EcoStations[stationId].name, NamedTextColor.AQUA)),
-				textOfChildren(text("for ", NamedTextColor.GOLD), text(costPerStack.toCreditsString(), NamedTextColor.YELLOW)),
-			))
-		}
+	private fun getPurchasedItem(collectedItem: CollectedItem) =
+		createItem(collectedItem).apply { amount = maxStackSize }
 
 	private fun getMaxBuy(shiftClick: Boolean, player: Player): Int {
 		return when {

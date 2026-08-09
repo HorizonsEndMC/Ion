@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSet
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -36,6 +37,8 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Reverse DC Speed Boost Key"), "Enabled = DC speed is boosted by default; sneaking slows. Disabled = DC speed is slow by default; sneaking boosts.", GuiItem.LIST, false, PlayerSettings::reverseDcBoost),
 			DBCachedBooleanToggle(text("Toggle DC Speed Boost Key"), "Enabling this setting changes the DC boost key to a toggle.", GuiItem.LIST, false, PlayerSettings::toggleDcBoost),
 			DBCachedBooleanToggle(text("Switch Light/Heavy Weapon Keys"), "Switches the firing controls for light and heavy weapons.", GuiItem.LIST, false, PlayerSettings::alternateFireButtons),
+			DBCachedBooleanToggle(text("Rotate Player with the ship"), "Disables camera rotation, useful for aiming player guided missiles.", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::playerRotateWithShip),
+			DBCachedEnumCycle(PlayerDirectControlInput.TertiaryButtonControl::class.java, text("Change Tertiary Control Function"), "Changes the functionality of the Tertiary Control (jumping in dc)", GuiItem.LIST, 0, PlayerSettings::tertiaryButtonControl),
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
@@ -116,7 +119,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Other Settings",
 			DBCachedBooleanToggle(text("Dynmap Transponder"),"Makes you visible on Dynmap. Disabling it will not hide you when gameplay conditions require visibility.",GuiItem.COMPASS_NEEDLE,true,PlayerSettings::dynmapTransponderEnabled),
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, PlayerSettings::enableCombatTimerAlerts),
-			DBCachedBooleanToggle(text("Release Touch Confirmation"), "Warn before releasing a ship touching nearby blocks.", GuiItem.LIST, true, PlayerSettings::releaseTouchVerification),
+			DBCachedBooleanToggle(text("Release Touch Confirmation"), "Controls warnings and restrictions when releasing a ship touching nearby blocks.", GuiItem.LIST, true, PlayerSettings::releaseTouchVerification),
 			DBCachedBooleanToggle(text("Enable Protection Messages"), "", GuiItem.LIST, true, PlayerSettings::protectionMessagesEnabled),
 			DBCachedBooleanToggle(text("Shorten Chat Messages"), "", GuiItem.LIST, false, PlayerSettings::shortenChatChannels),
 			DBCachedBooleanToggle(text("Remove User Prefixes"), "Removes prefixes, like Helper and Mod, from non-global chats", GuiItem.LIST, false, PlayerSettings::hideUserPrefixes),

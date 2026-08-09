@@ -10,7 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.UNDERLINED
 
-@CommandAlias("info|map|wiki|patreon|rules|github")
+@CommandAlias("info|map|resourcepack|texturepack|wiki|patreon|rules|github")
 object VelocityInfoCommand : ProxyCommand() {
 	@Default
 	@Suppress("Unused")

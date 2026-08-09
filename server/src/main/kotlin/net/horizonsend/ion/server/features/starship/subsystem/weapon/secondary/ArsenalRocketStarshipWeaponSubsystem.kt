@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomLightMissileLauncherStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopLightMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.BottomArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
@@ -15,14 +13,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWea
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles.ArsenalMissileProjectile
 //import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArsenalRocketProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
@@ -91,7 +87,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 				val randomLoc = getFirePos().toCenterVector().clone()
 					.add(randomInitialDir.clone().normalize().multiply(0.1))
 
-				TrackingMissileProjectile(
+				ArsenalMissileProjectile(
 					StarshipProjectileSource(starship),
 					getName(),
 					randomLoc.toLocation(starship.world),

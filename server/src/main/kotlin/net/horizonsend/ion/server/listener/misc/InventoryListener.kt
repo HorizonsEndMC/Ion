@@ -4,8 +4,8 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.features.transport.items.util.addToFurnace
 import net.horizonsend.ion.server.features.transport.items.util.getSpecialFurnaceInputSlot
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.SHELF_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
-import org.bukkit.Material
 import org.bukkit.block.BlockType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -58,6 +58,26 @@ object InventoryListener : SLEventListener() {
 			event.clickedBlock?.type?.asBlockType() == BlockType.DECORATED_POT
 			) event.isCancelled = true
 
+	}
+
+	private fun isShelf(blockType: BlockType?): Boolean {
+
+		// this shouldn't be ble to fail, so i will unwisely assume the null can never be null
+		val shelfTypes = mutableListOf<BlockType>()
+		SHELF_TYPES.forEach { shelfTypes.add(it.asBlockType() ?: BlockType.AIR) }
+
+		return blockType in shelfTypes
+	}
+
+	// Shelves can have illegal items stored in them.
+	// this almost completely preserves shelf functionality
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun contrabandShelfClick(event: PlayerInteractEvent) {
+		if (
+			(0..8).any { event.player.inventory.getItem(it)?.type?.isShulkerBox ?: false } &&
+			event.action == Action.RIGHT_CLICK_BLOCK &&
+			isShelf(event.clickedBlock?.type?.asBlockType())
+		) event.isCancelled = true
 	}
 
 	/** allow players to put items in furnace fuel slots */

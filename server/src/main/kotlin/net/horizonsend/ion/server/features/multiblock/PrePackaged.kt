@@ -353,6 +353,8 @@ object PrePackaged : SLEventListener() {
 				for (item in state.inventory.filterNotNull()) {
 					state.world.dropItemNaturally(state.location.toCenterLocation(), item)
 				}
+				state.inventory.clear()
+				state.update()
 			}
 
 			it.setType(Material.AIR, false)

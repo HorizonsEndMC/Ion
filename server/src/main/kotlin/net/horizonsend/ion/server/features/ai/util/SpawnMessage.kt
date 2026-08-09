@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
@@ -22,12 +23,13 @@ interface SpawnMessage {
 			location.blockX,
 			location.blockY,
 			location.blockZ,
-			location.world.name
+			location.world.name,
+			location.world.ion.getSpaceRegion()
 		)
 	}
 
 	/**
-	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name, 5: Space Region
 	 **/
 	class GlobalMessage(val message: Component) : SpawnMessage {
 		override fun broadcast(location: Location, template: AITemplate?) {
@@ -36,7 +38,7 @@ interface SpawnMessage {
 	}
 
 	/**
-	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name, 5: Space Region
 	 **/
 	class ChatMessage(val message: Component) : SpawnMessage {
 		override fun broadcast(location: Location, template: AITemplate?) {
@@ -45,7 +47,7 @@ interface SpawnMessage {
 	}
 
 	/**
-	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name, 5: Space Region
 	 **/
 	class RadiusMessage(val message: Component, val radius: Double) : SpawnMessage {
 		override fun broadcast(location: Location, template: AITemplate?) {
@@ -54,7 +56,7 @@ interface SpawnMessage {
 	}
 
 	/**
-	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name, 5: Space Region
 	 **/
 	class WorldMessage(val message: Component) : SpawnMessage {
 		override fun broadcast(location: Location, template: AITemplate?) {
@@ -63,7 +65,7 @@ interface SpawnMessage {
 	}
 
 	/**
-	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name, 5: Space Region
 	 **/
 	class SelectorMessage(val message: Component, private val selector: (Player) -> Boolean) : SpawnMessage {
 		override fun broadcast(location: Location, template: AITemplate?) {

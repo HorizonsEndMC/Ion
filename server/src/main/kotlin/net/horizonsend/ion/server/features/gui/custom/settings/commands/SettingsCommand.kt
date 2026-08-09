@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SettingsMainMenuG
 import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
@@ -89,6 +90,12 @@ object SettingsCommand : SLCommand() {
         handleBooleanToggleSetting(sender, PlayerSettings::alternateFireButtons, enabled)
     }
 
+	@CommandAlias("control tertiarycontrollers")
+	@CommandCompletion("@controlTertiaryControl")
+	fun onSettingsControlChangeTertiaryControl(sender: Player, value: PlayerDirectControlInput.TertiaryButtonControl) = asyncCommand(sender) {
+		handleEnumCycleSetting(sender, PlayerSettings::tertiaryButtonControl, value, PlayerDirectControlInput.TertiaryButtonControl::class.java)
+	}
+
     @CommandAlias("sidebar combattimer enablecombattimerinfo")
     @CommandCompletion("true|false")
     fun onSettingsSidebarCombatTimerEnableCombatTimerInfo(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
@@ -120,7 +127,7 @@ object SettingsCommand : SLCommand() {
     }
 
     @CommandAlias("sidebar contacts changecontactsrange")
-    @CommandCompletion("0|6000")
+    @CommandCompletion("0|2500")
     fun onSettingsSidebarContactsChangeContactsRange(sender: Player, value: Int) = asyncCommand(sender) {
         handleIntegerInputSetting(sender, PlayerSettings::contactsDistance, value, 0, MainSidebar.CONTACTS_RANGE)
     }

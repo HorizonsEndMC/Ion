@@ -36,22 +36,24 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 	protected abstract fun getYFactor(): Int
 
 	override fun MultiblockShape.buildStructure() {
+		val yFactor = getYFactor()
+		
 		z(1) {
-			y(0) {
+			y(0 * yFactor) {
 				x(2).sponge()
 				x(1).ironBlock()
 				x(0).ironBlock()
 				x(-1).ironBlock()
 				x(-2).sponge()
 			}
-			y(1) {
+			y(1 * yFactor) {
 				x(2).ironBlock()
 				x(1).ironBlock()
 				x(0).ironBlock()
 				x(-1).ironBlock()
 				x(-2).ironBlock()
 			}
-			y(2) {
+			y(2 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -70,7 +72,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(4) {
+			y(4 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -89,21 +91,21 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(5) {
+			y(5 * yFactor) {
 				x(2).ironBlock()
 				x(1).titaniumBlock()
 				x(0).ironBlock()
 				x(-1).titaniumBlock()
 				x(-2).ironBlock()
 			}
-			y(6) {
+			y(6 * yFactor) {
 				x(2).type(Material.LODESTONE)
 				x(1).ironBlock()
 				x(0).dispenser()
 				x(-1).ironBlock()
 				x(-2).type(Material.LODESTONE)
 			}
-			y(7) {
+			y(7 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -121,14 +123,14 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(3) {
+			y(3 * yFactor) {
 				x(1).titaniumBlock()
 				x(0).ironBlock()
 				x(-1).titaniumBlock()
 			}
 		}
 		z(2) {
-			y(0) {
+			y(0 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -146,64 +148,64 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(1) {
+			y(1 * yFactor) {
 				x(2).assemblyCore()
 				x(1).ironBlock()
 				x(-1).ironBlock()
 				x(-2).assemblyCore()
 			}
-			y(2) {
+			y(2 * yFactor) {
 				x(2).assemblyCore()
 				x(1).ironBlock()
 				x(-1).ironBlock()
 				x(-2).assemblyCore()
 			}
-			y(3) {
+			y(3 * yFactor) {
 				x(2).titaniumBlock()
 				x(1).ironBlock()
 				x(-1).ironBlock()
 				x(-2).titaniumBlock()
 			}
-			y(4) {
+			y(4 * yFactor) {
 				x(2).titaniumBlock()
 				x(1).ironBlock()
 				x(-1).ironBlock()
 				x(-2).titaniumBlock()
 			}
-			y(5) {
+			y(5 * yFactor) {
 				x(2).titaniumBlock()
 				x(1).ironBlock()
 				x(-1).ironBlock()
 				x(-2).titaniumBlock()
 			}
-			y(6) {
+			y(6 * yFactor) {
 				x(2).titaniumBlock()
 				x(1).dispenser()
 				x(0).dispenser()
 				x(-1).dispenser()
 				x(-2).titaniumBlock()
 			}
-			y(7) {
+			y(7 * yFactor) {
 				x(2).ironBlock()
 				x(-2).ironBlock()
 			}
 		}
 		z(3) {
-			y(0) {
+			y(0 * yFactor) {
 				x(2).sponge()
 				x(1).ironBlock()
 				x(0).ironBlock()
 				x(-1).ironBlock()
 				x(-2).sponge()
 			}
-			y(1) {
+			y(1 * yFactor) {
 				x(2).ironBlock()
 				x(1).ironBlock()
 				x(0).ironBlock()
 				x(-1).ironBlock()
 				x(-2).ironBlock()
 			}
-			y(2) {
+			y(2 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -222,7 +224,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(4) {
+			y(4 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -241,21 +243,21 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(5) {
+			y(5 * yFactor) {
 				x(2).ironBlock()
 				x(1).titaniumBlock()
 				x(0).ironBlock()
 				x(-1).titaniumBlock()
 				x(-2).ironBlock()
 			}
-			y(6) {
+			y(6 * yFactor) {
 				x(2).type(Material.LODESTONE)
 				x(1).ironBlock()
 				x(0).dispenser()
 				x(-1).ironBlock()
 				x(-2).type(Material.LODESTONE)
 			}
-			y(7) {
+			y(7 * yFactor) {
 				x(2).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.LEFT,
@@ -273,24 +275,24 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(3) {
+			y(3 * yFactor) {
 				x(1).titaniumBlock()
 				x(0).ironBlock()
 				x(-1).titaniumBlock()
 			}
 		}
 		z(0) {
-			y(0) {
+			y(0 * yFactor) {
 				x(1).sponge()
 				x(0).powerInput()
 				x(-1).sponge()
 			}
-			y(1) {
+			y(1 * yFactor) {
 				x(1).ironBlock()
 				x(0).anyGlass()
 				x(-1).ironBlock()
 			}
-			y(2) {
+			y(2 * yFactor) {
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -307,7 +309,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(4) {
+			y(4 * yFactor) {
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -324,17 +326,17 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(5) {
+			y(5 * yFactor) {
 				x(1).ironBlock()
 				x(0).titaniumBlock()
 				x(-1).ironBlock()
 			}
-			y(6) {
+			y(6 * yFactor) {
 				x(1).type(Material.LODESTONE)
 				x(0).titaniumBlock()
 				x(-1).type(Material.LODESTONE)
 			}
-			y(7) {
+			y(7 * yFactor) {
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.FORWARD,
@@ -351,12 +353,12 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(3) {
+			y(3 * yFactor) {
 				x(0).titaniumBlock()
 			}
 		}
 		z(4) {
-			y(0) {
+			y(0 * yFactor) {
 				x(1).sponge()
 				x(0).anyStairs(
 					PrepackagedPreset.stairs(
@@ -367,12 +369,12 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 				)
 				x(-1).sponge()
 			}
-			y(1) {
+			y(1 * yFactor) {
 				x(1).ironBlock()
 				x(0).assemblyCore()
 				x(-1).ironBlock()
 			}
-			y(2) {
+			y(2 * yFactor) {
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -389,7 +391,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(4) {
+			y(4 * yFactor) {
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -406,17 +408,17 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(5) {
+			y(5 * yFactor) {
 				x(1).ironBlock()
 				x(0).titaniumBlock()
 				x(-1).ironBlock()
 			}
-			y(6) {
+			y(6 * yFactor) {
 				x(1).type(Material.LODESTONE)
 				x(0).titaniumBlock()
 				x(-1).type(Material.LODESTONE)
 			}
-			y(7) {
+			y(7 * yFactor) {
 				x(1).anyStairs(
 					PrepackagedPreset.stairs(
 						RelativeFace.BACKWARD,
@@ -433,7 +435,7 @@ sealed class VerticalThermonuclearMissileWeaponMultiblock : ThermonuclearMissile
 					)
 				)
 			}
-			y(3) {
+			y(3 * yFactor) {
 				x(0).titaniumBlock()
 			}
 		}

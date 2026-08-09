@@ -1,12 +1,20 @@
 package net.horizonsend.ion.server.features.nations
 
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.nations.DominionTerritory
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import org.bukkit.entity.Player
+import java.util.concurrent.TimeUnit
 
 object DominionTerritoryBuffTypes {
 	// 1 territory buffs
@@ -49,6 +57,53 @@ object DominionTerritoryBuffTypes {
 			count >= 3 -> WARMUP_3.value  // 20% reduction
 			count >= 1 -> WARMUP_1.value  // flat 1s reduction
 			else -> 0.0
+		}
+	}
+
+	fun doDominionTerritoryBeaconTax(
+		starship: ActiveStarship,
+		movement: HyperspaceMovement
+	) {
+		// Gate tax check
+		val player = starship.playerPilot ?: return
+		val destinationWorld = movement.dest.world
+
+		if (destinationWorld.hasFlag(WorldFlag.DOMINION_WORLD)) {
+			val dominionTerritory = Regions.getAllOf<RegionDominionTerritory>()
+				.firstOrNull { it.world == destinationWorld.name }
+			val ownerNationId = dominionTerritory?.nation
+
+			if (ownerNationId != null) {
+				val ownerTerritoryCount = Regions.getAllOf<RegionDominionTerritory>()
+					.count { it.nation == ownerNationId }
+
+				if (ownerTerritoryCount >= 5) {
+					if (!VAULT_ECO.has(player, GATE_TAX_AMOUNT)) {
+						player.userError("You cannot afford the ${GATE_TAX_AMOUNT.toCreditsString()} gate tax to enter ${destinationWorld.name}!")
+						return
+					}
+
+					// Reset daily cap if 24 hours have passed
+					val lastReset = dailyGateTaxResetTime[ownerNationId] ?: 0L
+					if (System.currentTimeMillis() - lastReset > TimeUnit.DAYS.toMillis(1)) {
+						dailyGateTaxCollected[ownerNationId] = 0.0
+						dailyGateTaxResetTime[ownerNationId] = System.currentTimeMillis()
+					}
+
+					val currentCollected = dailyGateTaxCollected[ownerNationId] ?: 0.0
+
+					if (currentCollected < GATE_TAX_DAILY_CAP) {
+						val actualTax = minOf(GATE_TAX_AMOUNT, GATE_TAX_DAILY_CAP - currentCollected)
+						VAULT_ECO.withdrawPlayer(player, actualTax)
+						Nation.deposit(ownerNationId, actualTax.toInt())
+						dailyGateTaxCollected[ownerNationId] = currentCollected + actualTax
+						player.information("Paid ${actualTax.toCreditsString()} gate tax to enter ${destinationWorld.name}.")
+					} else {
+						// Cap reached, no tax but still allow jump
+						player.information("Gate tax cap reached for ${destinationWorld.name}, no tax charged.")
+					}
+				}
+			}
 		}
 	}
 }

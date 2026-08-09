@@ -46,6 +46,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShi
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -528,29 +529,35 @@ object PilotedStarships : IonServerComponent() {
 		// Keep pilot for info even after unpilot
 		val oldController = starship.controller
 
-		// Preserve the existing combat result: unpilot, but do not release.
-		if (!bypassCombatTag && oldController is PlayerController && isCombatTagged(oldController.player)) {
-			releaseVerifications.remove(oldController.player.uniqueId)
-			unpilot(starship)
-			oldController.alert("Your starship is in combat! It will be unpiloted instead!")
-
-			return false
-		}
-
-		if (oldController is PlayerController &&
-			oldController.player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
-			starship.initialBlockCount <= StarshipType.LANCER_BATTLECRUISER.maxSize &&
-			starship.isTouchingExternalBlock() &&
-			!hasConfirmedRelease(oldController.player, starship)
-		) {
-			oldController.player.userError(
-				"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
-			)
-			return false
-		}
-
 		if (oldController is PlayerController) {
-			releaseVerifications.remove(oldController.player.uniqueId)
+			val player = oldController.player
+			val touching = player.getSettingOrThrow(PlayerSettings::releaseTouchVerification) &&
+				starship.isTouchingExternalBlock()
+
+			// A touching ship in a protected safezone may not release or unpilot, including while combat tagged.
+			if (touching && ProtectionListener.isProtectedCity(player.location)) {
+				releaseVerifications.remove(player.uniqueId)
+				player.userError("You can't release here your ship is touching something nearby")
+				return false
+			}
+
+			//The pre existing combat unpiloting
+			if (!bypassCombatTag && isCombatTagged(player)) {
+				releaseVerifications.remove(player.uniqueId)
+				unpilot(starship)
+				oldController.alert("Your starship is in combat! It will be unpiloted instead!")
+
+				return false
+			}
+
+			if (touching && !hasConfirmedRelease(player, starship)) {
+				player.userError(
+					"The ship is touching something nearby so redetection here may not work. Attempt to release again within 5 seconds to confirm your release"
+				)
+				return false
+			}
+
+			releaseVerifications.remove(player.uniqueId)
 		}
 
 		unpilot(starship)
@@ -584,6 +591,35 @@ object PilotedStarships : IonServerComponent() {
 			starship = starship,
 			expiresAt = now + RELEASE_VERIFICATION_TIMEOUT_MILLIS
 		)
+		return false
+	}
+
+	private fun ActiveControlledStarship.isTouchingExternalBlock(): Boolean {
+		for (key in blocks) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						if (offsetX == 0 && offsetY == 0 && offsetZ == 0) continue
+
+						val nearbyX = x + offsetX
+						val nearbyY = y + offsetY
+						val nearbyZ = z + offsetZ
+
+						if (nearbyY < world.minHeight || nearbyY >= world.maxHeight) continue
+						if (contains(nearbyX, nearbyY, nearbyZ)) continue
+
+						if (!world.getBlockAt(nearbyX, nearbyY, nearbyZ).type.isAir) {
+							return true
+						}
+					}
+				}
+			}
+		}
+
 		return false
 	}
 

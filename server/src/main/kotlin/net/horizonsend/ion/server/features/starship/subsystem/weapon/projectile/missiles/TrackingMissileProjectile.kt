@@ -1,70 +1,81 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.DyedItemColor
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
+import org.bukkit.damage.DamageType
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
-import org.bukkit.damage.DamageType
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-/*
-class ArsenalRocketProjectile(
+
+abstract class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	val dir: Vector,
 	val initialDir: Vector,
+	override val balancing: B,
 	shooter: Damager,
 	var face: BlockFace, //Up = true, down = false
-	damageType: DamageType
-) : SimpleProjectile<ArsenalRocketBalancing.ArsenalRocketProjectileBalancing>(source, name, loc, dir, shooter, damageType), ProximityProjectile {
-	override val proximityRange: Double = balancing.proximityRange
+	originalTarget: Vector,
+	baseAimDistance: Int
+) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance,  DamageType.GENERIC) {
 	var flightPath1Completed = false
 	var flightPath2Completed = false
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
+	open val verticalLaunchDistance = 30.0
+	override var track = false
 
-	private val container = ItemDisplayContainer(
-		source.getWorld(),
-		4.0F,
-		loc.toVector(),
-		dir,
-		item,
-		interpolation = 2
-	).apply {
-		getEntity().transformationInterpolationDuration = 2
-		getEntity().teleportDuration = 2
+	open val item by lazy { ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()}
+	open val container by lazy {
+		ItemDisplayContainer(
+			source.getWorld(),
+			4.0F,
+			loc.toVector(),
+			dir.clone().multiply(-1),
+			ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct(),
+			interpolation = 2
+		).apply {
+			getEntity().transformationInterpolationDuration = 2
+			getEntity().teleportDuration = 2
+		}
+	}
+
+	init {
+	    track = false
 	}
 
 	override fun tick() {
 
 		if (!flightPath1Completed) {
 			// Initial launch - fly straight out of the multiblock
-			direction = initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
+			direction =
 
-			if (distance > 30) {
+				initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
+
+			if (distance > verticalLaunchDistance) {
 				distance = 0.0
 				flightPath1Completed = true
+				track = true
 			}
 
 			super.tick()
 			return
+
 		} else if (!flightPath2Completed) {
+
 			// Transitioning to free flight - linearly interpolate between initial launch and free flight
 			direction = direction.clone().lerp(dir, 0.2)
-
-			if (direction.angle(dir) < Math.PI / 6) {
-				flightPath2Completed = true
-			}
 
 			super.tick()
 			return
@@ -73,24 +84,11 @@ class ArsenalRocketProjectile(
 		// Free flight
 		direction = dir
 
-		val closestStarship = getStarshipsInProximity(location).minByOrNull { starship ->
-			starship.centerOfMass.toVector().distanceSquared(location.toVector())
-		}
-
-		// Maneuver to nearby starships
-		if (closestStarship != null && closestStarship.identifier != shooter.starship?.identifier) {
-			val oldDirection = direction.clone()
-			direction = oldDirection.lerp(closestStarship.centerOfMass.toVector().subtract(location.toVector()).normalize().multiply(oldDirection.length()),
-				lerpAmount(closestStarship.centerOfMass.toVector().distance(location.toVector()))
-			)
-		}
-
-		super.tick()
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		container.position = location.toVector()
-		container.heading = direction.clone()
+		container.heading = direction.clone().multiply(-1)
 		container.update()
 
 		/*for (lineLoc in oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 5)) {
@@ -103,8 +101,28 @@ class ArsenalRocketProjectile(
 				.rotateAroundX(randomDouble(-angle, angle))
 				.rotateAroundY(randomDouble(-angle, angle))
 				.rotateAroundZ(randomDouble(-angle, angle))
-			location.world.spawnParticle(Particle.LARGE_SMOKE, location, 0, opposite.x, opposite.y, opposite.z, 1.0, null, true)
-			location.world.spawnParticle(Particle.FLAME, location, 0, opposite.x, opposite.y, opposite.z, 0.25, null, true)
+			location.world.spawnParticle(
+				Particle.LARGE_SMOKE,
+				location,
+				0,
+				opposite.x,
+				opposite.y,
+				opposite.z,
+				1.0,
+				null,
+				true
+			)
+			location.world.spawnParticle(
+				Particle.FLAME,
+				location,
+				0,
+				opposite.x,
+				opposite.y,
+				opposite.z,
+				0.25,
+				null,
+				true
+			)
 		}
 	}
 
@@ -113,7 +131,7 @@ class ArsenalRocketProjectile(
 	}
 
 	private fun lerpAmount(distance: Double): Double {
-		val distanceRatio = distance / proximityRange
+		val distanceRatio = distance / 67
 		return when {
 			distanceRatio <= 0.0 -> 1.0 // projectile is basically inside the target
 			distanceRatio >= 1.0 -> 0.0 // projectile is further than the proximity range
@@ -124,7 +142,17 @@ class ArsenalRocketProjectile(
 	override fun onImpact() {
 		for (loc in location.circlePoints(2.0, 30, direction)) {
 			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
-			loc.world.spawnParticle(Particle.CLOUD, location, 0, radialVector.x, radialVector.y, radialVector.z, 1.0, null, true)
+			loc.world.spawnParticle(
+				Particle.CLOUD,
+				location,
+				0,
+				radialVector.x,
+				radialVector.y,
+				radialVector.z,
+				1.0,
+				null,
+				true
+			)
 		}
 
 		(0 until 20).forEach { _ ->
@@ -133,7 +161,17 @@ class ArsenalRocketProjectile(
 				.rotateAroundX(randomDouble(-angle, angle))
 				.rotateAroundY(randomDouble(-angle, angle))
 				.rotateAroundZ(randomDouble(-angle, angle))
-			location.world.spawnParticle(Particle.FLAME, location, 0, opposite.x, opposite.y, opposite.z, 1.0, null, true)
+			location.world.spawnParticle(
+				Particle.FLAME,
+				location,
+				0,
+				opposite.x,
+				opposite.y,
+				opposite.z,
+				1.0,
+				null,
+				true
+			)
 		}
 
 		(0 until 40).forEach { _ ->
@@ -142,20 +180,18 @@ class ArsenalRocketProjectile(
 				.rotateAroundX(randomDouble(-angle, angle))
 				.rotateAroundY(randomDouble(-angle, angle))
 				.rotateAroundZ(randomDouble(-angle, angle))
-			location.world.spawnParticle(Particle.LARGE_SMOKE, location, 0, opposite.x, opposite.y, opposite.z, 2.0, null, true)
+			location.world.spawnParticle(
+				Particle.LARGE_SMOKE,
+				location,
+				0,
+				opposite.x,
+				opposite.y,
+				opposite.z,
+				2.0,
+				null,
+				true
+			)
 		}
+
 	}
-
-	/*
-    override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-        if (starship.type != StarshipType.STARFIGHTER) {
-            impactLocation.createExplosion(ADDITIONAL_EXPLOSION_POWER)
-
-            // explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
-            addToDamagers(impactLocation.world, impactLocation.block, shooter, ADDITIONAL_EXPLOSION_POWER.roundToInt(), explosionOccurred = false, runStarshipImpactEvent = false
-            )
-        }
-    }
-     */
 }
-*/

@@ -91,6 +91,10 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		return lastTime != null && System.currentTimeMillis() < lastTime + STATION_FORMATION_COOLDOWN.toMillis()
 	}
 
+	private fun checkStationNameUnique(name: String): Boolean {
+		return SpaceStationCache[name] == null
+	}
+
 	/**
 	 * Records the time that a player created a station
 	 * @param player the player to set the station creation cooldown
@@ -319,6 +323,10 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		failIf(!sender.hasPermission("nations.spacestation.create")) {
 			"You can't create space stations here!"
+		}
+
+		failIf(!checkStationNameUnique(name)) {
+			"A space station with the name $name already exists!"
 		}
 
 		failIf(!sender.world.ion.hasFlag(WorldFlag.ALLOW_SPACE_STATIONS)) { "You can't create space stations in this world!" }

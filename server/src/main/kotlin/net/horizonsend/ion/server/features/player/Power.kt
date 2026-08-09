@@ -38,7 +38,7 @@ object Power : IonServerComponent() {
 		// 20 ticks * 60 minutes converted to seconds
 		Tasks.syncRepeat(0L, 20L * TimeUnit.MINUTES.toSeconds(60)) {
 			for (player in Bukkit.getOnlinePlayers()) {
-				if (ConfigurationFiles.serverConfiguration().serverName != "survival") continue
+				if (!ConfigurationFiles.legacySettings().master) continue
 				SLXP.addPowerAsync(player.uniqueId, 5)
 			}
 
@@ -112,7 +112,7 @@ object Power : IonServerComponent() {
 
 	@EventHandler
 	fun modifyPowerOnPlayerDeath(event: PlayerDeathEvent) {
-		if (ConfigurationFiles.serverConfiguration().serverName != "survival") return
+		if (!ConfigurationFiles.legacySettings().master) return
 		if (!event.player.isConnected) {
 			log.info("Player ${event.player.name} has died, but is not connected.")
 			return

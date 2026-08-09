@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.UNLOADED_BREACHER_SHELL
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CANNON_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESE_BUCKET
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHEESEBURGER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
@@ -179,6 +180,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_B
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.LOG_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MUSHROOM_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SAPLING_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -344,7 +346,7 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_BLOCK)
-			setIngredient('o', OAK_LOG)
+			setIngredient('o', MaterialChoice(LOG_TYPES.toList()))
 			setIngredient('s', STICK)
 		}
 		// Wool -> String
@@ -971,6 +973,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', TOMATO)
 			setIngredient('s', SALAMI)
 		}
+		shapeless(
+			"cheese_bucket",
+			CHEESE_BUCKET.getValue().constructItemStack(),
+			CraftingBookCategory.MISC,
+			MILK_BUCKET,
+			Material.WHEAT_SEEDS
+		)
 		shapeless("ice_cream_mixture", ICE_CREAM_MIXTURE.getValue().constructItemStack(), CraftingBookCategory.MISC, MILK_BUCKET, SUGAR, ICE)
 		shapeless("nutrient_cube", NUTRIENT_CUBE.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			addIngredient(MaterialChoice(WHEAT))

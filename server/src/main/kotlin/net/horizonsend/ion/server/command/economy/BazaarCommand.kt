@@ -195,10 +195,15 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("withdraw")
 	@Description("Withdraw the specified amount of the item")
-	@CommandCompletion("@bazaarItemStrings 1|64")
-	fun onWithdraw(sender: Player, itemString: String, amount: Int) = asyncCommand(sender) {
+	@CommandCompletion("@bazaarItemStrings 1|64 confirm")
+	fun onWithdraw(sender: Player, itemString: String, amount: Int, @Optional confirm: String?) = asyncCommand(sender) {
 		requireNotInTutorial(sender)
 		val territory = requireTerritoryIn(sender)
+
+		failIf(amount > 2000 && confirm != "confirm") {
+			"Withdrawing more than 2000 items from the bazaar may cause your items to disappear, requiring staff intervention. Do \"/bazaar withdraw $itemString $amount confirm\" to override this warning."
+		}
+
 		Bazaars.withdrawListingBalance(sender, territory, itemString, amount).sendReason(sender)
 	}
 

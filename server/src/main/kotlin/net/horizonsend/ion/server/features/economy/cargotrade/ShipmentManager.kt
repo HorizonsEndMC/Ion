@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.RegionalObjective
 import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveType
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
@@ -29,6 +30,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionDominionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionRegionalObjective
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -37,6 +39,8 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
@@ -80,6 +84,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
+import org.litote.kmongo.util.idValue
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
@@ -541,14 +546,18 @@ object ShipmentManager : IonServerComponent() {
 				}
 
 				// Tax beacon passive tax collection
-				val taxBeaconRegion = Regions.findFirstOf<RegionRegionalObjective>(player.location)
-				if (taxBeaconRegion != null && taxBeaconRegion.type == RegionalObjectiveType.TAX_BEACON) {
-					val beaconNationId = taxBeaconRegion.nation
-					if (beaconNationId != null && beaconNationId != playernationid) {
-						val beaconTax = (totalRevenue * 0.10).roundToInt()
-						totalRevenue -= beaconTax
-						Nation.deposit(beaconNationId, beaconTax)
-						player.information("Paid ${beaconTax.toCreditsString()} tax to the controlling nation of ${taxBeaconRegion.name}.")
+				val beacons = Regions.getAllOf<RegionRegionalObjective>()
+				val playerRegion = player.world.ion.getSpaceRegion()
+				for (beacon in beacons) {
+					val taxBeaconRegion = beacon.bukkitWorld?.ion?.getSpaceRegion() ?: continue //likely failure point ig
+					if (beacon.type == RegionalObjectiveType.TAX_BEACON && taxBeaconRegion == playerRegion) {
+						val beaconNationId = beacon.nation
+						if (beaconNationId != null && beaconNationId != playernationid) {
+							val beaconTax = (totalRevenue * 0.10).roundToInt()
+							totalRevenue -= beaconTax
+							Nation.deposit(beaconNationId, beaconTax)
+							player.information("Paid ${beaconTax.toCreditsString()} tax to the controlling nation of ${taxBeaconRegion.name}.")
+						}
 					}
 				}
 

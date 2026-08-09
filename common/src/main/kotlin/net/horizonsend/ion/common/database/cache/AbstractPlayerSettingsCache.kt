@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.kyori.adventure.text.Component
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
 import org.litote.kmongo.id.StringId
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
@@ -98,8 +100,29 @@ abstract class AbstractPlayerSettingsCache : Cache {
 				}
 			}
 
+			// Safely clamp legacy contact ranges without overwriting a newer value.
+			val storedContactsDistance = settings.contactsDistance
+			val normalizedContactsDistance = storedContactsDistance.coerceIn(
+				0,
+				PlayerSettings.MAX_CONTACTS_DISTANCE
+			)
+
+			if (normalizedContactsDistance != storedContactsDistance) {
+				settings.contactsDistance = normalizedContactsDistance
+			}
+
 			for (setting in settingProperties) {
 				updateStoredSetting(player, setting, setting.getter.call(settings))
+			}
+
+			if (normalizedContactsDistance != storedContactsDistance) {
+				PlayerSettings.col.updateOne(
+					and(
+						PlayerSettings::_id eq settingsId,
+						PlayerSettings::contactsDistance eq storedContactsDistance
+					),
+					setValue(PlayerSettings::contactsDistance, normalizedContactsDistance)
+				)
 			}
 		}
 

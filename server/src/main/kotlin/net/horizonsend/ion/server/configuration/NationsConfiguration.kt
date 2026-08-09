@@ -29,14 +29,14 @@ data class NationsConfiguration(
 		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 60),
 		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 60),
 		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 3),
-		val playerKillPoints: Int = 1,
-		val passivePoints: Double = 0.25,
-		val subCapitalKillPoints: Double = 300.0,
-		val capitalKillPoints: Double = 500.0,
-		val superCapitalKillPoints: Double = 1000.0,
-		val miningShipKillPoints: Double = 1.0,
+		val playerKillPoints: Int = 4,
+		val passivePoints: Double = 1.0,
+		val subCapitalKillPoints: Double = 1200.0,
+		val capitalKillPoints: Double = 2000.0,
+		val superCapitalKillPoints: Double = 4000.0,
+		val miningShipKillPoints: Double = 4.0,
 		val tech2Multiplier: Double = 2.0,
 		val shipCostMultiplier: Double = 1.0,
-		val minimumPassivePointsShipSize: Int = 350
+		val minimumPassivePointsShipSize: Int = 4000
 	)
 }

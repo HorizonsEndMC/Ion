@@ -61,13 +61,10 @@ class WebifierProjectile(
 		}
 
 		if (starship.initialBlockCount < 12501) {
-
-			val speedPenalty = 1 - balancing.effectStrength
-
 			starship.addStatusEffect(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.DIRECT_CONTROL_SLOW,
-					speedPenalty,
+					balancing.effectStrength,
 					balancing.effectDurationMillis,
 					shooter.starship,
 				)
@@ -76,13 +73,11 @@ class WebifierProjectile(
 			starship.addStatusEffect(
 				StarshipStatusEffect(
 					StarshipStatusEffectTypes.CRUISE_SLOW,
-					speedPenalty,
+					balancing.effectStrength,
 					balancing.effectDurationMillis,
 					shooter.starship,
 				)
 			)
-
-			starship.userErrorAction("Ship speed slowed by ${(speedPenalty * 100).toInt()}%!")
 		}
 	}
 

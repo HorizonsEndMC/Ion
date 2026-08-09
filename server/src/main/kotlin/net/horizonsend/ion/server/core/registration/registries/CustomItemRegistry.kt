@@ -918,6 +918,11 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				lore = Component.text("A processed dairy product formed from the coagulation of milk proteins.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
+		unStackable(
+			key = CustomItemKeys.CHEESE_BUCKET,
+			model = "food/cheese_bucket",
+			displayName = Component.text("Cheese Bucket")
+		)
 		register(
 			CustomItemKeys.GROUND_BEEF, FoodItem(
 				key = CustomItemKeys.GROUND_BEEF,

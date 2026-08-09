@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatNationName
+import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
@@ -260,7 +261,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			event.starship.initialBlockCount < 4501 -> config.subCapitalKillPoints
 			event.starship.initialBlockCount in 4501..12501 -> config.capitalKillPoints
 			event.starship.initialBlockCount in 12501..36000 -> config.superCapitalKillPoints
-			else -> 1.0
+			else -> 4.0
 		}
 		if (event.starship.type.tech2) totalPoints *= config.tech2Multiplier
 
@@ -284,9 +285,21 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			if (victimIsDefenderSide && !damagerIsDefenderSide) {
 				siege.attackerPoints += points
 				log.info("Awarded attacker $points points for sinking ship of ${controller.player.name}")
+				siegeAudience(siege).sendMessage(template(
+					text("The attackers ({0}) gained {1} points for sinking {2}."),
+					formatNationName(siege.attacker),
+					points,
+					controller.player.name
+				))
 			} else if (!victimIsDefenderSide && damagerIsDefenderSide) {
 				siege.defenderPoints += points
 				log.info("Awarded defender $points points for sinking ship of ${controller.player.name}")
+				siegeAudience(siege).sendMessage(template(
+					text("{0} gained {1} points for sinking {2}."),
+					formatNationName(siege.defender),
+					points,
+					controller.player.name
+				))
 			}
 		}
 
@@ -314,12 +327,14 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 		val playerIsDefenderSide = siege.isDefender(player.slPlayerId)
 		val killerIsDefenderSide = siege.isDefender(killer.slPlayerId)
+		val killerNation = PlayerCache[killer].nationOid?.let { nationId -> formatNationName(nationId) }
 
 		if (!killerIsDefenderSide && playerIsDefenderSide) {
 			siege.attackerPoints += points
 			log.info("Awarded attacker $points points for killing ${player.name}")
 			siegeAudience(siege).sendMessage(template(
-				text("The besiegers accrued {0} points for killing {1}."),
+				text("The attackers ({0}) gained {1} points for killing {2}."),
+				killerNation ?: text("null"),
 				points,
 				player.name
 			))
@@ -329,7 +344,7 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			siege.defenderPoints += points
 			log.info("Awarded defender $points points for killing ${player.name}")
 			siegeAudience(siege).sendMessage(template(
-				text("{0} accrued {1} points for killing {2}."),
+				text("{0} gained {1} points for killing {2}."),
 				formatNationName(siege.defender),
 				points,
 				player.name
@@ -351,13 +366,15 @@ object DominionTerritorySieges : IonServerComponent(true) {
 
 		val defenderCount = contained.count { siege.isDefender(it.player.slPlayerId) }
 		val attackerCount = contained.count { siege.isAttacker(it.player.slPlayerId) }
+		val attackingNations = contained.filter { siege.isAttacker(it.player.slPlayerId) }
+			.mapNotNull { playerController -> PlayerCache[playerController.player].nationOid?.let { nationId -> formatNationName(nationId) } }
 
 		val defenderNew = (defenderCount.coerceAtMost(5) * config.passivePoints).roundToInt()
 		if (defenderNew > 0) {
 			siege.defenderPoints += defenderNew
 			log.info("Awarded defender $defenderNew passive points")
 			audience.sendMessage(template(
-				text("{0} accrued {1} passive points for being inside the nation territory."),
+				text("{0} gained {1} passive points for being inside the nation territory."),
 				formatNationName(siege.defender),
 				defenderNew
 			))
@@ -368,7 +385,8 @@ object DominionTerritorySieges : IonServerComponent(true) {
 			siege.attackerPoints += attackerNew
 			log.info("Awarded attacker $attackerNew passive points")
 			audience.sendMessage(template(
-				text("The besiegers accrued {0} passive points for being inside the nation territory."),
+				text("The attackers ({0}) gained {1} passive points for being inside the nation territory."),
+				attackingNations.join(),
 				attackerNew
 			))
 		}

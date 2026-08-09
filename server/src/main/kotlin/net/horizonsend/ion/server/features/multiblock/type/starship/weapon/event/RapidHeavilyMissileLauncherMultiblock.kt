@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.RapidHeavyMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles.RapidHeavyMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -50,7 +50,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {
-			y(3) {
+			y(getSign() * 3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(2).anyTerracotta()
 				x(1).anyTerracotta()
@@ -59,24 +59,24 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(-2).anyTerracotta()
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(2).type(Material.IRON_BARS)
 				x(1).type(Material.POLISHED_BASALT)
 				x(0).ironBlock()
 				x(-1).type(Material.POLISHED_BASALT)
 				x(-2).type(Material.IRON_BARS)
 			}
-			y(5) {
+			y(getSign() * 5) {
 				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
-			y(2) {
+			y(getSign() * 2) {
 				x(0).sponge()
 			}
 		}
 		z(0) {
-			y(3) {
+			y(getSign() * 3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(2).anyTerracotta()
 				x(1).anyTerracotta()
@@ -85,25 +85,25 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(-2).anyTerracotta()
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(2).anyWall()
 				x(1).type(Material.POLISHED_BASALT)
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-1).type(Material.POLISHED_BASALT)
 				x(-2).anyWall()
 			}
-			y(2) {
+			y(getSign() * 2) {
 				x(1).sponge()
 				x(-1).sponge()
 			}
-			y(5) {
+			y(getSign() * 5) {
 				x(1).type(Material.POLISHED_BASALT)
 				x(0).ironBlock()
 				x(-1).type(Material.POLISHED_BASALT)
 			}
 		}
 		z(-1) {
-			y(3) {
+			y(getSign() * 3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(2).anyTerracotta()
 				x(1).anyTerracotta()
@@ -112,59 +112,59 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(-2).anyTerracotta()
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(2).type(Material.IRON_BARS)
 				x(1).anyWall()
 				x(0).ironBlock()
 				x(-1).anyWall()
 				x(-2).type(Material.IRON_BARS)
 			}
-			y(5) {
+			y(getSign() * 5) {
 				x(1).type(Material.POLISHED_BASALT)
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).type(Material.POLISHED_BASALT)
 			}
-			y(2) {
+			y(getSign() * 2) {
 				x(0).sponge()
 			}
 		}
 		z(2) {
-			y(3) {
+			y(getSign() * 3) {
 				x(2).ironBlock()
 				x(1).anyTerracotta()
 				x(0).anyTerracotta()
 				x(-1).anyTerracotta()
 				x(-2).ironBlock()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 		}
 		z(-2) {
-			y(3) {
+			y(getSign() * 3) {
 				x(2).ironBlock()
 				x(1).anyTerracotta()
 				x(0).anyTerracotta()
 				x(-1).anyTerracotta()
 				x(-2).ironBlock()
 			}
-			y(4) {
+			y(getSign() * 4) {
 				x(1).type(Material.IRON_BARS)
 				x(0).type(Material.IRON_BARS)
 				x(-1).type(Material.IRON_BARS)
 			}
 		}
 		z(-3) {
-			y(3) {
+			y(getSign() * 3) {
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 		z(3) {
-			y(3) {
+			y(getSign() * 3) {
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

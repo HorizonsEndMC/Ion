@@ -67,6 +67,12 @@ object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	val LIGHTNING_ROD_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("LIGHTNING_ROD_OXIDATION")
 	val EXPOSED_LIGHTNING_ROD_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("EXPOSED_LIGHTNING_ROD_OXIDATION")
 	val WEATHERED_LIGHTNING_ROD_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("WEATHERED_LIGHTNING_ROD_OXIDATION")
+	val COPPER_CHAIN_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("COPPER_CHAIN_OXIDATION")
+	val EXPOSED_COPPER_CHAIN_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("EXPOSED_COPPER_CHAIN_OXIDATION")
+	val WEATHERED_COPPER_CHAIN_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("WEATHERED_COPPER_CHAIN_OXIDATION")
+	val COPPER_LANTERN_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("COPPER_LANTERN_OXIDATION")
+	val EXPOSED_COPPER_LANTERN_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("EXPOSED_COPPER_LANTERN_OXIDATION")
+	val WEATHERED_COPPER_LANTERN_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("WEATHERED_COPPER_LANTERN_OXIDATION")
 
 	val STONECUTTING_ANDESITE_ANDESITE_SLAB_SLAB = registerTypedKey<AutoMasonRecipe>("STONECUTTING_ANDESITE_ANDESITE_SLAB_SLAB")
 	val STONECUTTING_ANDESITE_ANDESITE_STAIRS_STAIR = registerTypedKey<AutoMasonRecipe>("STONECUTTING_ANDESITE_ANDESITE_STAIRS_STAIR")

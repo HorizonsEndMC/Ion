@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
@@ -8,84 +8,46 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
-import org.bukkit.damage.DamageType
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
+class LightMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,
-	val dir: Vector,
-	val initialDir: Vector,
+	dir: Vector,
+	initialDir: Vector,
 	override val balancing: B,
 	shooter: Damager,
-	var face: BlockFace, //Up = true, down = false
+	face: BlockFace, //Up = true, down = false
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : TrackingLaserProjectile<B>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
-	var flightPath1Completed = false
-	var flightPath2Completed = false
-	var age = 0
-
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_arsenal_missile").construct()
+) : PlayerGuidedMissileProjectile<B>(source, name, loc, dir, initialDir, balancing, shooter, face, originalTarget, baseAimDistance) {
+	override val item by lazy { ItemFactory.unStackableCustomItem("projectile/activated_light_missile").construct() }
 	override val color: Color = Color.ORANGE
+	override val verticalLaunchDistance = 10.0
 
-	init {
-		track = false
-	}
-
-	private val container = ItemDisplayContainer(
-		source.getWorld(),
-		4.0F,
-		loc.toVector(),
-		dir.clone().multiply(-1),
-		item,
-		interpolation = 2
-	).apply {
-		getEntity().transformationInterpolationDuration = 2
-		getEntity().teleportDuration = 2
-	}
-
-	override fun tick() {
-
-		if (!flightPath1Completed) {
-			// Initial launch - fly straight out of the multiblock
-			direction =
-
-				initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
-
-			if (distance > 30) {
-				distance = 0.0
-				flightPath1Completed = true
-				track = true
-			}
-
-			super.tick()
-			return
-
-		} else if (!flightPath2Completed) {
-
-			// Transitioning to free flight - linearly interpolate between initial launch and free flight
-			direction = direction.clone().lerp(dir, 0.2)
-
-			super.tick()
-			return
+	override val container by lazy {
+		ItemDisplayContainer(
+			source.getWorld(),
+			2.0F,
+			loc.toVector(),
+			dir,
+			ItemFactory.unStackableCustomItem("projectile/activated_light_missile").construct(),
+			interpolation = 2
+		).apply {
+			getEntity().transformationInterpolationDuration = 2
+			getEntity().teleportDuration = 2
 		}
-
-		// Free flight
-		direction = dir
-
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		container.position = location.toVector()
-		container.heading = direction.clone().multiply(-1)
+		container.heading = direction.clone()
 		container.update()
 
 		/*for (lineLoc in oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 5)) {
@@ -120,19 +82,6 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 				null,
 				true
 			)
-		}
-	}
-
-	override fun onDespawn() {
-		container.remove()
-	}
-
-	private fun lerpAmount(distance: Double): Double {
-		val distanceRatio = distance / 67
-		return when {
-			distanceRatio <= 0.0 -> 1.0 // projectile is basically inside the target
-			distanceRatio >= 1.0 -> 0.0 // projectile is further than the proximity range
-			else -> /*1.00262 * 0.0511657.pow(distance / proximityRange)*/ 1 - distanceRatio
 		}
 	}
 
@@ -189,6 +138,5 @@ class TrackingMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 				true
 			)
 		}
-
 	}
 }

@@ -23,7 +23,7 @@ services:
       MONGO_REPLICA_SET_NAME: rs0
 
   velocity:
-    image: "itzg/mc-proxy"
+    image: "itzg/mc-proxy:java25"
     container_name: "velocity"
     depends_on:
       - "mongo"
