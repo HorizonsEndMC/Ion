@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import org.bukkit.Bukkit
 import org.bukkit.Location
 
-class TraceCityCaravanRoute( // trace city lmao, not trade city
+class TraceCityCaravanRoute(
 	val cites: MutableList<TradeCityData> = TradeCities.getAll().shuffled().toMutableList(),
 	val source: TradeCityData = cites.removeFirst()
 ) : ConvoyRoute {
