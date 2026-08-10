@@ -446,10 +446,12 @@ class AIFaction private constructor(
 				text("Executive Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
 			.addFleeMessages(
-				"Hey you! yes you! put out that fire! <#FFA500>Before we get blown up" to true,
-				"<#FFA500>If we die here we will get our pay cut so move it!" to true,
+				"Hey you! yes you! put out that fire <#FFA500>Before we get blown up!" to true,
+				"<#FFA500>If we die here, we will get our pay cut so move it!" to true,
+				"<#FFA500>That's a bit of a hole in the hull, let's repair!" to true,
 				"<#FFA500>Engine patched, reengaging!" to false,
-				"Lets try this again" to false,
+				//"Lets try this again." to false, // pirate lines?
+				"<#FFA500>Hull is repaired, let's go again!"to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Unregistered vessel detected near Guild claim."),
@@ -508,10 +510,10 @@ class AIFaction private constructor(
 			.addFriendlyFireMessages(
 				"suspect" to "<gray>You okay buddy?",
 				"warn" to "<#FFA500>Hey stop that",
-				"betrayal" to "<red>Dammit, I knew I shouldn't have trusted you "
+				"betrayal" to "<red>Damn it. I knew I shouldn't have trusted you."
 			)
 			.addSmackMessages(
-				"<white>Please no, I've done nothing wrong!",
+				"<white>Please no! I've done nothing wrong!",
 				"<white>Spare me; this ship is all I have!",
 				"<white>My friends will avenge me!",
 				"<white>I'm calling the {0} Defense Patrol! ",
@@ -522,6 +524,7 @@ class AIFaction private constructor(
 			.addFleeMessages(
 				"<white>Mayday, mayday, going down!" to true,
 				"<white>Shields are down!" to true,
+				"<white>Please, have we calmed down?" to false,
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
@@ -584,6 +587,9 @@ class AIFaction private constructor(
 				"<white>Ha, you call those weapons?",
 				"<white>Flanking right!",
 				"<white>Flanking left!",
+				"<white>I won't go down like the rest of them!",
+				"<white>Oh you thought I wouldn't put on a good fight?",
+				"<white>A good idea to give up!",
 				"<white>System command, hostile contact is taking severe shield damage."
 			)
 			.addFleeMessages(
@@ -600,15 +606,15 @@ class AIFaction private constructor(
 		val TSAII_RAIDERS = builder("TSAII_RAIDERS", TSAII_MEDIUM_ORANGE.value())
 			.addNames(
 				0,
-				text("pup Dhagdagar", TSAII_DARK_ORANGE),
+				text("Pup Dhagdagar", TSAII_DARK_ORANGE),
 				text("wimp Zazgrord", TSAII_DARK_ORANGE),
 				text("stooge Furriebruh", TSAII_DARK_ORANGE),
 			)
 			.addNames(
 				1,
-				text("pup Dhagdagar", TSAII_DARK_ORANGE),
-				text("wimp Zazgrord", TSAII_DARK_ORANGE),
-				text("stooge Furriebruh", TSAII_DARK_ORANGE),
+				text("Pup Dhagdagar", TSAII_DARK_ORANGE),
+				text("Wimp Zazgrord", TSAII_DARK_ORANGE),
+				text("Stooge Furriebruh", TSAII_DARK_ORANGE),
 			)
 			.addNames(
 				2,
@@ -627,19 +633,50 @@ class AIFaction private constructor(
 			.addNames(
 				4,
 				text("Big Bozz", TSAII_DARK_ORANGE, TextDecoration.BOLD),
-				text("Rizz Master", TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("Rizz Master", TSAII_DARK_ORANGE, TextDecoration.BOLD), // rizz master is wild
 				text("GOATaider", TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("Big Boy", TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("The GOAT", TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("The GOATed Chef", TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("Your Nightmare", TSAII_DARK_ORANGE, TextDecoration.BOLD),
 			)
 			.addSmackMessages(
-				"I'll leave nothing but scrap",
-				"I'll cut you to bacon",
+				"I'll leave nothing but scrap.",
+				"I'll cut you to bacon!",
 				"When I'm done with you, I'll mantle your skull!"
+				"You're lucky you're still alive!"
+				"You scared?"
+				"Why are you even trying? I'm obviously going to win!"
+				"It's over man!"
+				"You won't even make it a minute!"
 			)
 			.addFleeMessages(
-				"<#FFA500> is this guy made of sriracha? too spicy!" to true,
-				"<#FFA500> hot! hot! hot!" to true,
-				"<#FFA500> Lets try this again" to false,
+				"<#FFA500> Is this guy made of sriracha? Too spicy!" to true,
+				"<#FFA500> Hot! Hot! Hot!" to true,
+				"<#FFA500> You're a fiesty one!" to true,
+				"<#FFA500> You're a spicy one really!" to true,
+				"<#FFA500> Oh that one hurt, but not for much longer!" to true,
+				"<#FFA500> You really think you're sinking me that easy?" to true,
+				"<#FFA500> Ow! Ow!" to true,
+				"<#FFA500> Oh yikes!" to true,
+				"<#FFA500> You hurt a bit!" to true,
+				"<#FFA500> Not an easy win for you!" to true,
+				"<#FFA500> Let's take a bit of a break, shall we?" to true,
+				"<#FFA500> You might be a tough fight, but I'm even tougher!" to true,
+				"<#FFA500> I'm back for more!" to false,
+				"<#FFA500> Better watch out, since I'm on my way!" to false,
+				"<#FFA500> Let's go back at it!" to false,
+				"<#FFA500> Our show continues!" to false,
+				"<#FFA500> You think you're that good? Think again!" to false,
+				"<#FFA500> Your ship won't be there for much longer!" to false,
+				"<#FFA500> Wow, still fighting?" to false,
+				"<#FFA500> Let's try this again!" to false,
 				"<#FFA500> Back and hungry!" to false,
+				"<#FFA500> Oh yeah! I'm back for more!" to false,
+				"<#FFA500> Let's dance some more!" to false,
+				"<#FFA500> More fighting!" to false,
+				"<#FFA500> Let's go at it again!" to false,
+				"<#FFA500> Chaos, Chaos!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Heh. What's this then?"),
@@ -661,7 +698,7 @@ class AIFaction private constructor(
 		private val pirateNames = listOf(
 			"Lord Monty",
 			"Kaptin Jakk",
-			"Mr. D",
+			"Mr. D", // Mr Duck?
 			"Fugitive 862",
 			"Vex",
 			"Dapper Dan",
@@ -973,17 +1010,18 @@ class AIFaction private constructor(
 			.addNames(4, pirateNames.map { ("Calamity " + it).toComponent(PIRATE_LIGHT_RED) })
 			.addNames(4, pirateNames.map { ("Woe " + it).toComponent(PIRATE_LIGHT_RED) })
 			.addSmackMessages(
-				"Nice day, Nice Ship. I think ill take it!",
+				"Nice day, Nice Ship. I think I'll take it!",
 				"I'll plunder your booty!",
 				"Scram or we'll blow you to pieces!",
 				"Someones too curious for their own good.",
 				"Don't say I didn't warn ya, mate."
 			)
 			.addFleeMessages(
-				"<#FFA500> Screw this this aint worth my hide!" to true,
-				"<#FFA500> time for a tactical retreat" to true,
-				"<#FFA500> Lets try this again" to false,
+				"<#FFA500> Screw this, this aint worth my hide!" to true,
+				"<#FFA500> Time for a tactical retreat!" to true,
+				"<#FFA500> Let's try this again!" to false,
 				"<#FFA500> Second time is the charm!" to false,
+				"<#FFA500> Let's go again!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>They're watching us..."),
