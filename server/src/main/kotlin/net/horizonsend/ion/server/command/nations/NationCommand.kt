@@ -595,8 +595,8 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("trusted add player")
 	@Description("Give a player build access to the territory")
-	@CommandCompletion("@outposts @players")
-    fun onOutpostTrustedAddPlayer(sender: Player, territory: String, player: String) = asyncCommand(sender) {
+	@CommandCompletion("@players @outposts")
+    fun onOutpostTrustedAddPlayer(sender: Player, player: String, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
@@ -636,8 +636,8 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("trusted add settlement")
 	@Description("Give a settlement build access to the territory")
-	@CommandCompletion("@outposts @settlements")
-    fun onOutpostTrustedAddSettlement(sender: Player, territory: String, settlement: String) = asyncCommand(sender) {
+	@CommandCompletion("@settlements @outposts")
+    fun onOutpostTrustedAddSettlement(sender: Player, settlement: String, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
@@ -678,8 +678,8 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("trusted add nation")
 	@Description("Give a nation build access to the territory")
-	@CommandCompletion("@outposts @nations")
-    fun onOutpostTrustedAddNation(sender: Player, territory: String, nation: String) = asyncCommand(sender) {
+	@CommandCompletion("@nations @outposts")
+    fun onOutpostTrustedAddNation(sender: Player, nation: String, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
@@ -720,8 +720,8 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("trusted remove player")
 	@Description("Revoke a player's build access to the territory")
-	@CommandCompletion("@outposts @players")
-    fun onOutpostTrustedRemovePlayer(sender: Player, territory: String, player: String) = asyncCommand(sender) {
+	@CommandCompletion("@players @outposts")
+    fun onOutpostTrustedRemovePlayer(sender: Player, player: String, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
@@ -762,8 +762,8 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("trusted remove settlement")
 	@Description("Remove a settlement's build access to the territory")
-	@CommandCompletion("@outposts @settlements")
-    fun onOutpostTrustedRemoveSettlement(sender: Player, territory: String, settlement: String) = asyncCommand(sender) {
+	@CommandCompletion("@settlements @outposts")
+    fun onOutpostTrustedRemoveSettlement(sender: Player, settlement: String, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
@@ -804,8 +804,8 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("trusted remove nation")
 	@Description("Remove a nation's build access to the territory")
-	@CommandCompletion("@outposts @nations")
-    fun onOutpostTrustedRemoveNation(sender: Player, territory: String, nation: String) = asyncCommand(sender) {
+	@CommandCompletion("@nations @outposts")
+    fun onOutpostTrustedRemoveNation(sender: Player, nation: String, territory: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 

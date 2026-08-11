@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.chat.Discord.asDiscord
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -73,13 +74,18 @@ class AISinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactor
 
 		val assists = getAssists(sortedByTime.map { it.key })
 
+		if(inArena){
+			sunkShip.centerOfMass.toLocation(sunkShip.world).getNearbyPlayers(1000.0).forEach {
+				it.sendMessage(ofChildren(sinkMessage,assists.orEmpty()))
+			}
+			return
+		}
 		if ((sunkShip.controller as? AIController)?.getUtilModule(CaravanModule::class.java) != null && !inArena) {
 			Notify.chatAndGlobal(ofChildren(sinkMessage, assists.orEmpty()))
 		} else {
 			IonServer.server.sendMessage(ofChildren(sinkMessage, assists.orEmpty()))
 		}
 		if (sunkShip.initialBlockCount < 12000) return // super capitals after this point
-		if (inArena) return
 
 		//todo: replace with another url.
 		val headURL = (sunkShip.controller as? PlayerController)?.player?.name?.let { "https://minotar.net/avatar/$it" }

@@ -63,6 +63,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import java.util.Collections
+import java.util.IdentityHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class ShipFactoryPrintTask(
@@ -429,6 +431,8 @@ class ShipFactoryPrintTask(
 		 **/
 		fun getAvailableItems(inventories: Set<InventoryReference>, settings: ShipFactorySettings): Map<PrintItem, AvailableItemInformation> {
 			val items = mutableMapOf<PrintItem, AvailableItemInformation>()
+			// keep a record of inventory slots that were seen so they are not iterated again
+			val seenSlots = Collections.newSetFromMap(IdentityHashMap<ItemReference, Boolean>())
 
 			for (inventoryReference in inventories) {
 				for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
@@ -439,10 +443,13 @@ class ShipFactoryPrintTask(
 						continue
 					}
 
+					val itemReference = ItemReference(inventoryReference.inventory, index)
+					if (!seenSlots.add(itemReference)) continue
+
 					val information = items.getOrPut(printItem) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
 
 					information.amount.addAndGet(item.amount)
-					information.references.add(ItemReference(inventoryReference.inventory, index))
+					information.references.add(itemReference)
 				}
 			}
 
@@ -492,22 +499,23 @@ class ShipFactoryPrintTask(
 			}
 
 		if (resourceInformation.amount.get() < requiredAmount) {
-			val missing = requiredAmount - resourceInformation.amount.get()
+			// the missing amount was being calculated incorrectly, resulting in duped items
+			val availableFromInventories = resourceInformation.amount.get()
+			val missing = requiredAmount - availableFromInventories
 
 			// Try and make a partial purchase with the missing amount
-			if (!integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
+			if (!integration.any { it.canAddTransaction(printItem, printPosition, missing) }) {
 				markItemMissing(printItem, missing)
 				return false
 			} else {
-				resourceInformation.amount.addAndGet(-resourceInformation.amount.get())
+				resourceInformation.amount.addAndGet(-availableFromInventories)
 
-				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, minOf(availableItems[printItem]?.amount?.get() ?: missing, missing))
+				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, availableFromInventories)
 
 				if (missingFromInventories == 0) return true
-				else {
-					markItemMissing(printItem, missingFromInventories)
-					return false
-				}
+
+				markItemMissing(printItem, missingFromInventories)
+				return false
 			}
 		}
 
@@ -525,10 +533,14 @@ class ShipFactoryPrintTask(
 		val missing = consumeItemFromReferences(references, requiredAmount)
 
 		if (missing > 0) {
-			if (integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
-				markItemMissing(printItem, missing)
-				return false
+			resourceInformation.amount.addAndGet(missing)
+
+			if (integration.any { it.canAddTransaction(printItem, printPosition, missing) }) {
+				return true
 			}
+
+			markItemMissing(printItem, missing)
+			return false
 		}
 
 		return true
