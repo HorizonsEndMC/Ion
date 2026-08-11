@@ -451,7 +451,7 @@ class AIFaction private constructor(
 				"<#FFA500>That's a bit of a hole in the hull, let's repair!" to true,
 				"<#FFA500>Engine patched, reengaging!" to false,
 				//"Lets try this again." to false, // pirate lines?
-				"<#FFA500>Hull is repaired, let's go again!"to false,
+				"<#FFA500>Hull is repaired, let's go again!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Unregistered vessel detected near Guild claim."),
@@ -643,17 +643,17 @@ class AIFaction private constructor(
 			.addSmackMessages(
 				"I'll leave nothing but scrap.",
 				"I'll cut you to bacon!",
-				"When I'm done with you, I'll mantle your skull!"
-				"You're lucky you're still alive!"
-				"You scared?"
-				"Why are you even trying? I'm obviously going to win!"
-				"It's over man!"
+				"When I'm done with you, I'll mantle your skull!",
+				"You're lucky you're still alive!",
+				"You scared?",
+				"Why are you even trying? I'm obviously going to win!",
+				"It's over man!",
 				"You won't even make it a minute!"
 			)
 			.addFleeMessages(
 				"<#FFA500> Is this guy made of sriracha? Too spicy!" to true,
 				"<#FFA500> Hot! Hot! Hot!" to true,
-				"<#FFA500> You're a fiesty one!" to true,
+				"<#FFA500> You're a feisty one!" to true,
 				"<#FFA500> You're a spicy one really!" to true,
 				"<#FFA500> Oh that one hurt, but not for much longer!" to true,
 				"<#FFA500> You really think you're sinking me that easy?" to true,
@@ -663,6 +663,7 @@ class AIFaction private constructor(
 				"<#FFA500> Not an easy win for you!" to true,
 				"<#FFA500> Let's take a bit of a break, shall we?" to true,
 				"<#FFA500> You might be a tough fight, but I'm even tougher!" to true,
+				
 				"<#FFA500> I'm back for more!" to false,
 				"<#FFA500> Better watch out, since I'm on my way!" to false,
 				"<#FFA500> Let's go back at it!" to false,
