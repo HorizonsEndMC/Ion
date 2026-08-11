@@ -38,6 +38,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MediumReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.MiniReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.checklist.SmallReactorMultiblock
+import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -79,6 +80,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -174,6 +177,11 @@ object SubsystemDetector {
 		val multiblock = MultiblockAccess.getFast(sign)
 		if (multiblock is AreaShield) {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
+		}
+
+		if (sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("display")) {
+			println("1")
+			StarshipSigns.MAP.onStarshipPilot(starship, sign)
 		}
 
 		if (sign.type.isWallSign && sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("node")) {

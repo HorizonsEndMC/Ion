@@ -148,6 +148,8 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 
 		passengers.addAll(starship.onlinePassengers)
 
+		passengers.addAll(starship.entityPassengers)
+
 		for (chunk in passengerChunks) for (entity in chunk.entities) {
 			if (passengers.contains(entity)) continue
 

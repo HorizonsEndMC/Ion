@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -160,11 +162,25 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			MiscStarshipCommands.onDirectControl(player)
 		}
+	},
+
+	MAP("[map]", arrayOf(text("Display", DARK_AQUA),null,null,null)){
+		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
+            DisplayMap(findPlayerStarship(player) ?: return, sign)
+
+		}
+
+		override fun onStarshipPilot(starship: Starship, sign: Sign) {
+            DisplayMap(starship, sign)
+			println("2")
+		}
 	};
 
 	open fun onDetect(player: Player, sign: Sign): Boolean = true
 
 	open fun onClick(player: Player, sign: Sign, rightClick: Boolean) {}
+
+	open fun onStarshipPilot(starship: Starship, sign: Sign) {}
 
 	protected fun findPlayerStarship(player: Player): ActiveControlledStarship? {
 		val activeStarship = ActiveStarships.findByPassenger(player)

@@ -717,6 +717,7 @@ class Starship(
 	//region Passengers
 	private val passengers = HashSet<UUID>()
 	val passengerIDs get() = passengers.toList()
+	val entityPassengers = HashSet<Entity>()
 	val onlinePassengers get() = passengers.mapNotNull(Bukkit::getPlayer)
 
 	fun isPassenger(playerID: UUID): Boolean {
