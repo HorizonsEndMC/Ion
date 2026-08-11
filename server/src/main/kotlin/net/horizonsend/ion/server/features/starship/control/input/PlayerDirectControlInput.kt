@@ -46,6 +46,8 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8.0, false)
 	private var boostToggleOverride = false
 
+	private var lastTertiaryInput = 0
+
 	override fun create() {
 		val message = ofChildren(
 			text("Direct Control: ", GRAY),
@@ -64,6 +66,7 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			player.isFlying = true
 		} else {
 			player.walkSpeed = 0.009f
+			player.allowFlight = false
 		}
 
 		val playerLoc = player.location
@@ -136,6 +139,12 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (input.isRight) strafe += 1.0
 		if (input.isForward) ascend += 1.0
 		if (input.isBackward) ascend -= 1.0
+		if(input.isJump) {
+			if(player.server.currentTick-lastTertiaryInput > 10) {
+				handleTertiaryInput()
+				lastTertiaryInput = player.server.currentTick
+			}
+		}
 
 		// Convert to world-relative vector
 		val vector = when (direction) {
@@ -169,8 +178,6 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			player.isFlying = true
 		} else {
 			player.walkSpeed = 0.009f
-			player.flySpeed = 0.06f
-			player.isFlying = false
 		}
 
 		// If player moved, teleport them back to dc center
@@ -198,7 +205,17 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 
 	override fun handleJump(event: PlayerJumpEvent) {
 		event.isCancelled = true
+	}
 
+	override fun handleSneak(event: PlayerToggleSneakEvent) {
+		if (!event.isSneaking) return
+
+		if (player.getSetting(PlayerSettings::toggleDcBoost) == true) {
+			boostToggleOverride = !boostToggleOverride
+		}
+	}
+
+	fun handleTertiaryInput(){
 		when(TertiaryButtonControl.entries[player.getSettingOrThrow(PlayerSettings::tertiaryButtonControl)]) {
 			TertiaryButtonControl.NOTHING->{}
 			TertiaryButtonControl.DISRUPT-> {
@@ -211,10 +228,10 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 				}.sortedBy { it.centerOfMass.toCenterVector().subtract(player.location.toVector()).angle(player.eyeLocation.direction) }.firstOrNull()
 
 				targetShip.let {
-						if (it == starship) return //should prevent setting to yourself
-						starship.disruptorTarget = it
-						starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${it?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
-					}
+					if (it == starship) return //should prevent setting to yourself
+					starship.disruptorTarget = it
+					starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${it?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
+				}
 				player.debugBanner("INTERACT EVENT DISRUPT TARGETING END")
 			}
 			TertiaryButtonControl.CHANGE_WEAPON_SET ->{
@@ -229,14 +246,6 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 				}
 				player.success("Took control of weaponset ${starship.weaponSetSelections[player.uniqueId]}")
 			}
-		}
-	}
-
-	override fun handleSneak(event: PlayerToggleSneakEvent) {
-		if (!event.isSneaking) return
-
-		if (player.getSetting(PlayerSettings::toggleDcBoost) == true) {
-			boostToggleOverride = !boostToggleOverride
 		}
 	}
 
