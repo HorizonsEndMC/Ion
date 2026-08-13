@@ -491,6 +491,12 @@ class AIFaction private constructor(
 				text("Director Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 			)
 			.addFleeMessages(
+				"Hey you! yes you! put out that fire <#FFA500>Before we get blown up!" to true,
+				"<#FFA500>If we die here, we will get our pay cut so move it!" to true,
+				"<#FFA500>That's a bit of a hole in the hull, let's repair!" to true,
+				"<#FFA500>Engine patched, reengaging!" to false,
+				//"Lets try this again." to false, // pirate lines?
+				"<#FFA500>Hull is repaired, let's go again!" to false,
 				"Damage control, get rid of that fire!" to true,
 				"If we die your family won't get your pension!" to true,
 				"Engine patched, reengaging!" to false,
@@ -556,7 +562,7 @@ class AIFaction private constructor(
 				"betrayal" to "<red>Dammit, I knew I shouldn't have trusted you"
 			)
 			.addSmackMessages(
-				"<white>Please no, I've done nothing wrong!",
+				"<white>Please no! I've done nothing wrong!",
 				"<white>Spare me; this ship is all I have!",
 				"<white>My friends will avenge me!",
 				"<white>I'm calling the {0} Defense Patrol! ",
@@ -567,6 +573,7 @@ class AIFaction private constructor(
 			.addFleeMessages(
 				"<white>Mayday, mayday, going down!" to true,
 				"<white>Shields are down!" to true,
+				"<white>Please, have we calmed down?" to false,
 			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
@@ -880,6 +887,10 @@ class AIFaction private constructor(
 				"<white>Ha, you call those weapons?",
 				"<white>Flanking right!",
 				"<white>Flanking left!",
+				"<white>I won't go down like the rest of them!",
+				"<white>Oh you thought I wouldn't put on a good fight?",
+				"<white>A good idea to give up!",
+				"<white>System command, hostile contact is taking severe shield damage."
 				"<white>Command, hostile contact is taking severe shield damage.",
 				"<white>You don't know how over it is for you and your rustbucket ship.",
 				"<white>Moving in to assault!",
@@ -1014,6 +1025,11 @@ class AIFaction private constructor(
 				"<#FFA500> You're mine this time!" to false,
 				"<#FFA500> You thought that was the last of me?" to false,
 				"<#FFA500> Back and hungry!" to false,
+				"<#FFA500> Oh yeah! I'm back for more!" to false,
+				"<#FFA500> Let's dance some more!" to false,
+				"<#FFA500> More fighting!" to false,
+				"<#FFA500> Let's go at it again!" to false,
+				"<#FFA500> Chaos, Chaos!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Heh. What's this then?"),
@@ -1035,7 +1051,7 @@ class AIFaction private constructor(
 		private val pirateNames = listOf(
 			"Lord Monty",
 			"Kaptin Jakk",
-			"Mr. D",
+			"Mr. D", // Mr Duck?
 			"Fugitive 862",
 			"Vex",
 			"Dapper Dan",
@@ -1362,6 +1378,7 @@ class AIFaction private constructor(
 				"<#FFA500> You just bought yourself a death warrant!" to false,
 				"<#FFA500> A closed casket funeral it is, then!" to false,
 				"<#FFA500> Second time is the charm!" to false,
+				"<#FFA500> Let's go again!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Hey, who the hell are you?"),
