@@ -180,7 +180,6 @@ object SubsystemDetector {
 		}
 
 		if (sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("display")) {
-			println("1")
 			StarshipSigns.MAP.onStarshipPilot(starship, sign)
 		}
 

@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -28,6 +29,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import java.util.Locale
 import java.util.UUID
+import kotlin.text.lines
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
 	CRUISE("[cruise]", arrayOf(
@@ -166,13 +168,14 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 
 	MAP("[map]", arrayOf(text("Display", DARK_AQUA),null,null,null)){
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
-            DisplayMap(findPlayerStarship(player) ?: return, sign)
-
+			val ship = findPlayerStarship(player) ?: return
+			val size = sign.lines[1].split(" ")
+			val sizeX = size[0].toFloat()
+			val sizeY = size[1].toFloat()
+			ship.displayMaps.add(DisplayMap(findPlayerStarship(player) ?: return, sign.location, sign.getFacing().direction, sizeX, sizeY))
 		}
 
 		override fun onStarshipPilot(starship: Starship, sign: Sign) {
-            DisplayMap(starship, sign)
-			println("2")
 		}
 	};
 
