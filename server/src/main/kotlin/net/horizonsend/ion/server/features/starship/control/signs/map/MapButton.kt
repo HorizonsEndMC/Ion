@@ -20,24 +20,12 @@ import org.joml.Vector3f
  * @property ry relative y coordinate to spawn at
  * @property itemStack the item stack used in the item Display
  */
-class MapButton(var identifier: String, val map: DisplayMap, val rx: Double, val ry: Double, val sizeX: Float, val sizeY: Float, val itemStack: ItemStack) {
-	val itemDisplay: ItemDisplay = map.location.world.spawnEntity(map.locationAtRelativeCoordinates(rx, ry, false),
-		EntityType.ITEM_DISPLAY) as ItemDisplay
-	val interaction: Interaction = map.location.world.spawnEntity(map.locationAtRelativeCoordinates(rx, ry, false), EntityType.INTERACTION) as Interaction
+class MapButton(identifier: String, map: DisplayMap, rx: Float, ry: Float, sizeX: Float, sizeY: Float, itemStack: ItemStack, offset: Float) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, offset) {
 
-	init {
-		//Setup for ItemDisplay
-	    itemDisplay.setItemStack(itemStack)
-		itemDisplay.teleportDuration = 0
-		itemDisplay.interpolationDelay = 0
-		itemDisplay.isPersistent = false
-		itemDisplay.brightness = Display.Brightness(15,0)
-		itemDisplay.transformation = Transformation(
-			Vector3f(),
-			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
-			Vector3f(sizeX * map.sizeX, sizeY * map.sizeY, 0.001f),
-			Quaternionf()
-		)
+	val interaction: Interaction = map.location.world.spawnEntity(this.location, EntityType.INTERACTION) as Interaction
+
+	override fun init() {
+		super.init()
 
 		//Setup for Interaction Entity
 		interaction.isResponsive = true

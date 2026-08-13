@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package net.horizonsend.ion.server.features.starship.control.signs.map
 
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -24,12 +26,10 @@ import org.joml.Vector3f
 
 class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, val sizeX: Float, val sizeY: Float) {
 	val shiftPerLayer = 0.0025
-	val buttonLayerOffset = shiftPerLayer * 4
 
-	val oppositeDir = dir.multiply(-1)
+	val oppositeDir = dir.clone().multiply(-1)
 	val dx = oppositeDir.x
 	val dz = oppositeDir.z
-
 
 	val displayLocation =
 		location.add(//the following vector maths, centers the displayEntity onto the center of the block
@@ -39,6 +39,7 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 				0.5 - 0.25 * dz - 0.5 * sizeX * dx
 			)
 		)
+	//Only works for text Displays 1 px wide & tall
 	val singleCharacterTextDisplayTransformation = Transformation(
 		Vector3f(),
 		ClientDisplayEntities.rotateToFaceVector(dir.toVector3f()),
@@ -46,9 +47,6 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		Quaternionf()
 	)
 
-	val background = ship.world.spawnEntity(
-		locationAtRelativeCoordinates(16.0 / 32, 16.0 / 32, false).clone(), EntityType.ITEM_DISPLAY
-	) as ItemDisplay
 	val border = ship.world.spawnEntity(
 		displayLocation.clone().add(
 			dir.clone().multiply(shiftPerLayer * 1)
@@ -56,32 +54,61 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		EntityType.TEXT_DISPLAY
 	) as TextDisplay
 
-	var map: ItemDisplay? = null
-
 	//Map features
 	val mapFeatures: MutableList<MapFeature> = mutableListOf()
 	val mapButtons = mutableListOf<MapButton>()
 
 	init {
 		initializeBackgroundAndBorder()
-		initializeButtons()
-		//placeMap()
+		setupSideBarButtons()
+		placeMap()
+
 		//DO LAST
 
 		//Add entities to ship
-		ship.entityPassengers.addAll(listOf(border, background))
-		mapButtons.forEach { ship.entityPassengers.add(it.itemDisplay); ship.entityPassengers.add(it.interaction) }
+		ship.entityPassengers.add(this.border)
+		mapFeatures.forEach {
+			it.init()
+			ship.entityPassengers.add(it.itemDisplay)
+		}
+		mapButtons.forEach {
+			it.init()
+			ship.entityPassengers.add(it.itemDisplay)
+			ship.entityPassengers.add(it.interaction)
+		}
 	}
 
-	private fun initializeButtons() {
+	private fun initializeBackgroundAndBorder() {
+		//GALACTIC MAP
+		mapFeatures.add(
+			MapFeature(
+				"BACKGROUND", this, 16f/32f,16f/32f, 1f, 1f,
+				ItemStack(Material.PAPER).updateData(
+					DataComponentTypes.ITEM_MODEL,
+					NamespacedKeys.packKey("map/black")
+				),
+				0f
+			),
+		)
+
+		border.backgroundColor = Color.fromARGB(0, 0, 0, 0)
+		border.brightness = Display.Brightness(15, 0)
+		border.transformation = singleCharacterTextDisplayTransformation.clone()
+		border.displayHeight
+		border.teleportDuration = 0
+		border.text(Component.text('\uEBF1').font(SPECIAL_FONT_KEY))
+	}
+
+	private fun setupSideBarButtons() {
 		//GALACTIC MAP
 		mapButtons.add(
 			MapButton(
-				"GALACTIC_MAP", this, 30.5 / 32.0, 28.5 / 32.0, 3f, 3f,
+				"MAP_BUTTON", this, 30.5f / 32.0f, 28.5f / 32.0f, 3f/32, 3f/32,
 				ItemStack(Material.PAPER).updateData(
 					DataComponentTypes.ITEM_MODEL,
 					NamespacedKeys.packKey("achievement_icon/hyperspace")
-				)
+				),
+				4f
 			)
 		)
 
@@ -90,78 +117,47 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButton(
 				"PLUS_BUTTON",
 				this,
-				30.5 / 32.0,
-				25.5 / 32.0,
-				3f,
-				3f,
-				ItemStack(Material.PAPER).applyGuiModel(GuiItem.PLUS)
-			)
+				30.5f / 32.0f,
+				25.5f / 32.0f,
+				3f/32,
+				3f/32,
+				ItemStack(Material.PAPER).applyGuiModel(GuiItem.PLUS),
+				4f
+			),
 		)
 
 		//MINUS BUTTON
-
 		mapButtons.add(
 			MapButton(
 				"MINUS_BUTTON",
 				this,
-				30.5 / 32.0,
-				22.5 / 32.0,
-				3f,
-				3f,
-				ItemStack(Material.PAPER).applyGuiModel(GuiItem.MINUS)
+				30.5f / 32.0f,
+				22.5f / 32.0f,
+				3/32f,
+				3f/32,
+				ItemStack(Material.PAPER).applyGuiModel(GuiItem.MINUS),
+				4f
 			)
 		)
 	}
 
-	private fun initializeBackgroundAndBorder() {
-		border.backgroundColor = Color.fromARGB(0, 0, 0, 0)
-
-		background.brightness = Display.Brightness(15, 0)
-		border.brightness = Display.Brightness(15, 0)
-
-		border.transformation = singleCharacterTextDisplayTransformation.clone()
-		border.displayHeight
-		background.transformation = Transformation(
-			Vector3f(), ClientDisplayEntities.rotateToFaceVector(dir.clone().multiply(-1).toVector3f()),
-			Vector3f(sizeX, sizeY, 0.001f), Quaternionf()
-		)
-
-		background.teleportDuration = 0
-		border.teleportDuration = 0
-
-
-		background.setItemStack(
-			ItemStack(Material.PAPER).updateData(
-				DataComponentTypes.ITEM_MODEL,
-				NamespacedKeys.packKey("map/black")
-			)
-		)
-		border.text(Component.text('\uEBF1').font(SPECIAL_FONT_KEY))
-	}
 
 	private fun placeMap() {
-
-
-		map = ship.world.spawnEntity(
-			locationAtRelativeCoordinates(
-				15.0 / 32f,
-				15.0 / 32.0,
-				false
-			).add(dir.clone().multiply(shiftPerLayer * 8)), EntityType.ITEM_DISPLAY
-		) as ItemDisplay
-		map!!.transformation = Transformation(
-			Vector3f(), ClientDisplayEntities.rotateToFaceVector(dir.clone().multiply(-1).toVector3f()),
-			Vector3f((sizeX * 28.0f) / 32.0f, (sizeY * 28.0f) / 32.0f, 0.001f), Quaternionf()
-		)
-		map!!.brightness = Display.Brightness(15, 0)
-		map!!.teleportDuration = 0
-		map!!.setItemStack(
-			ItemStack(Material.PAPER).updateData(
-				DataComponentTypes.ITEM_MODEL,
-				NamespacedKeys.packKey("map/systems")
+		mapFeatures.add(
+			MapFeature(
+			"GALACTIC_MAP",
+			this,
+			15f / 32.0f,
+			15f / 32.0f,
+			28f/32f,
+			28f/32,
+				ItemStack(Material.PAPER).updateData(
+					DataComponentTypes.ITEM_MODEL,
+					NamespacedKeys.packKey("map/systems")
+				),
+				8f
 			)
 		)
-		ship.entityPassengers.add(map!!)
 	}
 
 	/**
@@ -172,7 +168,7 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 	 * @ry: relative y
 	 * @return the location to set as the basis of the button.
 	 */
-	fun locationAtRelativeCoordinates(rx: Double, ry: Double, isTextDisplay: Boolean): Location {
+	fun locationAtRelativeCoordinates(rx: Float, ry: Float, isTextDisplay: Boolean): Location {
 		val isTextDisplay = isTextDisplay
 		return displayLocation.clone().add(
 			Vector(
@@ -186,6 +182,5 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 	companion object {
 		private fun Transformation.clone(): Transformation =
 			Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)
-
 	}
 }
