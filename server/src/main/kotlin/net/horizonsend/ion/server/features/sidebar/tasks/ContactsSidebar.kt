@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.tasks
 
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingO
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.protectionTime
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
@@ -414,23 +416,28 @@ object ContactsSidebar {
         val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (starship in starships) {
-            val otherController = starship.controller
-            val vector = when (otherController) {
-                is ActivePlayerController -> otherController.player.location.toVector()
-                else -> starship.centerOfMass.toVector()
-            }
+			val otherController = starship.controller
+			val vector = when (otherController) {
+				is ActivePlayerController -> otherController.player.location.toVector()
+				else -> starship.centerOfMass.toVector()
+			}
 
-            val distance = vector.distance(playerVector).toInt()
-            val interdictionDistance = starship.centerOfMass.toVector().distance(interdictionLocation).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
-            val height = vector.y.toInt()
+			val distance = vector.distance(playerVector).toInt()
+			val interdictionDistance = starship.centerOfMass.toVector().distance(interdictionLocation).toInt()
+			val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+			val height = vector.y.toInt()
 
-            val fleet = Fleets.findByMember(player)
-            val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
-            val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
-            val fleetStatusEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::fleetStatus) ?: true
+			val fleet = Fleets.findByMember(player)
+			val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
+			val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
+			val fleetStatusEnabled =
+		        player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::fleetStatus) ?: true
 
-            val nameString = starship.identifier.take(maxLength)
+			// Add noobstar to players with protection
+			val isProtected = player.protectionTime() > 0L
+			val noobstar = "★"
+			val nameString = if (isProtected) noobstar + starship.identifier.take(maxLength) else starship.identifier.take(maxLength)
+
             val priority = getPriority(player, nameString)
             val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
