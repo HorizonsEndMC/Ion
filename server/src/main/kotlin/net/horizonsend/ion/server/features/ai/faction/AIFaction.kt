@@ -890,7 +890,7 @@ class AIFaction private constructor(
 				"<white>I won't go down like the rest of them!",
 				"<white>Oh you thought I wouldn't put on a good fight?",
 				"<white>A good idea to give up!",
-				"<white>System command, hostile contact is taking severe shield damage."
+				"<white>System command, hostile contact is taking severe shield damage.",
 				"<white>Command, hostile contact is taking severe shield damage.",
 				"<white>You don't know how over it is for you and your rustbucket ship.",
 				"<white>Moving in to assault!",
