@@ -91,9 +91,9 @@ object SignlessMultiblockScanner : IonServerComponent() {
 	//translates to 10 seconds
 	private const val PLAYER_PRIORITY_DELAY_TICKS = 200
 	//debug control
-	private const val DEBUG_PRIORITY_SCAN_PLAYER_LOG = true
+	private const val DEBUG_PRIORITY_SCAN_PLAYER_LOG = false
 	//debug control
-	private const val DEBUG_PRIORITY_SCAN_SUMMARY_LOG = true
+	private const val DEBUG_PRIORITY_SCAN_SUMMARY_LOG = false
 	//debug control
 	private const val PRIORITY_SCAN_REPORT_INTERVAL_TICKS = 5 * 60 * 20
 
