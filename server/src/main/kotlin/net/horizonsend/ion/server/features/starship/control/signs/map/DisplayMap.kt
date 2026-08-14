@@ -16,7 +16,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Display
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
@@ -56,7 +55,7 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 
 	//Map features
 	val mapFeatures: MutableList<MapFeature> = mutableListOf()
-	val mapButtons = mutableListOf<MapButton>()
+	val mapButtonDisplays = mutableListOf<MapButtonDisplay>()
 
 	init {
 		initializeBackgroundAndBorder()
@@ -67,14 +66,14 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 
 		//Add entities to ship
 		ship.entityPassengers.add(this.border)
-		mapFeatures.forEach {
-			it.init()
-			ship.entityPassengers.add(it.itemDisplay)
+		for(mapFeatures in mapFeatures) {
+			mapFeatures.init()
+			ship.entityPassengers.add(mapFeatures.itemDisplay ?: continue)
 		}
-		mapButtons.forEach {
-			it.init()
-			ship.entityPassengers.add(it.itemDisplay)
-			ship.entityPassengers.add(it.interaction)
+		for(mapButtonDisplay in mapButtonDisplays) {
+			mapButtonDisplay.init()
+			ship.entityPassengers.add(mapButtonDisplay.itemDisplay ?: continue)
+			ship.entityPassengers.add(mapButtonDisplay.interaction)
 		}
 	}
 
@@ -101,8 +100,8 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 
 	private fun setupSideBarButtons() {
 		//GALACTIC MAP
-		mapButtons.add(
-			MapButton(
+		mapButtonDisplays.add(
+			MapButtonDisplay(
 				"MAP_BUTTON", this, 30.5f / 32.0f, 28.5f / 32.0f, 3f/32, 3f/32,
 				ItemStack(Material.PAPER).updateData(
 					DataComponentTypes.ITEM_MODEL,
@@ -113,8 +112,8 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		)
 
 		//PLUS BUTTON
-		mapButtons.add(
-			MapButton(
+		mapButtonDisplays.add(
+			MapButtonDisplay(
 				"PLUS_BUTTON",
 				this,
 				30.5f / 32.0f,
@@ -127,8 +126,8 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		)
 
 		//MINUS BUTTON
-		mapButtons.add(
-			MapButton(
+		mapButtonDisplays.add(
+			MapButtonDisplay(
 				"MINUS_BUTTON",
 				this,
 				30.5f / 32.0f,
@@ -148,7 +147,7 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			"GALACTIC_MAP",
 			this,
 			15f / 32.0f,
-			15f / 32.0f,
+			16f / 32.0f,
 			28f/32f,
 			28f/32,
 				ItemStack(Material.PAPER).updateData(

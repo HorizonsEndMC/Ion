@@ -22,17 +22,22 @@ import org.joml.Vector3f
 open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float, val ry: Float, val sizeX: Float, val sizeY: Float, val itemStack: ItemStack, val offset: Float) {
 	open val location = map.locationAtRelativeCoordinates(rx, ry, false).add(map.dir.clone().multiply(map.shiftPerLayer * offset))
 
-	open val itemDisplay: ItemDisplay = map.location.world.spawnEntity(location,
-		EntityType.ITEM_DISPLAY) as ItemDisplay
+	open val itemDisplay: ItemDisplay? = null
 
 	open fun init(){
+		initItemDisplay()
+	}
+
+	open fun initItemDisplay(){
 		//Setup for ItemDisplay
-		itemDisplay.setItemStack(itemStack)
-		itemDisplay.teleportDuration = 0
-		itemDisplay.interpolationDelay = 0
-		itemDisplay.isPersistent = false
-		itemDisplay.brightness = Display.Brightness(15,0)
-		itemDisplay.transformation = Transformation(
+		map.location.world.spawnEntity(location,
+			EntityType.ITEM_DISPLAY) as ItemDisplay
+		itemDisplay?.setItemStack(itemStack)
+		itemDisplay?.teleportDuration = 0
+		itemDisplay?.interpolationDelay = 0
+		itemDisplay?.isPersistent = false
+		itemDisplay?.brightness = Display.Brightness(15,0)
+		itemDisplay?.transformation = Transformation(
 			Vector3f(),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f().mul(-1f)),
 			Vector3f(sizeX * map.sizeX, sizeY * map.sizeY, 0.001f),
