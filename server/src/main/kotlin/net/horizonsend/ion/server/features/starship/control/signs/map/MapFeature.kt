@@ -18,6 +18,7 @@ import org.joml.Vector3f
  * @property rx relative x coordinate to spawn at
  * @property ry relative y coordinate to spawn at
  * @property itemStack the item stack used in the item Display
+ * @property offset is the space in the z relative axis you want the display to appear
  */
 open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float, val ry: Float, val sizeX: Float, val sizeY: Float, val itemStack: ItemStack, val offset: Float) {
 	open val location = map.locationAtRelativeCoordinates(rx, ry, false).add(map.dir.clone().multiply(map.shiftPerLayer * offset))
