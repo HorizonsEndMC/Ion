@@ -170,8 +170,8 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val ship = findPlayerStarship(player) ?: return
 			val size = sign.lines[1].split(" ")
-			val sizeX = size[0].toFloat()
-			val sizeY = size[1].toFloat()
+			val sizeX = size[0].toDouble()
+			val sizeY = size[1].toDouble()
 			ship.displayMaps.add(DisplayMap(findPlayerStarship(player) ?: return, sign.location, sign.getFacing().direction, sizeX, sizeY))
 		}
 

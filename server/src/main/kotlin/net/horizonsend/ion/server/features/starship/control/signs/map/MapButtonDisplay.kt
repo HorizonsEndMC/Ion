@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
  * @property itemStack the item stack used in the item Display
  * @property offset is the space in the z relative axis you want the display to appear.
  */
-class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Float, ry: Float, sizeX: Float, sizeY: Float, itemStack: ItemStack, offset: Float, relativeFeature: MapFeature? = null,val function: (it: DisplayMap) -> Unit) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, offset, relativeFeature) {
+class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Double, ry: Double, sizeX: Double, sizeY: Double, itemStack: ItemStack, offset: Double, relativeFeature: MapFeature? = null,val function: (it: DisplayMap) -> Unit) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, offset, relativeFeature) {
 
 	val interaction: Interaction = map.location.world.spawnEntity(this.location.clone(), EntityType.INTERACTION) as Interaction //.add(0.0,-sizeY/16.0, 0.0)
 
@@ -23,8 +23,8 @@ class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Float, ry: Float
 		super.init()
 		//Setup for Interaction Entity
 		interaction.isResponsive = true
-		interaction.interactionWidth = sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1f)
-		interaction.interactionHeight = sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1f)
+		interaction.interactionWidth = (sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0)).toFloat()
+		interaction.interactionHeight = (sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0)).toFloat()
 	}
 
 	fun onClick(){

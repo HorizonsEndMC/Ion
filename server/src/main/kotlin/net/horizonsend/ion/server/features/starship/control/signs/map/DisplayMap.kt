@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.kyori.adventure.text.Component
-import net.minecraft.world.entity.Interaction
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
@@ -27,9 +26,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
+import org.joml.Vector3d
 import org.joml.Vector3f
 
-class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, val sizeX: Float, val sizeY: Float) {
+class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, val sizeX: Double, val sizeY: Double) {
 	val shiftPerLayer = 0.0025
 
 	val oppositeDir = dir.clone().multiply(-1)
@@ -37,13 +37,13 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 	val dz = oppositeDir.z
 
 	var state: MapState = MapState.LOCAL_MAP
-	var zoom: Float = 1.0f
+	var zoom: Double = 1.0
 
 	val displayLocation =
 		location.add(//the following vector maths, centers the displayEntity onto the center of the block
 			Vector(
 				0.5 - 0.25 * dx + 0.5 * sizeX * dz,
-				-sizeY.toDouble(),
+				-sizeY,
 				0.5 - 0.25 * dz - 0.5 * sizeX * dx
 			)
 		)
@@ -52,13 +52,13 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 	val singleCharacterTextDisplayTransformation = Transformation(
 		Vector3f(),
 		ClientDisplayEntities.rotateToFaceVector(dir.toVector3f()),
-		Vector3f(40f * sizeX, 40 * sizeY, 0f),
+		Vector3d(40.0* sizeX, 40.0 * sizeY, 0.0).toVector3f(),
 		Quaternionf()
 	)
 
 	val border = ship.world.spawnEntity(
 		displayLocation.clone().add(
-			dir.clone().multiply(shiftPerLayer * 1)
+			dir.clone().multiply(shiftPerLayer * 1.0)
 		),
 		EntityType.TEXT_DISPLAY
 	) as TextDisplay
@@ -94,12 +94,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		//GALACTIC MAP
 		commonFeatures.add(
 			MapFeature(
-				"BACKGROUND", this, 16f / 32f, 16f / 32f, 1f, 1f,
+				"BACKGROUND", this, 16.0/ 32.0, 16.0/ 32.0, 1.0, 1.0,
 				ItemStack(Material.PAPER).updateData(
 					DataComponentTypes.ITEM_MODEL,
 					NamespacedKeys.packKey("map/black")
 				),
-				0f
+				0.0
 			),
 		)
 
@@ -119,12 +119,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		//GALACTIC MAP
 		commonButtons.add(
 			MapButtonDisplay(
-				"MAP_BUTTON", this, 30.5f / 32.0f, 28.5f / 32.0f, 3f / 32, 3f / 32,
+				"MAP_BUTTON", this, 30.5 / 32.0, 28.5 / 32.0, 3.0/ 32.0, 3.0/ 32.0,
 				ItemStack(Material.PAPER).updateData(
 					DataComponentTypes.ITEM_MODEL,
 					NamespacedKeys.packKey("achievement_icon/hyperspace")
 				),
-				4f
+				4.0
 			) {
 				when (it.state) {
 					MapState.LOCAL_MAP -> {
@@ -150,14 +150,14 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"PLUS_BUTTON",
 				this,
-				30.5f / 32.0f,
-				25.5f / 32.0f,
-				3f / 32,
-				3f / 32,
+				30.5/ 32.0,
+				25.5/ 32.0,
+				3.0/ 32.0,
+				3.0/ 32.0,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.PLUS),
-				4f
+				4.0
 			) {
-				it.zoom += 1f;
+				it.zoom += 1.0;
 			}
 		)
 
@@ -166,14 +166,14 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"MINUS_BUTTON",
 				this,
-				30.5f / 32.0f,
-				22.5f / 32.0f,
-				3 / 32f,
-				3f / 32,
+				30.5/ 32.0,
+				22.5/ 32.0,
+				3.0 / 32.0,
+				3.0/ 32.0,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.MINUS),
-				4f
+				4.0
 			) {
-				it.zoom -= 1f;
+				it.zoom -= 1.0;
 			}
 		)
 	}
@@ -187,15 +187,15 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 		val backgroundMap = MapFeature(
 			"GALACTIC_MAP",
 			this,
-			15f / 32.0f,
-			16f / 32.0f,
-			28f / 32f,
-			28f / 32f,
+			15.0/ 32.0,
+			16.0/ 32.0,
+			28.0/ 32.0,
+			28.0/ 32.0,
 			ItemStack(Material.PAPER).updateData(
 				DataComponentTypes.ITEM_MODEL,
 				NamespacedKeys.packKey("map/systems")
 			),
-			8f
+			8.0
 		)
 		mapStateFeatures.add(backgroundMap)
 
@@ -205,12 +205,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"ASTERI",
 				this,
-				.1f,
-				1f-.1465f,
-				0.12f,
-				0.12f,
+				.1 ,
+				1.0-.167 ,
+				0.12 ,
+				0.12 ,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -218,12 +218,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"TRAVERSE",
 				this,
-				.207f,
-				1f-.084f,
-				58f / 1024f,
-				58f / 1024f,
+				.207 ,
+				1.0-.084 ,
+				58.0/ 1024.0,
+				58.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -231,12 +231,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"RESERVE",
 				this,
-				.19433f,
-				1f-.26172f,
-				58f / 1024f,
-				58f / 1024f,
+				.19433 ,
+				1.0-.26172 ,
+				58.0/ 1024.0,
+				58.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -244,12 +244,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"VENTURE",
 				this,
-				.0664f,
-				1f-.2715f,
-				58f / 1024f,
-				58f / 1024f,
+				.0664 ,
+				1.0-.2715 ,
+				58.0/ 1024.0,
+				58.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -259,12 +259,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"TRENCH",
 				this,
-				.34765f,
-				1f-.2109375f,
-				154f / 1024f,
-				154f / 1024f,
+				.34765 ,
+				1.0-.23 ,
+				154.0/ 1024.0,
+				154.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -273,12 +273,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"HORIZON",
 				this,
-				.322f,
-				1f-.07422f,
-				58f / 1024f,
-				58f / 1024f,
+				.322 ,
+				1.0-.07422 ,
+				58.0/ 1024.0,
+				58.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -286,12 +286,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"D-1LA",
 				this,
-				.44824f,
-				1f-.0752f,
-				58f / 1024f,
-				58f / 1024f,
+				.44824,
+				1.0-.0752 ,
+				58.0/ 1024.0,
+				58.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -302,12 +302,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"ILIOS",
 				this,
-				.64648f,
-				1f-.19043f,
-				152f / 1024f,
-				152f / 1024f,
+				.64648 ,
+				1.0-.225 ,
+				152.0/ 1024.0,
+				152.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -316,12 +316,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"XN-81",
 				this,
-				.71582f,
-				1f-.067383f,
-				58f / 1024f,
-				58f / 1024f,
+				.71582 ,
+				1.0-.067383 ,
+				58.0/ 1024.0,
+				58.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -329,12 +329,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"VXM-11",
 				this,
-				.85156f,
-				1f-.06445f,
-				44f / 1024f,
-				44f / 1024f,
+				.85156 ,
+				1.0-.06445 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -342,12 +342,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"IX-Q3",
 				this,
-				.78027f,
-				1f-.11816f,
-				44f / 1024f,
-				44f / 1024f,
+				.78027 ,
+				1.0-.11816 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -355,12 +355,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"DN-4V",
 				this,
-				.88476f,
-				1f-.1171875f,
-				44f / 1024f,
-				44f / 1024f,
+				.88476 ,
+				1.0-.1171875 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -368,12 +368,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"CONDUIT",
 				this,
-				.83594f,
-				1f-.16115f,
-				44f / 1024f,
-				44f / 1024f,
+				.83594 ,
+				1.0-.16115 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -381,12 +381,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"GRX-5",
 				this,
-				.94726f,
-				1f-.1631f,
-				44f / 1024f,
-				44f / 1024f,
+				.94726 ,
+				1.0-.1631 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -394,12 +394,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"NTH-3",
 				this,
-				.77734f,
-				1f-.2041f,
-				44f / 1024f,
-				44f / 1024f,
+				.77734 ,
+				1.0-.2041 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -407,12 +407,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"RELIQUARY",
 				this,
-				.84668f,
-				1f-.2051f,
-				44f / 1024f,
-				44f / 1024f,
+				.84668 ,
+				1.0-.2051 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -420,12 +420,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"PDN-2",
 				this,
-				.9473f,
-				1f-.20898f,
-				44f / 1024f,
-				44f / 1024f,
+				.9473 ,
+				1.0-.20898 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -433,12 +433,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"XRW-9",
 				this,
-				.8584f,
-				1f-.25195f,
-				44f / 1024f,
-				44f / 1024f,
+				.8584 ,
+				1.0-.25195 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -446,12 +446,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"0Q-04",
 				this,
-				.9463f,
-				1f-.25195f,
-				44f / 1024f,
-				44f / 1024f,
+				.9463 ,
+				1.0-.25195 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -459,12 +459,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"TH-89",
 				this,
-				.765625f,
-				1f-.291f,
-				44f / 1024f,
-				44f / 1024f,
+				.765625 ,
+				1.0-.291 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -475,12 +475,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"REGULUS",
 				this,
-				.25586f,
-				1f-.47168f,
-				167f / 1024f,
-				167f / 1024f,
+				.25586 ,
+				1.0-.51 ,
+				167.0/ 1024.0,
+				167.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -489,12 +489,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"VXM-11",
 				this,
-				.068356f,
-				1f-.5498f,
-				50f / 1024f,
-				50f / 1024f,
+				.068356 ,
+				1.0-.5498 ,
+				50.0/ 1024.0,
+				50.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -502,12 +502,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"LOA-7",
 				this,
-				.07324f,
-				1f-.6133f,
-				44f / 1024f,
-				44f / 1024f,
+				.07324 ,
+				1.0-.6133 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -515,12 +515,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"BQ-5A",
 				this,
-				.1641f,
-				1f-.6123f,
-				44f / 1024f,
-				44f / 1024f,
+				.1641 ,
+				1.0-.6123 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -528,12 +528,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"TT-91",
 				this,
-				.25293f,
-				1f-.6133f,
-				44f / 1024f,
-				44f / 1024f,
+				.25293 ,
+				1.0-.6133 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -541,12 +541,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"CXK-3",
 				this,
-				.0723f,
-				1f-.67383f,
-				44f / 1024f,
-				44f / 1024f,
+				.0723 ,
+				1.0-.67383 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -554,12 +554,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"QIM-8",
 				this,
-				.16406f,
-				1f-.671875f,
-				44f / 1024f,
-				44f / 1024f,
+				.16406 ,
+				1.0-.671875 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -567,12 +567,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"VXM-11",
 				this,
-				.2783f,
-				1f-.68066f,
-				44f / 1024f,
-				44f / 1024f,
+				.2783 ,
+				1.0-.68066 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -580,12 +580,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"F3L-1",
 				this,
-				.072265f,
-				1f-.72070f,
-				44f / 1024f,
-				44f / 1024f,
+				.072265 ,
+				1.0-.72070 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -593,12 +593,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"KRY-2",
 				this,
-				.2334f,
-				1f-.73926f,
-				44f / 1024f,
-				44f / 1024f,
+				.2334 ,
+				1.0-.73926 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -606,12 +606,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"SUNDER",
 				this,
-				.3916f,
-				1f-.73926f,
-				44f / 1024f,
-				44f / 1024f,
+				.3916 ,
+				1.0-.73926 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -622,12 +622,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"SIRIUS",
 				this,
-				.6128f,
-				1f-.5298f,
-				163f / 1024f,
-				163f / 1024f,
+				.6128 ,
+				1.0-.575 ,
+				163.0/ 1024.0,
+				163.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -636,12 +636,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"URT-8",
 				this,
-				.7207f,
-				1f-.36816f,
-				44f / 1024f,
-				44f / 1024f,
+				.7207 ,
+				1.0-.36816 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -649,12 +649,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"VERTIGO",
 				this,
-				.7207f,
-				1f-.416015f,
-				44f / 1024f,
-				44f / 1024f,
+				.7207 ,
+				1.0-.416015 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -662,12 +662,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"LM-77",
 				this,
-				.83886f,
-				1f-.4502f,
-				44f / 1024f,
-				44f / 1024f,
+				.83886 ,
+				1.0-.4502 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -675,12 +675,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"TNS-44f",
 				this,
-				.76465f,
-				1f-.487305f,
-				44f / 1024f,
-				44f / 1024f,
+				.76465 ,
+				1.0-.487305 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -688,12 +688,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"HL-81",
 				this,
-				.76465f,
-				1f-.5303f,
-				44f / 1024f,
-				44f / 1024f,
+				.76465 ,
+				1.0-.5303 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -701,12 +701,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"KTR-18",
 				this,
-				.76465f,
-				1f-.609375f,
-				44f / 1024f,
-				44f / 1024f,
+				.76465 ,
+				1.0-.609375 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -714,12 +714,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"ANCHOR",
 				this,
-				.76465f,
-				1f-.651376f,
-				44f / 1024f,
-				44f / 1024f,
+				.76465 ,
+				1.0-.651376 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -727,12 +727,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"AXIS",
 				this,
-				.8779f,
-				1f-.506836f,
-				44f / 1024f,
-				44f / 1024f,
+				.8779 ,
+				1.0-.506836 ,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -740,12 +740,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"JCT-3",
 				this,
-				.90625f,
-				1f-.56641f,
-				44f / 1024f,
-				44f / 1024f,
+				.90625,
+				1.0-.56641,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -753,12 +753,12 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"PRM-16",
 				this,
-				.911133f,
-				1f-.647461f,
-				44f / 1024f,
-				44f / 1024f,
+				.911133,
+				1.0-.647461,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
@@ -766,20 +766,20 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 			MapButtonDisplay(
 				"STR-29",
 				this,
-				.83789f,
-				1f-.706055f,
-				44f / 1024f,
-				44f / 1024f,
+				.83789,
+				1.0-.706055,
+				44.0/ 1024.0,
+				44.0/ 1024.0,
 				ItemStack(Material.AIR),
-				8f,
+				8.0,
 				backgroundMap
 			) {}
 		)
 
 		for (state in mapStateFeatures) {
 			state.init()
+			if(state is MapButtonDisplay) ship.entityPassengers.add(state.interaction)
 			ship.entityPassengers.add(state.itemDisplay ?: continue)
-			ship.entityPassengers.add((state as? MapButtonDisplay)?.interaction ?: continue)
 		}
 	}
 
@@ -792,7 +792,7 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 	 * @isTextDisplay: shifts the returned location down by a pixel to account for the padding minecraft adds to text
 	 * @return the location to set as the basis of the button.
 	 */
-	fun locationAtRelativeCoordinates(rx: Float, ry: Float, isTextDisplay: Boolean): Location {
+	fun locationAtRelativeCoordinates(rx: Double, ry: Double, isTextDisplay: Boolean): Location {
 		val isTextDisplay = isTextDisplay
 		Tasks.async { }
 		return displayLocation.clone().add(
@@ -807,6 +807,9 @@ class DisplayMap(val ship: Starship, val location: Location, val dir: Vector, va
 	companion object : SLEventListener() {
 		private fun Transformation.clone(): Transformation =
 			Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)
+
+		fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
+
 
 		@EventHandler
 		private fun onPlayerInteractWithInteraction(event: PlayerInteractEntityEvent) {

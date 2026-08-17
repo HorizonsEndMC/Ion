@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map
 
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
+import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap.Companion.toVector3f
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material
 import org.bukkit.entity.Display
@@ -10,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
+import org.joml.Vector3d
 import org.joml.Vector3f
 
 /**
@@ -24,11 +26,11 @@ import org.joml.Vector3f
  * @property offset is the space in the z relative axis you want the display to appear
  * @property relativeFeature allows you to specify if this feature is relative to another. This will add the relative locations together, and scales the Size accordingly
  */
-open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float, val ry: Float, val sizeX: Float, val sizeY: Float, val itemStack: ItemStack, val offset: Float, var relativeFeature: MapFeature? = null) {
+open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Double, val ry: Double, val sizeX: Double, val sizeY: Double, val itemStack: ItemStack, val offset: Double, var relativeFeature: MapFeature? = null) {
 	//open val location = map.locationAtRelativeCoordinates((rx*(relativeFeature?.sizeX?:1f)) + if(relativeFeature != null) 1f/32f else 0f, (ry*(relativeFeature?.sizeY ?: 1f) + if(relativeFeature != null) 2f/32f else 0f), false)
 	open val location = map.locationAtRelativeCoordinates(
-		(((relativeFeature?.rx ?: 0f)-(relativeFeature?.sizeX ?: 0f)/2f)+(rx).times((((relativeFeature?.rx ?: 1f)+(relativeFeature?.sizeX ?: 1f)/2f)-((relativeFeature?.rx ?: 1f)-(relativeFeature?.sizeX ?: 1f)/2f)))),
-		(((relativeFeature?.ry ?: 0f)-(relativeFeature?.sizeY ?: 0f)/2f)+(ry).times(((relativeFeature?.ry ?: 1f)+(relativeFeature?.sizeY ?: 1f)/2f)-((relativeFeature?.ry ?: 1f)-(relativeFeature?.sizeY ?: 1f)/2f))),
+		(((relativeFeature?.rx ?: 0.0)-(relativeFeature?.sizeX ?: 0.0)/2.0)+(rx).times((((relativeFeature?.rx ?: 1.0)+(relativeFeature?.sizeX ?: 1.0)/2.0)-((relativeFeature?.rx ?: 1.0)-(relativeFeature?.sizeX ?: 1.0)/2.0)))),
+		(((relativeFeature?.ry ?: 0.0)-(relativeFeature?.sizeY ?: 0.0)/2.0)+(ry).times(((relativeFeature?.ry ?: 1.0)+(relativeFeature?.sizeY ?: 1.0)/2.0)-((relativeFeature?.ry ?: 1.0)-(relativeFeature?.sizeY ?:1.0)/2.0))),
 		false
 	).add(map.dir.clone().multiply(map.shiftPerLayer * offset))
 
@@ -42,7 +44,7 @@ open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float
 		if(itemStack.type == Material.AIR) return
 		//Setup for ItemDisplay
 		itemDisplay = map.location.world.spawnEntity(
-			location.clone().add(Vector(0f, sizeY / 16f, 0f)),
+			location.clone().add(Vector(0.0, sizeY / 16.0, 0.0)),
 			EntityType.ITEM_DISPLAY
 		) as ItemDisplay
 		itemDisplay?.setItemStack(itemStack)
@@ -53,7 +55,7 @@ open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float
 		itemDisplay?.transformation = Transformation(
 			Vector3f(),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f().mul(-1f)),
-			Vector3f(sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1f), sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1f), 0.001f),
+			Vector3d(sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0), sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0), 0.001).toVector3f(),
 			Quaternionf()
 		)
 	}
