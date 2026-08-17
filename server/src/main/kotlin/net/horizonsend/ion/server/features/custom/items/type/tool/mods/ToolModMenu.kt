@@ -88,6 +88,18 @@ class ToolModMenu(
 	 * Fired when the inventory is closed
 	 **/
 	override fun handleClose(event: InventoryCloseEvent) {
+		val seenMods = mutableSetOf<String>()
+
+		internalInventory.contents.forEachIndexed { slot, item ->
+			val modificationItem = item?.customItem as? ModificationItem ?: return@forEachIndexed
+
+			if (seenMods.add(modificationItem.modKey.key)) return@forEachIndexed
+
+			val duplicate = item.clone()
+			internalInventory.setItem(slot, null)
+			viewer.world.dropItemNaturally(viewer.location, duplicate)
+		}
+
 		rebuildFromContents()
 	}
 
