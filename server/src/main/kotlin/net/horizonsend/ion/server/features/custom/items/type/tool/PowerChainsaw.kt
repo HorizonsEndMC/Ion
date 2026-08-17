@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
-import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
@@ -120,8 +119,8 @@ class PowerChainsaw(
 			var replacementType: Material? = null
 
 			if (mods.contains(ItemModKeys.AUTO_REPLANT.getValue()) && (block.type.isWood || block.type.isLog)) {
-				if (Crop.SWEET_BERRIES.canBePlanted(block)) {
-					replacementType = saplingTypes[block.type]
+				replacementType = saplingTypes[block.type]?.takeIf { sapling ->
+					sapling.createBlockData().isSupported(block)
 				}
 			}
 
