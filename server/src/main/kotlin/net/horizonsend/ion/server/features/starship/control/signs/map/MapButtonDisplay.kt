@@ -13,17 +13,26 @@ import org.bukkit.inventory.ItemStack
  * @property rx relative x coordinate to spawn at
  * @property ry relative y coordinate to spawn at
  * @property itemStack the item stack used in the item Display
+ * @property offset is the space in the z relative axis you want the display to appear.
  */
-class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Float, ry: Float, sizeX: Float, sizeY: Float, itemStack: ItemStack, offset: Float) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, offset) {
+class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Float, ry: Float, sizeX: Float, sizeY: Float, itemStack: ItemStack, offset: Float, relativeFeature: MapFeature? = null,val function: (it: DisplayMap) -> Unit) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, offset, relativeFeature) {
 
-	val interaction: Interaction = map.location.world.spawnEntity(this.location.clone().add(0.0,-sizeY/16.0, 0.0), EntityType.INTERACTION) as Interaction
+	val interaction: Interaction = map.location.world.spawnEntity(this.location.clone(), EntityType.INTERACTION) as Interaction //.add(0.0,-sizeY/16.0, 0.0)
 
 	override fun init() {
 		super.init()
-
 		//Setup for Interaction Entity
 		interaction.isResponsive = true
-		interaction.interactionWidth = sizeX * map.sizeX
-		interaction.interactionHeight = sizeY * map.sizeY
+		interaction.interactionWidth = sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1f)
+		interaction.interactionHeight = sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1f)
+	}
+
+	fun onClick(){
+		function.invoke(map)
+	}
+
+	fun onDespawn(){
+		super.despawn()
+		interaction.remove()
 	}
 }

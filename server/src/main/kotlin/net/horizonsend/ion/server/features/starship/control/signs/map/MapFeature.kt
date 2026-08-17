@@ -1,11 +1,14 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map
 
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Material
 import org.bukkit.entity.Display
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
+import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -19,30 +22,43 @@ import org.joml.Vector3f
  * @property ry relative y coordinate to spawn at
  * @property itemStack the item stack used in the item Display
  * @property offset is the space in the z relative axis you want the display to appear
+ * @property relativeFeature allows you to specify if this feature is relative to another. This will add the relative locations together, and scales the Size accordingly
  */
-open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float, val ry: Float, val sizeX: Float, val sizeY: Float, val itemStack: ItemStack, val offset: Float) {
-	open val location = map.locationAtRelativeCoordinates(rx, ry, false).add(map.dir.clone().multiply(map.shiftPerLayer * offset))
+open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Float, val ry: Float, val sizeX: Float, val sizeY: Float, val itemStack: ItemStack, val offset: Float, var relativeFeature: MapFeature? = null) {
+	//open val location = map.locationAtRelativeCoordinates((rx*(relativeFeature?.sizeX?:1f)) + if(relativeFeature != null) 1f/32f else 0f, (ry*(relativeFeature?.sizeY ?: 1f) + if(relativeFeature != null) 2f/32f else 0f), false)
+	open val location = map.locationAtRelativeCoordinates(
+		(((relativeFeature?.rx ?: 0f)-(relativeFeature?.sizeX ?: 0f)/2f)+(rx).times((((relativeFeature?.rx ?: 1f)+(relativeFeature?.sizeX ?: 1f)/2f)-((relativeFeature?.rx ?: 1f)-(relativeFeature?.sizeX ?: 1f)/2f)))),
+		(((relativeFeature?.ry ?: 0f)-(relativeFeature?.sizeY ?: 0f)/2f)+(ry).times(((relativeFeature?.ry ?: 1f)+(relativeFeature?.sizeY ?: 1f)/2f)-((relativeFeature?.ry ?: 1f)-(relativeFeature?.sizeY ?: 1f)/2f))),
+		false
+	).add(map.dir.clone().multiply(map.shiftPerLayer * offset))
 
-	open val itemDisplay: ItemDisplay? = null
+	open var itemDisplay: ItemDisplay? = null
 
-	open fun init(){
+	open fun init() {
 		initItemDisplay()
 	}
 
-	open fun initItemDisplay(){
+	open fun initItemDisplay() {
+		if(itemStack.type == Material.AIR) return
 		//Setup for ItemDisplay
-		map.location.world.spawnEntity(location,
-			EntityType.ITEM_DISPLAY) as ItemDisplay
+		itemDisplay = map.location.world.spawnEntity(
+			location.clone().add(Vector(0f, sizeY / 16f, 0f)),
+			EntityType.ITEM_DISPLAY
+		) as ItemDisplay
 		itemDisplay?.setItemStack(itemStack)
 		itemDisplay?.teleportDuration = 0
 		itemDisplay?.interpolationDelay = 0
 		itemDisplay?.isPersistent = false
-		itemDisplay?.brightness = Display.Brightness(15,0)
+		itemDisplay?.brightness = Display.Brightness(15, 0)
 		itemDisplay?.transformation = Transformation(
 			Vector3f(),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f().mul(-1f)),
-			Vector3f(sizeX * map.sizeX, sizeY * map.sizeY, 0.001f),
+			Vector3f(sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1f), sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1f), 0.001f),
 			Quaternionf()
 		)
+	}
+
+	open fun despawn() {
+		this.itemDisplay?.remove()
 	}
 }
