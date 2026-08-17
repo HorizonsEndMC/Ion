@@ -61,6 +61,7 @@ open class MapFeature(var identifier: String, val map: DisplayMap, val rx: Doubl
 	}
 
 	open fun despawn() {
+		map.ship.entityPassengers.remove(itemDisplay!!)
 		this.itemDisplay?.remove()
 	}
 }

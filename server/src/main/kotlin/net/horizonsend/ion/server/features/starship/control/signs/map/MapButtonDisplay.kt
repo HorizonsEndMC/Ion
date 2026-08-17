@@ -33,6 +33,7 @@ class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Double, ry: Doub
 
 	fun onDespawn(){
 		super.despawn()
+		map.ship.entityPassengers.remove(interaction)
 		interaction.remove()
 	}
 }
