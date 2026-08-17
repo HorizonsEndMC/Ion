@@ -12,6 +12,8 @@ data class TradeConfiguration(
 		val profitCapPerLevel: Double = 2_000.0,
 		val maxProfitPerStationPerDay: Double = 100_000.0,
 		val stationTypeByEcoStationName: Map<String, String> = emptyMap(),
+		val buyMultiplierByEcoStationName: Map<String, Double> = emptyMap(),
+		val sellMultiplierByEcoStationName: Map<String, Double> = emptyMap(),
 		val stationTypeConfigurations: Map<String, StationTypeConfiguration> = emptyMap()
 	)
 
