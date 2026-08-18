@@ -40,7 +40,6 @@ import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -309,12 +308,11 @@ object ContactsSidebar {
         // identify contacts that should be displayed (enabled and in range)
         val starships: List<ActiveStarship> = if (starshipsEnabled && !player.world.hasFlag(WorldFlag.TUTORIAL_WORLD)) {
             ActiveStarships.all().filter {
-                it.world == player.world &&
-					if (it.type == StarshipType.BLACK_OPS_FRIGATE || it.type == StarshipType.RECON_STARFIGHTER) {it.centerOfMass.toVector().distanceSquared(sourceVector) <= (700.squared())}
-                    else{it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)} &&
-                        it.controller !== ActiveStarships.findByPilot(player)?.controller &&
-                        isRelationEnabled(player, it.controller) &&
-                        (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
+                it.world == player.world
+				&& it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player).coerceIn(0,it.balancing.contactsRange.squared())
+				&& it.controller !== ActiveStarships.findByPilot(player)?.controller
+				&& isRelationEnabled(player, it.controller)
+				&& (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
         } else listOf()
 
