@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -17,6 +18,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -48,6 +50,12 @@ object LocatorCommands : SLCommand() {
 
 			PlayerCache[sender].nationOid?.let {
 				if (targetNation != null) relation = RelationCache[it, targetNation]
+			}
+
+			if (sender.uniqueId != target.uniqueId && relation >= NationRelation.Level.ALLY) {
+				failIf(!target.getSettingOrThrow(PlayerSettings::shareLocationToAllies)) {
+					"${target.name} is not sharing their location with allies."
+				}
 			}
 
 			distance = if (sender.world != target.world) {

@@ -46,6 +46,7 @@ data class PlayerSettings(
 	var rotateCompass: Boolean = false,
 	var combatTimerEnabled: Boolean = true,
 	var dynmapTransponderEnabled: Boolean = true,
+	var shareLocationToAllies: Boolean = false,
 
 	var hudPlanetsImage: Boolean = true,
 	var hudPlanetsSelector: Boolean = true,
