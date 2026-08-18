@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -33,6 +34,10 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.math.roundToInt
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.starship.StarshipType
 
 @CommandAlias("starship|starshipinfo")
 object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -47,7 +52,8 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendRichMessage(
 			"<aqua>${ship.getDisplayNameMiniMessage()} <white>(${
-				ship.data.starshipType.actualType.displayName}) ($size blocks)\n" +
+				ship.data.starshipType.actualType.displayName
+			}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${"%.2f".format(ship.mass)}\n" +
 				"   <gray>World:<white> ${ship.world.name}\n" +
 				"   <gray>Pilot:<white> ${ship.controller.name}"
@@ -58,11 +64,18 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			sender.sendRichMessage("   <gray>Passengers: <white>$passengers")
 		}
 
-		sender.sendRichMessage("   <gray>Concrete Percent: <white>${createPercent(blocks.values.count { it.type.isConcrete }, size)}")
+		sender.sendRichMessage(
+			"   <gray>Concrete Percent: <white>${
+				createPercent(
+					blocks.values.count { it.type.isConcrete },
+					size
+				)
+			}"
+		)
 
 		val inventoryCount =
 			blocks.values.count { StarshipDetection.isInventory(it.type) } +
-			blocks.values.count { it.type == Material.CHEST || it.type == Material.TRAPPED_CHEST } * 2
+				blocks.values.count { it.type == Material.CHEST || it.type == Material.TRAPPED_CHEST } * 2
 
 		sender.sendRichMessage("   <gray>Inventory Percent: <white>${createPercent(inventoryCount, size)}")
 
@@ -86,8 +99,8 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val powerOutput = ship.reactor.output
 		sender.sendRichMessage(
 			"   <gray>Power Output: <white>${"%.2f".format(powerOutput)}\n" +
-			"   <gray>Weapon Capacitor Capacity: <white>${"%.2f".format(ship.reactor.weaponCapacitor.capacity)}\n" +
-			"   <gray>Heavy Weapon Booster Output: <white>${"%.2f".format(ship.reactor.heavyWeaponBooster.output)}"
+				"   <gray>Weapon Capacitor Capacity: <white>${"%.2f".format(ship.reactor.weaponCapacitor.capacity)}\n" +
+				"   <gray>Heavy Weapon Booster Output: <white>${"%.2f".format(ship.reactor.heavyWeaponBooster.output)}"
 		)
 
 		sender.sendRichMessage("   <gray>Power Division:")
@@ -123,11 +136,13 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 				val shieldName = miniMessage().serialize(legacyAmpersand().deserialize(shield.name))
 
-				sender.sendMessage(Component.textOfChildren(
-					text("$shieldName: ", NamedTextColor.GRAY),
-					text("$percent (", NamedTextColor.AQUA),
-					shieldClass ?: text(""),
-					text(")", NamedTextColor.AQUA))
+				sender.sendMessage(
+					Component.textOfChildren(
+						text("$shieldName: ", NamedTextColor.GRAY),
+						text("$percent (", NamedTextColor.AQUA),
+						shieldClass ?: text(""),
+						text(")", NamedTextColor.AQUA)
+					)
 				)
 			}
 
@@ -137,7 +152,13 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendRichMessage("   <gray>Hull Integrity: <white>${ship.hullIntegrity.times(100).roundToInt()}%")
 		sender.sendRichMessage("   <gray>Center of Mass: <white>${ship.centerOfMass}")
-		sender.sendRichMessage("   <gray>Interdiction Range: <white>${Interdiction.starshipInterdictionRangeEquation(ship).toInt()}")
+		sender.sendRichMessage(
+			"   <gray>Interdiction Range: <white>${
+				Interdiction.starshipInterdictionRangeEquation(
+					ship
+				).toInt()
+			}"
+		)
 
 //		val worth = blocks.values
 //			.sumOf { StarshipFactories.getPrice(it.blockData) ?: 0.0 }
@@ -178,18 +199,68 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun onDownload(sender: Player) = MiscStarshipCommands.onDownload(sender)
 
 	@Subcommand("sell")
-	fun onSell(sender: Player, className: String, shipName: String, price: Double, @Optional priceConfirm: Double?, @Optional description: String?) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, priceConfirm, description)
+	fun onSell(
+		sender: Player,
+		className: String,
+		shipName: String,
+		price: Double,
+		@Optional priceConfirm: Double?,
+		@Optional description: String?
+	) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, priceConfirm, description)
+
+	@Subcommand("ammo")
+	fun getAmmo(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+		val counts = mutableMapOf<Component, Int>()
+
+		starship.magazines.forEach { magazine ->
+			val inventory = magazine.getInventoryPublic()
+			if (inventory != null) {
+				for (item in inventory.filterNotNull()) {
+					val name = item.customItem?.displayName ?: item.displayName()
+					counts[name] = counts.getOrDefault(name, 0) + item.amount
+				}
+			}
+		}
+
+		sender.sendRichMessage("<dark_gray><bold>=====================================")
+
+		val message = counts.entries.joinToString("\n") { (name, amount) ->
+			"${name.plainText()}: $amount"
+		}
+		sender.sendRichMessage(message)
+		sender.sendRichMessage("<dark_gray><bold>=====================================")
+	}
+
+	@Subcommand("jumps")
+	fun getRemainingJumps(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+		val amounts = mutableListOf<Int>()
+
+		starship.hyperdrives.forEach { hyperdrive ->
+			val inventory = hyperdrive.getFuelInventories().forEach { inventory ->
+				val total = inventory.inventory.asSequence()
+					.filterNotNull()
+					.filter { it.customItem?.key == CHETHERITE }
+					.sumOf { it.amount }
+				amounts.add(total)
+			}
+			val minAmmount = amounts.minOrNull() ?: 0
+			val maxjumps = minAmmount.div(Hyperspace.getHyperMatterAmount(starship))
+			sender.sendRichMessage("<dark_gray>You have enough <light_purple><b>Chetherite</b></light_purple> <reset> <dark_gray>for (<white>$maxjumps<dark_gray>) jumps")
+		}
+	}
 
 	@Subcommand("coverage")
-	fun onHullInfo(sender: Player){
+	fun onHullInfo(sender: Player) {
 		val ship = getStarshipPiloting(sender)
 		val mapOfBlockPosToShields = mutableMapOf<BlockPos, MutableList<ShieldSubsystem>>()
-		ship.blocks.forEach{
+		ship.blocks.forEach {
 			val pos = BlockPos(blockKeyX(it), blockKeyY(it), blockKeyZ(it))
 			val vec3iPos = pos.toVec3i()
 			mapOfBlockPosToShields[pos] = mutableListOf()
-			for(shield in ship.shields) {
-				if(shield.isIntact() && shield.containsPosition(ship.world, vec3iPos)) {
+			for (shield in ship.shields) {
+				if (shield.isIntact() && shield.containsPosition(ship.world, vec3iPos)) {
 					val newList =
 						mapOfBlockPosToShields[pos]
 					newList?.add(shield)
@@ -207,13 +278,13 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val mapOfShieldToBlocksItOnlyContains = mutableMapOf<ShieldSubsystem, Int>()
 		val mapOfShieldToBlocksItOverlapsWith = mutableMapOf<ShieldSubsystem, Int>()
-		val totalBlocksNotShielded = mapOfBlockPosToShields.count {it.value.isEmpty()}
+		val totalBlocksNotShielded = mapOfBlockPosToShields.count { it.value.isEmpty() }
 
-		for((block, shields) in mapOfBlockPosToShields) {
+		for ((block, shields) in mapOfBlockPosToShields) {
 			if (shields.count() == 1) {
-				mapOfShieldToBlocksItOnlyContains[shields.first()] = (mapOfShieldToBlocksItOnlyContains[shields.first()] ?: 0) + 1
-			}
-			else {
+				mapOfShieldToBlocksItOnlyContains[shields.first()] =
+					(mapOfShieldToBlocksItOnlyContains[shields.first()] ?: 0) + 1
+			} else {
 				for (shield in shields) {
 					mapOfShieldToBlocksItOverlapsWith[shield] = (mapOfShieldToBlocksItOverlapsWith[shield] ?: 0) + 1
 				}
@@ -224,23 +295,26 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendRichMessage("<gray><bold>Shield Coverage:")
 		if (totalBlocksNotShielded != 0) {
 			sender.sendRichMessage("<red><bold>Total Blocks not shielded: $totalBlocksNotShielded</red>")
-		}
-		else{
+		} else {
 			sender.sendRichMessage("<green><bold>All Blocks Shielded!")
 		}
-		for(shield in ship.shields) {
+		for (shield in ship.shields) {
 			if (!shield.isIntact()) {
 				sender.sendRichMessage("<red><bold>Shield: ${shield.name},Not Intact!</bold><dark_gray>[${shield.pos.x}, ${shield.pos.y}, ${shield.pos.z}]")
 				continue
 			}
-			val totalBlocksCovered = (mapOfShieldToBlocksItOverlapsWith[shield]?:0).plus(mapOfShieldToBlocksItOnlyContains[shield]?:0)
+			val totalBlocksCovered =
+				(mapOfShieldToBlocksItOverlapsWith[shield] ?: 0).plus(mapOfShieldToBlocksItOnlyContains[shield] ?: 0)
 			sender.sendRichMessage("<gray>Shield: <aqua>${shield.name} <dark_gray>[${shield.pos.x}, ${shield.pos.y}, ${shield.pos.z}]")
 			sender.sendRichMessage("<gray>   Total Blocks Covered: <white>$totalBlocksCovered")
 			sender.sendRichMessage("<gray>   Total Overlapped Blocks: <white>${mapOfShieldToBlocksItOverlapsWith[shield] ?: 0}")
 			sender.sendRichMessage("<gray>   Total Blocks covered only by this shield: <white>${mapOfShieldToBlocksItOnlyContains[shield] ?: 0}")
-			sender.sendRichMessage("<gray>   Total Hull Percentage Covered: <white>${(totalBlocksCovered/ship.initialBlockCount)}")
+			sender.sendRichMessage("<gray>   Total Hull Percentage Covered: <white>${(totalBlocksCovered / ship.initialBlockCount)}")
 
 		}
 		sender.sendRichMessage("<dark_gray><bold>=====================================")
 	}
 }
+
+
+
