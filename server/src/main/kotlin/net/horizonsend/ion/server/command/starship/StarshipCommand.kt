@@ -226,7 +226,10 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendRichMessage("<dark_gray><bold>=====================================")
 
 		val message = counts.entries.joinToString("\n") { (name, amount) ->
-			"${name.plainText()}: $amount"
+			val plainName = name.plainText()
+			val hexColor = String.format("%06X", plainName.lowercase().hashCode() and 0xFFFFFF)
+			"<#$hexColor>$plainName: <white>$amount</white>"
+
 		}
 		sender.sendRichMessage(message)
 		sender.sendRichMessage("<dark_gray><bold>=====================================")
