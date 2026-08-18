@@ -16,6 +16,8 @@ import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_ICON
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -218,6 +220,15 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
 				ship?.centerOfMass?.toLocation(ship.world)
 			}
 		}
+	}
+
+	fun getJointContacts() : List<Starship>{
+		val starships = mutableListOf<Starship>()
+		for(member in playerMembers()) {
+			val ship = ActiveStarships.findByPilot(member) ?: continue
+			starships.addAll(ship.getContacts())
+		}
+		return starships
 	}
 
 

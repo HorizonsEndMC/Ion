@@ -33,7 +33,6 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -115,6 +114,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -125,8 +125,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import java.time.Duration
-import java.util.LinkedList
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -928,5 +927,14 @@ class Starship(
 		}
 
 		return false
+	}
+
+	fun getContacts() : List<Starship> {
+		return ActiveStarships.all().filter {
+			it.world == this.world
+				&& it.centerOfMass.toVector().distanceSquared(this.centerOfMass.toVector()) <= 2500.squared().coerceIn(0,it.balancing.contactsRange.squared())
+				&& it.controller !== this.controller
+				&& (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
+		}
 	}
 }
