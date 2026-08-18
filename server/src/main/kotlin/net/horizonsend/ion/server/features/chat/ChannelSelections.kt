@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.chat
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
@@ -66,6 +67,11 @@ object ChannelSelections : IonServerComponent() {
 
 			ChatChannel.entries.firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true
+
+				if (channel == ChatChannel.ALLY && !ChatChannel.canUseAllyChat(player)) {
+					player.userError("You need the nation permission ALLY_CHAT to use ally chat.")
+					return@listen
+				}
 
 				val oldChannel = get(player)
 

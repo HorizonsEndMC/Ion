@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
@@ -59,6 +60,9 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.litote.kmongo.and
+import org.litote.kmongo.contains
+import org.litote.kmongo.eq
 
 @Suppress("UNUSED") // They're used
 enum class ChatChannel(
@@ -452,6 +456,10 @@ enum class ChatChannel(
 			val settlement = playerData.settlementOid ?: return player.userError("You're not in a settlement! <italic>(Hint: To get back to global, use /global)")
 			val nation = playerData.nationOid ?: return player.userError("You're not in a nation! <italic>(Hint: To get back to global, use /global)")
 
+			if (!ChatChannel.canUseAllyChat(player)) {
+				return player.userError("You need the nation permission ALLY_CHAT to use ally chat.")
+			}
+
 			allyAction(NationsChatMessage(
 				senderLevel = Levels[player],
 				channel = this,
@@ -473,6 +481,20 @@ enum class ChatChannel(
 	abstract fun onChat(player: Player, event: AsyncChatEvent)
 
 	companion object ChannelActions : IonServerComponent() {
+		fun canUseAllyChat(player: Player): Boolean {
+			val nation = PlayerCache[player].nationOid ?: return false
+
+			if (SettlementCache[NationCache[nation].capital].leader == player.slPlayerId) {
+				return true
+			}
+
+			return !NationRole.none(and(
+				NationRole::parent eq nation,
+				NationRole::members contains player.slPlayerId,
+				NationRole::permissions contains NationRole.Permission.ALLY_CHAT
+			))
+		}
+
 		private val globalAction = { message: NormalChatMessage ->
 			val sender = message.sender
 
@@ -558,6 +580,7 @@ enum class ChatChannel(
 			for (player in Bukkit.getOnlinePlayers()) {
 				val playerNation = PlayerCache.getIfOnline(player)?.nationOid ?: continue
 				if (RelationCache[playerNation, message.nationsid] < NationRelation.Level.ALLY) continue
+				if (!canUseAllyChat(player)) continue
 
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
