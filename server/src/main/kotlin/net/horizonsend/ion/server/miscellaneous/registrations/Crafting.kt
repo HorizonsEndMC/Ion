@@ -1324,6 +1324,15 @@ object Crafting : IonServerComponent() {
 		blackDyeRecipe.category = CookingBookCategory.MISC
 		Bukkit.addRecipe(blackDyeRecipe)
 		listOfCustomRecipes.add(blackDyeRecipe.key)
+		shapeless(
+			"book_and_quill",
+			WRITABLE_BOOK.getValue().constructItemStack(),
+			CraftingBookCategory.MISC,
+			BOOK,
+			FEATHER,
+			BLACK_DYE
+		)
+
 	}
 
 	// Different names due to signature problems from type erasure
