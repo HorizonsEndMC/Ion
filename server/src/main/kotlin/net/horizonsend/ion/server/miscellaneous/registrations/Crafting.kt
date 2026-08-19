@@ -193,6 +193,7 @@ import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
+import org.bukkit.Material.BOOK
 import org.bukkit.Material.BOWL
 import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.CHARCOAL
@@ -317,6 +318,7 @@ import org.bukkit.Material.ROSE_BUSH
 import org.bukkit.Material.SUNFLOWER
 import org.bukkit.Material.WHITE_TULIP
 import org.bukkit.Material.WITHER_ROSE
+import org.bukkit.Material.WRITABLE_BOOK
 
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
@@ -1325,14 +1327,13 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(blackDyeRecipe)
 		listOfCustomRecipes.add(blackDyeRecipe.key)
 		shapeless(
-			"book_and_quill",
+			"writable_book",
 			WRITABLE_BOOK.getValue().constructItemStack(),
 			CraftingBookCategory.MISC,
 			BOOK,
 			FEATHER,
 			BLACK_DYE
 		)
-
 	}
 
 	// Different names due to signature problems from type erasure
