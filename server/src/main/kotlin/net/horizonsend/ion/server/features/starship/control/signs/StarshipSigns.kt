@@ -172,10 +172,18 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			val size = sign.lines[1].split(" ")
 			val sizeX = size[0].toDouble()
 			val sizeY = size[1].toDouble()
-			ship.displayMaps.add(DisplayMap(findPlayerStarship(player) ?: return, sign.location, sign.getFacing().direction, sizeX, sizeY))
+			val map = DisplayMap(ship, sign.location, sign.getFacing().direction, sizeX, sizeY)
+			ship.displayMaps.add(map)
+			map.init()
 		}
 
 		override fun onStarshipPilot(starship: Starship, sign: Sign) {
+			val size = sign.lines[1].split(" ")
+			val sizeX = size[0].toDouble()
+			val sizeY = size[1].toDouble()
+			val map = DisplayMap(starship, sign.location, sign.getFacing().direction, sizeX, sizeY)
+			starship.displayMaps.add(map)
+			map.init()
 		}
 	};
 

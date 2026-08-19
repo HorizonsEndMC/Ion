@@ -106,7 +106,7 @@ object SubsystemDetector {
 			val block = starship.world.getBlockAt(x, y, z)
 			val type = block.type
 
-			if (type.isWallSign) potentialSignBlocks.add(block)
+			if (type.isSign) potentialSignBlocks.add(block)
 
 			potentialWeaponBlocks.add(block)
 

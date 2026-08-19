@@ -187,6 +187,7 @@ class Starship(
 		if (statsEnabled) {
 			logStatistics(this)
 		}
+		displayMaps.forEach { it.tick() }
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -418,6 +419,9 @@ class Starship(
 			future.complete(result)
 			controller.onMove(movement)
 			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
+			if (result) {
+				displayMaps.forEach { it.processMovement(event) }
+			}
 		}
 
 		return future

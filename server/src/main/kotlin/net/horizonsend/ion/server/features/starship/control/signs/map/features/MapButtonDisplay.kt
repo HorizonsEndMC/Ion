@@ -1,5 +1,8 @@
-package net.horizonsend.ion.server.features.starship.control.signs.map
+package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
+import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
+import net.kyori.adventure.text.Component
+import org.bukkit.entity.Display
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Interaction
 import org.bukkit.inventory.ItemStack
@@ -15,9 +18,24 @@ import org.bukkit.inventory.ItemStack
  * @property itemStack the item stack used in the item Display
  * @property offset is the space in the z relative axis you want the display to appear.
  */
-class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Double, ry: Double, sizeX: Double, sizeY: Double, itemStack: ItemStack, offset: Double, relativeFeature: MapFeature? = null,val function: (it: DisplayMap) -> Unit) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, offset, relativeFeature) {
+class MapButtonDisplay(
+	identifier: String,
+	map: DisplayMap,
+	rx: Double,
+	ry: Double,
+	sizeX: Double,
+	sizeY: Double,
+	itemStack: ItemStack? = null,
+	component: Component? = null,
+	offset: Double,
+	relativeFeature: MapFeature? = null,
+	val function: (it: DisplayMap) -> Unit
+) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
 
-	val interaction: Interaction = map.location.world.spawnEntity(this.location.clone(), EntityType.INTERACTION) as Interaction //.add(0.0,-sizeY/16.0, 0.0)
+	val interaction: Interaction = map.location.world.spawnEntity(
+		this.location(),
+		EntityType.INTERACTION
+	) as Interaction //.add(0.0,-sizeY/16.0, 0.0)
 
 	override fun init() {
 		super.init()
@@ -25,15 +43,18 @@ class MapButtonDisplay(identifier: String, map: DisplayMap, rx: Double, ry: Doub
 		interaction.isResponsive = true
 		interaction.interactionWidth = (sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0)).toFloat()
 		interaction.interactionHeight = (sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0)).toFloat()
+		entities.add(interaction)
 	}
 
-	fun onClick(){
+	fun getDisplayEntities(): List<Display> {
+		return entities.filterIsInstance<Display>()
+	}
+
+	fun onClick() {
 		function.invoke(map)
 	}
 
-	fun onDespawn(){
+	fun onDespawn() {
 		super.despawn()
-		map.ship.entityPassengers.remove(interaction)
-		interaction.remove()
 	}
 }
