@@ -6,7 +6,9 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceInputSlot
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
@@ -100,6 +102,13 @@ fun addToInventory(inventory: CraftInventory, itemStack: ItemStack): Int {
 
 fun getSpecialFurnaceInputSlot(destination: FurnaceInventory, itemStack: ItemStack): Int? {
 	val entity = destination.holder?.location?.block?.let(MultiblockEntities::getMultiblockEntity) ?: return null
+
+	(entity as? FurnaceBasedMultiblockEntity)?.configuredPrimaryFurnaceInputSlot?.let { configuredSlot ->
+		return when (configuredSlot) {
+			FurnaceInputSlot.TOP -> AbstractFurnaceMenu.INGREDIENT_SLOT
+			FurnaceInputSlot.BOTTOM -> AbstractFurnaceMenu.FUEL_SLOT
+		}
+	}
 
 	return when (entity) {
 		is PlanterMultiblock.PlanterEntity ->
