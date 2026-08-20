@@ -312,7 +312,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			sender.sendRichMessage("<gray>   Total Blocks Covered: <white>$totalBlocksCovered")
 			sender.sendRichMessage("<gray>   Total Overlapped Blocks: <white>${mapOfShieldToBlocksItOverlapsWith[shield] ?: 0}")
 			sender.sendRichMessage("<gray>   Total Blocks covered only by this shield: <white>${mapOfShieldToBlocksItOnlyContains[shield] ?: 0}")
-			sender.sendRichMessage("<gray>   Total Hull Percentage Covered: <white>${(totalBlocksCovered / ship.initialBlockCount)}")
+			sender.sendRichMessage("<gray>   Total Hull Percentage Covered: <white>${(totalBlocksCovered.toFloat() / ship.initialBlockCount.toFloat())}")
 
 		}
 		sender.sendRichMessage("<dark_gray><bold>=====================================")
