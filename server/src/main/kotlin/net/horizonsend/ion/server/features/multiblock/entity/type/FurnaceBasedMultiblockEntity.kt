@@ -10,6 +10,27 @@ import java.time.Duration
  * Common interface for multiblocks with a furnace at their origin. Provides utils for dealing with them.
  **/
 interface FurnaceBasedMultiblockEntity {
+	val configuredPrimaryFurnaceInputSlot: FurnaceInputSlot?
+		get() {
+			this as MultiblockEntity
+			return MultiblockFurnaceSlots.primaryInputSlots[multiblock.name]
+		}
+
+	val primaryFurnaceInputSlot: FurnaceInputSlot
+		get() = configuredPrimaryFurnaceInputSlot ?: FurnaceInputSlot.TOP
+
+	val secondaryFurnaceInputSlot: FurnaceInputSlot
+		get() = when (primaryFurnaceInputSlot) {
+			FurnaceInputSlot.TOP -> FurnaceInputSlot.BOTTOM
+			FurnaceInputSlot.BOTTOM -> FurnaceInputSlot.TOP
+		}
+
+	fun getFurnaceInputSlot(index: Int): FurnaceInputSlot = when (index) {
+		0 -> primaryFurnaceInputSlot
+		1 -> secondaryFurnaceInputSlot
+		else -> throw IndexOutOfBoundsException("Furnace input index $index")
+	}
+
 	/**
 	 * Gets the furnace block entity. Must be called sync
 	 **/
