@@ -250,7 +250,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			}
 			val minAmmount = amounts.minOrNull() ?: 0
 			val maxjumps = minAmmount.div(Hyperspace.getHyperMatterAmount(starship))
-			sender.sendRichMessage("<dark_gray>You have enough <light_purple><b>Chetherite</b></light_purple> <reset> <dark_gray>for (<white>$maxjumps<dark_gray>) jumps")
+			sender.sendRichMessage("<gray>You have enough <light_purple><b>Chetherite</b></light_purple> <reset> <gray>for (<white>$maxjumps<gray>) jumps")
 		}
 	}
 
