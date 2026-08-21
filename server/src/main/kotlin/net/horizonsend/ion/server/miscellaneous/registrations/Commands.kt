@@ -44,6 +44,7 @@ import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.SuicideCommand
+import net.horizonsend.ion.server.command.misc.DisposalCommand
 import net.horizonsend.ion.server.command.misc.TransponderCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
@@ -71,6 +72,7 @@ import net.horizonsend.ion.server.command.qol.CalcExpCommand
 import net.horizonsend.ion.server.command.qol.CheckCryoCommand
 import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.ContainerCommand
+import net.horizonsend.ion.server.command.qol.CustomBlockCopyPasteFixCommand
 import net.horizonsend.ion.server.command.qol.DisplayShieldsCommand
 import net.horizonsend.ion.server.command.qol.EnableOrbitBreakingCommand
 import net.horizonsend.ion.server.command.qol.EnableStationBreakingCommand
@@ -178,6 +180,7 @@ val commands: List<SLCommand> = listOf(
 	CalcExpCommand,
 	CheckProtectionCommand,
 	FixExtractorsCommand,
+	CustomBlockCopyPasteFixCommand,
 	SetPowerCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
@@ -207,6 +210,7 @@ val commands: List<SLCommand> = listOf(
     ForbiddenBlocksCommand,
 	IonSitCommand,
 	SuicideCommand,
+	DisposalCommand,
 	StructureCreator,
 	ModelCreator,
 	NavigationCommand,
