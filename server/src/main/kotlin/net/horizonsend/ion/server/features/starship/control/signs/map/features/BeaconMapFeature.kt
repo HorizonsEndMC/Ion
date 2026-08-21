@@ -1,18 +1,10 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
-import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap.Companion.toVector3f
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.entity.ItemDisplay
-import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.Transformation
-import org.joml.Quaternionf
-import org.joml.Vector3d
-import org.joml.Vector3f
 
 class BeaconMapFeature(
 	identifier: String,

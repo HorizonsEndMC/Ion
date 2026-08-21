@@ -1,20 +1,12 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
-import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap.Companion.toVector3f
 import net.horizonsend.ion.server.features.starship.control.signs.map.shipScale
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.entity.ItemDisplay
-import org.bukkit.entity.TextDisplay
-import org.bukkit.util.Transformation
-import org.joml.Quaternionf
-import org.joml.Vector3d
-import org.joml.Vector3f
 
 /**
  * Ship map feature is the encapsulation of the Map feature of a starship on the map + the textDisplay with the info, and the

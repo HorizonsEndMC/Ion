@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.body.CachedMoon
 import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
