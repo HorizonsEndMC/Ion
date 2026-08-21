@@ -53,6 +53,7 @@ object Hyperspace : IonServerComponent() {
 
 	fun getHyperMatterAmount(starship: Starship): Int {
 		val playerPilot = starship.playerPilot ?: return DEFAULT_HYPERMATTER_AMOUNT
+		if (starship.hyperdrives.find {it.multiblock.chetheritePerInventory == 12} != null) return 12
 
 		return /*if (SolarSieges.checkZoneBenefits(playerPilot)) 1 else */DEFAULT_HYPERMATTER_AMOUNT
 	}

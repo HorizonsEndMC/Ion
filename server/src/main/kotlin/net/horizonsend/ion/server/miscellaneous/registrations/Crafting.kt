@@ -790,6 +790,9 @@ object Crafting : IonServerComponent() {
 			setIngredient('i', IRON_BLOCK)
 			setIngredient('c', CRAFTING_TABLE)
 		}
+		shapeless("battlecruiserReactorCore", result = BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, CRUISER_REACTOR_CORE)
+		shapeless("cruiserReactorCore", result = CRUISER_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, BARGE_REACTOR_CORE)
+		shapeless("bargeReactorCore", result = BARGE_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.MISC, BATTLECRUISER_REACTOR_CORE)
 
 		// Tool Mods start
 		shaped("silk_touch_modifier", TOOL_MODIFICATION_SILK_TOUCH_MOD.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {

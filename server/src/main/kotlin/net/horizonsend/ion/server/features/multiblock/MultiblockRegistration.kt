@@ -121,6 +121,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.DisruptorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.InterdictionWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperHyperDrive
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass1
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass3
@@ -469,6 +470,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HyperdriveMultiblockClass2)
 		registerMultiblock(HyperdriveMultiblockClass3)
 		registerMultiblock(HyperdriveMultiblockClass4)
+		registerMultiblock(HyperHyperDrive)
 
 		// Starship shields
 		registerMultiblock(ShieldMultiblockClass08Right)

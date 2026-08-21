@@ -20,7 +20,7 @@ object HyperdriveMultiblockClass4 : HyperdriveMultiblock() {
 	override val hyperdriveClass = 4
 
 	override fun MultiblockShape.buildStructure() {
-		addHoppers(this)
+		addFuelInventories(this)
 
 		z(+0) {
 			y(-1) {
@@ -67,7 +67,7 @@ object HyperdriveMultiblockClass4 : HyperdriveMultiblock() {
 		}
 	}
 
-	override fun buildHopperOffsets() = listOf(
+	override fun buildFuelInventoryOffsets() = listOf(
 		Vec3i(x = -1, y = -1, z = +0), // front left hopper
 		Vec3i(x = +1, y = -1, z = +0), // front right hopper
 		Vec3i(x = -2, y = -1, z = +1), // middle left hopper

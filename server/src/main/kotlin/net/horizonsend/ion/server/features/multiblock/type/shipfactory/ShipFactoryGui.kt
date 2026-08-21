@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInfo
+import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterialCost
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterials
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -71,10 +72,11 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 				"x y z . . . . d .",
 				". . . . C c . . .",
 				"X Y Z . . . . . .",
-				"B A M R . P . e .",
+				"B A M R G P . e .",
 				"m 1 3 6 b I . . ."
 			)
 			.addIngredient('s', searchMenuBotton)
+			.addIngredient('r', showMaterialCost)
 			.addIngredient('i', blueprintMenuBotton)
 			.addIngredient('x', tracked { id ->
 				ValueScrollButton({ GuiItem.UP.makeItem(text("Increase X offset")) }, false, { entity.settings.offsetX },+1, -100..100) {
@@ -135,6 +137,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			.addIngredient('B', boundingBoxPreview)
 			.addIngredient('A', GuiItems.CustomControlItem(text("Align [Coming Soon]"), GuiItem.ALIGN))
 			.addIngredient('M', materialsButton)
+			.addIngredient('G', showMaterialCost)
 			.addIngredient('R', resetButton)
 			.addIngredient('1', getPreviewButton(GuiItem.ONE_QUARTER, 10))
 			.addIngredient('3', getPreviewButton(GuiItem.TWO_QUARTER, 30))
@@ -372,6 +375,19 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 	private val placementMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(text("Placement Settings"))) { _, _, _ ->
 		placementSettings.openGui()
 	}
+
+	private val showMaterialCost = FeedbackItem.builder(GuiItem.MATERIALS.makeItem(text("Get Cost of each Material"))) { _, player ->
+		if (!entity.ensureBlueprintLoaded(player)) {
+			return@builder InputResult.FailureReason(listOf(text("You must load a blueprint first!", RED)))
+		}
+		InputResult.InputSuccess
+	}
+		.withSuccessHandler { _, _ ->
+			Tasks.async {
+				showMaterialCost(viewer, entity.cachedBlueprintData ?: return@async)
+			}
+		}
+		.build()
 
 	private val placementSettings = createSettingsPage(
 		viewer,

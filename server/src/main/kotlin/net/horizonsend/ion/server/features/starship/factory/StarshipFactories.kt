@@ -186,6 +186,30 @@ object StarshipFactories : IonServerComponent() {
 		return list.join(separator = text(", ", YELLOW))
 	}
 
+	fun getPrintItemCostString(map: Map<PrintItem, Int>): Component {
+		val list = LinkedList<Component>()
+		var color = false // used to make it alternate colors
+
+		val entriesByValue = map.entries.toList().sortedBy { it.value }
+
+		for ((item, totalprice) in entriesByValue) {
+			if (totalprice == 0) {
+				continue
+			}
+
+			color = !color
+
+			if (color) {
+				list.add(ofChildren(item.toComponent(color = DARK_AQUA), text(": ", DARK_GRAY), text(totalprice, YELLOW)))
+				continue
+			}
+
+			list.add(ofChildren(item.toComponent(color = RED), text(": ", DARK_GRAY), text(totalprice, YELLOW)))
+		}
+
+		return list.join(separator = text(", ", YELLOW))
+	}
+
 	fun getRequiredAmount(data: BlockData): Int {
 		if (data is Slab) {
 			return if (data.type == Slab.Type.DOUBLE) 2 else 1

@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
-import net.horizonsend.ion.server.features.transport.util.CacheType.entries
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
@@ -28,13 +27,6 @@ import org.bukkit.Material.BARREL
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.COPPER_CHEST
-import org.bukkit.Material.EXPOSED_COPPER_CHEST
-import org.bukkit.Material.WEATHERED_COPPER_CHEST
-import org.bukkit.Material.OXIDIZED_COPPER_CHEST
-import org.bukkit.Material.WAXED_COPPER_CHEST
-import org.bukkit.Material.WAXED_EXPOSED_COPPER_CHEST
-import org.bukkit.Material.WAXED_WEATHERED_COPPER_CHEST
-import org.bukkit.Material.WAXED_OXIDIZED_COPPER_CHEST
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DECORATED_POT
@@ -42,6 +34,7 @@ import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.DROPPER
 import org.bukkit.Material.END_ROD
+import org.bukkit.Material.EXPOSED_COPPER_CHEST
 import org.bukkit.Material.FURNACE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
@@ -51,11 +44,17 @@ import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.NOTE_BLOCK
 import org.bukkit.Material.OBSERVER
+import org.bukkit.Material.OXIDIZED_COPPER_CHEST
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SMOKER
 import org.bukkit.Material.SPONGE
 import org.bukkit.Material.TINTED_GLASS
 import org.bukkit.Material.TRAPPED_CHEST
+import org.bukkit.Material.WAXED_COPPER_CHEST
+import org.bukkit.Material.WAXED_EXPOSED_COPPER_CHEST
+import org.bukkit.Material.WAXED_OXIDIZED_COPPER_CHEST
+import org.bukkit.Material.WAXED_WEATHERED_COPPER_CHEST
+import org.bukkit.Material.WEATHERED_COPPER_CHEST
 import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.FaceAttachable.AttachedFace
@@ -70,6 +69,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 			.addSimpleNode(SPONGE, PowerNode.SpongeNode)
+			.addSimpleNode(Material.JACK_O_LANTERN, PowerNode.SpongeNode) //Non pilotable, for base chargers
 			.addDataHandler<CraftEndRod>(END_ROD) { data, _, _ -> PowerNode.EndRodNode(data.facing.axis) }
 			.addSimpleNode(REDSTONE_BLOCK, PowerNode.RedstoneMergeNode)
 			.addSimpleNode(IRON_BLOCK, PowerNode.IronMergeNode)

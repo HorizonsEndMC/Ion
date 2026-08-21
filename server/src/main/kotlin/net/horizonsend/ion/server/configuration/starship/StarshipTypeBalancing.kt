@@ -3,6 +3,7 @@
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
@@ -1990,6 +1991,11 @@ sealed interface StarshipParticleProjectileBalancing : StarshipProjectileBalanci
 @Serializable
 sealed interface StarshipTrackingProjectileBalancing : StarshipParticleProjectileBalancing {
 	val maxDegrees: Double
+	//default set to 1.5.squared(). This is the original detonation range factor.
+	val detonationRange: Double
+	val turnRate: Double
+	val acceleration: Double
+
 }
 
 @Serializable

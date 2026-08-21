@@ -731,7 +731,7 @@ object AISpawners : IonServerComponent(true) {
 				"EXPLORER_BASIC",
 				AISpawnerTicker(
 					pointChance = 0.75,
-					pointThreshold = 20 * 60 * 10
+					pointThreshold = 20 * 60 * 5
 				),
 				spawnMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned in the {5} region".miniMessage(),
 				worlds = listOf(
@@ -752,7 +752,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> Congregation".miniMessage(),
 			EXPLORER_LIGHT_CYAN,
 			duration = { Duration.ofMinutes(15) },
-			separation = { getRandomDuration(Duration.ofHours(1), Duration.ofHours(2)) },
+			separation = { getRandomDuration(Duration.ofMinutes(30), Duration.ofHours(1)) },
 			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> are meeting in {0} at {1} {3}. <$EXPLORER_LIGHT_CYAN>Do not disturb.".miniMessage(),
 			"<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> meeting has ended".miniMessage(),

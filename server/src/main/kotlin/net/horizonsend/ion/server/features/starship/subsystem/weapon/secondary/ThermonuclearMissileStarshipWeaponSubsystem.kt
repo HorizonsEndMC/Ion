@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWea
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ThermonuclearMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles.ThermonuclearMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i

@@ -25,7 +25,6 @@ import net.horizonsend.ion.server.features.sequences.SequenceUtils.NEXT_PHASE_SO
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_EXPLOSION_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_HEAVY_TURRET_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.RANDOM_PHASER_SOUND
-import net.horizonsend.ion.server.features.sequences.SequenceUtils.SPAWN_PIRATES
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowDroppingItem
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowJumpWarmup
 import net.horizonsend.ion.server.features.sequences.SequenceUtils.disallowOpeningDoor
@@ -1547,16 +1546,16 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         Tasks.sync {
                             val starship = PilotedStarships[player] ?: return@sync
                             val hyperdrive: HyperdriveSubsystem = starship.hyperdrives.firstOrNull() ?: return@sync
-                            hyperdrive.getHoppers().forEach { //
+                            hyperdrive.getFuelInventories().forEach { //
                                 player.sendText(
-                                    location = it.location.toCenterLocation(),
+                                    location = it.inventory.location!!.toCenterLocation(),
                                     text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                                     durationTicks = 2L + 1L,
                                     scale = 1.0f,
                                     seeThrough = true,
                                 )
                                 player.sendText(
-                                    location = it.location.toCenterLocation(),
+                                    location = it.inventory.location!!.toCenterLocation(),
                                     text = text(QUEST_OBJECTIVE_ICON).font(SPECIAL_FONT_KEY),
                                     durationTicks = 2L + 1L,
                                     scale = 1.0f,

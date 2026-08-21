@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.miscellaneous.utils.ANVIL_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.FENCE_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.FENCE_GATE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SLAB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
@@ -145,6 +147,8 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.QUARTZ_STAIRS, 6.0f)
 		setBlastResistance(Material.SANDSTONE_STAIRS, 6.0f)
 		setBlastResistance(Material.RED_SANDSTONE_STAIRS, 6.0f)
+		FENCE_TYPES.forEach { setBlastResistance(it, 6.0f) }
+		FENCE_GATE_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }

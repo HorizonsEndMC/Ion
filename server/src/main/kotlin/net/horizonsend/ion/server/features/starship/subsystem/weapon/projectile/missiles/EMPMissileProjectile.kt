@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles
 
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
@@ -10,49 +10,52 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffect
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TrackingLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
 import net.kyori.adventure.text.Component
-import org.bukkit.damage.DamageType
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class EMPMissileProjectile(
-	source: ProjectileSource,
-	name: Component,
-	loc: Location,
-	val dir: Vector,
-	val initialDir: Vector,
-	shooter: Damager,
-	var face: BlockFace, //Up = true, down = false
-	originalTarget: Vector,
-	baseAimDistance: Int
+    source: ProjectileSource,
+    name: Component,
+    loc: Location,
+    val dir: Vector,
+    val initialDir: Vector,
+    shooter: Damager,
+    var face: BlockFace, //Up = true, down = false
+    originalTarget: Vector,
+    baseAimDistance: Int
 ) : TrackingLaserProjectile<EMPMissileBalancing.EMPMissileProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, DamageType.GENERIC) {
 	var flightPath1Completed = false
 	var flightPath2Completed = false
 	var age = 0
 
-	val item = ItemFactory.unStackableCustomItem("projectile/activated_emp_missile").construct()
+	val item by lazy{ ItemFactory.Preset.unStackableCustomItem("projectile/activated_emp_missile").construct()}
 	override val color: Color = Color.ORANGE
 
 	init {
 		track = false
 	}
 
-	private val container = ItemDisplayContainer(
-		source.getWorld(),
-		1.0F,
-		loc.toVector(),
-		dir.clone().multiply(-1),
-		item,
-		interpolation = 2
-	).apply {
-		getEntity().transformationInterpolationDuration = 2
-		getEntity().teleportDuration = 2
+	private val container by lazy {
+		ItemDisplayContainer(
+			source.getWorld(),
+			1.0F,
+			loc.toVector(),
+			dir.clone().multiply(-1),
+			item,
+			interpolation = 2
+		).apply {
+			getEntity().transformationInterpolationDuration = 2
+			getEntity().teleportDuration = 2
+		}
 	}
 
 	override fun tick() {
@@ -199,14 +202,13 @@ class EMPMissileProjectile(
 		val shieldPenalty = balancing.effectStrength
 
 		starship.addStatusEffect(
-			StarshipStatusEffect(
-				StarshipStatusEffectTypes.SHIELD_WEAKNESS,
-				shieldPenalty,
-				balancing.effectDurationMillis,
-				shooter.starship
-			)
+            StarshipStatusEffect(
+                StarshipStatusEffectTypes.SHIELD_WEAKNESS,
+                shieldPenalty,
+                balancing.effectDurationMillis,
+                shooter.starship
+            )
 		)
 		starship.userErrorAction("Shields weakened by ${(shieldPenalty * 100).toInt()}%!")
 	}
 }
-

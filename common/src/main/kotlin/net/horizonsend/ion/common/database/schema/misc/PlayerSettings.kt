@@ -66,6 +66,8 @@ data class PlayerSettings(
 	var hitmarkerOnShield: Boolean = true,
 	var flareTime: Int = 5,
 	var useAlternateShieldHitParticle : Boolean = false,
+	var playerRotateWithShip: Boolean = true,
+	var tertiaryButtonControl: Int = 0,
 
 	var shortenChatChannels: Boolean = false,
 

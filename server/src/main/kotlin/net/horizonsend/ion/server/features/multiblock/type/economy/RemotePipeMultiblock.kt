@@ -77,14 +77,18 @@ interface RemotePipeMultiblock {
 	}
 
 	fun getRemoteReferences(extractors: Map<BlockKey, Array<PathfindResult>>, itemCache: ItemTransportCache): Set<InventoryReference.RemoteInventoryReference> {
-		return extractors.flatMapTo(mutableSetOf()) { (_, destinations) ->
-
+		val references = extractors.flatMap { (_, destinations) ->
 			destinations.flatMap { pathResult: PathfindResult ->
 				itemCache.getSources(pathResult.destinationPosition).map {
 					InventoryReference.RemoteInventoryReference(it, itemCache.holder, pathResult.trackedPath)
 				}
 			}
 		}
+
+		// ensures that references are not duplicated if multiple extractors detect the same chest
+		return references
+			.distinctBy { it.inventory.inventory }
+			.toSet()
 	}
 
 	fun getStandardReference(offset: Vec3i): InventoryReference.StandardInventoryReference? {

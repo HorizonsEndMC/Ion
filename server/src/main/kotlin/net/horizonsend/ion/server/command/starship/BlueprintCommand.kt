@@ -169,7 +169,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 					Blueprint::trustedNations contains SLPlayer[sender]?.nation
 				),
 				Blueprint::name eq name
-			)).toSet()
+			)
+		).toSet()
 	}
 
 	private fun saveBlueprint(blueprint: Blueprint) {
@@ -265,7 +266,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.list.other")
 	@CommandCompletion("@players")
 	fun onListOther(sender: Player, player: String) = asyncCommand(sender) {
-		val target = SLPlayer[player] ?: fail { "Player $player not found or not online." } // Database lookup so it works when the player is offline
+		val target = SLPlayer[player]
+			?: fail { "Player $player not found or not online." } // Database lookup so it works when the player is offline
 
 		failIf(!Blueprint.any(Blueprint::owner eq target._id)) { "${target.lastKnownName} has no blueprints!" }
 
@@ -280,7 +282,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.list.other")
 	@CommandCompletion("@players")
 	fun onListSharedOther(sender: Player, player: String) = asyncCommand(sender) {
-		val target = SLPlayer[player] ?: fail { "Player $player not found or not online." } // Database lookup so it works when the player is offline
+		val target = SLPlayer[player]
+			?: fail { "Player $player not found or not online." } // Database lookup so it works when the player is offline
 
 		val accessibleBlueprints = or(
 			Blueprint::trustedPlayers contains target._id,
@@ -315,6 +318,27 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		handleMultipleFoundBlueprints(sender, blueprints, name) { player, foundBlueprint ->
 			player.sendRichMessage(blueprintInfo(foundBlueprint).joinToString("\n"))
+		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("cost personal")
+	@CommandCompletion("@blueprints")
+	fun onCostPersonal(sender: Player, name: String) = asyncCommand(sender) {
+		val target = sender.slPlayerId
+		val blueprint = getBlueprint(target, name)
+		showMaterialCost(sender, blueprint)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("cost shared")
+	@CommandCompletion("@sharedblueprints")
+	fun onCostShared(sender: Player, name: String) = asyncCommand(sender) {
+		val target = sender.slPlayerId
+		val blueprints = getSharedBlueprints(target, name)
+
+		handleMultipleFoundBlueprints(sender, blueprints, name) { player, foundBlueprint ->
+			showMaterialCost(player, foundBlueprint)
 		}
 	}
 
@@ -474,7 +498,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	fun getPasteVector(origin: Location, pilotLoc: Vec3i): BlockVector3 {
-		return BukkitAdapter.asVector(origin).toBlockPoint().subtract(BlockVector3.at(pilotLoc.x, pilotLoc.y, pilotLoc.z))
+		return BukkitAdapter.asVector(origin).toBlockPoint()
+			.subtract(BlockVector3.at(pilotLoc.x, pilotLoc.y, pilotLoc.z))
 	}
 
 	fun tryPilot(
@@ -491,7 +516,14 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, sender.uniqueId, name) { data ->
+		DeactivatedPlayerStarships.createPlayerShipAsync(
+			block.world,
+			block.x,
+			block.y,
+			block.z,
+			sender.uniqueId,
+			name
+		) { data ->
 			Tasks.async {
 				try {
 					DeactivatedPlayerStarships.updateType(data, type)
@@ -533,6 +565,32 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendMessage(StarshipFactories.getPrintItemCountString(map))
 	}
 
+	fun showMaterialCost(sender: Player, blueprint: Blueprint) {
+		val clipboard = blueprint.loadClipboard()
+
+		val map = mutableMapOf<PrintItem, Int>()
+
+		for (vec in clipboard.region) {
+			val state = clipboard.getBlock(vec) ?: continue
+			val blockData = state.toBukkitBlockData()
+
+			if (blockData.material.isAir) {
+				continue
+			}
+
+			val printItem = PrintItem[blockData] ?: continue
+			val amount = StarshipFactories.getRequiredAmount(blockData)
+			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+
+			val totalprice = (price * amount).toInt()
+
+			map[printItem] = map.getOrDefault(printItem, 0) + totalprice
+		}
+
+		sender.sendMessage(StarshipFactories.getPrintItemCostString(map))
+	}
+
+
 	@Suppress("Unused")
 	@Subcommand("trust player")
 	@CommandCompletion("@blueprints @players")
@@ -546,7 +604,11 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		blueprint.trustedPlayers.add(slPlayerId)
 		saveBlueprint(blueprint)
-		Notify.playerCrossServer(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>trusted you to their blueprint <aqua>$name"))
+		Notify.playerCrossServer(
+			playerId,
+			MiniMessage.miniMessage()
+				.deserialize("<aqua>${sender.name} <gray>trusted you to their blueprint <aqua>$name")
+		)
 		sender.success("Trusted $player to blueprint $name")
 	}
 

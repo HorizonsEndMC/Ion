@@ -1,14 +1,17 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
+//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
-//import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
@@ -43,6 +46,8 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8.0, false)
 	private var boostToggleOverride = false
 
+	private var lastTertiaryInput = 0
+
 	override fun create() {
 		val message = ofChildren(
 			text("Direct Control: ", GRAY),
@@ -61,6 +66,7 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			player.isFlying = true
 		} else {
 			player.walkSpeed = 0.009f
+			player.allowFlight = false
 		}
 
 		val playerLoc = player.location
@@ -133,6 +139,12 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (input.isRight) strafe += 1.0
 		if (input.isForward) ascend += 1.0
 		if (input.isBackward) ascend -= 1.0
+		if(input.isJump) {
+			if(player.server.currentTick-lastTertiaryInput > 10) {
+				handleTertiaryInput()
+				lastTertiaryInput = player.server.currentTick
+			}
+		}
 
 		// Convert to world-relative vector
 		val vector = when (direction) {
@@ -166,8 +178,6 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			player.isFlying = true
 		} else {
 			player.walkSpeed = 0.009f
-			player.flySpeed = 0.06f
-			player.isFlying = false
 		}
 
 		// If player moved, teleport them back to dc center
@@ -203,5 +213,45 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (player.getSetting(PlayerSettings::toggleDcBoost) == true) {
 			boostToggleOverride = !boostToggleOverride
 		}
+	}
+
+	fun handleTertiaryInput(){
+		when(TertiaryButtonControl.entries[player.getSettingOrThrow(PlayerSettings::tertiaryButtonControl)]) {
+			TertiaryButtonControl.NOTHING->{}
+			TertiaryButtonControl.DISRUPT-> {
+				//Disrupts the ship the player is looking at
+				player.debugBanner("INTERACT EVENT DISRUPT TARGETING START")
+				val targetShip = ActiveStarships.getInWorld(player.world).filter {
+					it.centerOfMass.toCenterVector().distanceSquared(player.location.toVector()) <=
+						starship.balancing.interdictionRange * starship.balancing.interdictionRange &&
+						it != ActiveStarships.findByPassenger(player)
+				}.sortedBy { it.centerOfMass.toCenterVector().subtract(player.location.toVector()).angle(player.eyeLocation.direction) }.firstOrNull()
+
+				targetShip.let {
+					if (it == starship) return //should prevent setting to yourself
+					starship.disruptorTarget = it
+					starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${it?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
+				}
+				player.debugBanner("INTERACT EVENT DISRUPT TARGETING END")
+			}
+			TertiaryButtonControl.CHANGE_WEAPON_SET ->{
+				val currentWeaponSet = 	starship.weaponSetSelections[player.uniqueId] ?: ""
+				val indexOf = starship.weaponSets.keys().indexOf(currentWeaponSet)+1
+				//if the player hasn't selected a weapon set, or has reached the last weapon set, give them the first one in the index.
+				if(indexOf == -1 || indexOf == starship.weaponSets.size()) {
+					starship.weaponSetSelections[player.uniqueId] = starship.weaponSets.keys().first()
+				}
+				else{
+					starship.weaponSetSelections[player.uniqueId] = starship.weaponSets.keys().elementAt(indexOf)
+				}
+				player.success("Took control of weaponset ${starship.weaponSetSelections[player.uniqueId]}")
+			}
+		}
+	}
+
+	enum class TertiaryButtonControl{
+		NOTHING,
+		DISRUPT,
+		CHANGE_WEAPON_SET,
 	}
 }

@@ -12,13 +12,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LightMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.missiles.LightMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.kyori.adventure.text.Component
-import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
