@@ -5,7 +5,9 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Display
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Interaction
+import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 
 /**
  * Generates a button and interaction for the following inputted properties
@@ -33,9 +35,9 @@ class MapButtonDisplay(
 ) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
 
 	val interaction: Interaction = map.location.world.spawnEntity(
-		this.location(),
+		this.location().add(if(this.display is TextDisplay) Vector(0.0,-sizeY/16.0, 0.0) else Vector()),
 		EntityType.INTERACTION
-	) as Interaction //.add(0.0,-sizeY/16.0, 0.0)
+	) as Interaction
 
 	override fun init() {
 		super.init()

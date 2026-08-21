@@ -3,20 +3,26 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map
 
 import io.papermc.paper.datacomponent.DataComponentTypes
-import net.horizonsend.ion.common.database.cache.nations.RelationCache
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.successAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.CelestialBody
+import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.signs.map.features.BeaconMapFeature
+import net.horizonsend.ion.server.features.starship.control.signs.map.features.CelestialBodyFeature
 import net.horizonsend.ion.server.features.starship.control.signs.map.features.MapButtonDisplay
 import net.horizonsend.ion.server.features.starship.control.signs.map.features.MapFeature
 import net.horizonsend.ion.server.features.starship.control.signs.map.features.ShipMapFeature
@@ -54,47 +60,16 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 	val shiftPerLayer = 0.0025
 
 	var state: MapState = MapState.LOCAL_MAP
+	val absoluteMaxDistance = 10000.0
+	val absoluteMinimumMaxDistance = 1000.0
 	var maxDistance = 1000.0
+
 	val shipsTracked = mutableMapOf<Starship, ShipMapFeature>()
+	val celestialBodiesTracked = mutableMapOf<CelestialBody, CelestialBodyFeature>()
+	val beaconTracked = mutableMapOf<ServerConfiguration.HyperspaceBeacon, BeaconMapFeature>()
 
 	var stateMap: MapFeature? = null
-	val border = ship.world.spawnEntity(
-		displayLocation().clone().add(
-			dir.clone().multiply(shiftPerLayer * 1.0)
-		),
-		EntityType.TEXT_DISPLAY
-	) as TextDisplay
-
-	/*
-	The following maths serves to center a given displayEntity onto the center of the location given.
-	The maths is most useful for a given text display of sizeX & sizeY, as it will center the center of the text display
-	onto the center of the block.
-	 */
-	fun displayLocation(): Location {
-		val oppositeDir = dir.clone().multiply(-1)
-		val dx = oppositeDir.x
-		val dz = oppositeDir.z
-		return location.clone().add(//the following vector maths, centers the displayEntity onto the center of the block
-			Vector(
-				0.5 - 0.25 * dx + 0.5 * sizeX * dz,
-				-sizeY,
-				0.5 - 0.25 * dz - 0.5 * sizeX * dx
-			)
-		)
-	}
-
-	/*
-	Minecraft renders text at 1/40 blocks per pixel. Thus given a 1 pixel tall and wide text. To scale it to the size of
-	a block, multiply it by 40
-	TLDR: This transformation only works for text Displays 1 px wide & tall.
-	 */
-
-	val singlePixelCharacterTextDisplayTransformation = Transformation(
-		Vector3f(),
-		ClientDisplayEntities.rotateToFaceVector(dir.toVector3f()),
-		Vector3f((40f * sizeX).toFloat(), (40f * sizeY).toFloat(), 0f),
-		Quaternionf()
-	)
+	var borderDisplay: TextDisplay? = null
 
 	//Map features that are common to all the map states
 	val commonFeatures: MutableList<MapFeature> = mutableListOf()
@@ -122,14 +97,26 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 
 	fun tick() {
 		if (state == MapState.LOCAL_MAP) {
-			val shipsInRange = shipsInRange(maxDistance)
+			val shipsInRange = shipsInRange(maxDistance, ship)
+			val centerOfMass = ship.centerOfMass.toVector()
+			val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass)
 			for (ship in shipsInRange) {
 				if (shipsTracked.containsKey(ship)) continue
 				else {
 					shipsTracked[ship] = generateShipMapFeature(ship)
 				}
 			}
-			mapStateFeatures.forEach { it.tick() }
+
+			for(body in bodiesInRange) {
+				if (celestialBodiesTracked.containsKey(body)) continue
+				else{
+					celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+				}
+			}
+
+			mapStateFeatures.forEach {
+				it.tick()
+			}
 		}
 	}
 
@@ -137,7 +124,8 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 		mapStateFeatures.forEach { it.despawn() }
 		commonFeatures.forEach { it.despawn() }
 		commonButtons.forEach { it.despawn() }
-		border.remove()
+		borderDisplay?.remove()
+		borderDisplay = null
 		mapStateFeatures.clear()
 		commonFeatures.clear()
 		commonButtons.clear()
@@ -158,14 +146,32 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 			),
 		)
 
+		//border
+		val border = ship.world.spawnEntity(
+			displayLocation().clone().add(
+				dir.clone().multiply(shiftPerLayer * 1.0)
+			),
+			EntityType.TEXT_DISPLAY
+		) as TextDisplay
 		border.backgroundColor = Color.fromARGB(0, 0, 0, 0)
 		border.brightness = Display.Brightness(15, 0)
-		border.transformation = singlePixelCharacterTextDisplayTransformation.clone()
+		/*
+		Minecraft renders text at 1/40 blocks per pixel. Thus given a 1 pixel tall and wide text. To scale it to the size of
+		a block, multiply it by 40
+		TLDR: This transformation only works for text Displays 1 px wide & tall.
+		 */
+		border.transformation = Transformation(
+			Vector3f(),
+			ClientDisplayEntities.rotateToFaceVector(dir.toVector3f()),
+			Vector3f((40f * sizeX).toFloat(), (40f * sizeY).toFloat(), 0f),
+			Quaternionf()
+		)
 		border.displayHeight
 		border.teleportDuration = 0
-		border.text(Component.text('\uEBF1').font(SPECIAL_FONT_KEY))
+		border.text(MapTextIcon.BORDER_RIGHT_MISSING.component())
 		border.isPersistent = false
 
+		borderDisplay = border
 		ship.entityPassengers.add(border)
 	}
 
@@ -215,11 +221,13 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 				4.0,
 			) {
 				it.maxDistance += 1000.0
-				if (maxDistance == 6000.0) {
-					maxDistance = 5000.0
+				if (maxDistance >= absoluteMaxDistance+1000.0) {
+					maxDistance = absoluteMaxDistance
 				}
-				tick()
-				ship.successAction("Set zoom to ${it.maxDistance / 1000.0}")
+				(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
+					Component.text("Max Distance: ${maxDistance/2.0}")
+				)
+				ship.successAction("Set max distance to ${it.maxDistance/2.0}m")
 			}
 		)
 
@@ -237,11 +245,13 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 				4.0,
 			) {
 				it.maxDistance -= 1000.0
-				if (maxDistance == 000.0) {
-					maxDistance = 1000.0
+				if (maxDistance <= absoluteMinimumMaxDistance-1000.0) {
+					maxDistance = absoluteMinimumMaxDistance
 				}
-				tick()
-				ship.successAction("Set zoom to ${it.maxDistance / 1000.0}")
+				(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
+					Component.text("Max Distance: ${maxDistance/2.0}")
+				)
+				ship.successAction("Set max distance to ${it.maxDistance/2.0}m")
 			}
 		)
 	}
@@ -259,7 +269,7 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 			28.0 / 32.0,
 			ItemStack(Material.PAPER).updateData(
 				DataComponentTypes.ITEM_MODEL,
-				NamespacedKeys.packKey("map/black")
+				NamespacedKeys.packKey("map/grid_lines")
 			),
 			null,
 			4.0
@@ -272,59 +282,58 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 			this,
 			15.0 / 32.0,
 			16.0 / 32.0,
-			.03,
-			.03,
+			.04,
+			.04,
 			null,
 			ofChildren(
-				Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
 				Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(Sidebar.fontKey),
 				Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
 			),
 			8.1
 		)
 
+		val maxDistanceMap = MapFeature(
+			"MAX_DISTANCE",
+			this,
+			15.0/32.0,
+			1.0/32.0,
+			.03,
+			.03,
+			null,
+			Component.text("Max Distance: $maxDistance"),
+			8.1
+		)
+
+		mapStateFeatures.add(maxDistanceMap)
 		mapStateFeatures.add(centralShipIcon)
 		mapStateFeatures.add(backgroundMap)
 
+		maxDistanceMap.init()
 		backgroundMap.init()
 		centralShipIcon.init()
 
-		val ships = shipsInRange(maxDistance)
+		val centerOfMass = ship.centerOfMass.toVector()
 
-		for (other in ships) {
-			generateShipMapFeature(other)
-		}
+		//Add Ships
+		shipsInRange(maxDistance, ship).forEach { generateShipMapFeature(it) }
+		//Add CelestialBodies
+		celestialBodiesInRange(this, maxDistance, centerOfMass).forEach { generateCelestialBodyMapFeature(it) }
+		//Add Beacons
+		beaconsInRange(this, maxDistance,centerOfMass).forEach { generateBeaconMapFeature(it) }
 
 		for (state in mapStateFeatures) {
 			ship.entityPassengers.addAll(state.entities)
 		}
 	}
 
-	private fun shipsInRange(maxDistance: Double): List<Starship> {
-		return (if (ship.playerPilot != null) {
-			Fleets.findByMember(ship.playerPilot!!)?.getJointContacts() ?: ship.getContacts()
-		} else ship.getContacts()).filter { it.centerOfMass.distance(ship.centerOfMass) < maxDistance }
-	}
-
-	private fun getRelationBetweenTwoStarships(starship1: Starship, starship2: Starship): NationRelation.Level {
-		val viewerNation = PlayerCache.getIfOnline(starship1.playerPilot ?: return NationRelation.Level.NONE)?.nationOid
-			?: return NationRelation.Level.NONE
-		val otherNation = PlayerCache.getIfOnline(starship2.playerPilot ?: return NationRelation.Level.NONE)?.nationOid
-			?: return NationRelation.Level.NONE
-		starship1.controller.getColor()
-		return RelationCache[viewerNation, otherNation]
-	}
-
 	private fun generateShipMapFeature(other: Starship): ShipMapFeature {
-		var color = getRelationBetweenTwoStarships(ship, other).color
+		var color = ship.getRelation(other).color
 		if (other.playerPilot != null && ship.playerPilot != null) {
 			if (Fleets.findByMember(ship.playerPilot!!)?.contains(other.playerPilot!!) == true) {
 				color = NamedTextColor.BLUE
 			}
 		}
-
-		val shipScale = shipScale()
-
+		val shipScale = shipScale(this)
 		//Get the ships icon
 		val icon = other.type.icon
 
@@ -340,14 +349,15 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 			shipScale,
 			ofChildren(
 				//\ueBF2 is a 1x1px character of literally nothing. Used for padding to avoid stretching below
-				Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
+				MapTextIcon.ONE_PIXEL.component(),
 				Component.text(icon, color).font(Sidebar.fontKey),
-				Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
+				MapTextIcon.ONE_PIXEL.component(),
 			),
 			8.0,
 			this.stateMap,
-			other,
-			color
+			Component.text(""),
+			color,
+			other
 		)
 		mapStateFeatures.add(smf)
 		smf.init()
@@ -355,11 +365,56 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 		return smf
 	}
 
-	fun shipScale() = when (maxDistance) {
-		1000.0 -> .05
-		2000.0 -> .035
-		3000.0 -> .025
-		else -> .02
+	private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature {
+		val starScale = celestialBodyScale(maxDistance, body)
+		val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
+		val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
+		val itemStack: ItemStack? = if (body is CachedPlanet) body.planetIconFactory.construct() else null
+		val component: Component? = if (body is CachedStar) Component.text(SidebarIcon.STAR_ICON.text, NamedTextColor.YELLOW).font(Sidebar.fontKey) else null
+
+		val cbf = CelestialBodyFeature(
+			identifier.uppercase(),
+			this,
+			.5 + offset.x,
+			.5 + offset.z,
+			starScale,
+			starScale,
+			component,
+			itemStack,
+			7.9,
+			this.stateMap!!,
+			Component.text(identifier, null, BOLD),
+			NamedTextColor.YELLOW,
+			body
+		)
+		mapStateFeatures.add(cbf)
+		celestialBodiesTracked[body] = cbf
+		cbf.init()
+		return cbf
+	}
+
+	private fun generateBeaconMapFeature(beacon: ServerConfiguration.HyperspaceBeacon) : BeaconMapFeature{
+		val beaconScale = 100.0/maxDistance
+		val offset = (ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+		val smf = BeaconMapFeature(
+			beacon.name,
+			this,
+			.5 + offset.x,
+			.5 + offset.z,
+			beaconScale,
+			beaconScale,
+			null,
+			ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
+			7.9,
+			this.stateMap!!,
+			Component.text(beacon.name, null, BOLD),
+			NamedTextColor.WHITE,
+			beacon
+		)
+		mapStateFeatures.add(smf)
+		beaconTracked[beacon] = smf
+		smf.init()
+		return smf
 	}
 
 	/*
@@ -1014,6 +1069,24 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 		}
 	}
 
+	/*
+	The following maths serves to center a given displayEntity onto the center of the location given.
+	The maths is most useful for a given text display of sizeX & sizeY, as it will center the center of the text display
+	onto the center of the block.
+ 	*/
+	fun displayLocation(): Location {
+		val oppositeDir = dir.clone().multiply(-1)
+		val dx = oppositeDir.x
+		val dz = oppositeDir.z
+		return location.clone().add(//the following vector maths, centers the displayEntity onto the center of the block
+			Vector(
+				0.5 - 0.25 * dx + 0.5 * sizeX * dz,
+				-sizeY,
+				0.5 - 0.25 * dz - 0.5 * sizeX * dx
+			)
+		)
+	}
+
 	/**
 	 * This function generates a location on the map, from the relative coordinates provided.
 	 * Values for x and y must be between 0 and 1
@@ -1061,7 +1134,6 @@ class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, va
 			}
 		}
 	}
-
 
 	companion object : SLEventListener() {
 		private fun Transformation.clone(): Transformation =

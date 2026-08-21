@@ -243,7 +243,7 @@ object ContactsSidebar {
         }
     }
 
-    private fun isCapturableStationRelationEnabled(player: Player, station: CachedCapturableStation): Boolean {
+	fun isCapturableStationRelationEnabled(player: Player, station: CachedCapturableStation): Boolean {
         // val relationAiStationEnabled = player.getSetting(PlayerSettings::relationAiStationEnabled
         val relationNoneStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneStationEnabled)
         val relationEnemyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyStationEnabled)

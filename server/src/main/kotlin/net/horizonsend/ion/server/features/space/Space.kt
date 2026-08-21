@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.space.body.CachedMoon
 import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.planet.CachedOrbitingPlanet
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.space.body.planet.CachedRoguePlanet
@@ -372,6 +373,18 @@ object Space : IonServerComponent() {
 	fun getRoguePlanets(world: World): List<CachedRoguePlanet> = planets.mapNotNull { it as? CachedRoguePlanet }.filter { it.spaceWorld?.uid == world.uid }
 	fun getMoons(): List<CachedMoon> = planets.mapNotNull { it as? CachedMoon }
 	fun getMoons(world: World): List<CachedMoon> = planets.mapNotNull { it as? CachedMoon }.filter { it.spaceWorld?.uid == world.uid }
+	fun getAllCelestialBodies(): List<CelestialBody>{
+		val list = mutableListOf<CelestialBody>()
+		list.addAll(getStars())
+		list.addAll(getAllPlanets())
+		return list
+	}
+	fun getAllCelestialBodies(world: World): List<CelestialBody>{
+		val list = mutableListOf<CelestialBody>()
+		list.addAll(getStars(world))
+		list.addAll(getAllPlanets(world))
+		return list
+	}
 
 	fun getPlanet(planetWorld: World): CachedPlanet? = planetWorldCache[planetWorld].orElse(null)
 

@@ -4,6 +4,8 @@ import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
@@ -27,6 +29,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -940,5 +943,14 @@ class Starship(
 				&& it.controller !== this.controller
 				&& (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
 		}
+	}
+
+	fun getRelation(other: Starship): NationRelation.Level{
+			val viewerNation = PlayerCache.getIfOnline(this.playerPilot ?: return NationRelation.Level.NONE)?.nationOid
+				?: return NationRelation.Level.NONE
+			val otherNation = PlayerCache.getIfOnline(other.playerPilot ?: return NationRelation.Level.NONE)?.nationOid
+				?: return NationRelation.Level.NONE
+			this.controller.getColor()
+			return RelationCache[viewerNation, otherNation]
 	}
 }
