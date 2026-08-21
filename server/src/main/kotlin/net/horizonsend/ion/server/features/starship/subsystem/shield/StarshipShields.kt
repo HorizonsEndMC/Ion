@@ -372,7 +372,7 @@ object StarshipShields : IonServerComponent() {
 
 		Tasks.async {
 			// Lifetime: use the max preference among nearby players
-			val lifetime = interested.maxOf { it.getSettingOrThrow(PlayerSettings::flareTime).toLong() }
+			val lifetime = interested.maxOf { it.getSettingOrThrow(PlayerSettings::flareTime).toLong().coerceAtMost(5L) }
 
 			// Throttle number of displays per hit to keep it light
 			val maxFlares = 20
