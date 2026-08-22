@@ -38,16 +38,5 @@ class GaussCannonProjectile(
 		super.spawnParticle(pointRight.x, pointRight.y, pointRight.z, force)
 		super.spawnParticle(pointBackward.x, pointBackward.y, pointBackward.z, force)
 		super.spawnParticle(pointForward.x, pointForward.y, pointForward.z, force)
-
-		val midForwardRight = pointForward.clone().add(pointRight).multiply(0.5)
-		val midBackwardRight = pointBackward.clone().add(pointRight).multiply(0.5)
-		val midBackwardLeft = pointBackward.clone().add(pointLeft).multiply(0.5)
-		val midForwardLeft = pointForward.clone().add(pointLeft).multiply(0.5)
-
-		super.spawnParticle(midForwardRight.x, midForwardRight.y, midForwardRight.z, force)
-		super.spawnParticle(midBackwardRight.x, midBackwardRight.y, midBackwardRight.z, force)
-		super.spawnParticle(midBackwardLeft.x, midBackwardLeft.y, midBackwardLeft.z, force)
-		super.spawnParticle(midForwardLeft.x, midForwardLeft.y, midForwardLeft.z, force)
-
 	}
 }

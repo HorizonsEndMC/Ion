@@ -57,9 +57,9 @@ object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblo
 		}
 		z(4) {
 			y(0) {
-				x(1).machineFurnace()
+				x(1).furnace()
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-1).machineFurnace()
+				x(-1).furnace()
 			}
 		}
 		z(5) {

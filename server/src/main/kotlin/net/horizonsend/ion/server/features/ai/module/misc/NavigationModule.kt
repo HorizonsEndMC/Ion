@@ -46,6 +46,7 @@ class NavigationModule(
 			}
 			return location
 		}
+	private val allowHyperspaceBeaconUse = false
 	private var hyperdriveNavigate = false
 	private var navigate = false
 	private var navigationTarget = GoalTarget(starship.centerOfMass, world, false)
@@ -89,7 +90,7 @@ class NavigationModule(
 		}
 
 		val dist = navigationTarget.position.toVector().distance(location.toVector())
-		if (starship.beacon != null && starship.beacon!!.radius > dist) { // if nearby beacon use beacon
+		if (allowHyperspaceBeaconUse && starship.beacon != null && starship.beacon!!.radius > dist) { // if nearby beacon use beacon
 			val hyperdrive = starship.hyperdrives.firstOrNull()
 			if (hyperdrive != null && !hyperdrive.isIntact()) {
 				starship.debug("Need hyperdrive to use beacon,it is broken, giving up")

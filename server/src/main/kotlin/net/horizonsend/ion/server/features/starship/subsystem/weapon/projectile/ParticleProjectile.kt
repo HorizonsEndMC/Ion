@@ -18,7 +18,7 @@ abstract class ParticleProjectile<out B : StarshipProjectileBalancing>(
 ) : SimpleProjectile<B>(source, name, loc, dir, shooter, damageType) {
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		for (i in 0 until travel.toInt()) {
+		for (i in 0 until travel.toInt() step 3) {
 			val x = location.x + direction.x * i
 			val y = location.y + direction.y * i
 			val z = location.z + direction.z * i
@@ -26,7 +26,7 @@ abstract class ParticleProjectile<out B : StarshipProjectileBalancing>(
 			spawnParticle(x, y, z, force)
 		}
 
-		spawnParticle(newLocation.x, newLocation.y, newLocation.z, true)
+		//spawnParticle(newLocation.x, newLocation.y, newLocation.z, true)
 	}
 
 	protected abstract fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean)

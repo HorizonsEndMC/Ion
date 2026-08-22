@@ -119,7 +119,7 @@ object CollectionMissions : IonServerComponent() {
 
 	private fun generateMission(station: EcoStation, item: CollectedItem = randomItem(station)): CollectionMission {
 		val stacks: Int = randomRange(item.minStacks, item.maxStacks)
-		val reward: Int = (item.value * stacks).roundToInt()
+		val reward: Int = (item.value * getSellMultiplier(station) * stacks).roundToInt()
 		val xp: Int = (config.xpPerCreditRoot * sqrt(item.value)).roundToInt() * stacks
 
 		return CollectionMission(item, stacks, reward, xp)
@@ -242,8 +242,26 @@ object CollectionMissions : IonServerComponent() {
 		openSellMenu(clicker, ecoStation) // re-open menu
 	}
 
-	private fun getBuyCost(collectedItem: CollectedItem): Int {
-		return (collectedItem.value * config.buyMultiplier).roundToInt()
+	private fun getSellMultiplier(ecoStation: EcoStation): Double {
+		val configuration = ConfigurationFiles.tradeConfiguration().ecoStationConfiguration
+
+		return configuration.sellMultiplierByEcoStationName.entries
+			.firstOrNull { (stationName, _) -> stationName.equals(ecoStation.name, ignoreCase = true) }
+			?.value
+			?: 1.0
+	}
+
+	private fun getBuyMultiplier(ecoStation: EcoStation): Double {
+		val configuration = ConfigurationFiles.tradeConfiguration().ecoStationConfiguration
+
+		return configuration.buyMultiplierByEcoStationName.entries
+			.firstOrNull { (stationName, _) -> stationName.equals(ecoStation.name, ignoreCase = true) }
+			?.value
+			?: config.buyMultiplier
+	}
+
+	private fun getBuyCost(collectedItem: CollectedItem, ecoStation: EcoStation): Int {
+		return (collectedItem.value * getBuyMultiplier(ecoStation)).roundToInt()
 	}
 
 	private fun openBuyMenu(player: Player, station: EcoStation) {
@@ -255,8 +273,8 @@ object CollectionMissions : IonServerComponent() {
 		val buttons: List<AbstractItem> = items.map { collectedItem ->
 			val icon: ItemStack = createItem(collectedItem).clone()
 
-			val cost: String = getBuyCost(collectedItem).toCreditsString()
-			val fillCost: String = getBuyCost(collectedItem).times(freeSpace).toCreditsString()
+			val cost: String = getBuyCost(collectedItem, station).toCreditsString()
+			val fillCost: String = getBuyCost(collectedItem, station).times(freeSpace).toCreditsString()
 			val stock: Component = if (collectedItem.stock == 0) text(0, RED) else text(collectedItem.stock, NamedTextColor.GREEN)
 
 			icon.lore(listOf(
@@ -421,7 +439,7 @@ object CollectionMissions : IonServerComponent() {
 			return player.userError("Inventory is full.")
 		}
 
-		val costPerStack: Double = getBuyCost(collectedItem).toDouble()
+		val costPerStack: Double = getBuyCost(collectedItem, EcoStations[stationId]).toDouble()
 		val buyAmount = getBuyAmount(maxBuy, player, costPerStack, collectedItem)
 
 		if (buyAmount == -1) {

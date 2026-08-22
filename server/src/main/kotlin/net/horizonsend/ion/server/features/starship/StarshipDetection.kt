@@ -155,7 +155,19 @@ object StarshipDetection : IonServerComponent() {
 				material.isShulkerBox -> cargoCrates++
 			}
 
-			if (material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL) {
+			if (
+				material == Material.CHEST ||
+				material == Material.TRAPPED_CHEST ||
+				material == Material.BARREL ||
+				material == Material.COPPER_CHEST ||
+				material == Material.EXPOSED_COPPER_CHEST ||
+				material == Material.WEATHERED_COPPER_CHEST ||
+				material == Material.OXIDIZED_COPPER_CHEST ||
+				material == Material.WAXED_COPPER_CHEST ||
+				material == Material.WAXED_EXPOSED_COPPER_CHEST ||
+				material == Material.WAXED_WEATHERED_COPPER_CHEST ||
+				material == Material.WAXED_OXIDIZED_COPPER_CHEST
+			) {
 				containers += 2
 			}
 
@@ -275,6 +287,14 @@ object StarshipDetection : IonServerComponent() {
 		return when (material) {
 			Material.CHEST,
 			Material.TRAPPED_CHEST,
+			Material.COPPER_CHEST,
+			Material.EXPOSED_COPPER_CHEST,
+			Material.WEATHERED_COPPER_CHEST,
+			Material.OXIDIZED_COPPER_CHEST,
+			Material.WAXED_COPPER_CHEST,
+			Material.WAXED_EXPOSED_COPPER_CHEST,
+			Material.WAXED_WEATHERED_COPPER_CHEST,
+			Material.WAXED_OXIDIZED_COPPER_CHEST,
 			Material.HOPPER,
 			Material.DISPENSER,
 			Material.BARREL,

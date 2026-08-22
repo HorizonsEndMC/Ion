@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.crafting.input
 
 import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceInputSlot
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -25,11 +27,36 @@ open class FurnaceEnviornment(
 		(entity as ProgressMultiblock).progressManager
 	)
 
-	override fun getInputItems(): List<ItemStack?> = listOf(furnaceInventory.smelting, furnaceInventory.fuel)
+	 /**
+    * Maps FurnaceMultiblockRecipe input requirements to each multiblock's
+    * configured physical furnace slots for recipe validation and item consumption.
+    */
+	private fun getInputSlot(index: Int): FurnaceInputSlot {
+		val furnaceEntity = multiblock as? FurnaceBasedMultiblockEntity
+
+		return furnaceEntity?.getFurnaceInputSlot(index) ?: when (index) {
+			0 -> FurnaceInputSlot.TOP
+			1 -> FurnaceInputSlot.BOTTOM
+			else -> throw IndexOutOfBoundsException("Furnace input index $index")
+		}
+	}
+
+	override fun getInputItems(): List<ItemStack?> = listOf(
+		getInputItem(0),
+		getInputItem(1)
+	)
 
 	override fun getInputItemSize(): Int = 2
+
 	override fun getInputItem(index: Int): ItemStack? {
-		return getInputItems()[index]
+		return getInputSlot(index).get(furnaceInventory)
+	}
+
+	fun getInputItemSlotModifier(index: Int): SlotModificationWrapper {
+		return when (getInputSlot(index)) {
+			FurnaceInputSlot.TOP -> SlotModificationWrapper.furnaceSmelting(furnaceInventory)
+			FurnaceInputSlot.BOTTOM -> SlotModificationWrapper.furnaceFuel(furnaceInventory)
+		}
 	}
 
 	override fun getResultItem(): ItemStack? {

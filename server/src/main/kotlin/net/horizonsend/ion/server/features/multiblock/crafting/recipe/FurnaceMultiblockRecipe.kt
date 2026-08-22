@@ -9,15 +9,11 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requiremen
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
-import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import kotlin.reflect.KClass
 
 /**
  * A multiblock recipe that uses a furnace inventory.
- *
- * @param smeltingItem Requirement for the item in the top slot. If it is null, there will be a requirement for this slot to be empty.
- * @param fuelItem Requirement for the item in the bottom slot. If it is null, there will be a requirement for this slot to be empty.
  **/
 class FurnaceMultiblockRecipe(
 	key: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<FurnaceEnviornment>>,
@@ -33,13 +29,13 @@ class FurnaceMultiblockRecipe(
 		RequirementHolder.itemConsumable(
 			getter = { it.getInputItem(0) },
 			requirement = smeltingItem ?: ItemRequirement.legacy(),
-			{ SlotModificationWrapper.furnaceSmelting(it.furnaceInventory) }
+			{ it.getInputItemSlotModifier(0) }
 		),
 		// Furnace fuel item
 		RequirementHolder.itemConsumable(
 			getter = { it.getInputItem(1) },
 			requirement = fuelItem ?: ItemRequirement.legacy(),
-			{ SlotModificationWrapper.furnaceFuel(it.furnaceInventory) }
+			{ it.getInputItemSlotModifier(1) }
 		),
 		// Power requirement
 		RequirementHolder.simpleConsumable(

@@ -1,27 +1,47 @@
 {
-  "ecoStationConfiguration": {
-    "profitCapPerLevel": 1000.0,
-    "maxProfitPerStationPerDay": 100000.0,
-    "stationTypeByEcoStationName": {
-      "Gaia": "foods",
-      "Prometheus": "crops",
-      "Deepspace": "mining",
-      "Deepspace2": "mining",
-      "Regulus": "crops"
-    },
-    "stationTypeConfigurations": {
-      "foods": {
-        "profitCapPerLevel": 2000.0,
-        "maxProfitPerStationPerDay": 100000.0
-      },
-      "crops": {
-        "profitCapPerLevel": 2000.0,
-        "maxProfitPerStationPerDay": 100000.0
-      },
-      "mining": {
-        "profitCapPerLevel": 100000.0,
-        "maxProfitPerStationPerDay": 100000.0
-      }
-    }
-  }
+	"ecoStationConfiguration": {
+		"profitCapPerLevel": 1000.0,
+		"maxProfitPerStationPerDay": 100000.0,
+		"stationTypeByEcoStationName": {
+			"Axis": "mining",
+			"GaiaProduceShop": "foods",
+			"SunderStation": "mining",
+			"ConduitStation": "mining",
+			"Prometheus": "crops",
+			"GaiaFoodBuyer": "foods",
+			"Prometheus2": "crops"
+		},
+		"sellMultiplierByEcoStationName": {
+			"Axis": 1.0,
+			"GaiaProduceShop": 1.0,
+			"SunderStation": 1.0,
+			"ConduitStation": 1.0,
+			"Prometheus": 1.0,
+			"GaiaFoodBuyer": 1.0,
+			"Prometheus2": 1.0
+		},
+		"buyMultiplierByEcoStationName": {
+			"Axis": 10.0,
+			"GaiaProduceShop": 2.0,
+			"SunderStation": 10.0,
+			"ConduitStation": 10.0,
+			"Prometheus": 2.0,
+			"GaiaFoodBuyer": 2.0,
+			"Prometheus2": 2.0
+		},
+		"stationTypeConfigurations": {
+			"foods": {
+				"profitCapPerLevel": 2000.0,
+				"maxProfitPerStationPerDay": 100000.0
+			},
+			"crops": {
+				"profitCapPerLevel": 2000.0,
+				"maxProfitPerStationPerDay": 100000.0
+			},
+			"mining": {
+				"profitCapPerLevel": 4000.0,
+				"maxProfitPerStationPerDay": 100000.0
+			}
+		}
+	}
 }

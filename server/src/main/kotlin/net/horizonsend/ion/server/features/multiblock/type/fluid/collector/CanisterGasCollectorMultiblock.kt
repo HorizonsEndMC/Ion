@@ -120,7 +120,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 				return
 			}
 
-			if (!AtmosphericGasRegistry.isCanister(furnaceInventory.fuel)) {
+			if (!AtmosphericGasRegistry.isCanister(primaryFurnaceInputSlot.get(furnaceInventory))) {
 				sleepWithStatus(text("No canister.", RED), 10)
 				return
 			}
@@ -160,7 +160,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 		}
 
 		private fun tryHarvestGas(furnaceInventory: FurnaceInventory, hopperInventory: Inventory, gas: Gas, amount: Int) {
-			val canisterItem = furnaceInventory.fuel ?: return
+			val canisterItem = primaryFurnaceInputSlot.get(furnaceInventory) ?: return
 
 			when (canisterItem.customItem) {
 				CustomItemKeys.GAS_CANISTER_EMPTY.getValue() -> fillEmptyCanister(furnaceInventory, gas, amount)
@@ -170,7 +170,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 
 		private fun fillEmptyCanister(furnaceInventory: FurnaceInventory, gas: Gas, amount: Int) {
 			val newCanister = gas.containerKey.getValue().createWithFill(amount)
-			furnaceInventory.fuel = newCanister
+			primaryFurnaceInputSlot.set(furnaceInventory, newCanister)
 		}
 
 		private fun fillGasCanister(canisterItem: ItemStack, furnaceInventory: FurnaceInventory, hopperInventory: Inventory, amount: Int) {
@@ -188,9 +188,9 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			if (newFill >= type.maximumFill) {
 				val canAdd = hopperInventory.addItem(type.constructItemStack())
 				if (canAdd.isEmpty()) {
-					furnaceInventory.fuel = null
+					primaryFurnaceInputSlot.set(furnaceInventory, null)
 				} else {
-					furnaceInventory.fuel = type.constructItemStack()
+					primaryFurnaceInputSlot.set(furnaceInventory, type.constructItemStack())
 				}
 			} else {
 				type.setFill(canisterItem, newFill)

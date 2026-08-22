@@ -52,4 +52,6 @@ class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: Abstra
 
 		return inventoryHolder.inventory
 	}
+
+	fun getInventoryPublic(): Inventory? = getInventory()
 }

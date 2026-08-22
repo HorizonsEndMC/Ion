@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingO
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.nations.DominionTerritoryBuffTypes
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
@@ -430,7 +431,11 @@ object ContactsSidebar {
             val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
             val fleetStatusEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::fleetStatus) ?: true
 
-            val nameString = starship.identifier.take(maxLength)
+			val isProtected = otherPlayer?.hasProtection() ?: false
+			val noobstar = "★"
+			val nameString = if (isProtected) noobstar + starship.identifier.take(maxLength) else starship.identifier.take(maxLength)
+
+           // val nameString = starship.identifier.take(maxLength)
             val priority = getPriority(player, nameString)
             val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
