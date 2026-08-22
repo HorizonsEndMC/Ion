@@ -59,3 +59,54 @@ object AdvancedProbeStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<
 		}
 	}
 }
+
+
+object AdvancedProbeStarshipWeaponMultiblockMirrored : SignlessStarshipWeaponMultiblock<AdvancedProbeWeaponSubsystem>(), DisplayNameMultilblock {
+	override val key: String = "advanced_probe"
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): AdvancedProbeWeaponSubsystem {
+		return AdvancedProbeWeaponSubsystem(starship, pos, face)
+	}
+
+	override val displayName: Component
+		get() = text("Advanced Probe Launcher (Mirrored)")
+	override val description: Component
+		get() = text("Fires off a probe that displays nearby players and their distance, or scans for nearby signatures.")
+
+	override fun MultiblockShape.buildStructure() {
+		z(0) {
+			y(0) {
+				x(+1).powerInput()
+				x(0).anyStairs()
+			}
+		}
+		z(1) {
+			y(0) {
+				x(+1).ironBlock()
+				x(0).sponge()
+			}
+		}
+		z(2) {
+			y(0) {
+				x(+1).ironBlock()
+				x(0).grindstone()
+			}
+		}
+		z(3) {
+			y(0) {
+				x(+1).dispenser()
+				x(0).grindstone(
+				)
+			}
+		}
+		z(4) {
+			y(0) {
+				x(0).endRod()
+			}
+		}
+		z(5) {
+			y(0) {
+				x(0).endRod()
+			}
+		}
+	}
+}
