@@ -71,10 +71,10 @@ open class MapFeature(
 
 
 	open fun init() {
-		initItemDisplay()
+		initMainDisplay()
 	}
 
-	open fun initItemDisplay() {
+	open fun initMainDisplay() {
 		if (itemStack != null) {
 			//Setup for ItemDisplay
 			display = map.location.world.spawnEntity(

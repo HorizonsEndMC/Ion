@@ -54,11 +54,8 @@ class ShipMapFeature(
 			this.despawn()
 		}
 
-		this.rx = -.5+offset.x
+		this.rx = .5+offset.x
 		this.ry = .5+offset.z
-		if(!ship.isMoving) {
-			this.entities.forEach { it.teleport(location()) }
-		}
 
 		val shipScale = shipScale(map)
 

@@ -34,12 +34,8 @@ class CelestialBodyFeature(
 
 		val bodyScale = celestialBodyMapScale(body, map)
 
-		this.rx = -.5+offset.x
+		this.rx = .5+offset.x
 		this.ry = .5+offset.z
-
-		if(!map.ship.isMoving) {
-			this.entities.forEach { it.teleport(location()) }
-		}
 
 		this.sizeX = bodyScale
 		this.sizeY = bodyScale

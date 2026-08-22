@@ -79,6 +79,10 @@ open class MapFeatureWithInfotext(
 	}
 
 	override fun tick() {
+		if(!map.ship.isMoving) {
+			this.entities.forEach { it.teleport(location()) }
+		}
+
 		this.infoDisplay?.transformation = Transformation(
 			Vector3f(0f,0f,0f),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),

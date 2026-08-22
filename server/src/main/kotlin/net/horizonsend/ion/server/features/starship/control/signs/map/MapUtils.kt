@@ -19,16 +19,9 @@ enum class MapTextIcon(val char: Char) {
 	ONE_PIXEL('\ueBF2'), //ascent 0, height 1
 	CIRCLE_HOLLOW('\ueBF3'), //ascent 7, height 8
 	CIRCLE_FILLED_TRANSPARENT('\ueBF4'); //ascent 7, height 8
-
-
 	fun component(): Component {
 		return Component.text(char).font(SPECIAL_FONT_KEY)
 	}
-}
-
-fun celestialBodyScale(maxDistance: Double, body: CelestialBody) = when (body) {
-	is CelestialBody -> maxDistance.toDouble()
-
 }
 
 fun shipScale(displayMap: DisplayMap) = when (displayMap.maxDistance) {
