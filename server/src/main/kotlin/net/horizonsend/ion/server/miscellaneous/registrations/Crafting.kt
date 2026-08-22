@@ -386,6 +386,7 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y", CraftingBookCategory.BUILDING, 'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapeless("glowstone_dust", ItemStack(GLOWSTONE_DUST, 4), CraftingBookCategory.MISC, GLOWSTONE)
 		shapeless("resin", ItemStack(RESIN_CLUMP), CraftingBookCategory.MISC, ItemStack(HONEYCOMB, 2), ItemStack(COBBLESTONE, 2))
+		shapeless("writable_book", ItemStack(WRITABLE_BOOK), CraftingBookCategory.MISC, BOOK, FEATHER, BLACK_DYE)
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		Bukkit.removeRecipe(Material.IRON_CHAIN.key)
@@ -1326,14 +1327,6 @@ object Crafting : IonServerComponent() {
 		blackDyeRecipe.category = CookingBookCategory.MISC
 		Bukkit.addRecipe(blackDyeRecipe)
 		listOfCustomRecipes.add(blackDyeRecipe.key)
-		shapeless(
-			"writable_book",
-			WRITABLE_BOOK.getValue().constructItemStack(),
-			CraftingBookCategory.MISC,
-			BOOK,
-			FEATHER,
-			BLACK_DYE
-		)
 	}
 
 	// Different names due to signature problems from type erasure
