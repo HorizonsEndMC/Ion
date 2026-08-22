@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 
-@CommandAlias("p|paste|ionpaste|ionPaste")
+@CommandAlias("paste|ionpaste|ionPaste")
 @CommandPermission("worldedit.clipboard.paste")
 object CustomBlockCopyPasteFixCommand : SLCommand() {
 	@Default
