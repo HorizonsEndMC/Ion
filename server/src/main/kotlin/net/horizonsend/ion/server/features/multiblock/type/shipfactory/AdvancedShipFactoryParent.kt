@@ -380,6 +380,9 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 
 		private val pipeSearchPoints: Array<Vec3i> = arrayOf(
 			Vec3i(0, 0, 0),
+			Vec3i(0, 0, 1),
+			Vec3i(0, 0, 2),
+			Vec3i(0, -1, 2)
 		)
 
 		private val inventoryOffsets = arrayOf(
