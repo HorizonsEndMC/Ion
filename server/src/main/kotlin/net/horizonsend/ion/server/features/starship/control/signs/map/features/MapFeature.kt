@@ -18,7 +18,7 @@ import org.joml.Vector3d
 import org.joml.Vector3f
 
 /**
- * Generates an itemDisplay for the following inputted properties
+ * Generates a feature for the following inputted properties
  *
  * @constructor Creates a new MapButton
  * @property identifier the name of this feature
@@ -94,7 +94,7 @@ open class MapFeature(
 				Vector3d(
 					sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
 					sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
-					0.001
+					0.0001
 				).toVector3f(),
 				Quaternionf()
 			)

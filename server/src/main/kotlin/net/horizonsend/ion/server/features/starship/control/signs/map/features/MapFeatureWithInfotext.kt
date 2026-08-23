@@ -1,11 +1,9 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
-import net.horizonsend.ion.common.utils.text.asShadowColor
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap.Companion.toVector3f
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
 import org.bukkit.entity.Display
 import org.bukkit.entity.EntityType
@@ -17,23 +15,6 @@ import org.joml.Quaternionf
 import org.joml.Vector3d
 import org.joml.Vector3f
 
-/**
- * Ship map feature is the encapsulation of the Map feature of a starship on the map + the textDisplay with the info, and the
- * good relative maths needed for it to work.
- *
- * @constructor
- * @property ship
- * @property color
- * @param identifier
- * @param map
- * @param rx
- * @param ry
- * @param sizeX the size x
- * @param sizeY the size y
- * @param component
- * @param offset
- * @param relativeFeature the relative feature
- */
 open class MapFeatureWithInfotext(
 	identifier: String,
 	map: DisplayMap,
@@ -46,8 +27,9 @@ open class MapFeatureWithInfotext(
 	offset: Double,
 	relativeFeature: MapFeature? = null,
 	var info: Component,
-	val color: NamedTextColor
-) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
+	val color: Color,
+	function: (it: DisplayMap) -> Unit
+) : MapButtonDisplay(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, function) {
 
 	override fun init() {
 		super.init()
@@ -57,9 +39,9 @@ open class MapFeatureWithInfotext(
 	var infoDisplay: TextDisplay? = null
 
 	open fun initInfoDisplay() {
-		val textDisplay = this.location().world.spawnEntity(location(), EntityType.TEXT_DISPLAY) as TextDisplay
+		val textDisplay = this.location().world.spawnEntity(location().add(map.dir.clone().multiply(map.shiftPerLayer*offset+.1)), EntityType.TEXT_DISPLAY) as TextDisplay
 		textDisplay.text(info)
-		textDisplay.backgroundColor = Color.fromARGB(color.asShadowColor(200).value())
+		textDisplay.backgroundColor = color
 		textDisplay.transformation = Transformation(
 			Vector3f(0f,0f,0f),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
@@ -87,8 +69,8 @@ open class MapFeatureWithInfotext(
 			Vector3f(0f,0f,0f),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
 			Vector3d(
-				(sizeX)*.5 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
-				(sizeY)*.5 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
+				(sizeX)*.75 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
+				(sizeY)*.75 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
 				0.001
 			).toVector3f(),
 			Quaternionf()

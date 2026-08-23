@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
-import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -27,9 +27,9 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import java.util.Locale
-import java.util.UUID
-import kotlin.text.lines
+import org.joml.Vector3d
+import org.joml.Vector3f
+import java.util.*
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
 	CRUISE("[cruise]", arrayOf(
@@ -168,20 +168,37 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 
 	MAP("[map]", arrayOf(text("Display", DARK_AQUA),null,null,null)){
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
-			val ship = findPlayerStarship(player) ?: return
-			val size = sign.lines[1].split(" ")
-			val sizeX = size[0].toDouble()
-			val sizeY = size[1].toDouble()
-			val map = DisplayMap(ship, sign.location, sign.getFacing().direction, sizeX, sizeY)
-			ship.displayMaps.add(map)
-			map.init()
+			val starship = findPlayerStarship(player) ?: return
+			spawnEntity(starship,sign)
 		}
 
 		override fun onStarshipPilot(starship: Starship, sign: Sign) {
+			spawnEntity(starship, sign)
+		}
+
+		fun spawnEntity(starship: Starship, sign: Sign) {
 			val size = sign.lines[1].split(" ")
-			val sizeX = size[0].toDouble()
-			val sizeY = size[1].toDouble()
-			val map = DisplayMap(starship, sign.location, sign.getFacing().direction, sizeX, sizeY)
+			var sizeX: Double? = null
+			var sizeY: Double? = null
+			try {
+				sizeX = size[0].toDouble()
+				sizeY = size[1].toDouble()
+			}catch (_: Exception) {}
+			var offset: Vector3d? = null
+			try {
+				val offsetText = sign.lines[2].split(" ")
+				offset = Vector3d(offsetText[0].toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
+			}catch (_: Exception){}
+			var pitch = 0.0
+			try {
+				pitch = sign.lines[3].toDouble()
+			}catch(_: Exception){}
+
+			val dir = sign.getFacing().direction.clone()
+			println(pitch)
+			pitch = Math.toRadians(pitch)
+			dir.rotateAroundX(-pitch)
+			val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
 			starship.displayMaps.add(map)
 			map.init()
 		}

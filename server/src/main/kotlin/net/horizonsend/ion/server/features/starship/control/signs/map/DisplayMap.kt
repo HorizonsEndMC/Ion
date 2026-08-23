@@ -7,14 +7,14 @@
 	import net.horizonsend.ion.common.utils.miscellaneous.d
 	import net.horizonsend.ion.common.utils.text.BOLD
 	import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
+	import net.horizonsend.ion.common.utils.text.asShadowColor
 	import net.horizonsend.ion.common.utils.text.ofChildren
 	import net.horizonsend.ion.common.utils.text.plainText
 	import net.horizonsend.ion.server.configuration.ServerConfiguration
-	import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
+	import net.horizonsend.ion.server.features.client.display.HudIcons
 	import net.horizonsend.ion.server.features.gui.GuiItem
 	import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 	import net.horizonsend.ion.server.features.sidebar.Sidebar
-	import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 	import net.horizonsend.ion.server.features.space.body.CachedStar
 	import net.horizonsend.ion.server.features.space.body.CelestialBody
 	import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
@@ -26,6 +26,7 @@
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.MapButtonDisplay
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.MapFeature
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.ShipMapFeature
+	import net.horizonsend.ion.server.features.starship.control.signs.map.features.SystemMapFeature
 	import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 	import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 	import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
@@ -33,6 +34,8 @@
 	import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 	import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 	import net.horizonsend.ion.server.features.starship.fleet.Fleets
+	import net.horizonsend.ion.server.features.waypoint.WaypointManager
+	import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 	import net.horizonsend.ion.server.listener.SLEventListener
 	import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 	import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -42,7 +45,6 @@
 	import org.bukkit.Color
 	import org.bukkit.Location
 	import org.bukkit.Material
-	import org.bukkit.entity.Display
 	import org.bukkit.entity.EntityType
 	import org.bukkit.entity.ItemDisplay
 	import org.bukkit.entity.TextDisplay
@@ -52,11 +54,10 @@
 	import org.bukkit.inventory.ItemStack
 	import org.bukkit.util.Transformation
 	import org.bukkit.util.Vector
-	import org.joml.Quaternionf
 	import org.joml.Vector3d
 	import org.joml.Vector3f
 
-	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double) {
+	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
 		val shiftPerLayer = 0.0025
 
 		var state: MapState = MapState.LOCAL_MAP
@@ -68,9 +69,8 @@
 		val celestialBodiesTracked = mutableMapOf<CelestialBody, CelestialBodyFeature>()
 		val beaconTracked = mutableMapOf<ServerConfiguration.HyperspaceBeacon, BeaconMapFeature>()
 
-		var stateMap: MapFeature? = null
-		var borderDisplay: TextDisplay? = null
 
+		var stateMap: MapFeature? = null
 		//Map features that are common to all the map states
 		val commonFeatures: MutableList<MapFeature> = mutableListOf()
 		val commonButtons = mutableListOf<MapButtonDisplay>()
@@ -124,8 +124,7 @@
 			mapStateFeatures.forEach { it.despawn() }
 			commonFeatures.forEach { it.despawn() }
 			commonButtons.forEach { it.despawn() }
-			borderDisplay?.remove()
-			borderDisplay = null
+
 			mapStateFeatures.clear()
 			commonFeatures.clear()
 			commonButtons.clear()
@@ -146,33 +145,13 @@
 				),
 			)
 
-			//border
-			val border = ship.world.spawnEntity(
-				displayLocation().clone().add(
-					dir.clone().multiply(shiftPerLayer * 1.0)
-				),
-				EntityType.TEXT_DISPLAY
-			) as TextDisplay
-			border.backgroundColor = Color.fromARGB(0, 0, 0, 0)
-			border.brightness = Display.Brightness(15, 0)
-			/*
-			Minecraft renders text at 1/40 blocks per pixel. Thus given a 1 pixel tall and wide text. To scale it to the size of
-			a block, multiply it by 40
-			TLDR: This transformation only works for text Displays 1 px wide & tall.
-			 */
-			border.transformation = Transformation(
-				Vector3f(),
-				ClientDisplayEntities.rotateToFaceVector(dir.toVector3f()),
-				Vector3f((40f * sizeX).toFloat(), (40f * sizeY).toFloat(), 0f),
-				Quaternionf()
+			commonFeatures.add(
+				MapFeature(
+					"BORDER", this, 14.0/32.0,0.0,1.0,1.0, null,
+					MapTextIcon.BORDER_RIGHT_MISSING.component(),
+					1.0
+				)
 			)
-			border.displayHeight
-			border.teleportDuration = 0
-			border.text(MapTextIcon.BORDER_RIGHT_MISSING.component())
-			border.isPersistent = false
-
-			borderDisplay = border
-			ship.entityPassengers.add(border)
 		}
 
 		private fun setupSideBarButtons() {
@@ -356,9 +335,11 @@
 				8.0,
 				this.stateMap,
 				Component.text(""),
-				color,
+				Color.fromARGB(color.asShadowColor(255).value()),
 				other
-			)
+			){
+				ship.playerPilot?.performCommand("/jump ${location.x} ${location.z}")
+			}
 			mapStateFeatures.add(smf)
 			smf.init()
 			shipsTracked[other] = smf
@@ -369,9 +350,16 @@
 			val starScale = celestialBodyMapScale(body, this)
 			val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
-			val itemStack: ItemStack? = if (body is CachedPlanet) body.planetIconFactory.construct() else null
-			val component: Component? = if (body is CachedStar) Component.text(SidebarIcon.STAR_ICON.text, NamedTextColor.YELLOW).font(Sidebar.fontKey) else null
-			val color: NamedTextColor = if(body is CachedPlanet) NamedTextColor.WHITE else NamedTextColor.YELLOW
+			//val itemStack: ItemStack? = if (body is CachedPlanet) body.planetIconFactory.construct() else null
+			val itemStack: ItemStack? =
+				when (body) {
+					is CachedPlanet -> body.planetIconFactory.construct()
+					is CachedStar -> body.starIconFactory.construct()
+					else -> null
+				}
+			HudIcons
+			//val component: Component? = if (body is CachedStar) Component.text(SidebarIcon.STAR_ICON.text, NamedTextColor.YELLOW).font(Sidebar.fontKey) else null
+			val component = null
 
 			val cbf = CelestialBodyFeature(
 				identifier.uppercase(),
@@ -385,9 +373,12 @@
 				7.9,
 				this.stateMap!!,
 				Component.text(identifier, null, BOLD),
-				color,
+				Color.fromARGB(0,0,0,0),
 				body
-			)
+			){
+				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@CelestialBodyFeature] ?: return@CelestialBodyFeature, identifier.replaceFirstChar { it.uppercase() }) ?: return@CelestialBodyFeature
+				WaypointCommand.addVertexToRoute(ship.playerPilot?: return@CelestialBodyFeature, vertex)
+			}
 			mapStateFeatures.add(cbf)
 			celestialBodiesTracked[body] = cbf
 			cbf.init()
@@ -409,9 +400,12 @@
 				7.9,
 				this.stateMap!!,
 				Component.text(beacon.name, null, BOLD),
-				NamedTextColor.WHITE,
+				Color.fromARGB(200, 255, 255, 255),
 				beacon
-			)
+			){
+				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BeaconMapFeature] ?: return@BeaconMapFeature, beacon.name.replaceFirstChar { it.uppercase() }) ?: return@BeaconMapFeature
+				WaypointCommand.addVertexToRoute(ship.playerPilot?: return@BeaconMapFeature, vertex)
+			}
 			mapStateFeatures.add(bmf)
 			beaconTracked[beacon] = bmf
 			bmf.init()
@@ -447,7 +441,7 @@
 			//WARD
 			//-asteri
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"ASTERI",
 					this,
 					.1,
@@ -461,7 +455,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"TRAVERSE",
 					this,
 					.207,
@@ -475,7 +469,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"RESERVE",
 					this,
 					.19433,
@@ -489,7 +483,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"VENTURE",
 					this,
 					.0664,
@@ -505,7 +499,7 @@
 			//BREACH
 			//-TRENCH
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"TRENCH",
 					this,
 					.34765,
@@ -520,7 +514,7 @@
 			)
 
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"HORIZON",
 					this,
 					.322,
@@ -534,7 +528,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"D-1LA",
 					this,
 					.44824,
@@ -551,7 +545,7 @@
 			//MONOLITH
 			//-ILIOS
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"ILIOS",
 					this,
 					.64648,
@@ -566,7 +560,7 @@
 			)
 
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"XN-81",
 					this,
 					.71582,
@@ -580,7 +574,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"VXM-11",
 					this,
 					.85156,
@@ -594,7 +588,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"IX-Q3",
 					this,
 					.78027,
@@ -608,7 +602,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"DN-4V",
 					this,
 					.88476,
@@ -622,7 +616,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"CONDUIT",
 					this,
 					.83594,
@@ -636,7 +630,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"GRX-5",
 					this,
 					.94726,
@@ -650,7 +644,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"NTH-3",
 					this,
 					.77734,
@@ -664,7 +658,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"RELIQUARY",
 					this,
 					.84668,
@@ -678,7 +672,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"PDN-2",
 					this,
 					.9473,
@@ -692,7 +686,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"XRW-9",
 					this,
 					.8584,
@@ -706,7 +700,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"0Q-04",
 					this,
 					.9463,
@@ -720,7 +714,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"TH-89",
 					this,
 					.765625,
@@ -737,7 +731,7 @@
 			//FRACTURE
 			//-REGULUS
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"REGULUS",
 					this,
 					.25586,
@@ -752,7 +746,7 @@
 			)
 
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"VXM-11",
 					this,
 					.068356,
@@ -766,7 +760,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"LOA-7",
 					this,
 					.07324,
@@ -780,7 +774,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"BQ-5A",
 					this,
 					.1641,
@@ -794,7 +788,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"TT-91",
 					this,
 					.25293,
@@ -808,7 +802,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"CXK-3",
 					this,
 					.0723,
@@ -822,7 +816,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"QIM-8",
 					this,
 					.16406,
@@ -836,7 +830,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"VXM-11",
 					this,
 					.2783,
@@ -850,7 +844,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"F3L-1",
 					this,
 					.072265,
@@ -864,7 +858,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"KRY-2",
 					this,
 					.2334,
@@ -878,7 +872,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"SUNDER",
 					this,
 					.3916,
@@ -895,7 +889,7 @@
 			//SPINE
 			//-SIRIUS
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"SIRIUS",
 					this,
 					.6128,
@@ -910,7 +904,7 @@
 			)
 
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"URT-8",
 					this,
 					.7207,
@@ -924,7 +918,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"VERTIGO",
 					this,
 					.7207,
@@ -938,7 +932,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"LM-77",
 					this,
 					.83886,
@@ -952,7 +946,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"TNS-44f",
 					this,
 					.76465,
@@ -966,7 +960,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"HL-81",
 					this,
 					.76465,
@@ -980,7 +974,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"KTR-18",
 					this,
 					.76465,
@@ -994,7 +988,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"ANCHOR",
 					this,
 					.76465,
@@ -1008,7 +1002,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"AXIS",
 					this,
 					.8779,
@@ -1022,7 +1016,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"JCT-3",
 					this,
 					.90625,
@@ -1036,7 +1030,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"PRM-16",
 					this,
 					.911133,
@@ -1050,7 +1044,7 @@
 				) {}
 			)
 			mapStateFeatures.add(
-				MapButtonDisplay(
+				SystemMapFeature(
 					"STR-29",
 					this,
 					.83789,
@@ -1085,6 +1079,10 @@
 					-sizeY,
 					0.5 - 0.25 * dz - 0.5 * sizeX * dx
 				)
+			).add(
+				offset.x * dz + offset.z * dx,
+				offset.y,
+				offset.x * dx + offset.z * dz
 			)
 		}
 

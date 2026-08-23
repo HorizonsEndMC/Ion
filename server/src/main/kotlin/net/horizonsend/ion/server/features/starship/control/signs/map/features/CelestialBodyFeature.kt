@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.features.starship.control.signs.map.celestialBodyMapScale
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 
 class CelestialBodyFeature(
@@ -19,9 +19,10 @@ class CelestialBodyFeature(
 	offset: Double,
 	relativeFeature: MapFeature? = null,
 	info: Component,
-	color: NamedTextColor,
+	color: Color,
 	val body: CelestialBody,
-) : MapFeatureWithInfotext(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, info, color) {
+	function: (it: DisplayMap) -> Unit
+) : MapFeatureWithInfotext(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, info, color, function) {
 	override fun tick() {
 		//check if the body is out of range
 		val offset = (map.ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / map.maxDistance)

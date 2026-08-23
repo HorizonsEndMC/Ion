@@ -15,7 +15,7 @@ import org.bukkit.util.Vector
 
 //All of these are stored under the font Special
 enum class MapTextIcon(val char: Char) {
-	BORDER_RIGHT_MISSING('\ueBF1'), //ascent 0, height 1
+	BORDER_RIGHT_MISSING('\ueBF1'), //ascent 6, height 8
 	ONE_PIXEL('\ueBF2'), //ascent 0, height 1
 	CIRCLE_HOLLOW('\ueBF3'), //ascent 7, height 8
 	CIRCLE_FILLED_TRANSPARENT('\ueBF4'); //ascent 7, height 8
@@ -32,9 +32,9 @@ fun shipScale(displayMap: DisplayMap) = when (displayMap.maxDistance) {
 }
 
 fun celestialBodyMapScale(body: CelestialBody, displayMap: DisplayMap) = when (body) {
-	is CachedPlanet -> body.size*(150.0/displayMap.maxDistance)
-	is CachedStar -> 2.0*body.outerSphereRadius.d()/displayMap.maxDistance
-	else -> {1.0*(225.0/displayMap.maxDistance)}
+	is CachedPlanet -> body.size*(360.0/displayMap.maxDistance)
+	is CachedStar -> (2.0*body.outerSphereRadius.d())/displayMap.maxDistance
+	else -> {1.0*(160.0/displayMap.maxDistance)}
 }
 
 fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {

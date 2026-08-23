@@ -20,7 +20,7 @@ import org.bukkit.util.Vector
  * @property itemStack the item stack used in the item Display
  * @property offset is the space in the z relative axis you want the display to appear.
  */
-class MapButtonDisplay(
+open class MapButtonDisplay(
 	identifier: String,
 	map: DisplayMap,
 	rx: Double,
@@ -35,7 +35,7 @@ class MapButtonDisplay(
 ) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
 
 	val interaction: Interaction = map.location.world.spawnEntity(
-		this.location().add(if(this.display is TextDisplay) Vector(0.0,-sizeY/16.0, 0.0) else Vector()),
+		this.location().add(if (itemStack== null&&component==null) Vector(0,0,0) else Vector(0.0,-sizeY,0.0)),
 		EntityType.INTERACTION
 	) as Interaction
 
@@ -52,7 +52,7 @@ class MapButtonDisplay(
 		return entities.filterIsInstance<Display>()
 	}
 
-	fun onClick() {
+	open fun onClick() {
 		function.invoke(map)
 	}
 

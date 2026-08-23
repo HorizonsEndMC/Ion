@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.signs.map.features
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 
 class BeaconMapFeature(
@@ -18,9 +18,10 @@ class BeaconMapFeature(
 	offset: Double,
 	relativeFeature: MapFeature? = null,
 	info: Component,
-	color: NamedTextColor,
+	color: Color,
 	val beacon: ServerConfiguration.HyperspaceBeacon,
-) : MapFeatureWithInfotext(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, info, color) {
+	function: (it: DisplayMap) -> Unit,
+	) : MapFeatureWithInfotext(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, info, color, function) {
 	override fun tick() {
 		//check if the beacon is out of range
 		val offset = (map.ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / map.maxDistance)
