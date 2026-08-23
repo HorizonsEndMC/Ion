@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
-import kotlinx.coroutines.CompletableDeferred
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.starship.Starship

@@ -11,7 +11,6 @@
 	import net.horizonsend.ion.common.utils.text.ofChildren
 	import net.horizonsend.ion.common.utils.text.plainText
 	import net.horizonsend.ion.server.configuration.ServerConfiguration
-	import net.horizonsend.ion.server.features.client.display.HudIcons
 	import net.horizonsend.ion.server.features.gui.GuiItem
 	import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 	import net.horizonsend.ion.server.features.sidebar.Sidebar
@@ -52,7 +51,6 @@
 	import org.bukkit.event.EventPriority
 	import org.bukkit.event.player.PlayerInteractEntityEvent
 	import org.bukkit.inventory.ItemStack
-	import org.bukkit.util.Transformation
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
 	import org.joml.Vector3f
@@ -350,15 +348,12 @@
 			val starScale = celestialBodyMapScale(body, this)
 			val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
-			//val itemStack: ItemStack? = if (body is CachedPlanet) body.planetIconFactory.construct() else null
 			val itemStack: ItemStack? =
 				when (body) {
 					is CachedPlanet -> body.planetIconFactory.construct()
 					is CachedStar -> body.starIconFactory.construct()
 					else -> null
 				}
-			HudIcons
-			//val component: Component? = if (body is CachedStar) Component.text(SidebarIcon.STAR_ICON.text, NamedTextColor.YELLOW).font(Sidebar.fontKey) else null
 			val component = null
 
 			val cbf = CelestialBodyFeature(
@@ -1064,7 +1059,7 @@
 			}
 		}
 
-		private val WORLD_UP = Vector(0.0, 1.0, 0.0)
+		private val worldUpBasisVector = Vector(0.0, 1.0, 0.0)
 
 		/*
 		Builds the local (right, up) basis for the display plane from its facing direction `dir`.
@@ -1077,7 +1072,7 @@
 
 			// Fallback axis for when dir is (near) straight up/down, where forward x worldUp
 			// collapses to a zero vector and can't be normalized.
-			val reference = if (Math.abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else WORLD_UP
+			val reference = if (Math.abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector
 
 			val right = forward.clone().crossProduct(reference).normalize()
 			val up = right.clone().crossProduct(forward).normalize()
@@ -1152,11 +1147,7 @@
 		}
 
 		companion object : SLEventListener() {
-			private fun Transformation.clone(): Transformation =
-				Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)
-
 			fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
-
 
 			@EventHandler
 			private fun onPlayerInteractWithInteraction(event: PlayerInteractEntityEvent) {

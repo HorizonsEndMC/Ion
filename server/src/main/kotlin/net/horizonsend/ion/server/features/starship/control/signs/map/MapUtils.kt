@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.kyori.adventure.text.Component
+import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 
 //All of these are stored under the font Special
@@ -69,3 +70,7 @@ fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Ve
 				.distance(centerOfMass) <= maxDistance
 	}
 }
+
+fun Transformation.clone(): Transformation =
+	Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)
+

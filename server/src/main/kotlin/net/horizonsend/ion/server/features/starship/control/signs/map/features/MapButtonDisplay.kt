@@ -19,6 +19,7 @@ import org.bukkit.util.Vector
  * @property ry relative y coordinate to spawn at
  * @property itemStack the item stack used in the item Display
  * @property offset is the space in the z relative axis you want the display to appear.
+ * @property relativeFeature is the feature that this button should align with
  */
 open class MapButtonDisplay(
 	identifier: String,
