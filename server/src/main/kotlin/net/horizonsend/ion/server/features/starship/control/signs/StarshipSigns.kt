@@ -29,7 +29,6 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.joml.Vector3d
-import org.joml.Vector3f
 import java.util.*
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
@@ -167,17 +166,17 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 		}
 	},
 
-	MAP("[map]", arrayOf(text("Display", DARK_AQUA),null,null,null)){
+	MAP("[map]", arrayOf(text("Map", DARK_AQUA),null,null,null)){
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPlayerStarship(player) ?: return
-			spawnEntity(starship,sign)
+			addMapToStarship(starship,sign)
 		}
 
 		override fun onStarshipPilot(starship: Starship, sign: Sign) {
-			spawnEntity(starship, sign)
+			addMapToStarship(starship, sign)
 		}
 
-		fun spawnEntity(starship: Starship, sign: Sign) {
+		fun addMapToStarship(starship: Starship, sign: Sign) {
 			val size = sign.lines[1].split(" ")
 			var sizeX: Double? = null
 			var sizeY: Double? = null
@@ -205,7 +204,6 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			dir.rotateAroundAxis(pitchAxis, pitch)
 			val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
 			starship.displayMaps.add(map)
-			map.init()
 		}
 	};
 

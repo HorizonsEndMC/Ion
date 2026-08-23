@@ -54,6 +54,7 @@
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
 	import org.joml.Vector3f
+	import kotlin.math.abs
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
 		val shiftPerLayer = .005
@@ -1072,7 +1073,7 @@
 
 			// Fallback axis for when dir is (near) straight up/down, where forward x worldUp
 			// collapses to a zero vector and can't be normalized.
-			val reference = if (Math.abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector
+			val reference = if (abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector
 
 			val right = forward.clone().crossProduct(reference).normalize()
 			val up = right.clone().crossProduct(forward).normalize()
@@ -1088,6 +1089,9 @@
 			val (right, up) = displayBasis()
 			val oppositeDir = dir.clone().multiply(-1)
 
+			val shipRight = ship.forward.direction.normalize().crossProduct( if (abs(ship.forward.direction.normalize().y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector)
+			val shipOpposite = ship.forward.oppositeFace.direction
+
 			return location.clone().add(
 				// centers the displayEntity onto the center of the block
 				Vector(0.5, 0.0, 0.5)
@@ -1095,16 +1099,16 @@
 					.add(right.clone().multiply(0.5 * sizeX))
 					.add(up.clone().multiply(-sizeY))
 			).add(
-				right.clone().multiply(offset.x)
+				shipRight.clone().multiply(offset.x)
 					.add(up.clone().multiply(offset.y))
-					.add(oppositeDir.clone().multiply(offset.z))
+					.add(shipOpposite.clone().multiply(offset.z))
 			)
 		}
 
 		/**
 		 * This function generates a location on the map, from the relative coordinates provided.
 		 * Values for x and y must be between 0 and 1
-		 * An example for its useage would be rx = .5, ry = .5. Which would be the center of the display.
+		 * An example for its usage would be rx = .5, ry = .5. Which would be the center of the display.
 		 *
 		 * @rx: relative x
 		 * @ry: relative y
