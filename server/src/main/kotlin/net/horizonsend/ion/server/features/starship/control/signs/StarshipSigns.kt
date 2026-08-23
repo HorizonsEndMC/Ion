@@ -27,6 +27,7 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import org.joml.Vector3d
 import org.joml.Vector3f
 import java.util.*
@@ -180,24 +181,28 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			val size = sign.lines[1].split(" ")
 			var sizeX: Double? = null
 			var sizeY: Double? = null
+
 			try {
 				sizeX = size[0].toDouble()
 				sizeY = size[1].toDouble()
 			}catch (_: Exception) {}
+
 			var offset: Vector3d? = null
 			try {
 				val offsetText = sign.lines[2].split(" ")
 				offset = Vector3d(offsetText[0].toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
 			}catch (_: Exception){}
+
 			var pitch = 0.0
 			try {
 				pitch = sign.lines[3].toDouble()
 			}catch(_: Exception){}
 
 			val dir = sign.getFacing().direction.clone()
-			println(pitch)
 			pitch = Math.toRadians(pitch)
-			dir.rotateAroundX(-pitch)
+			val pitchAxis = dir.clone().crossProduct(Vector(0.0, 1.0, 0.0)).normalize()
+
+			dir.rotateAroundAxis(pitchAxis, pitch)
 			val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
 			starship.displayMaps.add(map)
 			map.init()

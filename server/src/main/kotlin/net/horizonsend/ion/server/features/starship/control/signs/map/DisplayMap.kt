@@ -58,7 +58,7 @@
 	import org.joml.Vector3f
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
-		val shiftPerLayer = 0.0025
+		val shiftPerLayer = .005
 
 		var state: MapState = MapState.LOCAL_MAP
 		val absoluteMaxDistance = 10000.0
@@ -164,7 +164,7 @@
 						NamespacedKeys.packKey("achievement_icon/hyperspace")
 					),
 					null,
-					4.0
+					10.0
 				) {
 					when (it.state) {
 						MapState.LOCAL_MAP -> {
@@ -197,7 +197,7 @@
 					3.0 / 32.0,
 					ItemStack(Material.PAPER).applyGuiModel(GuiItem.PLUS),
 					null,
-					4.0,
+					10.0,
 				) {
 					it.maxDistance += 1000.0
 					if (maxDistance >= absoluteMaxDistance+1000.0) {
@@ -221,7 +221,7 @@
 					3.0 / 32.0,
 					ItemStack(Material.PAPER).applyGuiModel(GuiItem.MINUS),
 					null,
-					4.0,
+					10.0,
 				) {
 					it.maxDistance -= 1000.0
 					if (maxDistance <= absoluteMinimumMaxDistance-1000.0) {
@@ -251,7 +251,7 @@
 					NamespacedKeys.packKey("map/grid_lines")
 				),
 				null,
-				4.0
+				1.2
 			)
 
 			stateMap = backgroundMap
@@ -268,7 +268,7 @@
 					Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(Sidebar.fontKey),
 					Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
 				),
-				8.1
+				10.0
 			)
 
 			val maxDistanceMap = MapFeature(
@@ -280,7 +280,7 @@
 				.03,
 				null,
 				Component.text("Max Distance: $maxDistance"),
-				8.1
+				5.1
 			)
 
 			mapStateFeatures.add(maxDistanceMap)
@@ -332,7 +332,7 @@
 					Component.text(icon, color).font(Sidebar.fontKey),
 					MapTextIcon.ONE_PIXEL.component(),
 				),
-				8.0,
+				10.0,
 				this.stateMap,
 				Component.text(""),
 				Color.fromARGB(color.asShadowColor(255).value()),
@@ -370,7 +370,7 @@
 				starScale,
 				component,
 				itemStack,
-				7.9,
+				9.9,
 				this.stateMap!!,
 				Component.text(identifier, null, BOLD),
 				Color.fromARGB(0,0,0,0),
@@ -397,7 +397,7 @@
 				beaconScale,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
-				7.9,
+				9.9,
 				this.stateMap!!,
 				Component.text(beacon.name, null, BOLD),
 				Color.fromARGB(200, 255, 255, 255),
@@ -1064,25 +1064,45 @@
 			}
 		}
 
+		private val WORLD_UP = Vector(0.0, 1.0, 0.0)
+
+		/*
+		Builds the local (right, up) basis for the display plane from its facing direction `dir`.
+		`right` is derived from dir × worldUp, so it stays level with the horizon (pure yaw).
+		`up` is derived from right × dir, so it tilts correctly as dir gains a y-component from pitch,
+		instead of always being assumed to equal (0,1,0) like before.
+		*/
+		private fun displayBasis(): Pair<Vector, Vector> {
+			val forward = dir.clone().normalize()
+
+			// Fallback axis for when dir is (near) straight up/down, where forward x worldUp
+			// collapses to a zero vector and can't be normalized.
+			val reference = if (Math.abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else WORLD_UP
+
+			val right = forward.clone().crossProduct(reference).normalize()
+			val up = right.clone().crossProduct(forward).normalize()
+			return right to up
+		}
+
 		/*
 		The following maths serves to center a given displayEntity onto the center of the location given.
 		The maths is most useful for a given text display of sizeX & sizeY, as it will center the center of the text display
-		onto the center of the block.
+		onto the center of the block. Now respects full 3D rotation (yaw + pitch), not just yaw.
 		*/
 		fun displayLocation(): Location {
+			val (right, up) = displayBasis()
 			val oppositeDir = dir.clone().multiply(-1)
-			val dx = oppositeDir.x
-			val dz = oppositeDir.z
-			return location.clone().add(//the following vector maths, centers the displayEntity onto the center of the block
-				Vector(
-					0.5 - 0.25 * dx + 0.5 * sizeX * dz,
-					-sizeY,
-					0.5 - 0.25 * dz - 0.5 * sizeX * dx
-				)
+
+			return location.clone().add(
+				// centers the displayEntity onto the center of the block
+				Vector(0.5, 0.0, 0.5)
+					.add(oppositeDir.clone().multiply(-0.25))
+					.add(right.clone().multiply(0.5 * sizeX))
+					.add(up.clone().multiply(-sizeY))
 			).add(
-				offset.x * dz + offset.z * dx,
-				offset.y,
-				offset.x * dx + offset.z * dz
+				right.clone().multiply(offset.x)
+					.add(up.clone().multiply(offset.y))
+					.add(oppositeDir.clone().multiply(offset.z))
 			)
 		}
 
@@ -1097,16 +1117,13 @@
 		 * @return the location to set as the basis of the feature.
 		 */
 		fun locationAtRelativeCoordinates(rx: Double, ry: Double, isTextDisplay: Boolean): Location {
-			val isTextDisplay = isTextDisplay
-			val oppositeDir = dir.clone().multiply(-1)
-			val dx = oppositeDir.x
-			val dz = oppositeDir.z
+			val (right, up) = displayBasis()
+
 			return displayLocation().clone().add(
-				Vector(
-					rx * sizeX * -dz,
-					(sizeY * ry) + sizeY - 0.05 * sizeY * (if (isTextDisplay) 1.0 else 0.0),
-					-rx * sizeX * -dx
-				)
+				right.clone().multiply(-rx * sizeX)
+					.add(up.clone().multiply(
+						(sizeY * ry) + sizeY - 0.05 * sizeY * (if (isTextDisplay) 1.0 else 0.0)
+					))
 			)
 		}
 

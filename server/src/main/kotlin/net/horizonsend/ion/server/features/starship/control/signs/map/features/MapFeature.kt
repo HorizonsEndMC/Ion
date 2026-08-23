@@ -44,19 +44,6 @@ open class MapFeature(
 	val entities = mutableListOf<Entity>()
 	protected var display: Display? = null
 
-	/*
-	The following maths scales the coordinate axis specified in rx and ry of this class, to the size and rx/ry value of the
-	relative feature class. This allows for quick and easy placement of features atop another
-	For reference, its quite literally just the general formula for linear interpolation.
-	Given that the bound of rx is [0,1] and the bound of relative Feature is [rx-sizeX, rx+sizeX] = [x,y]
-	Then the formula used is:
-	relativeCoordinate(z) = x + z*(y-x)
-
-	Where z is either rx or ry
-
-	The last step for getting the location is to get the relative shift in the axis perpendicular to the text display.
-	This is a key step to stop z fighting, and to allow the overall display to have some depth.
-	 */
 	open fun location() = map.locationAtRelativeCoordinates(
 		(((relativeFeature?.rx ?: 0.0) - (relativeFeature?.sizeX ?: 0.0) / 2.0) + (rx).times(
 			(((relativeFeature?.rx ?: 1.0) + (relativeFeature?.sizeX ?: 1.0) / 2.0) - ((relativeFeature?.rx
@@ -94,7 +81,7 @@ open class MapFeature(
 				Vector3d(
 					sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
 					sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
-					0.0001
+					0.1
 				).toVector3f(),
 				Quaternionf()
 			)
