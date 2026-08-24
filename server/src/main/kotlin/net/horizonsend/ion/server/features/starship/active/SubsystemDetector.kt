@@ -179,7 +179,7 @@ object SubsystemDetector {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
 		}
 
-		if (sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("display")) {
+		if (sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("map")) {
 			StarshipSigns.MAP.onStarshipPilot(starship, sign)
 		}
 

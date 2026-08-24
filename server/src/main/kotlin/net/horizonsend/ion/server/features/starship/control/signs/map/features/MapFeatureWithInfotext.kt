@@ -66,7 +66,7 @@ open class MapFeatureWithInfotext(
 		}
 
 		this.infoDisplay?.transformation = Transformation(
-			Vector3f(0f,0f,0f),
+			Vector3f(0f, (-sizeY/64.0).toFloat(),0f),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
 			Vector3d(
 				(sizeX)*.75 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),

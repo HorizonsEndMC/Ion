@@ -42,7 +42,7 @@ open class MapFeature(
 	val relativeFeature: MapFeature? = null
 ) {
 	val entities = mutableListOf<Entity>()
-	protected var display: Display? = null
+	var display: Display? = null; private set
 
 	open fun location() = map.locationAtRelativeCoordinates(
 		(((relativeFeature?.rx ?: 0.0) - (relativeFeature?.sizeX ?: 0.0) / 2.0) + (rx).times(

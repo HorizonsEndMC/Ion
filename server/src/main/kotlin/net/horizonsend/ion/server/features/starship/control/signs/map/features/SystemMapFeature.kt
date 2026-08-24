@@ -22,29 +22,22 @@ class SystemMapFeature(
 	function: (it: DisplayMap) -> Unit = {}
 ): MapButtonDisplay(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, function) {
 	override fun onClick() {
-		println("x")
 		if (map.ship.playerPilot!=null) {
-			println("y")
 			val beaconsInSystem = ConfigurationFiles.serverConfiguration().beacons.filter {
 				it.spaceLocation.bukkitWorld().name.equals(identifier, ignoreCase = true)
 			}
-			println("z")
 			val vertex = WaypointManager.playerGraphs[map.ship.playerPilot!!.uniqueId]?.let { graph -> WaypointManager.getVertex(
 				graph,
 				beaconsInSystem.first().name)
 			}
-			println("c")
 			val lastWaypoint = WaypointManager.playerPaths[map.ship.playerPilot!!.uniqueId]?.first()?.edgeList
 			if (lastWaypoint?.last()?.target?.loc?.world == lastWaypoint?.last()?.source?.loc?.world){
 				lastWaypoint?.removeLast()
 			}
-			println("v")
 
 			if (vertex != null) {
 				WaypointCommand.addVertexToRoute(map.ship.playerPilot!!, vertex)
-				println("b")
 			}
-			println("n")
 		}
 	}
 }

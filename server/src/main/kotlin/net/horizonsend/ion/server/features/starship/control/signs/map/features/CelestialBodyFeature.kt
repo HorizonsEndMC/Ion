@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
+import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.features.starship.control.signs.map.celestialBodyMapScale
@@ -23,6 +24,10 @@ class CelestialBodyFeature(
 	val body: CelestialBody,
 	function: (it: DisplayMap) -> Unit
 ) : MapFeatureWithInfotext(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, info, color, function) {
+	override fun init() {
+		super.init()
+		if (body is CachedStar) interaction.remove()
+	}
 	override fun tick() {
 		//check if the body is out of range
 		val offset = (map.ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / map.maxDistance)

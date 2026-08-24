@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.body.CelestialBody
@@ -11,8 +12,10 @@ import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.kyori.adventure.text.Component
+import org.bukkit.block.BlockFace
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
+import kotlin.math.pow
 
 //All of these are stored under the font Special
 enum class MapTextIcon(val char: Char) {
@@ -25,6 +28,17 @@ enum class MapTextIcon(val char: Char) {
 	}
 }
 
+fun getSidebarKeyToUse(ship: Starship) = when(ship.forward){
+	BlockFace.NORTH -> Sidebar.fontKey
+	BlockFace.EAST -> Sidebar.fontKey90
+	BlockFace.SOUTH -> Sidebar.fontKey180
+	BlockFace.WEST -> Sidebar.fontKey270
+
+	else -> {
+		Sidebar.fontKey
+	}
+}
+
 fun shipScale(displayMap: DisplayMap) = when (displayMap.maxDistance) {
 	1000.0 -> .05
 	2000.0 -> .035
@@ -33,8 +47,8 @@ fun shipScale(displayMap: DisplayMap) = when (displayMap.maxDistance) {
 }
 
 fun celestialBodyMapScale(body: CelestialBody, displayMap: DisplayMap) = when (body) {
-	is CachedPlanet -> body.size*(360.0/displayMap.maxDistance)
-	is CachedStar -> (2.0*body.outerSphereRadius.d())/displayMap.maxDistance
+	is CachedPlanet -> body.size*(360.0/(displayMap.maxDistance.pow(.95)))
+	is CachedStar -> (4.0*body.outerSphereRadius.d())/(displayMap.maxDistance.pow(.95))
 	else -> {1.0*(160.0/displayMap.maxDistance)}
 }
 

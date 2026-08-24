@@ -16,6 +16,10 @@ import java.util.UUID
 
 object Sidebar : IonServerComponent() {
 	val fontKey = Key.key("horizonsend:sidebar")
+	val fontKey90 = Key.key("horizonsend:sidebar90")
+	val fontKey180 = Key.key("horizonsend:sidebar180")
+	val fontKey270 = Key.key("horizonsend:sidebar270")
+
 
 	private val playerSidebars: MutableMap<UUID, MainSidebar> = Collections.synchronizedMap(mutableMapOf<UUID, MainSidebar>())
 	private val scoreboardLibrary by lazy {

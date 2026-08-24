@@ -13,7 +13,6 @@
 	import net.horizonsend.ion.server.configuration.ServerConfiguration
 	import net.horizonsend.ion.server.features.gui.GuiItem
 	import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
-	import net.horizonsend.ion.server.features.sidebar.Sidebar
 	import net.horizonsend.ion.server.features.space.body.CachedStar
 	import net.horizonsend.ion.server.features.space.body.CelestialBody
 	import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
@@ -60,6 +59,8 @@
 		val shiftPerLayer = .005
 
 		var state: MapState = MapState.LOCAL_MAP
+		var mapInitialized = false;
+
 		val absoluteMaxDistance = 10000.0
 		val absoluteMinimumMaxDistance = 1000.0
 		var maxDistance = 1000.0
@@ -67,7 +68,6 @@
 		val shipsTracked = mutableMapOf<Starship, ShipMapFeature>()
 		val celestialBodiesTracked = mutableMapOf<CelestialBody, CelestialBodyFeature>()
 		val beaconTracked = mutableMapOf<ServerConfiguration.HyperspaceBeacon, BeaconMapFeature>()
-
 
 		var stateMap: MapFeature? = null
 		//Map features that are common to all the map states
@@ -92,30 +92,40 @@
 				mapButtonDisplay.init()
 				ship.entityPassengers.addAll(mapButtonDisplay.entities)
 			}
+			mapInitialized = true
 		}
 
 		fun tick() {
+			if (!mapInitialized) init()
 			if (state == MapState.LOCAL_MAP) {
-				val shipsInRange = shipsInRange(maxDistance, ship)
-				val centerOfMass = ship.centerOfMass.toVector()
-				val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass)
-				for (ship in shipsInRange) {
-					if (shipsTracked.containsKey(ship)) continue
-					else {
-						shipsTracked[ship] = generateShipMapFeature(ship)
+				try {
+					val shipsInRange = shipsInRange(maxDistance, ship)
+					val centerOfMass = ship.centerOfMass.toVector()
+					val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass)
+					for (ship in shipsInRange) {
+						if (shipsTracked.containsKey(ship)) continue
+						else {
+							shipsTracked[ship] = generateShipMapFeature(ship)
+						}
+					}
+
+					for (body in bodiesInRange) {
+						if (celestialBodiesTracked.containsKey(body)) continue
+						else {
+							celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+						}
+					}
+
+					(mapStateFeatures.find { it.identifier == "THIS_SHIP" }?.display as TextDisplay).text(
+						ofChildren(
+							Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(getSidebarKeyToUse(ship)),
+						)
+					)
+					mapStateFeatures.toList().forEach {
+						it.tick()
 					}
 				}
-
-				for(body in bodiesInRange) {
-					if (celestialBodiesTracked.containsKey(body)) continue
-					else{
-						celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
-					}
-				}
-
-				mapStateFeatures.toList().forEach {
-					it.tick()
-				}
+				catch(_: Exception){}
 			}
 		}
 
@@ -203,9 +213,9 @@
 						maxDistance = absoluteMaxDistance
 					}
 					(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
-						Component.text("Max Distance: ${maxDistance/2.0}")
+						Component.text("Square Size: ${maxDistance/4.0}"),
 					)
-					ship.successAction("Set max distance to ${it.maxDistance/2.0}m")
+					ship.successAction("Set radius to ${it.maxDistance/2.0}m")
 				}
 			)
 
@@ -227,9 +237,9 @@
 						maxDistance = absoluteMinimumMaxDistance
 					}
 					(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
-						Component.text("Max Distance: ${maxDistance/2.0}")
+						Component.text("Square Size: ${maxDistance/4.0}"),
 					)
-					ship.successAction("Set max distance to ${maxDistance/2.0}m")
+					ship.successAction("Set radius to ${maxDistance/2.0}m")
 				}
 			)
 		}
@@ -264,7 +274,7 @@
 				.04,
 				null,
 				ofChildren(
-					Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(Sidebar.fontKey),
+					Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(getSidebarKeyToUse(ship)),
 					Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
 				),
 				10.0
@@ -278,8 +288,8 @@
 				.03,
 				.03,
 				null,
-				Component.text("Max Distance: $maxDistance"),
-				5.1
+				Component.text("Square Size: ${maxDistance/4.0}"),
+				10.1
 			)
 
 			mapStateFeatures.add(maxDistanceMap)
@@ -326,11 +336,10 @@
 				shipScale,
 				shipScale,
 				ofChildren(
-					//\ueBF2 is a 1x1px character of literally nothing. Used for padding to avoid stretching below
 					MapTextIcon.ONE_PIXEL.component(),
-					Component.text(icon, color).font(Sidebar.fontKey),
+					Component.text(icon, color).font(getSidebarKeyToUse(ship)),
 					MapTextIcon.ONE_PIXEL.component(),
-				),
+					),
 				10.0,
 				this.stateMap,
 				Component.text(""),

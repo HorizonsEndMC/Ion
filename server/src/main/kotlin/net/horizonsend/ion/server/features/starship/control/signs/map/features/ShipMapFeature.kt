@@ -1,13 +1,18 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
+import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
+import net.horizonsend.ion.server.features.starship.control.signs.map.MapTextIcon
+import net.horizonsend.ion.server.features.starship.control.signs.map.getSidebarKeyToUse
 import net.horizonsend.ion.server.features.starship.control.signs.map.shipScale
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
+import org.bukkit.entity.TextDisplay
 
 /**
  * Ship map feature is the encapsulation of the Map feature of a starship on the map + the textDisplay with the info, and the
@@ -56,7 +61,7 @@ class ShipMapFeature(
 			this.despawn()
 		}
 
-		this.rx = .5+offset.x
+		this.rx = .5-offset.x
 		this.ry = .5+offset.z
 
 		val shipScale = shipScale(map)
@@ -65,6 +70,20 @@ class ShipMapFeature(
 		this.sizeY = shipScale
 
 		this.infoDisplay?.text(generateDistanceText())
+
+		val icon = ship.type.icon
+
+		var color = ship.getRelation(ship).color
+		if (ship.playerPilot != null && ship.playerPilot != null) {
+			if (Fleets.findByMember(ship.playerPilot!!)?.contains(ship.playerPilot!!) == true) {
+				color = NamedTextColor.BLUE
+			}
+		}
+
+		(this.display as? TextDisplay)?.text(ofChildren(
+			MapTextIcon.ONE_PIXEL.component(),
+			Component.text(icon, color).font(getSidebarKeyToUse(ship)),
+		))
 
 		super.tick()
 	}
