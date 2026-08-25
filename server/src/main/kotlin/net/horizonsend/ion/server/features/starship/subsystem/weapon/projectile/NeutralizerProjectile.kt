@@ -75,7 +75,7 @@ class NeutralizerProjectile(
 			}
 		}
 
-		val task = Tasks.syncRepeatTask(0L, 5L) {
+		val task = Tasks.syncRepeatTask(0L, 3L) {
 			val endLocation = subsystem.getFirePos().toLocation(shooterStarship.world).toCenterLocation()
 
 			for (startPoint in impactLocation.circlePoints(5.0, 10, direction)) {
