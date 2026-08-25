@@ -245,7 +245,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
 
-	private val jumpFieldGeneratorCooldown = object : PerPlayerCooldown(5L, TimeUnit.MINUTES) {
+	private val jumpFieldGeneratorCooldown = object : PerPlayerCooldown(2L, TimeUnit.MINUTES) {
 		override fun cooldownRejected(player: UUID) {
 			Bukkit.getPlayer(player)?.userError("Your jump field generator cannot activate that frequently!")
 		}
@@ -363,9 +363,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					sender.userError("Cannot jump to a player in a different space region!")
 					sender.sendRichMessage(addToRouteMessage)
 					return
-				} else if (starship.world.ion.hasFlag(WorldFlag.CORE_REGION_WORLD)) {
-					sender.userError("You cannot jump to a beacon from a core world!")
-					return
 				}
 			} else {
 				// Sender was not jumping to a player, always fail and ask to add to route
@@ -391,7 +388,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private val jumpBeaconCooldown = object : PerPlayerCooldown(5L, TimeUnit.MINUTES) {
+	private val jumpBeaconCooldown = object : PerPlayerCooldown(2L, TimeUnit.MINUTES) {
 		override fun cooldownRejected(player: UUID) {
 			Bukkit.getPlayer(player)?.userError("Your jump beacon cannot switch on/off that frequently!")
 		}
@@ -415,8 +412,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(starship.isDirectControlEnabled || starship.isMoving || StarshipCruising.isCruising(starship)) { "You cannot use a jump beacon while moving!" }
 
 		failIf(!starship.world.hasFlag(WorldFlag.SPACE_WORLD)) { "You can only activate jump beacons in space!" }
-
-		failIf(starship.world.hasFlag(WorldFlag.CORE_REGION_WORLD)) { "You cannot activate a jump beacon in a core world!" }
 
 		jumpBeaconCooldown.tryExec(sender) {
 			starship.enableJumpBeacon()

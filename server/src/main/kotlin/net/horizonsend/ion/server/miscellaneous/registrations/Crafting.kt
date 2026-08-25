@@ -380,7 +380,7 @@ object Crafting : IonServerComponent() {
 		shapeless("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), CraftingBookCategory.MISC, SEA_LANTERN)
 		shapeless("pink_petals", ItemStack(PINK_PETALS, 4), CraftingBookCategory.BUILDING, CHERRY_LEAVES)
 		shapeless("nether_warts", ItemStack(NETHER_WART, 9), CraftingBookCategory.BUILDING, NETHER_WART_BLOCK)
-		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), CraftingBookCategory.MISC, HONEYCOMB_BLOCK)
+		shapeless("honeycomb", ItemStack(HONEYCOMB, 4), CraftingBookCategory.MISC, HONEYCOMB_BLOCK)
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", CraftingBookCategory.BUILDING, 's' to STRING)
 		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ", CraftingBookCategory.BUILDING,'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y", CraftingBookCategory.BUILDING, 'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
