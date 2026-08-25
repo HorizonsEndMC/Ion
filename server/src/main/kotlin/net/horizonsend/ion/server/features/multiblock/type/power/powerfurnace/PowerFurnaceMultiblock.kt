@@ -102,7 +102,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 		structureDirection: BlockFace,
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, PoweredMultiblockEntity, LegacyMultiblockEntity, FurnaceBasedMultiblockEntity,
 		DisplayMultiblockEntity {
-		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 10)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(

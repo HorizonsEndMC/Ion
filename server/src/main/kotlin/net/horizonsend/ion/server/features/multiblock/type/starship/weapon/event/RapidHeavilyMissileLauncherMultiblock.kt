@@ -52,11 +52,11 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		z(1) {
 			y(getSign() * 3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(2).anyTerracotta()
-				x(1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(-1).anyTerracotta()
-				x(-2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
+				x(-2).terracottaOrDoubleSlab()
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(getSign() * 4) {
@@ -78,11 +78,11 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		z(0) {
 			y(getSign() * 3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(2).anyTerracotta()
-				x(1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(-1).anyTerracotta()
-				x(-2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
+				x(-2).terracottaOrDoubleSlab()
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(getSign() * 4) {
@@ -105,11 +105,11 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		z(-1) {
 			y(getSign() * 3) {
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(2).anyTerracotta()
-				x(1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(-1).anyTerracotta()
-				x(-2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
+				x(-2).terracottaOrDoubleSlab()
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(getSign() * 4) {
@@ -131,9 +131,9 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		z(2) {
 			y(getSign() * 3) {
 				x(2).ironBlock()
-				x(1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(-1).anyTerracotta()
+				x(1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
 				x(-2).ironBlock()
 			}
 			y(getSign() * 4) {
@@ -145,9 +145,9 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 		z(-2) {
 			y(getSign() * 3) {
 				x(2).ironBlock()
-				x(1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(-1).anyTerracotta()
+				x(1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
 				x(-2).ironBlock()
 			}
 			y(getSign() * 4) {
