@@ -21,23 +21,23 @@ class SystemMapFeature(
 	relativeFeature: MapFeature? = null,
 	function: (it: DisplayMap) -> Unit = {}
 ): MapButtonDisplay(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, function) {
-	override fun onClick() {
-		if (map.ship.playerPilot!=null) {
-			val beaconsInSystem = ConfigurationFiles.serverConfiguration().beacons.filter {
-				it.spaceLocation.bukkitWorld().name.equals(identifier, ignoreCase = true)
-			}
-			val vertex = WaypointManager.playerGraphs[map.ship.playerPilot!!.uniqueId]?.let { graph -> WaypointManager.getVertex(
-				graph,
-				beaconsInSystem.first().name)
-			}
-			val lastWaypoint = WaypointManager.playerPaths[map.ship.playerPilot!!.uniqueId]?.first()?.edgeList
-			if (lastWaypoint?.last()?.target?.loc?.world == lastWaypoint?.last()?.source?.loc?.world){
-				lastWaypoint?.removeLast()
-			}
+	//override fun onClick() {
+	//	if (map.ship.playerPilot!=null) {
+	//		val beaconsInSystem = ConfigurationFiles.serverConfiguration().beacons.filter {
+	//			it.spaceLocation.bukkitWorld().name.equals(identifier, ignoreCase = true)
+	//		}
+	//		val vertex = WaypointManager.playerGraphs[map.ship.playerPilot!!.uniqueId]?.let { graph -> WaypointManager.getVertex(
+	//			graph,
+	//			beaconsInSystem.first().name)
+	//		}
+	//		val lastWaypoint = WaypointManager.playerPaths[map.ship.playerPilot!!.uniqueId]?.first()?.edgeList
+	//		if (lastWaypoint?.last()?.target?.loc?.world == lastWaypoint?.last()?.source?.loc?.world){
+	//			lastWaypoint?.removeLast()
+	//		}
 
-			if (vertex != null) {
-				WaypointCommand.addVertexToRoute(map.ship.playerPilot!!, vertex)
-			}
-		}
-	}
+	//		if (vertex != null) {
+	//			WaypointCommand.addVertexToRoute(map.ship.playerPilot!!, vertex)
+	//		}
+	//	}
+	//}
 }
