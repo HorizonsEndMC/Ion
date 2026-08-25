@@ -1110,7 +1110,7 @@ data class PulseCannonBalancing(
 	@Serializable
 	data class PulseCannonProjectileBalancing(
         override var range: Double = 160.0,
-        override var speed: Double = 230.0,
+        override var speed: Double = 300.0,
         override var explosionPower: Float = 2f,
         override var starshipShieldDamageMultiplier: Double = 2.0,
         override var areaShieldDamageMultiplier: Double = 2.0,
