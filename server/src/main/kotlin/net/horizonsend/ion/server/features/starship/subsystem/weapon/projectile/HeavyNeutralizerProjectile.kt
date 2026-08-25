@@ -63,7 +63,7 @@ class HeavyNeutralizerProjectile(
 			)
 		}
 
-		val task = Tasks.syncRepeatTask(0L, 5L) {
+		val task = Tasks.syncRepeatTask(0L, 3L) {
 			val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world)
 
 			for (startPoint in impactLocation.circlePoints(5.0, 10, direction)) {
