@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
-import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -16,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
@@ -37,7 +35,6 @@ import kotlin.math.roundToInt
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
-import net.horizonsend.ion.server.features.starship.StarshipType
 import kotlin.collections.set
 
 @CommandAlias("starship|starshipinfo")
