@@ -1232,7 +1232,7 @@ enum class StarshipType(
 		minLevel = 90,
 		concretePercent = 0.1,
 		containerPercent = 0.02,
-		crateLimitMultiplier = 3.0,
+		crateLimitMultiplier = 7.0,
 		menuItemRaw = { ItemStack(Material.PEARLESCENT_FROGLIGHT) },
 		displayInMainMenu = false,
 		typeCategory = TypeCategory.TRADE_SHIP,
