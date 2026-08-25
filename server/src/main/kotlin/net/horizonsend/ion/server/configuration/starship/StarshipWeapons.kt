@@ -1111,8 +1111,8 @@ data class PulseCannonBalancing(
 	data class PulseCannonProjectileBalancing(
         override var range: Double = 160.0,
         override var speed: Double = 230.0,
-        override var explosionPower: Float = 1.5f,
-        override var starshipShieldDamageMultiplier: Double = 1.8,
+        override var explosionPower: Float = 2f,
+        override var starshipShieldDamageMultiplier: Double = 2.0,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -1185,8 +1185,8 @@ data class PlasmaCannonBalancing(
 	data class PlasmaCannonProjectileBalancing(
         override var range: Double = 160.0,
         override var speed: Double = 400.0,
-        override var explosionPower: Float = 3f,
-        override var starshipShieldDamageMultiplier: Double = 2.0,
+        override var explosionPower: Float = 4f,
+        override var starshipShieldDamageMultiplier: Double = 3.0,
         override var areaShieldDamageMultiplier: Double = 3.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -1257,8 +1257,8 @@ data class LaserCannonBalancing(
 	data class LaserCannonProjectileBalancing(
         override var range: Double = 200.0,
         override var speed: Double = 250.0,
-        override var explosionPower: Float = 1f,
-        override var starshipShieldDamageMultiplier: Double = 0.2,
+        override var explosionPower: Float = 2f,
+        override var starshipShieldDamageMultiplier: Double = 0.1,
         override var areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
