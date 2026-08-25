@@ -38,6 +38,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.starship.StarshipType
+import kotlin.collections.set
 
 @CommandAlias("starship|starshipinfo")
 object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -251,6 +252,48 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			val minAmmount = amounts.minOrNull() ?: 0
 			val maxjumps = minAmmount.div(Hyperspace.getHyperMatterAmount(starship))
 			sender.sendRichMessage("<gray>You have enough <light_purple><b>Chetherite</b></light_purple> <reset> <gray>for (<white>$maxjumps<gray>) jumps")
+		}
+	}
+
+	@Subcommand("Diagnostics")
+	fun shipDiagnostics(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+		val brokenCounts = mutableMapOf<String, Int>()
+		val intactCounts = mutableMapOf<String, Int>()
+
+		starship.subsystems.forEach { subsystem ->
+			val inTact = subsystem.isIntact()
+			val message = subsystem.toString()
+			val simplerName = message.substringAfterLast('.').substringBefore('@')
+			if (!inTact) {
+				brokenCounts[simplerName] = brokenCounts.getOrDefault(simplerName, 0) + 1
+			} else {
+				intactCounts[simplerName] = intactCounts.getOrDefault(simplerName, 0) + 1
+			}
+
+		sender.sendRichMessage("<dark_gray><bold>=====================================")
+
+			val allCounts = brokenCounts.keys + intactCounts.keys
+
+			allCounts.forEach { name ->
+				val broken = brokenCounts.getOrDefault(name, 0)
+				val intact = intactCounts.getOrDefault(name, 0)
+				val total = broken + intact
+
+				val percent = intact.toFloat() / total.toFloat()
+
+				val color = when {
+					percent >= 1.0 -> "<green>"
+					percent >= 0.75 -> "<yellow>"
+					percent >= 0.5 -> "<gold>"
+					percent >= 0.05 -> "<red>"
+					percent < 0.05 -> "<gray>"
+					else -> "<light_purple>"
+				}
+				sender.sendRichMessage("$color$name</${color.removePrefix("<")}: <white>$intact/$total")
+			}
+
+			sender.sendRichMessage("<dark_gray><bold>=====================================")
 		}
 	}
 
