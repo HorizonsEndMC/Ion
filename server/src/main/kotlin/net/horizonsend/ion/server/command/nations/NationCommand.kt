@@ -1189,7 +1189,7 @@ internal object NationCommand : SLCommand() {
 	@Subcommand("broadcast")
 	fun onBroadcast(sender: Player, message: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
-		requireNationPermission(sender, nationId, NationRole.Permission.BRODCAST)
+		requireNationPermission(sender, nationId, NationRole.Permission.BROADCAST)
 		ServerInboxes.sendToNationMembers(nationId, message.miniMessage())
 	}
 
