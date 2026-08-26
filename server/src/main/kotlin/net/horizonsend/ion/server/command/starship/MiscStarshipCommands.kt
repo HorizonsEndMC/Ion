@@ -429,13 +429,22 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		val targetStarship = ActiveStarships.getByIdentifier(identifier) ?: fail { "No ship found with identifier $identifier!" }
+		val targetStarship = ActiveStarships.getByIdentifier(identifier)
 		if (targetStarship == starship) fail { "Cannot disrupt your own ship!" }
-		if (starship.disruptorTarget == targetStarship) fail { "Already disrupting ${targetStarship.identifier}!" }
+		//if (starship.disruptorTarget == targetStarship) fail { "Already disrupting that target!" }
 		if (starship.isInterdicting) fail { "Cannot interdict and disrupt at the same time!" }
 
 
 		Interdiction.findDisruptor(starship) ?: fail { "Intact Disruptor not found!" }
+		/*
+		If there is no target starship, we pretend to the player that their disruption went through.
+		This is so they cannot figure out if a player is piloting a ship.
+		 */
+		if (targetStarship == null){
+			starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on target Starship!") }
+			starship.disruptorTarget = null
+			return
+		}
 
 		// This sets the disruption target so that it continuously checks and applies, but does not actually
 		// disrupt unless the below conditions are met
