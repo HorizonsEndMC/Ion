@@ -267,6 +267,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			} else {
 				intactCounts[simplerName] = intactCounts.getOrDefault(simplerName, 0) + 1
 			}
+		}
 
 		sender.sendRichMessage("<dark_gray><bold>=====================================")
 
@@ -292,7 +293,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			sender.sendRichMessage("<dark_gray><bold>=====================================")
 		}
-	}
+
 
 	@Subcommand("coverage")
 	fun onHullInfo(sender: Player) {
