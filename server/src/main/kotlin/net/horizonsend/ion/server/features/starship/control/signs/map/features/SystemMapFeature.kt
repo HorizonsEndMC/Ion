@@ -1,13 +1,9 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
-import net.horizonsend.ion.server.features.waypoint.WaypointManager
-import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 
-//TODO ACTUALLY TEST THIS
 class SystemMapFeature(
 	identifier: String,
 	map: DisplayMap,
