@@ -111,26 +111,26 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 			ConfigurationFiles.pvpBalancing().throwables::smokeGrenade
 		) { item, maxTicks, source -> ThrownSmokeGrenade(item, maxTicks, source) }
 
-		//register(CustomItemKeys.PUMPKIN_GRENADE, object : ThrowableCustomItem(
-		//	CustomItemKeys.PUMPKIN_GRENADE,
-		//	"",
-        //    ofChildren(Component.text("Pumpkin ", NamedTextColor.GOLD), Component.text("Grenade", NamedTextColor.GREEN)),
-		//	ConfigurationFiles.pvpBalancing().throwables::detonator
-		//) {
-		//	override val baseItemFactory: ItemFactory = ItemFactory.Preset.builder(ItemFactory.Preset.builder().setMaterial(Material.PUMPKIN).build())
-		//		.setNameSupplier { displayName.itemName }
-		//		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, key.key)
-		//		.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base, this) } }
-		//		.addModifier { base -> decorateItemStack(base) }
-		//		.setLoreSupplier { base -> assembleLore(base) }
-		//		.build()
-//
-		//	override fun assembleLore(itemStack: ItemStack): List<Component> {
-		//		return mutableListOf(Component.text("Spooky", NamedTextColor.LIGHT_PURPLE))
-		//	}
-		//	override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem =
-        //        ThrownPumpkinGrenade(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
-		//})
+		register(CustomItemKeys.PUMPKIN_GRENADE, object : ThrowableCustomItem(
+			CustomItemKeys.PUMPKIN_GRENADE,
+			"",
+            ofChildren(Component.text("Pumpkin ", NamedTextColor.GOLD), Component.text("Grenade", NamedTextColor.GREEN)),
+			ConfigurationFiles.pvpBalancing().throwables::detonator
+		) {
+			override val baseItemFactory: ItemFactory = ItemFactory.Preset.builder(ItemFactory.Preset.builder().setMaterial(Material.PUMPKIN).build())
+				.setNameSupplier { displayName.itemName }
+				.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, key.key)
+				.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base, this) } }
+				.addModifier { base -> decorateItemStack(base) }
+				.setLoreSupplier { base -> assembleLore(base) }
+				.build()
+
+			override fun assembleLore(itemStack: ItemStack): List<Component> {
+				return mutableListOf(Component.text("Spooky", NamedTextColor.LIGHT_PURPLE))
+			}
+			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem =
+				ThrownDetonator(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
+		})
 	}
 
 	private fun registerGuns() {
