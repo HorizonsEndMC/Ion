@@ -139,6 +139,25 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			all
 		}
 
+		manager.commandCompletions.registerAsyncCompletion("jumpPlayerDestinations") { context ->
+			val player = context.player
+			val destinations = linkedSetOf<String>()
+
+			val playerNation = PlayerCache[player].nationOid
+			if (playerNation != null) {
+				Bukkit.getOnlinePlayers()
+					.filter { other -> other != player && PlayerCache[other].nationOid == playerNation }
+					.mapTo(destinations) { it.name }
+			}
+
+			Fleets.findByMember(player)?.playerMembers()
+				?.mapNotNull { uuid -> Bukkit.getPlayer(uuid) }
+				?.filter { other -> other != player }
+				?.mapTo(destinations) { it.name }
+
+			destinations.toList()
+		}
+
 		manager.commandCompletions.setDefaultCompletion("autoTurretTargets", AutoTurretTargeting.AutoTurretTarget::class.java)
 
 		manager.commandCompletions.registerAsyncCompletion("nodes") { context ->
@@ -252,8 +271,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("jump")
-	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@spaceWorlds|@onlineNationMembers")
-	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, another system or a member of your nation")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@jumpPlayerDestinations")
+	@Description("Jump to coordinates, a hyperspace beacon, a planet, or an online fleet or nation member")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val separated = destination.split(",")
 		if (separated.size == 2 && separated.all { runCatching { it.toInt() }.isSuccess }) {
@@ -295,7 +314,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val otherPlayer = Bukkit.getPlayer(destination)
+		val senderFleet = Fleets.findByMember(sender)
 		val otherFleet = if (otherPlayer != null) Fleets.findByMember(otherPlayer) else null
+		val senderNation = PlayerCache[sender].nationOid
+		val isAccessiblePlayerDestination = otherPlayer != null &&
+			((senderFleet != null && otherFleet == senderFleet) ||
+				(senderNation != null && PlayerCache[otherPlayer].nationOid == senderNation))
 
 		val destinationPos = Space.getPlanet(destination)?.let {
 			// Check if the destination is a planet
@@ -321,8 +345,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.y,
 				it.z
 			)
-		} ?: if (otherPlayer != null && otherFleet != null && otherFleet == Fleets.findByMember(sender)) {
-			// Check if the destination is a fleet member
+		} ?: if (isAccessiblePlayerDestination) {
+			// Check if the destination is an online fleet or nation member
 			otherPlayer.location.let {
 				Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt())
 			}
