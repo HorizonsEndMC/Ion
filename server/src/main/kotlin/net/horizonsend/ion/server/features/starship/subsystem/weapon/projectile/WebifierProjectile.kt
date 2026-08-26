@@ -39,7 +39,7 @@ class WebifierProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		val shooterStarship = shooter.starship ?: return
 
-		val task = Tasks.syncRepeatTask(0L, 4L) {
+		val task = Tasks.syncRepeatTask(0L, 2L) {
 			val endLocation = subsystem.getFirePos().toLocation(shooterStarship.world).toCenterLocation()
 
 			for (startPoint in impactLocation.circlePoints(10.0, 30, direction)) {

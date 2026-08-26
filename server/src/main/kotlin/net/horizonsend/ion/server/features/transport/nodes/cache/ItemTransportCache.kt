@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportTask
+import net.horizonsend.ion.server.features.transport.items.util.InventoryLockRegistry
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
 import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.reflect.KClass
 
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder), DestinationCacheHolder {
@@ -58,34 +60,45 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			return
 		}
 
-		val references = mutableMapOf<ItemStack, ArrayDeque<ItemReference>>()
+		// Add a lock to the sources we are using. This stops another extractor from deciding that it too wants to extract from the inventory.
+		val acquiredLocks = InventoryLockRegistry.tryLockAll(sources) ?: return
+		if (acquiredLocks.isEmpty()) return
 
-		for (inventory in sources) {
-			if (task.isInterrupted()) return
+		try {
+			val references = mutableMapOf<ItemStack, ArrayDeque<ItemReference>>()
 
-			for ((index, item: ItemStack) in getRemovableItems(inventory)) {
+			for (inventory in sources) {
 				if (task.isInterrupted()) return
 
-				references.getOrPut(item.asOne()) { ArrayDeque() }.add(ItemReference(inventory, index))
+				for ((index, item: ItemStack) in getRemovableItems(inventory)) {
+					if (task.isInterrupted()) return
+
+					references.getOrPut(item.asOne()) { ArrayDeque() }.add(ItemReference(inventory, index))
+				}
 			}
-		}
 
-		val originNode = getOrCache(location) ?: return
+			val originNode = getOrCache(location) ?: return
 
-		val destinationInvCache = mutableMapOf<BlockKey, CraftInventory>()
+			val destinationInvCache = mutableMapOf<BlockKey, CraftInventory>()
 
-		for ((item, itemReferences) in references) {
-			if (task.isInterrupted()) return
+			if (references.isEmpty()) return
 
-			transferItemType(
-				task,
-				location,
-				originNode,
-				meta,
-				item,
-				destinationInvCache,
-				itemReferences
-			)
+			for ((item, itemReferences) in references) {
+				if (task.isInterrupted()) return
+
+				transferItemType(
+					task,
+					location,
+					originNode,
+					meta,
+					item,
+					destinationInvCache,
+					itemReferences
+				)
+			}
+		} finally {
+			// Guaranteed unlock on the same async thread that acquired the locks
+			acquiredLocks.forEach { it.unlock() }
 		}
 	}
 
@@ -162,9 +175,9 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		meta: ItemExtractorMetaData?,
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
-		availableItemReferences: ArrayDeque<ItemReference>,
+		availableItemReferences: ArrayDeque<ItemReference>
 	) {
-		val destinations: MutableList<PathfindResult> = getTransferDestinations(
+		val destinations: MutableList<PathfindResult>? = getTransferDestinations(
 			task = task,
 			extractorLocation = originKey,
 			extractorNode = originNode,
@@ -179,35 +192,45 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			task,
 			singletonItem,
 			destinationInvCache,
-			destinations,
+			destinations!!,
 			meta
 		)
 
-		for (reference in availableItemReferences) {
-			val remainingDestinations = destinationInventories.keys
+		// Lock our destinations too
+		val destinationLocks = InventoryLockRegistry.tryLockAll(destinationInventories.values) ?: return
 
-			if (task.isInterrupted()) return
-			val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
-			val amount = minOf(reference.get()?.amount ?: 0, room)
+		try {
+			for (reference in availableItemReferences) {
+				val remainingDestinations = destinationInventories.keys
 
-			if (amount == 0) continue
+				if (task.isInterrupted()) return
+				val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
+				val amount = minOf(reference.get()?.amount ?: 0, room)
 
-			transaction.addTransfer(
-				reference,
-				remainingDestinations,
-				singletonItem,
-				amount
-			) {
-				val destination = getDestination(meta, remainingDestinations)
-				destination to destinationInvCache[destination.destinationPosition]!!
+				if (amount == 0) continue
+
+				transaction.addTransfer(
+					reference,
+					remainingDestinations,
+					singletonItem,
+					amount
+				) {
+					val destination = getDestination(meta, remainingDestinations)
+					destination to destinationInvCache[destination.destinationPosition]!!
+				}
 			}
-		}
 
-		if (!transaction.isEmpty() && IonServer.isEnabled) {
-			Tasks.sync {
-				if (task.isInterrupted()) return@sync
-				transaction.commit()
+			if (!transaction.isEmpty() && IonServer.isEnabled) {
+				// Block the async thread until the transaction commits on the main thread
+				// ensuring locks are held while items are modified
+				Tasks.syncBlocking {
+					if (!task.isInterrupted()) {
+						transaction.commit()
+					}
+				}
 			}
+		} finally {
+			destinationLocks.forEach { it.unlock() }
 		}
 	}
 

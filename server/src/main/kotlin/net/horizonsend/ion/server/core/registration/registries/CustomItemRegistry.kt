@@ -129,7 +129,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				return mutableListOf(Component.text("Spooky", NamedTextColor.LIGHT_PURPLE))
 			}
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem =
-                ThrownPumpkinGrenade(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
+				ThrownDetonator(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
 		})
 	}
 

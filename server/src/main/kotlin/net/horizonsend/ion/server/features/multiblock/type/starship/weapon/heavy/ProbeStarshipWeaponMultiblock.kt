@@ -49,3 +49,42 @@ object ProbeStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ProbeWea
 		}
 	}
 }
+
+// Todo: Determine if open val mirrored is required (shouldn't be due to the position being relatively unimportant?)
+// Todo: Update buildStructure to flipped
+object ProbeStarshipWeaponMultiblockMirrored : SignlessStarshipWeaponMultiblock<ProbeWeaponSubsystem>(), DisplayNameMultilblock {
+	override val key: String = "probe"
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): ProbeWeaponSubsystem {
+		return ProbeWeaponSubsystem(starship, pos, face)
+	}
+
+	override val displayName: Component
+		get() = text("Probe Launcher (Mirrored)")
+	override val description: Component
+		get() = text("Fires a scanner probe that detects nearby signatures.")
+
+	override fun MultiblockShape.buildStructure() {
+		z(0) {
+			y(0) {
+				x(0).sponge()
+				x(1).powerInput()
+			}
+		}
+		z(1) {
+			y(0) {
+				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+				x(1).dispenser()
+			}
+		}
+		z(2) {
+			y(0) {
+				x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
+			}
+		}
+		z(3) {
+			y(0) {
+				x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.END_ROD.createBlockData()))
+			}
+		}
+	}
+}
