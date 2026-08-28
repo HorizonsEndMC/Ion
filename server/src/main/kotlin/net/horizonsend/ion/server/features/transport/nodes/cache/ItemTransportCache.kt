@@ -34,10 +34,10 @@ import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
-import java.util.concurrent.locks.ReentrantLock
 import kotlin.reflect.KClass
 
-class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder), DestinationCacheHolder {
+class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) : TransportCache(holder),
+	DestinationCacheHolder {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
 	override val destinationCache = MappedDestinationCache<ItemStack>(this)
@@ -158,8 +158,10 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 			// Special handling of double chests
 			if (destinationInventory is CraftInventoryDoubleChest && referenceInventory is CraftInventoryDoubleChest) {
-				val leftMatches = (referenceInventory.leftSide as CraftInventory).inventory == (destinationInventory.leftSide as CraftInventory).inventory
-				val rightMatches = (referenceInventory.rightSide as CraftInventory).inventory == (destinationInventory.rightSide as CraftInventory).inventory
+				val leftMatches =
+					(referenceInventory.leftSide as CraftInventory).inventory == (destinationInventory.leftSide as CraftInventory).inventory
+				val rightMatches =
+					(referenceInventory.rightSide as CraftInventory).inventory == (destinationInventory.rightSide as CraftInventory).inventory
 
 				return@none leftMatches || rightMatches
 			}
@@ -177,7 +179,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>
 	) {
-		val destinations: MutableList<PathfindResult>? = getTransferDestinations(
+		val destinations: MutableList<PathfindResult> = getTransferDestinations(
 			task = task,
 			extractorLocation = originKey,
 			extractorNode = originNode,
@@ -197,40 +199,34 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		)
 
 		// Lock our destinations too
-		val destinationLocks = InventoryLockRegistry.tryLockAll(destinationInventories.values) ?: return
+		for (reference in availableItemReferences) {
+			val remainingDestinations = destinationInventories.keys
 
-		try {
-			for (reference in availableItemReferences) {
-				val remainingDestinations = destinationInventories.keys
+			if (task.isInterrupted()) return
+			val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
+			val amount = minOf(reference.get()?.amount ?: 0, room)
 
-				if (task.isInterrupted()) return
-				val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
-				val amount = minOf(reference.get()?.amount ?: 0, room)
+			if (amount == 0) continue
 
-				if (amount == 0) continue
+			transaction.addTransfer(
+				reference,
+				remainingDestinations,
+				singletonItem,
+				amount
+			) {
+				val destination = getDestination(meta, remainingDestinations)
+				destination to destinationInvCache[destination.destinationPosition]!!
+			}
+		}
 
-				transaction.addTransfer(
-					reference,
-					remainingDestinations,
-					singletonItem,
-					amount
-				) {
-					val destination = getDestination(meta, remainingDestinations)
-					destination to destinationInvCache[destination.destinationPosition]!!
+		if (!transaction.isEmpty() && IonServer.isEnabled) {
+			// Block the async thread until the transaction commits on the main thread
+			// ensuring locks are held while items are modified
+			Tasks.syncBlocking {
+				if (!task.isInterrupted()) {
+					transaction.commit()
 				}
 			}
-
-			if (!transaction.isEmpty() && IonServer.isEnabled) {
-				// Block the async thread until the transaction commits on the main thread
-				// ensuring locks are held while items are modified
-				Tasks.syncBlocking {
-					if (!task.isInterrupted()) {
-						transaction.commit()
-					}
-				}
-			}
-		} finally {
-			destinationLocks.forEach { it.unlock() }
 		}
 	}
 
@@ -331,6 +327,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				val left = if (type == ChestType.LEFT) entity else otherEntity
 				return CraftInventoryDoubleChest(CompoundContainer(right, left))
 			}
+
 			else -> {
 				CraftInventory(entity)
 			}
@@ -342,7 +339,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inventoryLocation = getRelative(extractorLocation, face)
-			if (holder.globalNodeCacher.invoke(this, holder.getWorld(), inventoryLocation)?.second !is ItemNode.InventoryNode) continue
+			if (holder.globalNodeCacher.invoke(
+					this,
+					holder.getWorld(),
+					inventoryLocation
+				)?.second !is ItemNode.InventoryNode
+			) continue
 			val inv = getInventory(inventoryLocation) ?: continue
 			if (inv.isEmpty) continue
 			inventories.add(inv)
