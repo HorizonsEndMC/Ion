@@ -39,12 +39,12 @@ open class MapButtonDisplay(
 	) as Interaction
 
 	override fun init() {
-		super.init()
 		//Setup for Interaction Entity
 		interaction.isResponsive = true
 		interaction.interactionWidth = (sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0)).toFloat()
 		interaction.interactionHeight = (sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0)).toFloat()
 		entities.add(interaction)
+		super.init()
 	}
 
 	fun getDisplayEntities(): List<Display> {

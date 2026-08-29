@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.signs
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.starship.Starship
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_BLUE
@@ -30,6 +32,9 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.joml.Vector3d
 import java.util.*
+import kotlin.math.absoluteValue
+import kotlin.math.ln
+import kotlin.math.sign
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
 	CRUISE("[cruise]", arrayOf(
@@ -166,36 +171,57 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 		}
 	},
 
-	MAP("[map]", arrayOf(text("Map", DARK_AQUA),null,null,null)){
-		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
-			val starship = findPlayerStarship(player) ?: return
-			addMapToStarship(starship,sign)
-		}
+	MAP("[map]", arrayOf(text("Map", DARK_AQUA, BOLD),null,null,null)){
+		private val prefixes = arrayOf(
+			text("n/a"),
+			text("Size", DARK_GREEN).append(text(":")).append(text(" ")),
+			text("Offset", NamedTextColor.BLACK).append(text(":")).append(text(" ")),
+			text("Rotation", GOLD).append(text(":")).append(text(" "))
+		)
 
 		override fun onStarshipPilot(starship: Starship, sign: Sign) {
 			addMapToStarship(starship, sign)
 		}
 
+		override fun onDetect(player: Player, sign: Sign): Boolean {
+			for (i in 1..3) {
+				val lineText = sign.front().line(i).plainText()
+				sign.front().line(i, prefixes[i].append(text(lineText, DARK_GRAY)))
+			}
+			return true
+		}
+
+
 		fun addMapToStarship(starship: Starship, sign: Sign) {
-			val size = sign.lines[1].split(" ")
+			// Helper to strip the "label:" prefix and split the remaining values by whitespace
+			fun parseValues(line: String): List<String> {
+				val parts = line.split(":", limit = 2)
+				val valuesPart = if (parts.size == 2) parts[1] else parts[0]
+				return valuesPart.trim().split(" ").filter { it.isNotBlank() }
+			}
+
+			val size = parseValues(sign.lines[1])
 			var sizeX: Double? = null
 			var sizeY: Double? = null
-
 			try {
-				sizeX = size[0].toDouble()
-				sizeY = size[1].toDouble()
-			}catch (_: Exception) {}
+				sizeX = size[1].replace("§8","").toDouble()
+				sizeY = size[2].toDouble()
+			} catch (_: Exception) {}
 
 			var offset: Vector3d? = null
 			try {
-				val offsetText = sign.lines[2].split(" ")
+				val offsetText = parseValues(sign.lines[2])
 				offset = Vector3d(offsetText[0].toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
-			}catch (_: Exception){}
+			} catch (_: Exception) {}
 
 			var pitch = 0.0
 			try {
-				pitch = sign.lines[3].toDouble()
-			}catch(_: Exception){}
+				pitch = sign.lines[3].split(':')[1].replace("§8", "").replace("§6", "").trim().toDouble()
+			} catch (_: Exception) {}
+			if (pitch.absoluteValue>45.0){
+				pitch = 45*pitch.sign
+				starship.userError("Error: Display Maps angle may not be greater in magnitude then 45 degrees!")
+			}
 
 			val dir = sign.getFacing().direction.clone()
 			pitch = Math.toRadians(pitch)
@@ -204,8 +230,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			dir.rotateAroundAxis(pitchAxis, pitch)
 			val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
 			starship.displayMaps.add(map)
-		}
-	};
+		}	};
 
 	open fun onDetect(player: Player, sign: Sign): Boolean = true
 

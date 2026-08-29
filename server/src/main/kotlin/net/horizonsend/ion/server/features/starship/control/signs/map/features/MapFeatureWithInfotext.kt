@@ -32,8 +32,8 @@ open class MapFeatureWithInfotext(
 ) : MapButtonDisplay(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature, function) {
 
 	override fun init() {
-		super.init()
 		initInfoDisplay()
+		super.init()
 	}
 
 	var infoDisplay: TextDisplay? = null
@@ -75,6 +75,9 @@ open class MapFeatureWithInfotext(
 			).toVector3f(),
 			Quaternionf()
 		)
+
+		interaction.interactionWidth = (sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0)).toFloat()
+		interaction.interactionHeight = (sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0)).toFloat()
 
 		if (display is TextDisplay) {
 			this.display?.transformation = Transformation(

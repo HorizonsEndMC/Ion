@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
 import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.body.CelestialBody
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
-import net.horizonsend.ion.server.features.starship.control.signs.map.celestialBodyMapScale
+import net.horizonsend.ion.server.features.starship.control.signs.map.MapState
+import net.horizonsend.ion.server.features.starship.control.signs.map.celestialBodyLocalMapScale
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 
 class CelestialBodyFeature(
 	identifier: String,
@@ -29,18 +32,29 @@ class CelestialBodyFeature(
 		if (body is CachedStar) interaction.remove()
 	}
 	override fun tick() {
-		//check if the body is out of range
-		val offset = (map.ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / map.maxDistance)
+		val source = map.systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
 
+		//check if the body is out of range
+		val offset = when(map.state){
+			MapState.LOCAL_MAP ->(map.ship.centerOfMass.toVector().add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / map.maxDistance)
+			MapState.SYSTEMS_MAP-> ((source.add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / (map.systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+			else -> Vector()
+		}
 		if(offset.length() > .5){
 			map.mapStateFeatures.remove(this)
 			map.celestialBodiesTracked.remove(body)
 			this.despawn()
 		}
+		val bodyScale = when(this.map.state){
+			MapState.LOCAL_MAP -> celestialBodyLocalMapScale(body, map)
+			else -> when(this.body){
+				is CachedStar -> 0.12
+				is CachedPlanet -> 0.08
+				else -> 0.04
+			}
+		}
 
-		val bodyScale = celestialBodyMapScale(body, map)
-
-		this.rx = .5+offset.x
+		this.rx = .5-offset.x
 		this.ry = .5+offset.z
 
 		this.sizeX = bodyScale

@@ -422,9 +422,6 @@ class Starship(
 			future.complete(result)
 			controller.onMove(movement)
 			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
-			if (result) {
-				displayMaps.forEach { it.processMovement(event) }
-			}
 		}
 
 		return future

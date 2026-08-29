@@ -3,8 +3,10 @@
 	package net.horizonsend.ion.server.features.starship.control.signs.map
 
 	import io.papermc.paper.datacomponent.DataComponentTypes
+	import jdk.jfr.Label
+	import net.horizonsend.ion.common.extensions.serverError
 	import net.horizonsend.ion.common.extensions.successAction
-	import net.horizonsend.ion.common.utils.miscellaneous.d
+	import net.horizonsend.ion.common.extensions.userError
 	import net.horizonsend.ion.common.utils.text.BOLD
 	import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 	import net.horizonsend.ion.common.utils.text.asShadowColor
@@ -28,27 +30,26 @@
 	import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 	import net.horizonsend.ion.server.features.starship.event.StarshipReleaseEvent
 	import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
-	import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
-	import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
-	import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 	import net.horizonsend.ion.server.features.starship.fleet.Fleets
 	import net.horizonsend.ion.server.features.waypoint.WaypointManager
 	import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 	import net.horizonsend.ion.server.listener.SLEventListener
 	import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-	import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 	import net.horizonsend.ion.server.miscellaneous.utils.updateData
 	import net.kyori.adventure.text.Component
 	import net.kyori.adventure.text.format.NamedTextColor
 	import org.bukkit.Color
 	import org.bukkit.Location
 	import org.bukkit.Material
+	import org.bukkit.World
+	import org.bukkit.entity.Display
 	import org.bukkit.entity.EntityType
 	import org.bukkit.entity.ItemDisplay
 	import org.bukkit.entity.TextDisplay
 	import org.bukkit.event.EventHandler
 	import org.bukkit.event.EventPriority
 	import org.bukkit.event.player.PlayerInteractEntityEvent
+	import org.bukkit.event.player.PlayerInteractEvent
 	import org.bukkit.inventory.ItemStack
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
@@ -70,6 +71,8 @@
 		val beaconTracked = mutableMapOf<ServerConfiguration.HyperspaceBeacon, BeaconMapFeature>()
 
 		var stateMap: MapFeature? = null
+		var systemForSystemMap: World? = null
+
 		//Map features that are common to all the map states
 		val commonFeatures: MutableList<MapFeature> = mutableListOf()
 		val commonButtons = mutableListOf<MapButtonDisplay>()
@@ -81,7 +84,6 @@
 			initializeBackgroundAndBorder()
 			setupSideBarButtons()
 			placeLocalMap()
-			//DO LAST
 
 			//Add entities to ship
 			for (mapFeatures in commonFeatures) {
@@ -96,36 +98,54 @@
 		}
 
 		fun tick() {
+			//We dont want too many of these maps going around
+			if (ship.displayMaps.size > 2) {
+				return
+			}
 			if (!mapInitialized) init()
-			if (state == MapState.LOCAL_MAP) {
-				try {
-					val shipsInRange = shipsInRange(maxDistance, ship)
-					val centerOfMass = ship.centerOfMass.toVector()
-					val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass)
-					for (ship in shipsInRange) {
-						if (shipsTracked.containsKey(ship)) continue
-						else {
-							shipsTracked[ship] = generateShipMapFeature(ship)
+			when(state){
+				MapState.LOCAL_MAP->{
+					try {
+						val shipsInRange = shipsInRange(maxDistance, ship)
+						val centerOfMass = ship.centerOfMass.toVector()
+						val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass)
+						for (ship in shipsInRange) {
+							if (shipsTracked.containsKey(ship)) continue
+							else {
+								shipsTracked[ship] = generateShipMapFeature(ship)
+							}
 						}
-					}
 
-					for (body in bodiesInRange) {
-						if (celestialBodiesTracked.containsKey(body)) continue
-						else {
-							celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+						for (body in bodiesInRange) {
+							if (celestialBodiesTracked.containsKey(body)) continue
+							else {
+								celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+							}
 						}
-					}
 
-					(mapStateFeatures.find { it.identifier == "THIS_SHIP" }?.display as TextDisplay).text(
-						ofChildren(
-							Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(getSidebarKeyToUse(ship)),
+						(mapStateFeatures.find { it.identifier == "THIS_SHIP" }?.display as TextDisplay).text(
+							ofChildren(
+								Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(getSidebarKeyToUse(ship)),
+							)
 						)
-					)
-					mapStateFeatures.toList().forEach {
-						it.tick()
+
+					}
+					catch(_: Exception){}
+				}
+				MapState.SYSTEMS_MAP -> {}
+				MapState.GALACTIC_MAP -> {
+					if(ship.playerPilot != null){
+						val pilot = ship.playerPilot!!
+						val target = pilot.getTargetEntity(5, false)
+						val buttonLookedAt = this.mapStateFeatures.find { it.entities.contains(target) }
+						if (buttonLookedAt != null && buttonLookedAt is SystemMapFeature) {
+							pilot.sendActionBar(Component.text(buttonLookedAt.identifier, NamedTextColor.DARK_GREEN))
+						}
 					}
 				}
-				catch(_: Exception){}
+			}
+			mapStateFeatures.toList().forEach {
+				it.tick()
 			}
 		}
 
@@ -190,6 +210,14 @@
 							val button = it.commonButtons.find { it.identifier == "MAP_BUTTON" }
 							(button?.getDisplayEntities()?.first() as? ItemDisplay)?.setItemStack(button.itemStack)
 							it.placeLocalMap()
+						}
+						MapState.SYSTEMS_MAP -> {
+							it.state = MapState.GALACTIC_MAP
+							(it.commonButtons.find { it.identifier == "MAP_BUTTON" }?.getDisplayEntities()
+								?.first() as? ItemDisplay)?.setItemStack(
+								ItemStack(Material.PAPER).applyGuiModel(GuiItem.GENERIC_STARSHIP)
+							)
+							it.placeGalacticMap()
 						}
 					}
 				}
@@ -355,7 +383,7 @@
 		}
 
 		private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature {
-			val starScale = celestialBodyMapScale(body, this)
+			val starScale = celestialBodyLocalMapScale(body, this)
 			val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
 			val itemStack: ItemStack? =
@@ -440,7 +468,27 @@
 				null,
 				8.0
 			)
+
+			val clearRoutes = MapButtonDisplay(
+				"CLEAR_ROUTE",
+				this,
+				15.0/32.0,
+				1.0/32.0,
+				.04,.04,
+				null,
+				Component.text(
+					"[/Clear Route]", NamedTextColor.RED, BOLD
+				),
+				10.1,
+				null,
+			){
+				if(ship.playerPilot!=null) {
+					WaypointCommand.onClearWaypoint(ship.playerPilot!!)
+				}
+			}
+
 			mapStateFeatures.add(backgroundMap)
+			mapStateFeatures.add(clearRoutes)
 			stateMap = backgroundMap
 
 			//WARD
@@ -1067,6 +1115,64 @@
 				state.init()
 				ship.entityPassengers.addAll(state.entities)
 			}
+			clearRoutes.interaction.interactionWidth = (.2f * this.sizeX).toFloat()
+
+		}
+
+		fun placeSystemsMap() {
+			mapStateFeatures.forEach { it.despawn() }
+			mapStateFeatures.clear()
+			if(systemForSystemMap == null){
+				ship.serverError("ERROR: World not found for system map, please alert staff!")
+				return
+			}
+
+			val backgroundMap = MapFeature(
+				"LOCAL_MAP",
+				this,
+				15.0 / 32.0,
+				16.0 / 32.0,
+				28.0 / 32.0,
+				28.0 / 32.0,
+				ItemStack(Material.PAPER).updateData(
+					DataComponentTypes.ITEM_MODEL,
+					NamespacedKeys.packKey("map/grid_lines")
+				),
+				null,
+				1.2
+			)
+			val maxDistanceMap = MapFeature(
+				"WORLD_BORDER",
+				this,
+				15.0/32.0,
+				1.0/32.0,
+				.03,
+				.03,
+				null,
+				Component.text("System Size: ${systemForSystemMap!!.worldBorder.size.toInt()}m"),
+				10.1
+			)
+
+			mapStateFeatures.add(maxDistanceMap)
+			mapStateFeatures.add(backgroundMap)
+
+			maxDistanceMap.init()
+			backgroundMap.init()
+
+			val source = systemForSystemMap?.worldBorder?.center?.toVector()!!
+			planetInRange(this, 1_000_000.0, source).forEach {
+				generateCelestialBodyMapFeature(it)
+			}
+			starsInRange(this, 1_000_000.0, source).forEach {
+				generateCelestialBodyMapFeature(it)
+			}
+			beaconsInRange(this, 1_000_000.0, source).forEach {
+				generateBeaconMapFeature(it)
+			}
+
+			for (state in mapStateFeatures) {
+				ship.entityPassengers.addAll(state.entities)
+			}
 		}
 
 		private val worldUpBasisVector = Vector(0.0, 1.0, 0.0)
@@ -1135,49 +1241,26 @@
 			)
 		}
 
-		fun processMovement(event: StarshipMoveEvent) {
-			Tasks.sync {
-				if (event is StarshipTranslateEvent) {
-					this.location.add(Vector(event.x, event.y, event.z))
-					this.location.world = event.ship.world
-					this.tick()
-				} else if (event is StarshipRotateEvent) {
-					val rotation = (Math.PI / 2.0) * if (event.clockwise) -1.0 else 1.0
-					this.dir = this.dir.clone().rotateAroundY(rotation)
-
-					val oldX = this.location.x.toInt()
-					val oldY = this.location.y.toInt()
-					val oldZ = this.location.z.toInt()
-					this.location = Location(
-						event.ship.world,
-						event.movement.displaceX(oldX, oldZ).d(),
-						event.movement.displaceY(oldY).d(),
-						event.movement.displaceZ(oldZ, oldX).d()
-					)
-					this.tick()
-				}
-			}
-		}
-
 		companion object : SLEventListener() {
 			fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
 
 			@EventHandler
 			private fun onPlayerInteractWithInteraction(event: PlayerInteractEntityEvent) {
 				val interaction = event.rightClicked
-				if (interaction.type != EntityType.INTERACTION) return
-				val player = event.player
-				val ship = ActiveStarships.findByPassenger(player) ?: return
-				//find the map that the interaction entity belongs too
-				val map = ship.displayMaps.find {
-					it.commonButtons.find { button -> button.interaction == interaction } != null || it.mapStateFeatures.filterIsInstance<MapButtonDisplay>()
-						.find { button -> button.interaction == interaction } != null
-				} ?: return
-				//Find the button from the specified interaction entity inside the map
-				val button = map.commonButtons.find { it.interaction == interaction }
-					?: map.mapStateFeatures.filterIsInstance<MapButtonDisplay>()
-						.find { it.interaction == interaction } ?: return
-				button.onClick()
+				if (interaction.type == EntityType.INTERACTION) {
+					val player = event.player
+					val ship = ActiveStarships.findByPassenger(player) ?: return
+					//find the map that the interaction entity belongs too
+					val map = ship.displayMaps.find {
+						it.commonButtons.find { button -> button.interaction == interaction } != null || it.mapStateFeatures.filterIsInstance<MapButtonDisplay>()
+							.find { button -> button.interaction == interaction } != null
+					} ?: return
+					//Find the button from the specified interaction entity inside the map
+					val button = map.commonButtons.find { it.interaction == interaction }
+						?: map.mapStateFeatures.filterIsInstance<MapButtonDisplay>()
+							.find { it.interaction == interaction } ?: return
+					button.onClick()
+				}
 			}
 
 			@EventHandler(priority = EventPriority.LOWEST)
@@ -1192,6 +1275,11 @@
 
 			@EventHandler
 			private fun onStarshipPilot(event: StarshipPilotedEvent) {
+				//Dont let the player have more then 2 of these maps
+				if ((ActiveStarships.findByPilot(event.player)?.displayMaps?.size ?: 0) > 2) {
+					event.starship.userError("Error: No more then 2 Display Maps are allowed aboard the ship")
+					return
+				}
 				ActiveStarships.findByPilot(event.player)?.displayMaps?.forEach { map -> map.init() }
 			}
 		}

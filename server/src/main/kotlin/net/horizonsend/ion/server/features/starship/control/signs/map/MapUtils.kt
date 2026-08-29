@@ -46,7 +46,7 @@ fun shipScale(displayMap: DisplayMap) = when (displayMap.maxDistance) {
 	else -> .02
 }
 
-fun celestialBodyMapScale(body: CelestialBody, displayMap: DisplayMap) = when (body) {
+fun celestialBodyLocalMapScale(body: CelestialBody, displayMap: DisplayMap) = when (body) {
 	is CachedPlanet -> body.size*(360.0/(displayMap.maxDistance.pow(.95)))
 	is CachedStar -> (4.0*body.outerSphereRadius.d())/(displayMap.maxDistance.pow(.95))
 	else -> {1.0*(160.0/displayMap.maxDistance)}

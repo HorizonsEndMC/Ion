@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap.Companion.toVector3f
@@ -117,6 +118,13 @@ open class MapFeature(
 			display!!.isPersistent = false
 			display!!.brightness = Display.Brightness(15, 0)
 			entities.add(display!!)
+		}
+		//Hide all the entities from players not in the ship. Showing only players of the ship
+		this.entities.forEach { entity ->
+			entity.isVisibleByDefault = false
+			this.map.ship.onlinePassengers.forEach {
+				it.showEntity(IonServer, entity)
+			}
 		}
 	}
 
