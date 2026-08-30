@@ -525,11 +525,11 @@ object MultiblockRegistration : IonServerComponent() {
 		/*
 		if (ConfigurationFiles.featureFlags().graphTransfer) {
 			registerMultiblock(ChemicalProcessorMultiblock)
-			registerMultiblock(PumpMultiblock)
 		}
 		 */
 
 		// Fluids
+		registerMultiblock(PumpMultiblock)
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 	}
