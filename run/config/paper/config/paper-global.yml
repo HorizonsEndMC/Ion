@@ -7,5 +7,5 @@ proxies:
     online-mode: true
     secret: test
 block-updates:
-  disable-chorus-plant-updates: false
+  disable-chorus-plant-updates: true
   disable-mushroom-block-updates: true
