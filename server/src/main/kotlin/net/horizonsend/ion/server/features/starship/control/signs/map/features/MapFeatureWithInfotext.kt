@@ -39,16 +39,16 @@ open class MapFeatureWithInfotext(
 	var infoDisplay: TextDisplay? = null
 
 	open fun initInfoDisplay() {
-		val textDisplay = this.location().world.spawnEntity(location().add(map.dir.clone().multiply(map.shiftPerLayer*offset+.1)), EntityType.TEXT_DISPLAY) as TextDisplay
+		val textDisplay = map.ship.world.spawnEntity(location(), EntityType.TEXT_DISPLAY) as TextDisplay
 		textDisplay.text(info)
 		textDisplay.backgroundColor = color
 		textDisplay.transformation = Transformation(
-			Vector3f(0f,0f,0f),
+			Vector3f(),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
 			Vector3d(
 				(sizeX)*.5 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
 				(sizeY)*.5 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
-				0.001
+				0.01
 			).toVector3f(),
 			Quaternionf()
 		)
@@ -66,12 +66,12 @@ open class MapFeatureWithInfotext(
 		}
 
 		this.infoDisplay?.transformation = Transformation(
-			Vector3f(0f, (-sizeY/64.0).toFloat(),0f),
+			Vector3f(0f, (-sizeY/64.0).toFloat(),0f).add(map.dir.clone().multiply(map.shiftPerLayer * offset).toVector3f()),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
 			Vector3d(
 				(sizeX)*.75 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
 				(sizeY)*.75 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
-				0.001
+				0.0001
 			).toVector3f(),
 			Quaternionf()
 		)
@@ -86,7 +86,7 @@ open class MapFeatureWithInfotext(
 				Vector3d(
 					(5.0 * sizeX) * map.sizeX,
 					(5.0 * sizeY) * map.sizeY,
-					0.001
+					0.0001
 				).toVector3f(),
 				Quaternionf()
 
@@ -99,7 +99,7 @@ open class MapFeatureWithInfotext(
 				Vector3d(
 					sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
 					sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
-					0.001
+					0.0001
 				).toVector3f(),
 				Quaternionf()
 			)

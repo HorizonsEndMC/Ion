@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.signs.map
 
+import net.horizonsend.ion.common.database.cache.BookmarkCache
+import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -11,6 +13,7 @@ import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Transformation
@@ -84,6 +87,16 @@ fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Ve
 				.distance(centerOfMass) <= maxDistance
 	}
 }
+
+fun bookmarksInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector): List<Bookmark> {
+	val player = displayMap.ship.playerPilot ?: return listOf()
+	return BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
+		it.worldName == player.world.name &&
+			Vector(it.x, it.y, it.z).distance(centerOfMass) <= maxDistance
+	}
+}
+
+fun Bookmark.toVector() = Vector(x.toDouble(), y.toDouble(), z.toDouble())
 
 fun Transformation.clone(): Transformation =
 	Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)

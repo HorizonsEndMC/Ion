@@ -82,7 +82,7 @@ open class MapFeature(
 				Vector3d(
 					sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
 					sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
-					0.1
+					0.01
 				).toVector3f(),
 				Quaternionf()
 			)

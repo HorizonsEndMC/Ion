@@ -3,7 +3,7 @@
 	package net.horizonsend.ion.server.features.starship.control.signs.map
 
 	import io.papermc.paper.datacomponent.DataComponentTypes
-	import jdk.jfr.Label
+	import net.horizonsend.ion.common.database.schema.misc.Bookmark
 	import net.horizonsend.ion.common.extensions.serverError
 	import net.horizonsend.ion.common.extensions.successAction
 	import net.horizonsend.ion.common.extensions.userError
@@ -22,6 +22,7 @@
 	import net.horizonsend.ion.server.features.starship.Starship
 	import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.BeaconMapFeature
+	import net.horizonsend.ion.server.features.starship.control.signs.map.features.BookmarkMapFeature
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.CelestialBodyFeature
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.MapButtonDisplay
 	import net.horizonsend.ion.server.features.starship.control.signs.map.features.MapFeature
@@ -42,7 +43,6 @@
 	import org.bukkit.Location
 	import org.bukkit.Material
 	import org.bukkit.World
-	import org.bukkit.entity.Display
 	import org.bukkit.entity.EntityType
 	import org.bukkit.entity.ItemDisplay
 	import org.bukkit.entity.Player
@@ -69,7 +69,8 @@
 
 		val shipsTracked = mutableMapOf<Starship, ShipMapFeature>()
 		val celestialBodiesTracked = mutableMapOf<CelestialBody, CelestialBodyFeature>()
-		val beaconTracked = mutableMapOf<ServerConfiguration.HyperspaceBeacon, BeaconMapFeature>()
+		val beaconsTracked = mutableMapOf<ServerConfiguration.HyperspaceBeacon, BeaconMapFeature>()
+		val bookmarkTracked = mutableMapOf<Bookmark, BookmarkMapFeature>()
 
 		var stateMap: MapFeature? = null
 		var systemForSystemMap: World? = null
@@ -337,6 +338,8 @@
 			celestialBodiesInRange(this, maxDistance, centerOfMass).forEach { generateCelestialBodyMapFeature(it) }
 			//Add Beacons
 			beaconsInRange(this, maxDistance,centerOfMass).forEach { generateBeaconMapFeature(it) }
+			//Add BookMarks
+			bookmarksInRange(this, maxDistance,centerOfMass).forEach { generateBookmarkMapFeature(it) }
 
 			for (state in mapStateFeatures) {
 				ship.entityPassengers.addAll(state.entities)
@@ -375,7 +378,6 @@
 				Color.fromARGB(color.asShadowColor(255).value()),
 				other
 			){
-				ship.playerPilot?.performCommand("/jump ${location.x} ${location.z}")
 			}
 			mapStateFeatures.add(smf)
 			smf.init()
@@ -434,14 +436,41 @@
 				9.9,
 				this.stateMap!!,
 				Component.text(beacon.name, null, BOLD),
-				Color.fromARGB(200, 255, 255, 255),
+				Color.fromARGB(0, 255, 255, 255),
 				beacon
 			){
 				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BeaconMapFeature] ?: return@BeaconMapFeature, beacon.name.replaceFirstChar { it.uppercase() }) ?: return@BeaconMapFeature
 				WaypointCommand.addVertexToRoute(ship.playerPilot?: return@BeaconMapFeature, vertex)
 			}
 			mapStateFeatures.add(bmf)
-			beaconTracked[beacon] = bmf
+			beaconsTracked[beacon] = bmf
+			bmf.init()
+			return bmf
+		}
+
+		private fun generateBookmarkMapFeature(bookmark: Bookmark): BookmarkMapFeature{
+			val beaconScale = 100.0/maxDistance
+			val offset = (ship.centerOfMass.toVector().add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+			val bmf = BookmarkMapFeature(
+				bookmark.name,
+				this,
+				.5 + offset.x,
+				.5 + offset.z,
+				beaconScale,
+				beaconScale,
+				null,
+				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BOOKMARK),
+				9.9,
+				this.stateMap!!,
+				Component.text(bookmark.name, null, BOLD),
+				Color.fromARGB(0, 255, 255, 255),
+				bookmark
+			){
+				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BookmarkMapFeature] ?: return@BookmarkMapFeature, bookmark.name.lowercase()) ?: return@BookmarkMapFeature
+				WaypointCommand.addVertexToRoute(ship.playerPilot?: return@BookmarkMapFeature, vertex)
+			}
+			mapStateFeatures.add(bmf)
+			bookmarkTracked[bookmark] = bmf
 			bmf.init()
 			return bmf
 		}
@@ -1171,6 +1200,11 @@
 				generateBeaconMapFeature(it)
 			}
 
+			bookmarksInRange(this, 1_000_000.0, source).forEach {
+				generateBookmarkMapFeature(it)
+			}
+
+
 			for (state in mapStateFeatures) {
 				ship.entityPassengers.addAll(state.entities)
 			}
@@ -1292,13 +1326,10 @@
 				MapState.SYSTEMS_MAP-> (systemForSystemMap?.worldBorder?.size ?: 2.0)/2.0
 				else-> 1000.0
 			}
-
-			println("Distance: $distance")
-
 			val worldX = centerOfMass.x - offsetX * distance
 			val worldZ = centerOfMass.z - offsetZ * distance
 
-			return Location(location.world, worldX, centerOfMass.y, worldZ)
+			return Location(location.world, worldX, 0.0, worldZ)
 		}
 
 		companion object : SLEventListener() {
