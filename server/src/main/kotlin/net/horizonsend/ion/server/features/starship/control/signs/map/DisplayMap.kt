@@ -45,6 +45,7 @@
 	import org.bukkit.entity.Display
 	import org.bukkit.entity.EntityType
 	import org.bukkit.entity.ItemDisplay
+	import org.bukkit.entity.Player
 	import org.bukkit.entity.TextDisplay
 	import org.bukkit.event.EventHandler
 	import org.bukkit.event.EventPriority
@@ -1241,6 +1242,65 @@
 			)
 		}
 
+		/**
+		 * Casts a ray against this map's display plane and, if it lands within the
+		 * visible map square, returns the real-world location that point represents.
+		 * Only meaningful for LOCAL_MAP / SYSTEMS_MAP, since those are the only states
+		 * whose (rx, ry) placement is derived from a real world offset / maxDistance.
+		 */
+		fun getWorldClickLocation(rayOrigin: Vector, rayDirection: Vector): Location? {
+			if (state != MapState.LOCAL_MAP && state != MapState.SYSTEMS_MAP) return null
+
+			val (right, up) = displayBasis()
+			val normal = dir.clone().normalize()
+			val planePoint = displayLocation().toVector()
+
+			val denominator = rayDirection.dot(normal)
+			if (abs(denominator) < 1e-6) return null // ray parallel to the plane
+
+			val t = (planePoint.clone().subtract(rayOrigin)).dot(normal) / denominator
+			if (t < 0) return null // plane is behind the player
+
+			val hitPoint = rayOrigin.clone().add(rayDirection.clone().multiply(t))
+			val delta = hitPoint.clone().subtract(planePoint)
+
+			// Inverts locationAtRelativeCoordinates()'s isTextDisplay = false branch:
+			// point = displayLocation() + right*(-rx*sizeX) + up*(sizeY*ry + sizeY)
+			val rx = -(delta.dot(right)) / sizeX
+			val ry = (delta.dot(up)) / sizeY - 1.0
+
+			// Bounds of the LOCAL_MAP/SYSTEMS_MAP background square:
+			// anchored at rx=15/32, ry=16/32, spanning 28/32 x 28/32
+			val mapCenterX = 15.0 / 32.0
+			val mapCenterY = 16.0 / 32.0
+			val mapHalfExtent = 14.0 / 32.0
+
+			if (rx < mapCenterX - mapHalfExtent || rx > mapCenterX + mapHalfExtent) return null
+			if (ry < mapCenterY - mapHalfExtent || ry > mapCenterY + mapHalfExtent) return null
+
+			// Inverts: offset = (shipCenterOfMass - target) / maxDistance, rx = .5+offset.x, ry = .5+offset.z
+			val offsetX = rx - 0.5
+			val offsetZ = ry - 0.5
+
+			val centerOfMass = when(state){
+				MapState.LOCAL_MAP-> ship.centerOfMass.toVector()
+				MapState.SYSTEMS_MAP-> systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+				else -> Vector()
+			}
+			val distance = when(state){
+				MapState.LOCAL_MAP -> maxDistance
+				MapState.SYSTEMS_MAP-> (systemForSystemMap?.worldBorder?.size ?: 2.0)/2.0
+				else-> 1000.0
+			}
+
+			println("Distance: $distance")
+
+			val worldX = centerOfMass.x - offsetX * distance
+			val worldZ = centerOfMass.z - offsetZ * distance
+
+			return Location(location.world, worldX, centerOfMass.y, worldZ)
+		}
+
 		companion object : SLEventListener() {
 			fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
 
@@ -1271,6 +1331,37 @@
 			@EventHandler(priority = EventPriority.LOWEST)
 			private fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
 				event.starship.displayMaps.forEach { map -> map.despawn() }
+			}
+
+			@EventHandler
+			private fun onPlayerLeftClickInteration(event: PlayerInteractEvent) {
+				if (event.hand != org.bukkit.inventory.EquipmentSlot.HAND) return
+				if (!event.action.isLeftClick) return
+
+				handlePlayerLeftClick(event.player)
+			}
+
+			fun handlePlayerLeftClick(player: Player) {
+				val ship = ActiveStarships.findByPassenger(player) ?: return
+				if (ship.displayMaps.none { it.state == MapState.LOCAL_MAP || it.state == MapState.SYSTEMS_MAP }) return
+
+				val eyeLocation = player.eyeLocation
+				val rayOrigin = eyeLocation.toVector()
+				val rayDirection = eyeLocation.direction.normalize()
+
+				for (map in ship.displayMaps) {
+					if (map.state != MapState.LOCAL_MAP && map.state != MapState.SYSTEMS_MAP) continue
+
+					val worldPoint = map.getWorldClickLocation(rayOrigin, rayDirection) ?: continue
+
+					player.sendActionBar(
+						Component.text("Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}", NamedTextColor.DARK_PURPLE)
+					)
+					if(player.isSneaking) {
+						player.performCommand("jump ${worldPoint.blockX} ${worldPoint.blockZ}")
+					}
+					return
+				}
 			}
 
 			@EventHandler

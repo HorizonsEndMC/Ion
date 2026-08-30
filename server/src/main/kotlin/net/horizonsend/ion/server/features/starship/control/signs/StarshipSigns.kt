@@ -204,14 +204,16 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			var sizeX: Double? = null
 			var sizeY: Double? = null
 			try {
-				sizeX = size[1].replace("§8","").toDouble()
-				sizeY = size[2].toDouble()
-			} catch (_: Exception) {}
+				sizeX = size[0].replace("§8","").toDouble()
+				sizeY = size[1].trim().toDouble()
+			} catch (_: Exception){}
+
 
 			var offset: Vector3d? = null
+			val offsetText = parseValues(sign.lines[2])
 			try {
-				val offsetText = parseValues(sign.lines[2])
-				offset = Vector3d(offsetText[0].toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
+				offset = Vector3d(offsetText[0].replace("§8","").toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
+
 			} catch (_: Exception) {}
 
 			var pitch = 0.0
