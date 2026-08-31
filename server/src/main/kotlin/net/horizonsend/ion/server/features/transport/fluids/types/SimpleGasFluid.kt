@@ -11,6 +11,11 @@ import org.bukkit.Particle.Trail
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.tan
+import kotlin.random.Random
 
 class SimpleGasFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
@@ -31,12 +36,37 @@ class SimpleGasFluid(
 	}
 
 	override fun playLeakEffects(world: World, leakingNode: FluidNode, leakingDirection: BlockFace) {
+		val forward = leakingDirection.direction.normalize()
+		val reference = if (forward.y != 0.0) Vector(1.0, 0.0, 0.0) else Vector(0.0, 1.0, 0.0)
+		val right = forward.clone().crossProduct(reference).normalize()
+		val up = right.clone().crossProduct(forward).normalize()
+
+		val azimuth = Random.nextDouble(0.0, PI * 2.0)
+		val spread = Random.nextDouble() * tan(MAXIMUM_LEAK_ANGLE_RADIANS)
+		val randomizedDirection = forward.clone()
+			.add(right.clone().multiply(cos(azimuth) * spread))
+			.add(up.clone().multiply(sin(azimuth) * spread))
+			.normalize()
+
 		val start = leakingNode.getCenter()
-			.add(leakingDirection.direction.multiply(0.5))
+			.add(forward.clone().multiply(0.5))
+			.add(right.clone().multiply(Random.nextDouble(-START_POSITION_VARIATION, START_POSITION_VARIATION)))
+			.add(up.clone().multiply(Random.nextDouble(-START_POSITION_VARIATION, START_POSITION_VARIATION)))
 			.toLocation(world)
-		val destination = start.clone().add(leakingDirection.direction.multiply(leakDistance))
-		val trailOptions = Trail(destination, color, 40)
+		val randomizedDistance = leakDistance * Random.nextDouble(MINIMUM_DISTANCE_MULTIPLIER, MAXIMUM_DISTANCE_MULTIPLIER)
+		val destination = start.clone().add(randomizedDirection.multiply(randomizedDistance))
+		val duration = Random.nextInt(MINIMUM_LEAK_DURATION_TICKS, MAXIMUM_LEAK_DURATION_TICKS + 1)
+		val trailOptions = Trail(destination, color, duration)
 
 		world.spawnParticle(Particle.TRAIL, start, 1, 0.0, 0.0, 0.0, 0.0, trailOptions, true)
+	}
+
+	companion object {
+		private val MAXIMUM_LEAK_ANGLE_RADIANS = Math.toRadians(30.0)
+		private const val START_POSITION_VARIATION = 0.08
+		private const val MINIMUM_DISTANCE_MULTIPLIER = 0.75
+		private const val MAXIMUM_DISTANCE_MULTIPLIER = 1.25
+		private const val MINIMUM_LEAK_DURATION_TICKS = 30
+		private const val MAXIMUM_LEAK_DURATION_TICKS = 60
 	}
 }
