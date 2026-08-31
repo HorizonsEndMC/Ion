@@ -452,13 +452,22 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 		private var boilerTemperature = data.getAdditionalDataOrDefault(TEMPERATURE_KEY, DOUBLE, AMBIENT_TEMPERATURE)
 		private var burningEnds = data.getAdditionalDataOrDefault(BURNING_ENDS_KEY, LONG, 0L)
 		private var burningOutput = data.getAdditionalDataOrDefault(BURNING_OUTPUT_KEY, DOUBLE, 0.0)
+		@Volatile private var steamOutputUnlocked = fluidOutput.getContents().amount >= MINIMUM_STEAM_OUTPUT_RELEASE
 
 		override val ioData: IOData = IOData.builder(this)
 			.addPort(IOType.FLUID, -3, 0, 3) {
 				IOPort.RegisteredMetaDataInput(this, FluidInputMetadata(fluidInput, inputAllowed = true, outputAllowed = false))
 			}
 			.addPort(IOType.FLUID, 3, 0, 3) {
-				IOPort.RegisteredMetaDataInput(this, FluidInputMetadata(fluidOutput, inputAllowed = false, outputAllowed = true))
+				IOPort.RegisteredMetaDataInput(
+					this,
+					FluidInputMetadata(
+						fluidOutput,
+						inputAllowed = false,
+						outputAllowed = true,
+						outputCondition = ::canExtractSteam
+					)
+				)
 			}
 			.addPort(IOType.FLUID, 0, 1, 6) {
 				IOPort.RegisteredMetaDataInput(this, FluidInputMetadata(pollutionStorage, inputAllowed = false, outputAllowed = true))
@@ -509,6 +518,16 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			burningOutput = 0.0
 
 			return Tasks.getSyncBlocking { tryStartFuel(System.currentTimeMillis()) }
+		}
+
+		@Synchronized
+		private fun canExtractSteam(): Boolean {
+			val storedSteam = fluidOutput.getContents().amount
+
+			if (storedSteam <= EPSILON) steamOutputUnlocked = false
+			else if (!steamOutputUnlocked && storedSteam >= MINIMUM_STEAM_OUTPUT_RELEASE) steamOutputUnlocked = true
+
+			return steamOutputUnlocked
 		}
 
 		private fun tryStartFuel(now: Long): Boolean {
@@ -612,6 +631,7 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			private const val PASSIVE_COOLING_PER_SECOND = 5.0
 			private const val MAXIMUM_WATER_CONVERSION_PER_SECOND = 5.0
 			private const val STEAM_EXPANSION_FACTOR = 12.0
+			private const val MINIMUM_STEAM_OUTPUT_RELEASE = 5.0
 
 			private const val MAXIMUM_DELTA_MILLIS = 1_000L
 			private const val EPSILON = 0.000_001

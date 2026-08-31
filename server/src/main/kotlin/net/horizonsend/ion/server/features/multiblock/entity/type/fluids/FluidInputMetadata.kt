@@ -7,6 +7,11 @@ class FluidInputMetadata(
 	val connectedStore: FluidStorageContainer,
 
 	val inputAllowed: Boolean,
-	val outputAllowed: Boolean
+	outputAllowed: Boolean,
+	private val outputCondition: () -> Boolean = { true }
 ) : InputMetaData {
+	private val outputConfigured = outputAllowed
+
+	val outputAllowed: Boolean
+		get() = outputConfigured && outputCondition()
 }
