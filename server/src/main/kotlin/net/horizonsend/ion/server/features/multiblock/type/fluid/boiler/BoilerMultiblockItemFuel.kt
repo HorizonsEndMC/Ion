@@ -128,12 +128,12 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			}
 			y(4) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 			y(5) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 			y(6) {
@@ -232,12 +232,12 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 				x(2).titaniumBlock()
 			}
 			y(4) {
-				x(-2).type(Material.WAXED_COPPER_GRATE)
-				x(2).type(Material.WAXED_COPPER_GRATE)
+				x(-2).anyCopperGrate()
+				x(2).anyCopperGrate()
 			}
 			y(5) {
-				x(-2).type(Material.WAXED_COPPER_GRATE)
-				x(2).type(Material.WAXED_COPPER_GRATE)
+				x(-2).anyCopperGrate()
+				x(2).anyCopperGrate()
 			}
 			y(6) {
 				x(-2).titaniumBlock()
@@ -346,12 +346,12 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			}
 			y(4) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 			y(5) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 			y(6) {
@@ -500,14 +500,14 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 				Tasks.sync { if (!removed) displayBurningParticles() }
 			}
 
-			val boiledWater = boilWater(deltaSeconds)
+			boilWater(deltaSeconds)
 
 			if (!burning) {
 				boilerTemperature = maxOf(AMBIENT_TEMPERATURE, boilerTemperature - (PASSIVE_COOLING_PER_SECOND * deltaSeconds))
 			}
 
 			// Overheat explosions are intentionally disabled. A full steam output only stops further boiling.
-			updateStatus(burning, boiledWater)
+			updateTemperatureDisplay()
 		}
 
 		private fun continueOrStartBurning(): Boolean {
@@ -592,17 +592,8 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			return waterActuallyBoiled
 		}
 
-		private fun updateStatus(burning: Boolean, boiledWater: Double) {
-			val temperatureText = "${boilerTemperature.roundToInt()}°C"
-			val inputHasWater = fluidInput.getContents().type == FluidTypeKeys.WATER
-
-			when {
-				fluidOutput.getRemainingRoom() <= EPSILON && inputHasWater -> setStatus(text("Steam output full: $temperatureText", NamedTextColor.RED))
-				boiledWater > EPSILON -> setStatus(text("Boiling: $temperatureText", NamedTextColor.GOLD))
-				burning -> setStatus(text("Heating: $temperatureText", NamedTextColor.YELLOW))
-				boilerTemperature > AMBIENT_TEMPERATURE + EPSILON -> setStatus(text("Cooling: $temperatureText", NamedTextColor.AQUA))
-				else -> setStatus(text("Idle: $temperatureText", NamedTextColor.GRAY))
-			}
+		private fun updateTemperatureDisplay() {
+			setStatus(text("${boilerTemperature.roundToInt()}°C", NamedTextColor.WHITE))
 		}
 
 		private fun displayBurningParticles() {
@@ -630,7 +621,7 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			private const val WATER_LATENT_HEAT_PER_LITER = 2_257_000.0
 			private const val PASSIVE_COOLING_PER_SECOND = 5.0
 			private const val MAXIMUM_WATER_CONVERSION_PER_SECOND = 5.0
-			private const val STEAM_EXPANSION_FACTOR = 12.0
+			private const val STEAM_EXPANSION_FACTOR = 6.0
 			private const val MINIMUM_STEAM_OUTPUT_RELEASE = 5.0
 
 			private const val MAXIMUM_DELTA_MILLIS = 1_000L

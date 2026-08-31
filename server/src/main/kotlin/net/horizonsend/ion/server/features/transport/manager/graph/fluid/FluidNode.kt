@@ -120,7 +120,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		override val flowCapacity = 50.0
 
 		val removalCapacity: Double get() = 50.0
-		val additionCapacity: Double get() = 5.0
+		val additionCapacity: Double get() = 20.0
 
 		override fun isIntact(): Boolean? {
 			val world = getNetwork().manager.transportManager.getWorld()
