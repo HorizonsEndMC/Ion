@@ -209,11 +209,12 @@ class DoomsdayDeviceProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		super.onImpactStarship(starship, impactLocation)
 
-		val explosionSize = 25.0f
+		val isVega = PlayerCache[starship.playerPilot!!.slPlayerId].nationTag == "vega"
+		val explosionSize = 25.0f * if(isVega) 1.5f else .7f
 		val offsetDirection = direction.clone().multiply(5.0)
 		val explosionLocation = impactLocation.clone().add(offsetDirection)
 
-		Tasks.syncDelay(10L) {
+		Tasks.syncDelay(10L * if (isVega) 0 else 2) {
 			explosionLocation.createExplosion(explosionSize)
 
 			// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
