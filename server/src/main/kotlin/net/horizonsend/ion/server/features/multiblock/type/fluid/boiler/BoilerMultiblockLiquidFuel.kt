@@ -51,7 +51,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-object BoilerMultiblockFluidFuel : Multiblock(), EntityMultiblock<BoilerMultiblockFluidFuel.FluidBoilerEntity> {
+object BoilerMultiblockLiquidFuel : Multiblock(), EntityMultiblock<BoilerMultiblockLiquidFuel.LiquidFuelBoilerEntity> {
 	override val name: String = "fluidboiler"
 	override val signText: Array<Component?> = createSignText(
 		ofChildren(text("Fluid ", NamedTextColor.GOLD), text("Boiler", HEColorScheme.HE_MEDIUM_GRAY)),
@@ -393,7 +393,6 @@ object BoilerMultiblockFluidFuel : Multiblock(), EntityMultiblock<BoilerMultiblo
 			y(0) {
 				x(-3).anyWall()
 				x(-2).ironBlock()
-
 				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.LEFT))
 				x(0).anyGlass()
 				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.LEFT))
@@ -410,7 +409,6 @@ object BoilerMultiblockFluidFuel : Multiblock(), EntityMultiblock<BoilerMultiblo
 		}
 	}
 
-
 	override fun createEntity(
 		manager: MultiblockManager,
 		data: PersistentMultiblockData,
@@ -419,11 +417,11 @@ object BoilerMultiblockFluidFuel : Multiblock(), EntityMultiblock<BoilerMultiblo
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	): FluidBoilerEntity {
-		return FluidBoilerEntity(manager, data, world, x, y, z, structureDirection)
+	): LiquidFuelBoilerEntity {
+		return LiquidFuelBoilerEntity(manager, data, world, x, y, z, structureDirection)
 	}
 
-	class FluidBoilerEntity(
+	class LiquidFuelBoilerEntity(
 		manager: MultiblockManager,
 		data: PersistentMultiblockData,
 		world: World,
@@ -431,7 +429,7 @@ object BoilerMultiblockFluidFuel : Multiblock(), EntityMultiblock<BoilerMultiblo
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, BoilerMultiblockFluidFuel, world, x, y, z, structureDirection),
+	) : MultiblockEntity(manager, BoilerMultiblockLiquidFuel, world, x, y, z, structureDirection),
 		DisplayMultiblockEntity,
 		FluidStoringMultiblock,
 		StatusMultiblockEntity,

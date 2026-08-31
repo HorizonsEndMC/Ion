@@ -34,10 +34,10 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockItemFuel
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockLiquidFuel
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockFluidFuel
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockItemFuel
 import net.horizonsend.ion.server.features.multiblock.type.fluid.turbine.SteamTurbineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
@@ -536,7 +536,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 		registerMultiblock(BoilerMultiblockItemFuel)
-		registerMultiblock(BoilerMultiblockFluidFuel)
+		registerMultiblock(BoilerMultiblockLiquidFuel)
+		registerMultiblock(BoilerMultiblockLiquidFuel, "BoilerMultiblockFluidFuel")
 		registerMultiblock(SteamTurbineMultiblock)
 	}
 

@@ -491,11 +491,13 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 
 		override fun tickAsync() {
 			bootstrapNetwork()
-			val deltaSeconds = min(deltaTMS, MAXIMUM_DELTA_MILLIS).toDouble() / 1000.0
-			val burning = continueOrStartBurning()
+			val deltaMillis = min(deltaTMS, MAXIMUM_DELTA_MILLIS).coerceAtLeast(0L)
+			val deltaSeconds = deltaMillis.toDouble() / 1000.0
+			val generatedHeat = burnFuel(deltaMillis)
+			val burning = generatedHeat > EPSILON
 
 			if (burning) {
-				boilerTemperature += (burningOutput * deltaSeconds) / BOILER_THERMAL_MASS
+				boilerTemperature += generatedHeat / BOILER_THERMAL_MASS
 				boilerTemperature = min(boilerTemperature, MAXIMUM_TEMPERATURE)
 				Tasks.sync { if (!removed) displayBurningParticles() }
 			}
@@ -510,14 +512,36 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			updateTemperatureDisplay()
 		}
 
-		private fun continueOrStartBurning(): Boolean {
-			val now = System.currentTimeMillis()
-			if (burningEnds > now) return true
+		private fun burnFuel(deltaMillis: Long): Double {
+			if (deltaMillis <= 0L) return 0.0
 
-			burningEnds = 0L
-			burningOutput = 0.0
+			val intervalEnd = System.currentTimeMillis()
+			var cursor = intervalEnd - deltaMillis
+			var generatedHeat = 0.0
 
-			return Tasks.getSyncBlocking { tryStartFuel(System.currentTimeMillis()) }
+			while (cursor < intervalEnd) {
+				if (burningEnds <= cursor) {
+					burningEnds = 0L
+					burningOutput = 0.0
+
+					val started = Tasks.getSyncBlocking { tryStartFuel(cursor) }
+					if (!started) break
+				}
+
+				val segmentEnd = minOf(intervalEnd, burningEnds)
+				val segmentDurationMillis = segmentEnd - cursor
+				if (segmentDurationMillis <= 0L) break
+
+				generatedHeat += burningOutput * (segmentDurationMillis.toDouble() / 1000.0)
+				cursor = segmentEnd
+			}
+
+			if (burningEnds <= intervalEnd) {
+				burningEnds = 0L
+				burningOutput = 0.0
+			}
+
+			return generatedHeat
 		}
 
 		@Synchronized
@@ -530,7 +554,7 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 			return steamOutputUnlocked
 		}
 
-		private fun tryStartFuel(now: Long): Boolean {
+		private fun tryStartFuel(startTime: Long): Boolean {
 			if (removed) return false
 
 			val fuelInventory = getInventory(0, -1, 0) ?: return false
@@ -546,7 +570,7 @@ object BoilerMultiblockItemFuel : Multiblock(), EntityMultiblock<ItemBoilerEntit
 				if (!pollutionStorage.canAdd(pollutionStack) || !pollutionStorage.hasRoomFor(pollutionStack)) continue
 				*/
 
-				burningEnds = now + fuelProperties.burnDurationMillis
+				burningEnds = startTime + fuelProperties.burnDurationMillis
 				burningOutput = fuelProperties.heatOutputJoulesPerSecond
 
 				if (itemStack.amount <= 1) fuelInventory.setItem(slot, null)
