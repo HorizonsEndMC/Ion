@@ -795,6 +795,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			else -> ActiveStarships.all()
 		}
 
+		//map of system name to amount of ships found.
+		val map = mutableMapOf<String, Int>()
+
 		for (starship in starships) {
 			val controller = starship.controller
 
@@ -823,13 +826,16 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				else -> controller.pilotName
 			}
 
+			map[starship.world.ion.getSpaceRegion().name] = (map[starship.world.ion.getSpaceRegion().name]?:0) + 1
+		}
+		for((world, amount) in map){
 			val line = template(
-				"A ship is being piloted in {0}",
+				"{0}: {1} piloted",
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
 				useQuotesAroundObjects = true,
-				starship.world.ion.getSpaceRegion().name
-			)//.hoverEvent(ofChildren(text("${starship.initialBlockCount} block "), starship.type.displayNameComponent)) hide block count and class
+				world.lowercase().replaceFirstChar { it.uppercase() }, amount
+			)
 
 			sender.sendMessage(line)
 		}
