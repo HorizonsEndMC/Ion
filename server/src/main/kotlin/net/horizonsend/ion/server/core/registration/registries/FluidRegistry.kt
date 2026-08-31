@@ -9,11 +9,14 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
 import net.horizonsend.ion.server.features.transport.fluids.types.Water
+import net.horizonsend.ion.server.features.transport.fluids.types.SimpleGasFluid
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Color
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -42,5 +45,17 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 
 		register(FluidTypeKeys.WATER, Water)
 		register(FluidTypeKeys.LAVA, Lava)
+		register(FluidTypeKeys.DENSE_STEAM, SimpleGasFluid(
+			FluidTypeKeys.DENSE_STEAM,
+			text("Dense Steam", AQUA),
+			Color.WHITE
+		))
+
+		register(FluidTypeKeys.POLLUTION, SimpleGasFluid(
+			FluidTypeKeys.POLLUTION,
+			text("Pollution", GRAY),
+			Color.GRAY,
+			leakDistance = 17.5
+		))
 	}
 }

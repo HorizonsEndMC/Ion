@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.shape
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
@@ -282,6 +283,56 @@ class MultiblockShape {
 			complete(requirement)
 		}
 
+		fun anyCustomBlock(
+			vararg types: IonRegistryKey<CustomBlock, out CustomBlock>,
+			alias: String,
+			edit: BlockRequirement.() -> Unit = {}
+		) {
+			val allowedKeys = types.toSet()
+
+			val requirement = BlockRequirement(
+				alias = alias,
+				example = types.first().getValue().blockData,
+				syncCheck = { block, _, loadChunks ->
+					val customBlockKey = if (loadChunks) {
+						block.customBlock?.key
+					} else {
+						getBlockDataSafe(
+							block.world,
+							block.x,
+							block.y,
+							block.z
+						)?.customBlock?.key
+					}
+
+					customBlockKey != null && allowedKeys.contains(customBlockKey)
+				},
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = {
+						val customItem = it.customItem
+
+						customItem is CustomBlockItem &&
+							allowedKeys.contains(customItem.getCustomBlock().key)
+					},
+					amountConsumed = { 1 },
+					toBlock = { item ->
+						(item.customItem as CustomBlockItem)
+							.getCustomBlock()
+							.blockData
+					},
+					toItemStack = { blockData ->
+						blockData.customBlock
+							?.customItem
+							?.constructItemStack()
+							?: ItemStack(Material.AIR)
+					}
+				)
+			)
+
+			complete(requirement)
+			edit(requirement)
+		}
+
 		fun anyType(alias: String, types: Iterable<Material>, edit: BlockRequirement.() -> Unit = {}) = anyType(
 			*types.toList().toTypedArray(),
 			alias = alias,
@@ -490,6 +541,16 @@ class MultiblockShape {
 		fun assemblyCore() = customBlock(CustomBlockKeys.ASSEMBLY_CORE.getValue())
 
 		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
+		fun anyFluidPipe() = anyCustomBlock(
+			CustomBlockKeys.FLUID_PIPE,
+			CustomBlockKeys.FLUID_PIPE_JUNCTION,
+			CustomBlockKeys.REINFORCED_FLUID_PIPE,
+			CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION,
+			CustomBlockKeys.FLUID_VALVE,
+			alias = "any fluid pipe"
+		) {
+			setExample(CustomBlockKeys.FLUID_PIPE.getValue().blockData)
+		}
 		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 

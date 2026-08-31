@@ -47,18 +47,19 @@ class FluidStorageContainer private constructor(
 	}
 
 	fun canAdd(fluidStack: FluidStack): Boolean {
+		if (!restriction.canAdd(fluidStack)) return false
 		if (contentsUnsafe.isEmpty()) return true
-
 		if (contentsUnsafe.type != fluidStack.type) return false
 
-		return restriction.canAdd(fluidStack)
+		return true
 	}
 
 	fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+		if (!restriction.canAdd(type)) return false
 		if (contentsUnsafe.isEmpty()) return true
 		if (contentsUnsafe.type != type) return false
 
-		return restriction.canAdd(type)
+		return true
 	}
 
 	fun hasRoomFor(fluidStack: FluidStack): Boolean {
