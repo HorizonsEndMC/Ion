@@ -150,7 +150,9 @@ data class Nation(
 
 			DominionTerritorySiegeData.col.deleteMany(sess, or(DominionTerritorySiegeData::attacker eq id, DominionTerritorySiegeData::defender eq id))
 
-			RegionalObjective.col.deleteMany(sess, RegionalObjective::nation eq id)
+			RegionalObjective.col.updateMany(
+				sess, RegionalObjective::nation eq id, org.litote.kmongo.setValue(RegionalObjective::nation, null)
+			)
 
 			RegionalObjectiveSiegeData.col.deleteMany(sess, RegionalObjectiveSiegeData::winner eq id)
 
