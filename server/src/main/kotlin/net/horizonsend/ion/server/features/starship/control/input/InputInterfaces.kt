@@ -82,14 +82,17 @@ interface PlayerInput {
 				player.debugBanner("INTERACT EVENT DISRUPT TARGETING END")
 			}
 			TertiaryButtonControl.CHANGE_WEAPON_SET ->{
+				val setOfWeaponSets = starship.weaponSets.keys().toSet()
 				val currentWeaponSet = 	starship.weaponSetSelections[player.uniqueId] ?: ""
-				val indexOf = starship.weaponSets.keys().indexOf(currentWeaponSet)+1
+
+				val indexOf = setOfWeaponSets.indexOf(currentWeaponSet)+1
+
 				//if the player hasn't selected a weapon set, or has reached the last weapon set, give them the first one in the index.
-				if(indexOf == -1 || indexOf == starship.weaponSets.size()) {
-					starship.weaponSetSelections[player.uniqueId] = starship.weaponSets.keys().first()
+				if(indexOf == -1 || indexOf == setOfWeaponSets.size) {
+					starship.weaponSetSelections[player.uniqueId] = setOfWeaponSets.first()
 				}
 				else{
-					starship.weaponSetSelections[player.uniqueId] = starship.weaponSets.keys().elementAt(indexOf)
+					starship.weaponSetSelections[player.uniqueId] = setOfWeaponSets.elementAt(indexOf)
 				}
 				player.success("Took control of weaponset ${starship.weaponSetSelections[player.uniqueId]}")
 			}
