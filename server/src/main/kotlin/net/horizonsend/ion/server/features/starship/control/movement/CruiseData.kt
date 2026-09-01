@@ -34,7 +34,7 @@ class CruiseData(
             else 0.0
         } ?: 0.0
 
-        val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + /*nationCruiseModifier + */dominionBpsModifier * starship.directCruiseSpeedMultiplier).toInt()
+        val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + /*nationCruiseModifier + */dominionBpsModifier + starship.directCruiseSpeedAddition).toInt()
 
         val dir = this.targetDir ?: Vector()
         val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)

@@ -154,7 +154,7 @@ object StarshipCruising : IonServerComponent() {
 		val dx = if (abs(dir.x) >= 0.5) sign(dir.x).toInt() else 0
 		val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
 
-		if (dx == 0 && dz == 0) {
+		if (dx == 0 && dz == 0 && allowVerticalMovement) {
 			controller.userErrorAction("Can't go up or down")
 
 			return
@@ -179,9 +179,9 @@ object StarshipCruising : IonServerComponent() {
 		starship.cruiseData.targetDir = Vector(
 			dx,
 			0,
-			dz).normalize().add(
+			dz).add(
 				if(allowVerticalMovement) Vector(0.0,dir.y,0.0) else Vector()
-			)
+			).normalize()
 
 		val realAccel = starship.cruiseData.getRealAccel(starship.reactor.powerDistributor.thrusterPortion)
 

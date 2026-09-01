@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.input
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
@@ -16,10 +17,12 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.minecraft.world.entity.Relative
+import org.bukkit.Material
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
 import kotlin.math.PI
+import kotlin.math.max
 
 class PlayerDirectCruiseControlInput(override val controller: PlayerController): PlayerInput, DirectCruiseControlInput{
 	override val player get() = controller.player
@@ -69,19 +72,29 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 	}
 
 	override fun getData(): CruiseData {
+		//if the player is not holding a clock, do not accept anything
+		if (player.inventory.itemInMainHand.type != Material.CLOCK) return starship.cruiseData
 		val currentInput = player.currentInput
 
 		var center = starship.directControlCenter
 		if (center == null) {
-			starship.debug("Direct control center adjusted")
+			starship.debug("Cruise control center adjusted")
 			val pilotLocation = player.location
 			center = pilotLocation.toBlockLocation().add(0.5, 0.0, 0.5)
 			starship.directControlCenter = center
 		}
 
+		val shiftFlySpeed = (max(starship.type.balancing.maxSneakFlyAccel.d(), 1.0).div(starship.manualMoveCooldownMillis)).times(2000.0)
+
 		val dir = player.eyeLocation.direction.normalize()
 		dir.setY(0)
-		if(currentInput.isForward) dir.multiply(1)
+		if(currentInput.isForward){
+			starship.directCruiseSpeedAddition = shiftFlySpeed
+		}
+		else {
+			starship.directCruiseSpeedAddition = 0.0
+		}
+
 		//Handle forward diagonal, and Left
 		if(currentInput.isLeft && currentInput.isForward) dir.rotateAroundY(PI/4)
 		else if(currentInput.isBackward && currentInput.isLeft) dir.rotateAroundY(3*PI/4)
@@ -93,7 +106,8 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 		else if(currentInput.isRight)dir.rotateAroundY(-PI/2)
 		else if(currentInput.isBackward) dir.multiply(-1)
 
-		val verticalDistance = .1
+		val verticalDistance = shiftFlySpeed/starship.cruiseData.targetSpeed
+
 		if(currentInput.isJump) dir.add(Vector(0.0, verticalDistance, 0.0))
 		if(currentInput.isSneak) dir.add(Vector(0.0, -verticalDistance, 0.0))
 

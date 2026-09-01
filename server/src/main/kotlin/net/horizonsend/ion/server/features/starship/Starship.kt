@@ -377,7 +377,9 @@ class Starship(
 	var lastBlockedTime: Long = 0
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
 	var speedLimit = -1
-	val directCruiseSpeedMultiplier: Double = 1.0
+
+	//direct cruise, cruise speedup (brings direct cruise in line with shift fly speed in certain situations).
+	var directCruiseSpeedAddition: Double = 0.0
 
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
