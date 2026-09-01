@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
@@ -92,8 +93,8 @@ object SettingsCommand : SLCommand() {
 
 	@CommandAlias("control tertiarycontrollers")
 	@CommandCompletion("@controlTertiaryControl")
-	fun onSettingsControlChangeTertiaryControl(sender: Player, value: PlayerDirectControlInput.TertiaryButtonControl) = asyncCommand(sender) {
-		handleEnumCycleSetting(sender, PlayerSettings::tertiaryButtonControl, value, PlayerDirectControlInput.TertiaryButtonControl::class.java)
+	fun onSettingsControlChangeTertiaryControl(sender: Player, value: PlayerInput.TertiaryButtonControl) = asyncCommand(sender) {
+		handleEnumCycleSetting(sender, PlayerSettings::tertiaryButtonControl, value, PlayerInput.TertiaryButtonControl::class.java)
 	}
 
     @CommandAlias("sidebar combattimer enablecombattimerinfo")

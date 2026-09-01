@@ -33,7 +33,6 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -44,8 +43,11 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.control.input.AIDirectControlInput
 import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
 import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectCruiseControlInput
 import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.CruiseData
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.DirectCruiseControlHandler
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -371,10 +373,12 @@ class Starship(
 	//endregion
 
 	//region Movement
-	var cruiseData = StarshipCruising.CruiseData(this)
+	var cruiseData = CruiseData(this)
 	var lastBlockedTime: Long = 0
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
 	var speedLimit = -1
+	val directCruiseSpeedMultiplier: Double = 1.0
+
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
@@ -458,6 +462,10 @@ class Starship(
 		return controller.movementHandler is DirectControlHandler
 	}
 
+	val isDirectCruiseControlEanble: Boolean get(){
+		return controller.movementHandler is DirectCruiseControlHandler
+	}
+
 	var directControlCenter: Location? = null
 
 	// Stored on starship so it can't be reset by switching to dc and back
@@ -479,6 +487,22 @@ class Starship(
 				val controller = controller as AIController
 				if (enabled) controller.movementHandler = DirectControlHandler(controller, AIDirectControlInput(controller)) else
 					controller.movementHandler = ShiftFlightHandler(controller, AIShiftFlightInput(controller))
+			}
+			else -> return
+		}
+	}
+
+	fun setDirectCruiseControlEnabled(enabled: Boolean){
+		if (enabled && this.isDirectControlEnabled) {
+			this.userErrorAction("Direct Cruise Control cannot be enabled while Direct Control is activated")
+			return
+		}
+		when (controller) {
+			is ActivePlayerController -> {
+				val controller = controller as ActivePlayerController
+				if (enabled) controller.movementHandler =
+					DirectCruiseControlHandler(controller, PlayerDirectCruiseControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
 			}
 			else -> return
 		}

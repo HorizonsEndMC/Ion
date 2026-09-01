@@ -30,93 +30,16 @@ import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatu
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor.color
-import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.sign
 
 object StarshipCruising : IonServerComponent() {
 	const val SECONDS_PER_CRUISE = 2.0
-
-	class CruiseData(
-		val starship: ActiveControlledStarship,
-		var velocity: Vector = Vector(),
-		var targetSpeed: Int = 0,
-		var targetDir: Vector? = null,
-		var accel: Double = 0.0
-	) {
-		var lastBlockCount = starship.initialBlockCount
-
-		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
-			val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
-			val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
-			/*
-			val nationCruiseModifier = starship.playerPilot?.let { player ->
-				val cruiseBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.CRUISE_SPEED)
-				if (cruiseBuffActive) {
-					NationBuffTypes.CRUISE_SPEED.value
-				} else 0.0
-			} ?: 0.0
-			 */
-
-			val dominionBpsModifier = starship.playerPilot?.let { player ->
-				if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.SPEED))
-					DominionTerritoryBuffTypes.SPEED.value
-				else 0.0
-			} ?: 0.0
-
-			val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + /*nationCruiseModifier + */dominionBpsModifier).toInt()
-
-			val dir = this.targetDir ?: Vector()
-			val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)
-			val newVelocity = dir.clone().multiply(speed)
-
-			newVelocity.y = 0.0
-			moveTowards(velocity, newVelocity, getRealAccel(thrusterPower) * SECONDS_PER_CRUISE)
-			velocity.y = 0.0
-
-			if (velocity.x.isNaN()) velocity.x = 0.0
-			if (velocity.z.isNaN()) velocity.z = 0.0
-		}
-
-		// multiplied by power percent and rounded to the nearest hundredth
-		fun getRealAccel(thrusterPower: Double): Double {
-			/*
-			val nationAccelerationModifier = starship.playerPilot?.let { player ->
-				val accelerationBuffActive = NationBuffTypes.isEffectActive(player, NationBuffTypes.ACCELERATION)
-				if (accelerationBuffActive) {
-					NationBuffTypes.ACCELERATION.value
-				} else 0.0
-			} ?: 0.0
-			 */
-
-			val dominionAccelModifier = starship.playerPilot?.let { player ->
-				if (DominionTerritoryBuffTypes.isEffectActive(player, DominionTerritoryBuffTypes.ACCELERATION))
-					DominionTerritoryBuffTypes.ACCELERATION.value
-				else 0.0
-			} ?: 0.0
-			return (accel * thrusterPower + /*nationAccelerationModifier + */dominionAccelModifier).roundToHundredth()
-		}
-
-		private fun moveTowards(vector: Vector, other: Vector, maxDistance: Double): Vector {
-			val direction = other.clone().subtract(vector).normalize()
-			val distance = min(maxDistance, other.distance(vector))
-			if (distance < maxDistance) {
-				vector.x = other.x
-				vector.y = other.y
-				vector.z = other.z
-				return vector
-			}
-			return vector.add(direction.multiply(distance))
-		}
-	}
 
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, (20 * SECONDS_PER_CRUISE).toLong()) {
@@ -218,7 +141,7 @@ object StarshipCruising : IonServerComponent() {
 		return Hyperspace.isWarmingUp(starship)
 	}
 
-	fun startCruising(controller: Controller, starship: ActiveControlledStarship, dir: Vector) {
+	fun startCruising(controller: Controller, starship: ActiveControlledStarship, dir: Vector, allowVerticalMovement: Boolean = false) {
 		if (starship.type == PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
 			return
@@ -245,7 +168,7 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		maxSpeed /= 2
+		maxSpeed /= 2 //This change was done to save the server from imploding from chunk loading lag.
 		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
 		maxSpeed = minOf(maxSpeed, starship.balancing.maxCruiseSpeed)
 
@@ -253,7 +176,12 @@ object StarshipCruising : IonServerComponent() {
 
 		starship.cruiseData.accel = accel
 		starship.cruiseData.targetSpeed = maxSpeed
-		starship.cruiseData.targetDir = Vector(dx, 0, dz).normalize()
+		starship.cruiseData.targetDir = Vector(
+			dx,
+			0,
+			dz).normalize().add(
+				if(allowVerticalMovement) Vector(0.0,dir.y,0.0) else Vector()
+			)
 
 		val realAccel = starship.cruiseData.getRealAccel(starship.reactor.powerDistributor.thrusterPortion)
 
@@ -281,7 +209,7 @@ object StarshipCruising : IonServerComponent() {
 			}
 		} else {
 			starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
-			if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
+			//if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
 		}
 
 		// Sound alert for cruise
@@ -364,17 +292,4 @@ object StarshipCruising : IonServerComponent() {
 	fun isCruisingAndAccelerating(starship: ActiveControlledStarship) = starship.cruiseData.targetDir != null
 	// If the starship is moving due to cruising at all, even if not accelerating
 	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.velocity.lengthSquared() != 0.0
-
-	enum class Diagonal {
-		DIAGONAL_LEFT { override fun getRightFace(forward: BlockFace): BlockFace { return forward.leftFace } },
-		DIAGONAL_RIGHT { override fun getRightFace(forward: BlockFace): BlockFace { return forward.rightFace } }
-
-		;
-
-		abstract fun getRightFace(forward: BlockFace): BlockFace
-
-		fun vector(forward: BlockFace): Vector {
-			return forward.direction.add(getRightFace(forward).direction).normalize()
-		}
-	}
 }
