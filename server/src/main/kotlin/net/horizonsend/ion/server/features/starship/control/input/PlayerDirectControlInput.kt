@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.starship.control.input
 //import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
@@ -146,6 +148,7 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 			}
 		}
 		if(input.isJump){
+			starship.informationAction("Drifting")
 			starship.reactor.powerDistributor.thrusterPortion = 0.1
 		}
 		else {
