@@ -6,7 +6,6 @@ class PowerDistributor {
 	var weaponPortion: Double = 0.5
 		private set
 	var thrusterPortion: Double = 0.5
-		private set
 
 	fun setDivision(shield: Double, weapon: Double, thruster: Double, bypassCheck : Boolean = false) {
 		check(bypassCheck or (shield + weapon + thruster - 1.0 <= 1e-4)) {

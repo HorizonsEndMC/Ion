@@ -139,11 +139,17 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (input.isRight) strafe += 1.0
 		if (input.isForward) ascend += 1.0
 		if (input.isBackward) ascend -= 1.0
-		if(input.isJump) {
+		if(input.isSprint) {
 			if(player.server.currentTick-lastTertiaryInput > 10) {
 				handleTertiaryInput(starship)
 				lastTertiaryInput = player.server.currentTick
 			}
+		}
+		if(input.isJump){
+			starship.reactor.powerDistributor.thrusterPortion = 0.1
+		}
+		else {
+			starship.reactor.powerDistributor.thrusterPortion = 0.5
 		}
 
 		// Convert to world-relative vector
