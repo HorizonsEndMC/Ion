@@ -173,6 +173,9 @@ class Starship(
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
 	val statusEffects: MutableMap<StarshipStatusEffectType, MutableList<StarshipStatusEffect>> = mutableMapOf()
 
+	var cruiseTickCount = 0
+	var moveThisShipThisTick = false
+
 	var world: World = data.bukkitWorld()
 		set(value) {
 			ActiveStarships.updateWorld(this, field, value)
@@ -186,6 +189,12 @@ class Starship(
 		subsystems.forEach { it.tick() }
 		shiftKinematicEstimator.removeData()
 		cruiseKinematicEstimator.removeData()
+
+		cruiseTickCount+=1
+		if(cruiseTickCount.toDouble() == 20*StarshipCruising.SECONDS_PER_CRUISE){
+			cruiseTickCount = 0
+			moveThisShipThisTick = true
+		}
 
 		if (forecastEnabled) {
 			displayForecast(this)
