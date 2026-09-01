@@ -143,7 +143,7 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (input.isBackward) ascend -= 1.0
 		if(input.isJump) {
 			if(player.server.currentTick-lastTertiaryInput > 10) {
-				handleTertiaryInput()
+				handleTertiaryInput(starship)
 				lastTertiaryInput = player.server.currentTick
 			}
 		}
