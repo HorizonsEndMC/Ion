@@ -35,6 +35,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor.color
 import org.bukkit.util.Vector
+import org.litote.kmongo.month
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -42,9 +43,10 @@ object StarshipCruising : IonServerComponent() {
 	const val SECONDS_PER_CRUISE = 2.0
 
 	override fun onEnable() {
-		Tasks.syncRepeat(0L, (20 * SECONDS_PER_CRUISE).toLong()) {
+		Tasks.syncRepeat(0L, 1) {
 
-			for (starship in ActiveStarships.allControlledStarships()) {
+			for (starship in ActiveStarships.allControlledStarships().filter { it.moveThisShipThisTick }) {
+				starship.moveThisShipThisTick = false
 				if (!PilotedStarships.isPiloted(starship)) continue
 
 				if (shouldStopCruising(starship)) {
@@ -56,7 +58,7 @@ object StarshipCruising : IonServerComponent() {
 		}
 	}
 
-	private fun updateCruisingShip(starship: ActiveControlledStarship) {
+	fun updateCruisingShip(starship: ActiveControlledStarship) {
 		processUpdatedHullIntegrity(starship)
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
@@ -133,7 +135,7 @@ object StarshipCruising : IonServerComponent() {
 		starship.generateThrusterMap()
 	}
 
-	private fun shouldStopCruising(starship: ActiveControlledStarship): Boolean {
+	fun shouldStopCruising(starship: ActiveControlledStarship): Boolean {
 		if (starship.isDirectControlEnabled) return true
 
 		if (starship.controller is NoOpController || starship.controller is UnpilotedController) return true
