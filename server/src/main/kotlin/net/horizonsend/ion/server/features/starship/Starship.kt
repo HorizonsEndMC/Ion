@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
@@ -485,6 +486,12 @@ class Starship(
 	fun setDirectControlEnabled(enabled: Boolean) {
 		if (enabled && StarshipCruising.isCruising(this)) {
 			this.userErrorAction("Direct Control cannot be enabled while cruising")
+			return
+		}
+		if (this.initialBlockCount > 12501){
+			this.userErrorAction(
+				"Only ships of size 12500 or less can use direct control"
+			)
 			return
 		}
 		when (controller) {
