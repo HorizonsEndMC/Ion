@@ -725,6 +725,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}
 
+	@CommandAlias("cruisecontrol|cc|CC")
+	@Suppress("unused")
+	fun onCruiseControl(sender: Player){
+		val starship = getStarshipPiloting(sender)
+
+		starship.setDirectCruiseControlEnabled(!starship.isDirectCruiseControlEanble)
+	}
+
 	@Suppress("unused")
 	@CommandAlias("cruise")
 	fun onCruise(sender: Player) {
