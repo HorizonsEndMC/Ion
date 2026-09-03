@@ -291,6 +291,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 3,
 			warmupTime = 10,
 			interdictionRange = 1200,
+			contactsRange = 700,
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.35,
