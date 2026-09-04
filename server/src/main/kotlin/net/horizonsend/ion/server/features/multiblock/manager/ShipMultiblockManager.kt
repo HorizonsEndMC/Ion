@@ -22,7 +22,6 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
@@ -177,8 +176,8 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	 * Multiblock entities are stored on the block the sign is placed on.
 	 **/
 	override operator fun get(sign: Sign): MultiblockEntity? {
-		val origin = getRelative(Vec3i(sign.x, sign.y, sign.z), sign.getFacing().oppositeFace, 0, 0, 1)
-		val local = getLocalCoordinate(origin)
+		val origin = MultiblockEntity.getOriginFromSign(sign)
+		val local = getLocalCoordinate(Vec3i(origin.x, origin.y, origin.z))
 		return multiblockEntities[toBlockKey(local)]
 	}
 

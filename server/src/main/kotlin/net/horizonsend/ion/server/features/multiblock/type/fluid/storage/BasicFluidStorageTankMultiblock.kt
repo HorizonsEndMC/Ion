@@ -129,7 +129,9 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		getMultiblockEntity(sign, false)?.getStores()?.first()?.let { container -> player.information(container.getContents().toString()) }
+		getMultiblockEntity(sign, false)?.getStores()?.first()?.let { container ->
+			player.information(container.getContents().toString())
+		}
 	}
 
 	class FluidTankMultiblockEntity(
@@ -168,7 +170,7 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		}
 
 		override fun tickAsync() {
-			bootstrapNetwork()
+			bootstrapFluidNetwork()
 		}
 	}
 }

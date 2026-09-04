@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -27,6 +28,10 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	override val solarPanelManager = ShipCacheHolder(this) { SolarPanelCache(it) }
 	override val itemPipeManager = ShipCacheHolder(this) { ItemTransportCache(it) }
 //	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
+
+	override fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager {
+		return starship.multiblockManager
+	}
 
 	override val cacheHolders: Array<ShipCacheHolder<*>> = arrayOf(
 		powerNodeManager,

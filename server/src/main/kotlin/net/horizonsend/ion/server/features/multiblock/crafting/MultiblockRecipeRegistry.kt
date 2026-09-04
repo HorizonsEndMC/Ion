@@ -1,6 +1,5 @@
 ﻿package net.horizonsend.ion.server.features.multiblock.crafting
 
-import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -854,6 +853,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 10.0)),
 			fluidResultPollutionResult = FluidResult("pollution", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 1.0)),
 			itemResult = ResultHolder.of(ItemResult.simpleResult(CustomItemKeys.CIRCUITRY.getValue().constructItemStack())),
+			0
 		))
 		register(MultiblockRecipeKeys.SABATIER_METHANE, ChemicalProcessorRecipe(
 			key = MultiblockRecipeKeys.SABATIER_METHANE,
@@ -868,6 +868,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			fluidResultPollutionResult = null,
 
 			itemResult = ResultHolder.of(ItemResult.simpleResult(Material.IRON_INGOT)),
+			0
 		))
 	}
 

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -40,6 +41,7 @@ class FluidStack(
 		set
 
 	fun isEmpty(): Boolean = type == FluidTypeKeys.EMPTY || amount <= 0
+	fun isNotEmpty(): Boolean = type != FluidTypeKeys.EMPTY && amount > 0
 
 	/**
 	 * Returns a copy of this fluid stack with the amount specified
@@ -50,27 +52,71 @@ class FluidStack(
 		return FluidStack(type, amount, Object2ObjectOpenHashMap(dataComponents))
 	}
 
-	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T) {
-		dataComponents[type] = data
+	/** Returns an immutable map of all properties contained by this fluid stack */
+	fun getAllProperties(): Map<FluidPropertyType<*>, FluidProperty> = Object2ObjectOpenHashMap<FluidPropertyType<*>, FluidProperty>().apply {
+		putAll(type.getValue().defaultProperties.mapKeys { it.key.getValue() })
+		putAll(dataComponents) // Add patch second to override default values
 	}
 
-	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty) {
+	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T): FluidStack {
+		if (!type.canBeCustom()) throw IllegalArgumentException("Fluid property $type cannot be used in custom data!")
 		dataComponents[type] = data
+		return this
+	}
+
+	fun <T : FluidProperty> setData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, data: T): FluidStack {
+		if (!type.getValue().canBeCustom()) throw IllegalArgumentException("Fluid property $type cannot be used in custom data!")
+		dataComponents[type.getValue()] = data
+		return this
+	}
+
+	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty): FluidStack {
+		if (!type.canBeCustom()) throw IllegalArgumentException("Fluid property $type cannot be used in custom data!")
+		dataComponents[type] = data
+		return this
 	}
 
 	fun <T : FluidProperty> getData(type: FluidPropertyType<T>) : T? {
-		return dataComponents[type]?.let { type.castUnsafe(it) }
+		return getAllProperties()[type]?.let { type.castUnsafe(it) }
+	}
+
+	fun <T : FluidProperty> getData(key: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>) : T? {
+		return getAllProperties()[key.getValue()]?.let { key.getValue().castUnsafe(it) }
+	}
+
+	fun <T : FluidProperty> getDataOrDefault(type: FluidPropertyType<T>, location: Location?) : T {
+		return getAllProperties()[type]?.let { type.castUnsafe(it) } ?: type.getDefaultProperty(location)
+	}
+
+	fun <T : FluidProperty> getDataOrDefault(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, location: Location?) : T {
+		return getAllProperties()[type.getValue()]?.let { type.getValue().castUnsafe(it) } ?: type.getValue().getDefaultProperty(location)
 	}
 
 	fun <T : FluidProperty> getDataOrThrow(type: FluidPropertyType<T>) : T {
 		return getData(type) ?: throw NullPointerException()
 	}
 
-	fun <T : FluidProperty> hasData(type: FluidPropertyType<T>) : Boolean {
+	fun <T : FluidProperty> getDataOrThrow(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>) : T {
+		return getData(type) ?: throw NullPointerException()
+	}
+
+	fun hasData(type: FluidPropertyType<*>) : Boolean {
+		return getAllProperties().keys.contains(type)
+	}
+
+	fun hasCustomData(type: FluidPropertyType<*>) : Boolean {
 		return dataComponents.keys.contains(type)
 	}
 
-	fun getDataMap() = dataComponents.toMap()
+	fun hasData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>) : Boolean {
+		return getAllProperties().keys.contains(type.getValue())
+	}
+
+	fun hasCustomData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>) : Boolean {
+		return dataComponents.keys.contains(type.getValue())
+	}
+
+	fun getCustomDataMap() = dataComponents.toMap()
 
 	/**
 	 * Returns if these FluidStacks are of the same type
@@ -85,8 +131,8 @@ class FluidStack(
 	 * The provided location is used to generate a default value if the other stack does not have this property
 	 **/
 	fun combine(other: FluidStack, location: Location?) {
-		val existingPropertyKeys = dataComponents.keys
-		val otherPropertyKeys = other.dataComponents.keys
+		val existingPropertyKeys = getCustomDataMap().keys
+		val otherPropertyKeys = other.getCustomDataMap().keys
 		val allPropertyKeys = existingPropertyKeys.plus(otherPropertyKeys)
 
 		for (type: FluidPropertyType<*> in allPropertyKeys) {
@@ -154,4 +200,6 @@ class FluidStack(
 	override fun toString(): String {
 		return "FluidStack{type=${type.key},amount=$amount,properties=[${dataComponents.entries.joinToString { (key, value) -> "(${key.key}:$value)" }}]}"
 	}
+
+	fun getDisplayName(): Component = type.getValue().getDisplayName(this)
 }

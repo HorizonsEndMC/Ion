@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.Res
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 
 class AutoMasonRecipe(
@@ -36,12 +38,13 @@ class AutoMasonRecipe(
 		RequirementHolder(
 			dataTypeClass = Material::class.java as Class<Material?>,
 			getter = { it.getCenterBlock()?.getTypeSafe() },
-			requirement = CenterBlockRequirement(centerCheck)
+			requirement = CenterBlockRequirement(centerCheck),
+			failureStatus = Component.text("Mismatched center block!", NamedTextColor.RED)
 		)
 	)
 
 	fun consumeIngredients(enviornment: AutoMasonRecipeEnviornment) {
-		if (!verifyAllRequirements(enviornment)) return
+		if (!verifyAllRequirements(enviornment, false)) return
 
 		try {
 			requirements.forEach { requirement -> requirement.consume(enviornment) }
@@ -52,9 +55,9 @@ class AutoMasonRecipe(
 		}
 	}
 
-	override fun assemble(enviornment: AutoMasonRecipeEnviornment) {
-		if (!verifyAllRequirements(enviornment)) return
-		if (!result.verifySpace(enviornment)) return
+	override fun assemble(enviornment: AutoMasonRecipeEnviornment): Boolean {
+		if (!verifyAllRequirements(enviornment, true)) return false
+		if (!result.verifySpace(enviornment)) return false
 
 		val resultEnviornment = ResultExecutionEnviornment(enviornment, this)
 
@@ -65,11 +68,12 @@ class AutoMasonRecipe(
 		} catch (e: Throwable) {
 			IonServer.slF4JLogger.error("There was an error executing multiblock recipe ${this@AutoMasonRecipe.key}: ${e.message}")
 			e.printStackTrace()
-			return
+			return false
 		}
 
 		// Once ingredients have been sucessfully consumed, execute the result
 		val executionResult = resultEnviornment.executeResult()
 		result.executeCallbacks(enviornment, executionResult)
+		return true
 	}
 }

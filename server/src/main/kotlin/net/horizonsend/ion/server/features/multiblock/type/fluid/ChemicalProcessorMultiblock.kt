@@ -1,28 +1,39 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
+import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
+import net.horizonsend.ion.server.features.gui.custom.settings.button.ArbitraryButton
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.RegistryKeyConsumerInputButton
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ChemicalProcessorRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock.ChemicalProcessorEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
@@ -31,17 +42,23 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProcessorEntity> {
+object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProcessorEntity>, InteractableMultiblock {
 	override val name: String = "chemprocessor"
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Chemical", NamedTextColor.GOLD),
@@ -501,42 +518,47 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		return ChemicalProcessorEntity(data, manager, world, x, y, z, structureDirection)
 	}
 
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		getMultiblockEntity(sign, false)?.openSettingsGui(player)
+	}
+
 	class ChemicalProcessorEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
 		manager, ChemicalProcessorMultiblock, world, x, y, z, structureDirection
 	), DisplayMultiblockEntity,
         FluidStoringMultiblock,
         SyncTickingMultiblockEntity,
-        AsyncTickingMultiblockEntity,
+		AsyncTickingMultiblockEntity,
         ProgressMultiblock,
-        RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>
+        RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>,
+		StatusTickedMultiblockEntity
 	{
-		override var lastRecipe: MultiblockRecipe<ChemicalProcessorEnviornment>? = null
-		override var hasTicked: Boolean = false
+		override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<ChemicalProcessorEnviornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
 
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
+		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		override val ioData: IOData = IOData.Companion.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			// Inputs
-			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
 			.addPort(IOType.FLUID, -4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(
+                IOPort.RegisteredMetaDataInput(
                     this,
                     FluidPortMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)
                 )
             }
 
 			// Outputs
-			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, 4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(
+                IOPort.RegisteredMetaDataInput(
                     this,
                     FluidPortMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)
                 )
             }
 
 			.addPort(IOType.FLUID, 0, 9, 6) {
-                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(
+                IOPort.RegisteredMetaDataInput(
                     this,
                     FluidPortMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)
                 )
@@ -549,6 +571,59 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		val primaryOutput = FluidStorageContainer(data, "primaryout", Component.text("Primary Output"), NamespacedKeys.key("primaryout"), 100_000.0, FluidRestriction.Unlimited)
 		val secondaryOutput = FluidStorageContainer(data, "secondaryout", Component.text("Secondary Output"), NamespacedKeys.key("secondaryout"), 100_000.0, FluidRestriction.Unlimited)
 		val pollutionOutput = FluidStorageContainer(data, "pollutionout", Component.text("Pollution Output"), NamespacedKeys.key("pollutionout"), 100_000.0, FluidRestriction.Unlimited)
+
+		val settings = SettingsContainer.multiblockSettings(data,
+			SettingsContainer.SettingsProperty(ChemicalProcessorEntity::lockedRecipe, MultiblockRecipeKeys.serializer, null),
+		)
+
+		@Suppress("UNCHECKED_CAST")
+		var lockedRecipe: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<*>>? by settings.getDelegate { recipeManager.lockedRecipe = it as IonRegistryKey<MultiblockRecipe<*>, MultiblockRecipe<ChemicalProcessorEnviornment>>? }
+
+		init {
+			recipeManager.lockedRecipe = lockedRecipe as IonRegistryKey<MultiblockRecipe<*>, MultiblockRecipe<ChemicalProcessorEnviornment>>?
+		}
+		fun openSettingsGui(player: Player) {
+			createSettingsPage(
+				player,
+				"Locked Recipe",
+				RegistryKeyConsumerInputButton(
+					keyRegistry = MultiblockRecipeKeys,
+					keyFilter = { it.getValue().entityType == ChemicalProcessorEntity::class },
+					valueSupplier = this::lockedRecipe,
+					valueConsumer = { lockedRecipe = it as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnviornment>> },
+					name = text("Lock to Recipe"),
+					buttonDescription = "This multiblock will only process the specifed recipe. ",
+					inputDescription = text("Enter Key"),
+					icon = GuiItem.LIST,
+					defaultValue = null,
+					searchTermProvider = { key ->
+						key as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnviornment>>
+						val recipe: ChemicalProcessorRecipe = key.getValue() as ChemicalProcessorRecipe
+
+						listOfNotNull(
+							key.key,
+							recipe.fluidRequirementOne?.asFluidStack()?.getDisplayName()?.plainText(),
+							recipe.fluidRequirementTwo?.asFluidStack()?.getDisplayName()?.plainText(),
+							recipe.itemRequirement?.asItemStack()?.displayNameComponent?.plainText(),
+							recipe.fluidResultTwo?.stack?.getDisplayName()?.plainText(),
+							recipe.fluidResultTwo?.stack?.getDisplayName()?.plainText(),
+							recipe.fluidResultTwo?.stack?.getDisplayName()?.plainText(),
+							recipe.itemResult?.result?.asItem()?.displayNameComponent?.plainText(),
+						)
+					}
+				),
+				ArbitraryButton(
+					name = "Unset Locked Recipe",
+					firstLine = Component.empty(),
+					secondLine = text("Unset Locked Recipe"),
+					icon = GuiItem.CANCEL,
+					handleClick = { _, gui ->
+						lockedRecipe = null
+						gui.openGui()
+					}
+				)
+			).openGui()
+		}
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -620,7 +695,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 
 		override fun tickAsync() {
-			bootstrapNetwork()
+			bootstrapFluidNetwork()
 		}
 
 		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(

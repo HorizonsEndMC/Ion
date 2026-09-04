@@ -409,6 +409,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
 
+		register(CustomBlockKeys.REDSTONE_CONTROL_PORT, CustomBlock(
+			key = CustomBlockKeys.REDSTONE_CONTROL_PORT,
+			blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST, BlockFace.SOUTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REDSTONE_CONTROL_PORT)
+			),
+			CustomItemKeys.REDSTONE_CONTROL_PORT
+		))
+
 		register(CustomBlockKeys.FLUID_PORT, object : CustomBlock(
 			key = CustomBlockKeys.FLUID_PORT,
 			blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),

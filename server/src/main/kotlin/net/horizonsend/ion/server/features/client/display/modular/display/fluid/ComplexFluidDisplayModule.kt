@@ -19,6 +19,6 @@ class ComplexFluidDisplayModule(
 ) : FluidDisplayModule(handler, container, offsetLeft, offsetUp, offsetBack, scale, relativeFace) {
 
 	override fun buildText(): Component {
-		return ofChildren(title, newline(), formatFluid(), newline(), container.getContents().type.getValue().displayName)
+		return ofChildren(title, newline(), formatFluid(), newline(), container.getContents().getDisplayName())
 	}
 }

@@ -58,6 +58,11 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val MULTIBLOCK_TYPE = newComponentType<StoredMultiblock, OnlyOne<StoredMultiblock>>(ComponentType.ONLY_ONE)
 
 		/**
+		 * Specifies a stored fluid
+		 **/
+		val FLUID_STORAGE = newComponentType<FluidStorage, OnlyOne<FluidStorage>>(ComponentType.ONLY_ONE)
+
+		/**
 		 * Gives this item lore
 		 */
 		val FLAVOR_TEXT = newComponentType<FlavorText, OnlyOne<FlavorText>>(ComponentType.ONLY_ONE)
@@ -105,6 +110,6 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		/**
 		 * Recieves ticks, when held by a player
 		 **/
-		val TICK_RECIEVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
+		val TICK_RECEIVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
 	}
 }

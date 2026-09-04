@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
-import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Pressure.Companion.DEFAULT_PRESSURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature.Companion.DEFAULT_TEMPERATURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature.Companion.TEMPERATURE
@@ -44,8 +43,7 @@ object TemperatureProperty : FluidPropertyType<Temperature>() {
 	}
 
 	override fun getDefaultProperty(location: Location?): Temperature {
-		//TODO
-		return Temperature(DEFAULT_PRESSURE)
+		return Temperature(0.0)
 	}
 
 	override fun formatValue(property: Temperature): Component {

@@ -44,9 +44,9 @@ class FurnaceMultiblockRecipe(
 		)
 	)
 
-	override fun assemble(enviornment: FurnaceEnviornment) {
-		if (!verifyAllRequirements(enviornment)) result
-		if (!result.verifySpace(enviornment)) return
+	override fun assemble(enviornment: FurnaceEnviornment): Boolean {
+		if (!verifyAllRequirements(enviornment, true)) return false
+		if (!result.verifySpace(enviornment)) return false
 
 		val resultEnviornment = ResultExecutionEnviornment(enviornment, this)
 
@@ -57,11 +57,12 @@ class FurnaceMultiblockRecipe(
 		} catch (e: Throwable) {
 			IonServer.slF4JLogger.error("There was an error executing multiblock recipe $key: ${e.message}")
 			e.printStackTrace()
-			return
+			return false
 		}
 
 		// Once ingredients have been sucessfully consumed, execute the result
 		val executionResult = resultEnviornment.executeResult()
 		result.executeCallbacks(enviornment, executionResult)
+		return true
 	}
 }

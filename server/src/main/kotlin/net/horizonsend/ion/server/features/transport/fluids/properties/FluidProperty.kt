@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.fluids.properties
 
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 
@@ -10,23 +11,9 @@ interface FluidProperty {
 
 	fun clone(): FluidProperty
 
-	data class Pressure(val value: Double) : FluidProperty {
-		init {
-		    check(value.isFinite()) { "Pressure must be finite!" }
-		}
-
-		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Pressure>> = FluidPropertyTypeKeys.PRESSURE
-
-		companion object {
-			val PRESSURE = NamespacedKeys.key("pressure")
-			const val DEFAULT_PRESSURE = 0.0
-		}
-
-		override fun clone(): Pressure {
-			return copy()
-		}
-	}
-
+	/**
+	 * Stores temperature, in Celsius
+	 **/
 	data class Temperature(val value: Double) : FluidProperty {
 		init {
 			check(value.isFinite()) { "Temperature must be finite!" }
@@ -39,9 +26,7 @@ interface FluidProperty {
 			const val DEFAULT_TEMPERATURE = 15.0
 		}
 
-		override fun clone(): Temperature {
-			return copy()
-		}
+		override fun clone(): Temperature = copy()
 	}
 
 	data class Salinity(val value: Double) : FluidProperty {
@@ -57,8 +42,22 @@ interface FluidProperty {
 			const val DEFAULT_SALINITY = 0.0
 		}
 
-		override fun clone(): Salinity {
-			return copy()
+		override fun clone(): Salinity = copy()
+	}
+
+	data class Flammability(
+		val joulesPerLiter: Double,
+		val resultFluid: IonRegistryKey<FluidType, out FluidType>,
+		val resultVolumeMultiplier: Double
+	) : FluidProperty {
+		init {
+			check(joulesPerLiter.isFinite() && joulesPerLiter >= 0.0) { "Joules per liter must be between positive and finite!" }
+			check(joulesPerLiter.isFinite() && joulesPerLiter >= 0.0) { "Result volume multiplier must be between positive and finite!" }
 		}
+
+		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Flammability>> = FluidPropertyTypeKeys.FLAMMABILITY
+
+		override fun clone(): Flammability = copy()
+
 	}
 }

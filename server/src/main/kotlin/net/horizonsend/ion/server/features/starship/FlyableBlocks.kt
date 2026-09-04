@@ -38,23 +38,21 @@ import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BOOKSHELF
 import org.bukkit.Material.BREWING_STAND
 import org.bukkit.Material.BROWN_MUSHROOM_BLOCK
-import org.bukkit.Material.RED_MUSHROOM_BLOCK
 import org.bukkit.Material.CAMPFIRE
 import org.bukkit.Material.CARROTS
 import org.bukkit.Material.CARTOGRAPHY_TABLE
 import org.bukkit.Material.CAULDRON
-import org.bukkit.Material.IRON_CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
+import org.bukkit.Material.CHORUS_PLANT
 import org.bukkit.Material.COAL_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
-import org.bukkit.Material.COPPER_BARS
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_BULB
+import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.COPPER_TORCH
 import org.bukkit.Material.COPPER_WALL_TORCH
-import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
@@ -87,6 +85,7 @@ import org.bukkit.Material.HAY_BLOCK
 import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BARS
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_CHAIN
 import org.bukkit.Material.JUKEBOX
 import org.bukkit.Material.LADDER
 import org.bukkit.Material.LANTERN
@@ -149,6 +148,7 @@ import org.bukkit.Material.REDSTONE_LAMP
 import org.bukkit.Material.REDSTONE_TORCH
 import org.bukkit.Material.REDSTONE_WALL_TORCH
 import org.bukkit.Material.REDSTONE_WIRE
+import org.bukkit.Material.RED_MUSHROOM_BLOCK
 import org.bukkit.Material.REPEATER
 import org.bukkit.Material.SCAFFOLDING
 import org.bukkit.Material.SCULK
@@ -435,6 +435,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	POTATOES,
 	BEETROOTS,
 	HAY_BLOCK,
+	CHORUS_PLANT
 
 ).also {
 	it.addAll(CONCRETE_TYPES)

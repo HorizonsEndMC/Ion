@@ -35,7 +35,7 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 	fun getNamedStorage(name: String) = getStores().find { container -> container.name == name }
 
-	fun bootstrapNetwork() {
+	fun bootstrapFluidNetwork() {
 		this as MultiblockEntity
 
 		val fluidManager = manager.getTransportManager().getGraphTransportManager()

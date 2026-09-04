@@ -21,6 +21,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -170,5 +171,11 @@ object CustomBlockListeners : SLEventListener() {
 				}
 			}
 		}
+	}
+
+	// Prevents water from breaking custom blocks
+	@EventHandler
+	fun onWaterBreakPipe(event: BlockFromToEvent) {
+		if (event.toBlock.customBlock != null) event.isCancelled = true
 	}
 }

@@ -14,6 +14,8 @@ import org.bukkit.persistence.PersistentDataContainer
 abstract class FluidPropertyType<T : FluidProperty> {
 	abstract val key: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>
 
+	open fun canBeCustom(): Boolean = true
+
 	@Suppress("UNCHECKED_CAST")
 	fun castUnsafe(property: FluidProperty) : T = property as T
 
@@ -58,5 +60,5 @@ abstract class FluidPropertyType<T : FluidProperty> {
 
 	abstract fun formatValue(property: T): Component
 
-	protected abstract fun getDefaultProperty(location: Location?): T
+	abstract fun getDefaultProperty(location: Location?): T
 }

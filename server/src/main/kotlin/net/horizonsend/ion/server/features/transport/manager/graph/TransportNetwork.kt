@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager.graph
 
 import com.google.common.graph.MutableNetwork
 import com.google.common.graph.NetworkBuilder
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -20,6 +21,8 @@ import kotlin.concurrent.withLock
 
 @Suppress("UnstableApiUsage")
 abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manager: NetworkManager<N, TransportNetwork<N>>) {
+	var isAlive: Boolean = true; private set
+
 	private var removed: Boolean = false
 
 	fun setRemoved() { removed = true }
@@ -31,7 +34,7 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	/**
 	 * Readwritelock for reading / modifying node configuration
 	 **/
-	private val localLock = ReentrantReadWriteLock()
+	protected val localLock = ReentrantReadWriteLock()
 
 	/**
 	 * Keep track of nodes and their positions
@@ -199,7 +202,10 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 		try {
 			ensureNodeIntegrity()
 			handleTick()
-		} finally {
+		} catch (e: Throwable) {
+			e.printStackTrace()
+		}
+		finally {
 			isTicking = false
 		}
 	}
@@ -226,11 +232,13 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	fun ensureNodeIntegrity() {
 		val missing = mutableSetOf<N>()
 
-		for (node in getGraphNodes()) {
-			val intact = node.isIntact() ?: continue
-			if (intact) continue
+		localLock.readLock().withLock {
+			for (node in getGraphNodes()) {
+				val intact = node.isIntact() ?: continue
+				if (intact) continue
 
-			missing.add(node)
+				missing.add(node)
+			}
 		}
 
 		for (node in missing) {
@@ -239,4 +247,50 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	}
 
 	abstract fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer
+
+	protected fun discoverNetwork() {
+		val visitQueue = ArrayDeque<BlockKey>()
+		// A set is maintained to allow faster checks of
+		val visitSet = LongOpenHashSet()
+
+		visitQueue.addAll(getAllNodeLocations())
+		visitSet.addAll(getAllNodeLocations())
+
+		val visited = LongOpenHashSet()
+
+		var tick = 0
+
+		while (visitQueue.isNotEmpty() && tick < 10000 && isAlive) whileLoop@{
+			tick++
+			val key = visitQueue.removeFirst()
+			val node = getNodeAtLocation(key) ?: continue
+			visitSet.remove(key)
+
+			visited.add(key)
+
+			var toBreak = false
+
+			for (face in node.getPipableDirections()) {
+				val adjacent = getRelative(key, face)
+
+				if (isNodePresent(adjacent)) continue
+				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
+
+				val discoveryResult = manager.discoverPosition(adjacent, face, this)
+
+				// Check the node here
+				if (discoveryResult is NetworkManager.NodeRegistrationResult.Nothing) continue
+				if (discoveryResult is NetworkManager.NodeRegistrationResult.CombinedGraphs) {
+					toBreak = true
+					break
+				}
+
+				visitQueue.add(adjacent)
+			}
+
+			if (toBreak) {
+				break
+			}
+		}
+	}
 }

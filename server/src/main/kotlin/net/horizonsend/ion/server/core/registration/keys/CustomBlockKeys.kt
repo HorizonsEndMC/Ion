@@ -51,6 +51,7 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")
 	val ITEM_FILTER = registerTypedKey<ItemFilterBlock>("ITEM_FILTER")
+	val REDSTONE_CONTROL_PORT = registerKey("REDSTONE_CONTROL_PORT")
 
 	val FLUID_PORT = registerKey("FLUID_PORT")
 	val FLUID_VALVE = registerKey("FLUID_VALVE")

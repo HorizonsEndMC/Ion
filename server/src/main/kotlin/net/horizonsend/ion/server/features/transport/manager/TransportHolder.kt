@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
@@ -8,6 +9,7 @@ import java.util.function.Consumer
 
 interface TransportHolder {
 	fun getInputProvider(): IOManager
+	fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager?
 
 	fun getWorld(): World
 

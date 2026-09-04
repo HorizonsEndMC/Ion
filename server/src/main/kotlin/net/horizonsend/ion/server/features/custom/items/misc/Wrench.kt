@@ -57,18 +57,18 @@ object Wrench : CustomItem(
 		.setCustomModel("tool/wrench")
 		.build()
 ) {
-	private const val FLUID_TICK_INTERVAL = 2
+	const val WRENCH_DISPLAY_TICK_INTERVAL = 2
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
-		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Wrench) { event, _, itemStack ->
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Wrench) { event, _, _ ->
 			handleRightClick(event.player, event)
 		})
 
-		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@Wrench) { event, _, itemStack ->
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@Wrench) { event, _, _ ->
 			checkStructure(event.player, event)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(FLUID_TICK_INTERVAL) { entity, itemStack, customItem, _ ->
+		addComponent(CustomComponentTypes.TICK_RECEIVER, TickReceiverModule(WRENCH_DISPLAY_TICK_INTERVAL) { entity, _, _, _ ->
 			giveFluidTips(entity as? Player ?: return@TickReceiverModule)
 		})
 	}
@@ -146,7 +146,7 @@ object Wrench : CustomItem(
 			createHudEntity(player, projectedLocation, text, scale)
 		else updateHudEntity(player, projectedLocation, text, scale)
 
-		Tasks.asyncDelay(FLUID_TICK_INTERVAL.toLong()) async2@{
+		Tasks.asyncDelay(WRENCH_DISPLAY_TICK_INTERVAL.toLong()) async2@{
 			val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
 			val targeted = hitResult?.hitBlock ?: return@async2 removeEntity(player)
 			val key = toBlockKey(targeted.x, targeted.y, targeted.z)
@@ -164,7 +164,7 @@ object Wrench : CustomItem(
 		val entity = ClientDisplayEntities.createTextEntity(
 			location,
 			info,
-			FLUID_TICK_INTERVAL.toLong() + 1,
+			WRENCH_DISPLAY_TICK_INTERVAL.toLong() + 1,
 			scale = scale,
 			backgroundColor = Color.fromARGB(255, 0, 0, 0),
 			seeThrough = true,
@@ -186,8 +186,8 @@ object Wrench : CustomItem(
 			Quaternionf()
 		)
 
-		nmsEntity.transformationInterpolationDuration = FLUID_TICK_INTERVAL
-		nmsEntity.teleportDuration = FLUID_TICK_INTERVAL
+		nmsEntity.transformationInterpolationDuration = WRENCH_DISPLAY_TICK_INTERVAL
+		nmsEntity.teleportDuration = WRENCH_DISPLAY_TICK_INTERVAL
 
 		ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, location.x, location.y, location.z)
 		ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)

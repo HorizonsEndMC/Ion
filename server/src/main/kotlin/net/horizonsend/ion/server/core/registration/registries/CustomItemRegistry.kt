@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.T
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.HandheldTank
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -414,6 +415,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE, "pipe/reinforced_fluid_pipe", Component.text("Reinforced Fluid Pipe").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
+
+		customBlockItem(CustomItemKeys.REDSTONE_CONTROL_PORT, "industry/redstone_control_port", Component.text("Redstone Control Port").itemName, CustomBlockKeys.REDSTONE_CONTROL_PORT)
 	}
 
 	private fun registerGasCanisters() {
@@ -612,6 +615,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 EquipmentSlot.FEET
             )
         )
+
+		register(CustomItemKeys.HANDHELD_TANK, HandheldTank)
 	}
 
 	private fun registerEnergySwords() {

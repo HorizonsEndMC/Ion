@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.utils.persistence
 
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.NamespacedKey
@@ -70,7 +69,7 @@ class SettingsContainer<H : Any>(
 	}
 
 	companion object {
-		fun <T : MultiblockEntity> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any, Any?>): SettingsContainer<T> {
+		fun <T : Any> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any, Any?>): SettingsContainer<T> {
 			val container = SettingsContainer(changeCallback = {  }, *settingsProperties)
 			container.loadData(data.getAdditionalDataRaw())
 			return container
@@ -79,15 +78,17 @@ class SettingsContainer<H : Any>(
 		val SETTINGS_CONTAINER_KEY = NamespacedKeys.key("settings_container")
 	}
 
-	fun <V : Any?> getDelegate() = SettingsDelegate<V, H>(this)
+	fun <V : Any?> getDelegate(setterCallback: (value: V) -> Unit = { _ -> }) = SettingsDelegate<V, H>(this, setterCallback)
 
-	class SettingsDelegate<T : Any?, O : Any>(val container: SettingsContainer<O>) : ReadWriteProperty<O, T> {
+	class SettingsDelegate<T : Any?, O : Any>(val container: SettingsContainer<O>, val setterCallback: (value: T) -> Unit = { _ -> }) : ReadWriteProperty<O, T> {
 		override fun getValue(thisRef: O, property: KProperty<*>): T {
 			@Suppress("UNCHECKED_CAST")
 			return container.getValue(property as KMutableProperty1<O, T>)
 		}
 
 		override fun setValue(thisRef: O, property: KProperty<*>, value: T) {
+			setterCallback.invoke(value)
+
 			@Suppress("UNCHECKED_CAST")
 			return container.setValue(property as KMutableProperty1<O, T>, value)
 		}

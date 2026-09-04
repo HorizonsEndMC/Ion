@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnviornment
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
@@ -32,8 +31,7 @@ class AutoMasonMultiblockEntity(data: PersistentMultiblockData, override val mul
 	structureFace,
 	150_000
 ), SyncTickingMultiblockEntity, RecipeProcessingMultiblockEntity<AutoMasonRecipeEnviornment>, StatusTickedMultiblockEntity, FurnaceBasedMultiblockEntity {
-	override var lastRecipe: MultiblockRecipe<AutoMasonRecipeEnviornment>? = null
-	override var hasTicked: Boolean = false
+	override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<AutoMasonRecipeEnviornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
 
 	override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 	override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()

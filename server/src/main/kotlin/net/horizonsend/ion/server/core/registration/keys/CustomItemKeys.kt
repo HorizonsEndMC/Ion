@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.HandheldTank
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -192,6 +193,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<CustomBlockItem>("ADVANCED_ITEM_EXTRACTOR")
 	val ITEM_FILTER = registerTypedKey<CustomBlockItem>("ITEM_FILTER")
 
+	val HANDHELD_TANK = registerTypedKey<HandheldTank>("HANDHELD_TANK")
+
 	val POWER_DRILL_BASIC = registerTypedKey<PowerDrill>("POWER_DRILL_BASIC")
 	val POWER_DRILL_ENHANCED = registerTypedKey<PowerDrill>("POWER_DRILL_ENHANCED")
 	val POWER_DRILL_ADVANCED = registerTypedKey<PowerDrill>("POWER_DRILL_ADVANCED")
@@ -292,6 +295,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("FLUID_PIPE_JUNCTION")
 	val REINFORCED_FLUID_PIPE = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE")
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE_JUNCTION")
+	val REDSTONE_CONTROL_PORT = registerTypedKey<CustomBlockItem>("REDSTONE_CONTROL_PORT")
 
 	val HORIZON_FRIED_EGG = registerTypedKey<FoodItem>("HORIZON_FRIED_EGG")
 	val TOMATO = registerTypedKey<FoodItem>("TOMATO")

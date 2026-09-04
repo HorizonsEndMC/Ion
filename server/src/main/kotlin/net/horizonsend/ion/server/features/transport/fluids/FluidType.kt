@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.transport.fluids
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -11,8 +13,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidType>) : Keyed<FluidType> {
-	abstract val displayName: Component
-	abstract val categories: Array<FluidCategory>
+	abstract val displayProperties: DisplayProperties
+	abstract val categories: Array<out FluidCategory>
 
 	/**
 	 * Effect played inside a pipe, when this fluid is present
@@ -28,4 +30,8 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 * Called when this fluid leaks from a pipe. Should be used for anything that is not a visual effect, such as pollution.
 	 **/
 	open fun onLeak(world: World, location: Vec3i, amount: Double) {}
+
+	abstract fun getDisplayName(stack: FluidStack): Component
+
+	open val defaultProperties: Map<IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>, FluidProperty> = emptyMap()
 }

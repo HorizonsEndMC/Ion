@@ -36,9 +36,9 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})
@@ -48,9 +48,9 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: FluidValve, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: FluidValve, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})
@@ -61,10 +61,10 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: RegularJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: RegularJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
 				return pdc
 			}
 		})
@@ -75,11 +75,11 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: RegularLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: RegularLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
-				pdc.set(NamespacedKeys.AXIS, axisType, complex.axis)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
+				pdc.set(NamespacedKeys.AXIS, axisType, node.axis)
 				return pdc
 			}
 		})
@@ -90,10 +90,10 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: ReinforcedJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: ReinforcedJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
 				return pdc
 			}
 		})
@@ -104,11 +104,11 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: ReinforcedLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: ReinforcedLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
-				pdc.set(NamespacedKeys.AXIS, axisType, complex.axis)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
+				pdc.set(NamespacedKeys.AXIS, axisType, node.axis)
 				return pdc
 			}
 		})

@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
@@ -43,8 +42,7 @@ abstract class PowerlessIndustryEntity(
 	StatusTickedMultiblockEntity,
 	FurnaceBasedMultiblockEntity {
 
-	override var lastRecipe: MultiblockRecipe<FurnaceEnviornment>? = null
-	override var hasTicked: Boolean = false
+	override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<FurnaceEnviornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
 
 	override val progressManager: ProgressManager = ProgressManager(data)
 	override val tickingManager: TickingManager = TickingManager(20)
