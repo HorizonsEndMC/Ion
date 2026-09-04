@@ -90,7 +90,7 @@ object StarshipComputers : IonServerComponent() {
 		}
 
 		val starship = PilotedStarships[player]
-		if (starship != null && starship.isDirectControlEnabled) {
+		if (starship != null && (starship.isDirectControlEnabled || starship.isDirectCruiseControlEnable)) {
 			player.userErrorActionMessage("Cannot interact with starship computer while in Direct Control!")
 			return
 		}
