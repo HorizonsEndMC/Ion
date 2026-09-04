@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.control.movement
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.Colors
@@ -35,7 +34,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor.color
 import org.bukkit.util.Vector
-import org.litote.kmongo.month
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -156,14 +154,19 @@ object StarshipCruising : IonServerComponent() {
 		val dx = if (abs(dir.x) >= 0.5) sign(dir.x).toInt() else 0
 		val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
 
-		if (dx == 0 && dz == 0 && allowVerticalMovement) {
+		if (dx == 0 && dz == 0 && !allowVerticalMovement) {
 			controller.userErrorAction("Can't go up or down")
 
 			return
 		}
 
+		val forwardDirection = starship.forward.direction
+		val forwardDx = if (abs(forwardDirection.x) >= 0.5) sign(forwardDirection.x).toInt() else 0
+		val forwardDz = if (abs(forwardDirection.z) > 0.5) sign(forwardDirection.z).toInt() else 0
+
 		// ThrustData is a binomial data class so we can just expand it like this
-		var (accel, maxSpeed) = starship.getThrustData(dx, dz)
+		var (accel, maxSpeed) = if(dx == 0 && dz == 0) starship.getThrustData(forwardDx, forwardDz)
+		else starship.getThrustData(dx, dz)
 		if (maxSpeed == 0) {
 			controller.userErrorAction("Can't cruise in that direction")
 
@@ -183,7 +186,7 @@ object StarshipCruising : IonServerComponent() {
 			0,
 			dz).add(
 				if(allowVerticalMovement) Vector(0.0,dir.y,0.0) else Vector()
-			).normalize()
+			).normalize().multiply(if(dx==0&&dz==0) dir.length() else 1.0)
 
 		val realAccel = starship.cruiseData.getRealAccel(starship.reactor.powerDistributor.thrusterPortion)
 

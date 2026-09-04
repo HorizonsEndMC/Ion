@@ -33,7 +33,7 @@ object DoubleJumpListener : SLEventListener() {
 	fun onToggleFlight(event: PlayerToggleFlightEvent) {
 		// player is trying to stop flying
 		if (!event.isFlying) {
-			if (ActiveStarships.findByPilot(event.player)?.isDirectControlEnabled == true && event.player.getSetting(PlayerSettings::floatWhileDc) == true) {
+			if ((ActiveStarships.findByPilot(event.player)?.isDirectControlEnabled == true || ActiveStarships.findByPilot(event.player)?.isDirectCruiseControlEanble == true) && event.player.getSetting(PlayerSettings::floatWhileDc) == true) {
 				event.isCancelled = true
 			}
 			return

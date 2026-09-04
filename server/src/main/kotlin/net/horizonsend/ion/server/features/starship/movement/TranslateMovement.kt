@@ -27,7 +27,7 @@ import kotlin.math.min
 class TranslateMovement(
 	starship: ActiveStarship,
 	val dx: Int,
-	val dy: Int,
+	var dy: Int,
 	val dz: Int,
 	override val newWorld: World? = null,
 	val source: MovementSource

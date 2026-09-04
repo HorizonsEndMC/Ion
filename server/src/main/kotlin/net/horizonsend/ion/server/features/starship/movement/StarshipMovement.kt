@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.starship.movement
 
+import github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
@@ -70,8 +72,10 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 			return
 		}
 
+		var ignoreYMovement = false
+
 		if (displaceY(starship.min.y) < 0) {
-			throw StarshipOutOfBoundsException("Minimum height limit reached")
+			ignoreYMovement = true
 		}
 
 		if (displaceY(starship.max.y) >= world1.maxHeight) {
@@ -80,7 +84,13 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 				return
 			}
 
-			throw StarshipOutOfBoundsException("Maximum height limit reached")
+			ignoreYMovement = true
+		}
+
+		//if we would be moving out of the world height bounds, set the y movement to 0, instead of blocking the entire movement
+		if(ignoreYMovement){
+			(this as? TranslateMovement)?.dy = 0
+			starship.userErrorAction("World Height Limit Reached")
 		}
 
 		validateWorldBorders(starship.min, starship.max, findPassengers(world1), world2)
