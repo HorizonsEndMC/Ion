@@ -180,7 +180,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) :
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>
 	) {
-		val destinations: MutableList<PathfindResult>? = getTransferDestinations(
+		val destinations: MutableList<PathfindResult> = getTransferDestinations(
 			task = task,
 			extractorLocation = originKey,
 			extractorNode = originNode,
@@ -207,26 +207,18 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) :
 			val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
 			val amount = minOf(reference.get()?.amount ?: 0, room)
 
-		try {
-			for (reference in availableItemReferences) {
-				val remainingDestinations = destinationInventories.keys
+			if (amount == 0) continue
 
-				if (task.isInterrupted()) return
-				val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
-				val amount = minOf(reference.get()?.amount ?: 0, room)
-
-				if (amount == 0) continue
-
-				transaction.addTransfer(
-					reference,
-					remainingDestinations,
-					singletonItem,
-					amount
-				) {
-					val destination = getDestination(meta, remainingDestinations)
-					destination to destinationInvCache[destination.destinationPosition]!!
-				}
+			transaction.addTransfer(
+				reference,
+				remainingDestinations,
+				singletonItem,
+				amount
+			) {
+				val destination = getDestination(meta, remainingDestinations)
+				destination to destinationInvCache[destination.destinationPosition]!!
 			}
+		}
 
 		if (!transaction.isEmpty() && IonServer.isEnabled) {
 			// Block the async thread until the transaction commits on the main thread
@@ -236,8 +228,6 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) :
 					transaction.commit()
 				}
 			}
-		} finally {
-			destinationLocks.forEach { it.unlock() }
 		}
 	}
 
