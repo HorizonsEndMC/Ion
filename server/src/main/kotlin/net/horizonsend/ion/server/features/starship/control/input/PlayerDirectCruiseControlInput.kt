@@ -88,11 +88,11 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 			starship.directControlCenter = center
 		}
 
-		val effectiveCooldown = ceil(starship.manualMoveCooldownMillis/50.0) * 50
+		val effectiveCooldown = ceil(starship.manualMoveCooldownMillis/50.0) * 100
 
 		val shiftFlySpeed = max(starship.type.balancing.maxSneakFlyAccel.d(), 1.0).div(effectiveCooldown).times(2000.0).toInt().toDouble()
 
-		var dir = player.eyeLocation.direction.normalize()
+		var dir = player.eyeLocation.direction.setY(0).normalize()
 		dir.setY(0)
 		if(currentInput.isForward){
 			starship.directCruiseSpeedAddition = shiftFlySpeed
