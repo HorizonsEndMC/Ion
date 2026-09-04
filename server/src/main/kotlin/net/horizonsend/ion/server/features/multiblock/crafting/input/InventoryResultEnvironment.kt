@@ -5,7 +5,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
-interface InventoryResultEnviornment: RecipeEnviornment, ItemResultEnviornment {
+interface InventoryResultEnvironment: RecipeEnvironment, ItemResultEnvironment {
 	fun getResultInventory(): Inventory
 
 	override fun addItem(item: ItemStack) {

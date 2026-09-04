@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModifica
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-interface SingleItemResultEnviornment : RecipeEnviornment, ItemResultEnviornment {
+interface SingleItemResultEnvironment : RecipeEnvironment, ItemResultEnvironment {
 	override fun addItem(item: ItemStack) {
 		getResultItemSlotModifier().addToSlot(item)
 	}

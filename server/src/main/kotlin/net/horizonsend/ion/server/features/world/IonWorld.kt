@@ -124,7 +124,7 @@ class IonWorld private constructor(
 	fun reloadConfiguration() {
 		configuration = loadConfiguration()
 		terrainGenerator = configuration.terrainGenerationSettings?.buildGenerator(this)
-		enviornmentManager.reloadConfiguration()
+		environmentManager.reloadConfiguration()
 	}
 
 	/** Write the configuration to the disk */
@@ -157,7 +157,7 @@ class IonWorld private constructor(
 	/** Get all environments applied to this world */
 	val environments get() = configuration.environments
 
-	val enviornmentManager = WorldEnvironmentManager(this)
+	val environmentManager = WorldEnvironmentManager(this)
 
 	/** List of blocks that cannot be detected by starships */
 	val detectionForbiddenBlocks = loadForbiddenBlocks()

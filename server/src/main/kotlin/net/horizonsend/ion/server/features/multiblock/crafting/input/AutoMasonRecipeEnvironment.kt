@@ -8,13 +8,13 @@ import org.bukkit.block.Block
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
-class AutoMasonRecipeEnviornment(
+class AutoMasonRecipeEnvironment(
 	override val multiblock: AutoMasonMultiblockEntity,
 	private val inputInventory: Inventory,
 	private val outputInventory: Inventory,
 	override val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager
-) : InventoryResultEnviornment, PoweredEnviornment {
+) : InventoryResultEnvironment, PoweredEnvironment {
 	var wildcard: Boolean = false
 
 	fun getCenterBlock(): Block? {

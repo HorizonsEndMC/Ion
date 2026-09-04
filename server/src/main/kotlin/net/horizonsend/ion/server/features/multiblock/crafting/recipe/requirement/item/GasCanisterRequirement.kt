@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistr
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
-import net.horizonsend.ion.server.features.multiblock.crafting.input.GasFurnaceEnviornment
-import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.GasFurnaceEnvirornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnvironment
 import org.bukkit.inventory.ItemStack
 
 class GasCanisterRequirement(val gas: Gas, val amount: Int) : ItemRequirement {
@@ -18,7 +18,7 @@ class GasCanisterRequirement(val gas: Gas, val amount: Int) : ItemRequirement {
 		return customItem.gas == gas && customItem.getComponent(CustomComponentTypes.GAS_STORAGE).getFill(item) >= amount
 	}
 
-	override fun consume(item: ItemStack, environment: RecipeEnviornment) {
+	override fun consume(item: ItemStack, environment: RecipeEnvironment) {
 		val customItem = item.customItem as GasCanister
 		val component = customItem.getComponent(CustomComponentTypes.GAS_STORAGE)
 
@@ -28,7 +28,7 @@ class GasCanisterRequirement(val gas: Gas, val amount: Int) : ItemRequirement {
 		if (newFill > 0) {
 			component.setFill(item, customItem, newFill)
 		}
-		else if (environment is GasFurnaceEnviornment) {
+		else if (environment is GasFurnaceEnvirornment) {
 			item.amount = 0
 			environment.discardInventory.addItem(GAS_CANISTER_EMPTY.getValue().constructItemStack())
 		}

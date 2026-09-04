@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requireme
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RecipeRequirement
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -15,7 +15,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 
 	fun matches(item: ItemStack?): Boolean
 
-	fun consume(item: ItemStack, environment: RecipeEnviornment) {
+	fun consume(item: ItemStack, environment: RecipeEnvironment) {
 		item.amount--
 	}
 
@@ -34,7 +34,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 			return item?.type == material && item.amount >= count
 		}
 
-		override fun consume(item: ItemStack, environment: RecipeEnviornment) {
+		override fun consume(item: ItemStack, environment: RecipeEnvironment) {
 			item.amount -= count
 		}
 
@@ -76,7 +76,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 				return requirements.any { requirement -> requirement.matches(item) }
 			}
 
-			override fun consume(item: ItemStack, environment: RecipeEnviornment) {
+			override fun consume(item: ItemStack, environment: RecipeEnvironment) {
 				requirements.first { requirement -> requirement.matches(item) }.consume(item, environment)
 			}
 
@@ -92,7 +92,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 				return requirements.all { requirement -> requirement.matches(item) }
 			}
 
-			override fun consume(item: ItemStack, environment: RecipeEnviornment) {
+			override fun consume(item: ItemStack, environment: RecipeEnvironment) {
 				requirements.first { requirement -> requirement.matches(item) }.consume(item, environment)
 			}
 
@@ -105,7 +105,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 				return item.isEmpty
 			}
 
-			override fun consume(item: ItemStack, environment: RecipeEnviornment) {
+			override fun consume(item: ItemStack, environment: RecipeEnvironment) {
 				return
 			}
 		}

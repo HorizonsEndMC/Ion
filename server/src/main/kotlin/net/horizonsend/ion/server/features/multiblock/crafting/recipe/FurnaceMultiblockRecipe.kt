@@ -2,12 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnvirornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import kotlin.reflect.KClass
@@ -16,15 +16,15 @@ import kotlin.reflect.KClass
  * A multiblock recipe that uses a furnace inventory.
  **/
 class FurnaceMultiblockRecipe(
-	key: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<FurnaceEnviornment>>,
-	clazz: KClass<out RecipeProcessingMultiblockEntity<FurnaceEnviornment>>,
+	key: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<FurnaceEnvirornment>>,
+	clazz: KClass<out RecipeProcessingMultiblockEntity<FurnaceEnvirornment>>,
 	smeltingItem: ItemRequirement?,
 	fuelItem: ItemRequirement?,
-	power: PowerRequirement<FurnaceEnviornment>,
-	private val result: ResultHolder<FurnaceEnviornment, ItemResult<FurnaceEnviornment>>
-) : MultiblockRecipe<FurnaceEnviornment>(key, clazz) {
+	power: PowerRequirement<FurnaceEnvirornment>,
+	private val result: ResultHolder<FurnaceEnvirornment, ItemResult<FurnaceEnvirornment>>
+) : MultiblockRecipe<FurnaceEnvirornment>(key, clazz) {
 
-	override val requirements: Collection<RequirementHolder<FurnaceEnviornment, *, *>> = listOf(
+	override val requirements: Collection<RequirementHolder<FurnaceEnvirornment, *, *>> = listOf(
 		// Furnace smelting item
 		RequirementHolder.itemConsumable(
 			getter = { it.getInputItem(0) },
@@ -44,16 +44,16 @@ class FurnaceMultiblockRecipe(
 		)
 	)
 
-	override fun assemble(enviornment: FurnaceEnviornment): Boolean {
-		if (!verifyAllRequirements(enviornment, true)) return false
-		if (!result.verifySpace(enviornment)) return false
+	override fun assemble(environment: FurnaceEnvirornment): Boolean {
+		if (!verifyAllRequirements(environment, true)) return false
+		if (!result.verifySpace(environment)) return false
 
-		val resultEnviornment = ResultExecutionEnviornment(enviornment, this)
+		val resultEnvironment = ResultExecutionEnvironment(environment, this)
 
-		result.buildTransaction(enviornment, resultEnviornment)
+		result.buildTransaction(environment, resultEnvironment)
 
 		try {
-			resultEnviornment.requirements.forEach { requirement -> requirement.consume(enviornment) }
+			resultEnvironment.requirements.forEach { requirement -> requirement.consume(environment) }
 		} catch (e: Throwable) {
 			IonServer.slF4JLogger.error("There was an error executing multiblock recipe $key: ${e.message}")
 			e.printStackTrace()
@@ -61,8 +61,8 @@ class FurnaceMultiblockRecipe(
 		}
 
 		// Once ingredients have been sucessfully consumed, execute the result
-		val executionResult = resultEnviornment.executeResult()
-		result.executeCallbacks(enviornment, executionResult)
+		val executionResult = resultEnvironment.executeResult()
+		result.executeCallbacks(environment, executionResult)
 		return true
 	}
 }

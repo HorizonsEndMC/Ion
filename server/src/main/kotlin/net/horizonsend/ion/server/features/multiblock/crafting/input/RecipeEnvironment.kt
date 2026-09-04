@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.ItemStack
 
-interface RecipeEnviornment {
+interface RecipeEnvironment {
 	val multiblock: MultiblockEntity
 
 	fun getInputItems(): List<ItemStack?>

@@ -27,5 +27,5 @@ abstract class EnvironmentModule(val manager: WorldEnvironmentManager) {
 
 	open fun removeEffects(player: Player) {}
 
-	protected fun World.hasEnvironment(): Boolean = this.ion.enviornmentManager.modules.contains(this@EnvironmentModule)
+	protected fun World.hasEnvironment(): Boolean = this.ion.environmentManager.modules.contains(this@EnvironmentModule)
 }

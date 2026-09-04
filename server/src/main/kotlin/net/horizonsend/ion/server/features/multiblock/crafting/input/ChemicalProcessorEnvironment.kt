@@ -6,7 +6,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
-class ChemicalProcessorEnviornment(
+class ChemicalProcessorEnvironment(
 	override val multiblock: ChemicalProcessorMultiblock.ChemicalProcessorEntity,
 	val inputInventory: Inventory,
 	val outputInventory: Inventory,
@@ -18,7 +18,7 @@ class ChemicalProcessorEnviornment(
 	val fluidOutputTwo: FluidStorageContainer,
 
 	val pollutionContainer: FluidStorageContainer
-) : RecipeEnviornment, InventoryResultEnviornment, FluidMultiblockEnviornment {
+) : RecipeEnvironment, InventoryResultEnvironment, FluidMultiblockEnvironment {
 	override fun getInputItemSize(): Int {
 		return 0
 	}

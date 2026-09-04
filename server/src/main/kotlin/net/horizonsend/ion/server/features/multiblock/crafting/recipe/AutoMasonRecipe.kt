@@ -2,13 +2,13 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.CenterBlockRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
@@ -20,10 +20,10 @@ class AutoMasonRecipe(
 	key: IonRegistryKey<MultiblockRecipe<*>, AutoMasonRecipe>,
 	inputItem: ItemRequirement,
 	centerCheck: (Material?) -> Boolean,
-	power: PowerRequirement<AutoMasonRecipeEnviornment>,
-	val result: ResultHolder<AutoMasonRecipeEnviornment, ItemResult<AutoMasonRecipeEnviornment>>
-) : MultiblockRecipe<AutoMasonRecipeEnviornment>(key, AutoMasonMultiblockEntity::class) {
-	override val requirements: Collection<RequirementHolder<AutoMasonRecipeEnviornment, *, *>> = listOf(
+	power: PowerRequirement<AutoMasonRecipeEnvironment>,
+	val result: ResultHolder<AutoMasonRecipeEnvironment, ItemResult<AutoMasonRecipeEnvironment>>
+) : MultiblockRecipe<AutoMasonRecipeEnvironment>(key, AutoMasonMultiblockEntity::class) {
+	override val requirements: Collection<RequirementHolder<AutoMasonRecipeEnvironment, *, *>> = listOf(
 		// Input item
 		RequirementHolder.anySlot(
 			requirement = inputItem,
@@ -43,11 +43,11 @@ class AutoMasonRecipe(
 		)
 	)
 
-	fun consumeIngredients(enviornment: AutoMasonRecipeEnviornment) {
-		if (!verifyAllRequirements(enviornment, false)) return
+	fun consumeIngredients(environment: AutoMasonRecipeEnvironment) {
+		if (!verifyAllRequirements(environment, false)) return
 
 		try {
-			requirements.forEach { requirement -> requirement.consume(enviornment) }
+			requirements.forEach { requirement -> requirement.consume(environment) }
 		} catch (e: Throwable) {
 			IonServer.slF4JLogger.error("There was an error executing multiblock recipe ${this@AutoMasonRecipe.key}: ${e.message}")
 			e.printStackTrace()
@@ -55,16 +55,16 @@ class AutoMasonRecipe(
 		}
 	}
 
-	override fun assemble(enviornment: AutoMasonRecipeEnviornment): Boolean {
-		if (!verifyAllRequirements(enviornment, true)) return false
-		if (!result.verifySpace(enviornment)) return false
+	override fun assemble(environment: AutoMasonRecipeEnvironment): Boolean {
+		if (!verifyAllRequirements(environment, true)) return false
+		if (!result.verifySpace(environment)) return false
 
-		val resultEnviornment = ResultExecutionEnviornment(enviornment, this)
+		val resultEnvironment = ResultExecutionEnvironment(environment, this)
 
-		result.buildTransaction(enviornment, resultEnviornment)
+		result.buildTransaction(environment, resultEnvironment)
 
 		try {
-			resultEnviornment.requirements.forEach { requirement -> requirement.consume(enviornment) }
+			resultEnvironment.requirements.forEach { requirement -> requirement.consume(environment) }
 		} catch (e: Throwable) {
 			IonServer.slF4JLogger.error("There was an error executing multiblock recipe ${this@AutoMasonRecipe.key}: ${e.message}")
 			e.printStackTrace()
@@ -72,8 +72,8 @@ class AutoMasonRecipe(
 		}
 
 		// Once ingredients have been sucessfully consumed, execute the result
-		val executionResult = resultEnviornment.executeResult()
-		result.executeCallbacks(enviornment, executionResult)
+		val executionResult = resultEnvironment.executeResult()
+		result.executeCallbacks(environment, executionResult)
 		return true
 	}
 }

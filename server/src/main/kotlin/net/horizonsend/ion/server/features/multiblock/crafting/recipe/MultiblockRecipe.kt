@@ -2,14 +2,14 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
-import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.Consumable
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
-abstract class MultiblockRecipe<E: RecipeEnviornment>(
+abstract class MultiblockRecipe<E: RecipeEnvironment>(
 	override val key: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<E>>,
 	val entityType: KClass<out RecipeProcessingMultiblockEntity<E>>,
 ) : Keyed<MultiblockRecipe<*>> {
@@ -23,11 +23,11 @@ abstract class MultiblockRecipe<E: RecipeEnviornment>(
 		.filter { it.dataTypeClass == ItemStack::class.java }
 		.filterIsInstance<RequirementHolder<E, ItemStack?, *>>()
 
-	fun verifyAllRequirements(enviornment: E, displayStatuses: Boolean): Boolean = getAllRequirements().all { holder ->
-		holder.checkRequirement(enviornment, displayStatuses)
+	fun verifyAllRequirements(environment: E, displayStatuses: Boolean): Boolean = getAllRequirements().all { holder ->
+		holder.checkRequirement(environment, displayStatuses)
 	}
 
 	fun getAllRequirements(): Collection<RequirementHolder<E, *, *>> = requirements
 
-	abstract fun assemble(enviornment: E): Boolean
+	abstract fun assemble(environment: E): Boolean
 }

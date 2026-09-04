@@ -12,13 +12,13 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
-open class FurnaceEnviornment(
+open class FurnaceEnvirornment(
 	override val multiblock: MultiblockEntity,
 	val furnaceInventory: FurnaceInventory,
 	override val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager,
 	val progress: ProgressMultiblock.ProgressManager
-) : SingleItemResultEnviornment, ProgressEnviornment, PoweredEnviornment {
+) : SingleItemResultEnvironment, ProgressEnvironment, PoweredEnvironment {
 	constructor(entity: MultiblockEntity) : this(
 		entity,
 		entity.getInventory(0, 0, 0) as FurnaceInventory,

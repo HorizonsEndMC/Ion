@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.C
 import net.horizonsend.ion.server.features.gui.custom.settings.button.ArbitraryButton
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.RegistryKeyConsumerInputButton
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ChemicalProcessorRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -529,10 +529,10 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
         SyncTickingMultiblockEntity,
 		AsyncTickingMultiblockEntity,
         ProgressMultiblock,
-        RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>,
+        RecipeProcessingMultiblockEntity<ChemicalProcessorEnvironment>,
 		StatusTickedMultiblockEntity
 	{
-		override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<ChemicalProcessorEnviornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
+		override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<ChemicalProcessorEnvironment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
 
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
@@ -577,10 +577,10 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		)
 
 		@Suppress("UNCHECKED_CAST")
-		var lockedRecipe: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<*>>? by settings.getDelegate { recipeManager.lockedRecipe = it as IonRegistryKey<MultiblockRecipe<*>, MultiblockRecipe<ChemicalProcessorEnviornment>>? }
+		var lockedRecipe: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<*>>? by settings.getDelegate { recipeManager.lockedRecipe = it as IonRegistryKey<MultiblockRecipe<*>, MultiblockRecipe<ChemicalProcessorEnvironment>>? }
 
 		init {
-			recipeManager.lockedRecipe = lockedRecipe as IonRegistryKey<MultiblockRecipe<*>, MultiblockRecipe<ChemicalProcessorEnviornment>>?
+			recipeManager.lockedRecipe = lockedRecipe as IonRegistryKey<MultiblockRecipe<*>, MultiblockRecipe<ChemicalProcessorEnvironment>>?
 		}
 		fun openSettingsGui(player: Player) {
 			createSettingsPage(
@@ -590,14 +590,14 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 					keyRegistry = MultiblockRecipeKeys,
 					keyFilter = { it.getValue().entityType == ChemicalProcessorEntity::class },
 					valueSupplier = this::lockedRecipe,
-					valueConsumer = { lockedRecipe = it as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnviornment>> },
+					valueConsumer = { lockedRecipe = it as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnvironment>> },
 					name = text("Lock to Recipe"),
 					buttonDescription = "This multiblock will only process the specifed recipe. ",
 					inputDescription = text("Enter Key"),
 					icon = GuiItem.LIST,
 					defaultValue = null,
 					searchTermProvider = { key ->
-						key as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnviornment>>
+						key as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnvironment>>
 						val recipe: ChemicalProcessorRecipe = key.getValue() as ChemicalProcessorRecipe
 
 						listOfNotNull(
@@ -698,7 +698,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			bootstrapFluidNetwork()
 		}
 
-		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(
+		override fun buildRecipeEnvironment(): ChemicalProcessorEnvironment = ChemicalProcessorEnvironment(
             this,
             leftInventory!!,
             rightInventory!!,

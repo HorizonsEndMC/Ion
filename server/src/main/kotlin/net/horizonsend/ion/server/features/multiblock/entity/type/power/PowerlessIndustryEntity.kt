@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.power
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnvirornment
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
@@ -36,13 +36,13 @@ abstract class PowerlessIndustryEntity(
 ) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection),
 	LegacyMultiblockEntity,
 	SyncTickingMultiblockEntity,
-	RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
+	RecipeProcessingMultiblockEntity<FurnaceEnvirornment>,
 	ProgressMultiblock,
 	DisplayMultiblockEntity,
 	StatusTickedMultiblockEntity,
 	FurnaceBasedMultiblockEntity {
 
-	override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<FurnaceEnviornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
+	override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<FurnaceEnvirornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
 
 	override val progressManager: ProgressManager = ProgressManager(data)
 	override val tickingManager: TickingManager = TickingManager(20)
@@ -60,13 +60,13 @@ abstract class PowerlessIndustryEntity(
 		migrateLegacyPower(sign)
 	}
 
-	override fun buildRecipeEnviornment(): FurnaceEnviornment? {
+	override fun buildRecipeEnvironment(): FurnaceEnvirornment? {
 		val fakeHolder = object : PoweredMultiblockEntity {
 			override val powerStorage: PowerStorage get() = throw UnsupportedOperationException()
 			override val maxPower: Int = Int.MAX_VALUE
 		}
 		val fakePowerStorage = PowerStorage(fakeHolder, Int.MAX_VALUE, Int.MAX_VALUE)
-		return FurnaceEnviornment(
+		return FurnaceEnvirornment(
 			this,
 			getInventory(0, 0, 0) as? FurnaceInventory ?: return null,
 			fakePowerStorage,

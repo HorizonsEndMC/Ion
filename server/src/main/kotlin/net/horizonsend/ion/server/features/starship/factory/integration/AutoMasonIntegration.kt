@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.factory.integration
 
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
-import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnvironment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
@@ -21,15 +21,15 @@ class AutoMasonIntegration(
 	taskEntity: ShipFactoryEntity,
 	entity: AutoMasonMultiblockEntity
 ) : ShipFactoryIntegration<AutoMasonMultiblockEntity>(taskEntity, entity) {
-	private var recipeEnviornment: AutoMasonRecipeEnviornment? = null
+	private var recipeEnvironment: AutoMasonRecipeEnvironment? = null
 	private val recipes = multimapOf<Material, AutoMasonRecipe>()
 
 	private val inventoryReference = integratedEntity.getInputInventory()?.let(InventoryReference::wrap)
 	private var availableItems: Map<PrintItem, AvailableItemInformation> = mapOf()
 
 	override fun syncSetup(task: ShipFactoryPrintTask) {
-		recipeEnviornment = buildRecipeEnviornment()
-		recipeEnviornment?.wildcard = true
+		recipeEnvironment = buildRecipeEnvironment()
+		recipeEnvironment?.wildcard = true
 	}
 
 	override fun asyncSetup(task: ShipFactoryPrintTask) {
@@ -64,7 +64,7 @@ class AutoMasonIntegration(
 
 		val fails = mutableListOf<BlockKey>()
 
-		val recipeEnviornment = recipeEnviornment ?: return transaction.flatMap { it.value.keys }
+		val recipeEnvironment = this@AutoMasonIntegration.recipeEnvironment ?: return transaction.flatMap { it.value.keys }
 
 		for ((material, positions) in transaction) {
 			val recipesForMaterial = recipes[material]
@@ -74,7 +74,7 @@ class AutoMasonIntegration(
 				continue
 			}
 
-			val recipe = recipesForMaterial.firstOrNull { it.verifyAllRequirements(recipeEnviornment, false) }
+			val recipe = recipesForMaterial.firstOrNull { it.verifyAllRequirements(recipeEnvironment, false) }
 			if (recipe == null) {
 				fails.addAll(positions.keys)
 				continue
@@ -84,7 +84,7 @@ class AutoMasonIntegration(
 
 			for ((_, count) in positions) {
 				val executionCount = resultCount / count
-				repeat(executionCount) { recipe.consumeIngredients(recipeEnviornment) }
+				repeat(executionCount) { recipe.consumeIngredients(recipeEnvironment) }
 			}
 		}
 
@@ -94,11 +94,11 @@ class AutoMasonIntegration(
 	override fun canAddTransaction(printItem: PrintItem, printPosition: BlockKey, requiredAmount: Int): Boolean {
 		val transaction = this.transaction ?: return false
 
-		val enviornment = recipeEnviornment ?: return false
+		val environment = recipeEnvironment ?: return false
 		val itemStack = kotlin.runCatching { fromItemString(printItem.itemString) }.getOrNull() ?: return false
 		val recipes = recipes[itemStack.type]
 
-		val recipe = recipes.firstOrNull { it.verifyAllRequirements(enviornment, false) }
+		val recipe = recipes.firstOrNull { it.verifyAllRequirements(environment, false) }
 		if (recipe == null) return false
 
 		val ingredientMatches = recipe.getItemRequirements().mapNotNull { (it.requirement as ItemRequirement).asItemStack() }
@@ -109,10 +109,10 @@ class AutoMasonIntegration(
 		return true
 	}
 
-	private fun buildRecipeEnviornment(): AutoMasonRecipeEnviornment? {
+	private fun buildRecipeEnvironment(): AutoMasonRecipeEnvironment? {
 		val noOpInventory = CraftInventory(ResultContainer())
 
-		return AutoMasonRecipeEnviornment(
+		return AutoMasonRecipeEnvironment(
 			multiblock = integratedEntity,
 			inputInventory = integratedEntity.getInputInventory() ?: return null,
 			outputInventory = noOpInventory,

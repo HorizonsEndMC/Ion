@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
-import net.horizonsend.ion.server.features.multiblock.crafting.input.FluidMultiblockEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FluidMultiblockEnvironment
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.kyori.adventure.text.Component
 
-class FluidResult<E: FluidMultiblockEnviornment>(val storeName: String, val stack: FluidStack) : RecipeResult<E> {
-	override fun verifySpace(enviornment: E): Boolean {
-		val storage = enviornment.fluidStore.getNamedStorage(storeName) ?: return false
+class FluidResult<E: FluidMultiblockEnvironment>(val storeName: String, val stack: FluidStack) : RecipeResult<E> {
+	override fun verifySpace(environment: E): Boolean {
+		val storage = environment.fluidStore.getNamedStorage(storeName) ?: return false
 		return storage.canAdd(stack) && storage.hasRoomFor(stack)
 	}
 
@@ -20,6 +20,6 @@ class FluidResult<E: FluidMultiblockEnviornment>(val storeName: String, val stac
 	}
 
 	companion object {
-		fun <E : FluidMultiblockEnviornment> empty(storeName: String): FluidResult<E> = FluidResult(storeName, FluidStack(FluidTypeKeys.EMPTY, 0.0))
+		fun <E : FluidMultiblockEnvironment> empty(storeName: String): FluidResult<E> = FluidResult(storeName, FluidStack(FluidTypeKeys.EMPTY, 0.0))
 	}
 }

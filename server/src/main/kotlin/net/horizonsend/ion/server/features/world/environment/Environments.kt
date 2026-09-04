@@ -15,19 +15,19 @@ object Environments : IonServerComponent() {
 
 	private fun tickSyncEnironments() {
 		for (world in IonWorld.all()) {
-			world.enviornmentManager.tickSync()
+			world.environmentManager.tickSync()
 		}
 	}
 
 	private fun tickAsyncEnironments() {
 		for (world in IonWorld.all()) {
-			world.enviornmentManager.tickAsync()
+			world.environmentManager.tickAsync()
 		}
 	}
 
 	@EventHandler
 	fun onPlayerChangeWorld(event: PlayerChangedWorldEvent) {
-		val oldModules = event.from.ion.enviornmentManager.modules
+		val oldModules = event.from.ion.environmentManager.modules
 		oldModules.forEach { it.removeEffects(event.player) }
 	}
 }

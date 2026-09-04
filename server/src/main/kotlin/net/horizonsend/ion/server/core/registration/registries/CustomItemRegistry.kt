@@ -636,8 +636,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT,
                 ItemModKeys.ENVIRONMENT,
                 "power_armor/module/environment",
-                ofChildren(Component.text("Enviornment", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Allows the user to survive inhospitable planetary enviornments.")
+                ofChildren(Component.text("Environment", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+                Component.text("Allows the user to survive inhospitable planetary environments.")
             )
 		)
 		register(
@@ -646,7 +646,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 ItemModKeys.NIGHT_VISION,
                 "power_armor/module/night_vision",
                 ofChildren(Component.text("Night Vision", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Allows the user to see in dark enviornments. ")
+                Component.text("Allows the user to see in dark environments. ")
             )
 		)
 		register(

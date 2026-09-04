@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnvirornment
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -25,12 +25,12 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, maxPower),
 	LegacyMultiblockEntity,
 	SyncTickingMultiblockEntity,
-	RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
+	RecipeProcessingMultiblockEntity<FurnaceEnvirornment>,
 	ProgressMultiblock,
 	StatusTickedMultiblockEntity,
 	FurnaceBasedMultiblockEntity {
 
-	override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<FurnaceEnviornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
+	override val recipeManager: RecipeProcessingMultiblockEntity.MultiblockRecipeManager<FurnaceEnvirornment> = RecipeProcessingMultiblockEntity.MultiblockRecipeManager()
 
 	override val progressManager: ProgressManager = ProgressManager(data)
 	override val tickingManager: TickingManager = TickingManager(20)
@@ -47,8 +47,8 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 		migrateLegacyPower(sign)
 	}
 
-	override fun buildRecipeEnviornment(): FurnaceEnviornment? {
-		return FurnaceEnviornment(this)
+	override fun buildRecipeEnvironment(): FurnaceEnvirornment? {
+		return FurnaceEnvirornment(this)
 	}
 
 	private var furnaceActive = false
