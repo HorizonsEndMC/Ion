@@ -30,7 +30,6 @@ import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorIte
 import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCustomItem
-import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
@@ -409,7 +408,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 	}
 
 	fun registerPipes() {
-		customBlockItem(CustomItemKeys.FLUID_INPUT, "pipe/fluid_input", Component.text("Fluid Port").itemName, CustomBlockKeys.FLUID_INPUT)
+		customBlockItem(CustomItemKeys.FLUID_INPUT, "pipe/fluid_input", Component.text("Fluid Port").itemName, CustomBlockKeys.FLUID_PORT)
 		customBlockItem(CustomItemKeys.FLUID_VALVE, "pipe/fluid_valve", Component.text("Fluid Valve").itemName, CustomBlockKeys.FLUID_VALVE)
 		customBlockItem(CustomItemKeys.FLUID_PIPE, "pipe/fluid_pipe", Component.text("Fluid Pipe").itemName, CustomBlockKeys.FLUID_PIPE)
 		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)

@@ -127,7 +127,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
 			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 
-			return block.blockData.customBlock?.key == CustomBlockKeys.FLUID_INPUT
+			return block.blockData.customBlock?.key == CustomBlockKeys.FLUID_PORT
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES

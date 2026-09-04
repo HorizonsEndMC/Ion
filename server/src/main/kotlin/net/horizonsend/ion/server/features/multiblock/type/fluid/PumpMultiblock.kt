@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -86,11 +86,11 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		}
 		z(1) {
 			y(-1) {
-				x(2).fluidInput()
+				x(2).fluidPort()
 				x(1).redstoneBlock()
 				x(0).anyCopperGrate()
 				x(-1).redstoneBlock()
-				x(-2).fluidInput()
+				x(-2).fluidPort()
 			}
 			y(0) {
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -137,8 +137,8 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			// Input
 			.addPowerInput(0, -1, 0)
 			// Output
-			.addPort(IOType.FLUID, 2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
-			.addPort(IOType.FLUID, -2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, -2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val mainStorage = FluidStorageContainer(data, "main_storage", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, 1_000.0, FluidRestriction.Unlimited)

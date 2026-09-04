@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -191,8 +191,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(-4).fluidInput()
-				x(4).fluidInput()
+				x(-4).fluidPort()
+				x(4).fluidPort()
 			}
 			y(1) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -310,8 +310,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(-4).fluidInput()
-				x(4).fluidInput()
+				x(-4).fluidPort()
+				x(4).fluidPort()
 			}
 			y(1) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -417,7 +417,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			}
 			y(9) {
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(0).fluidInput()
+				x(0).fluidPort()
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 			y(10) {
@@ -518,27 +518,27 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Inputs
-			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
 			.addPort(IOType.FLUID, -4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
+                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(
                     this,
-                    FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)
+                    FluidPortMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)
                 )
             }
 
 			// Outputs
-			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, 4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
+                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(
                     this,
-                    FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)
+                    FluidPortMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)
                 )
             }
 
 			.addPort(IOType.FLUID, 0, 9, 6) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
+                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(
                     this,
-                    FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)
+                    FluidPortMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)
                 )
             }
 

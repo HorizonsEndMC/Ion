@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
@@ -172,12 +172,12 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	/**
 	 * Returns a pair of a location map of inputs, and a location map of outputs
 	 **/
-	private fun trackIO(): Pair<Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
-		val inputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
-		val outputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
+	private fun trackIO(): Pair<Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>, Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>> {
+		val inputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>()
+		val outputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>()
 
 		for (node in getGraphNodes()) {
-			val ports: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>> = manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location)
+			val ports: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidPortMetadata>> = manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location)
 
 			for (port in ports) {
 				val metaData = port.metaData
@@ -189,15 +189,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		return inputs to outputs
 	}
 
-	private fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
+	private fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>, delta: Double) {
 		inputs.forEach { entry -> addToMultiblocks(entry.key, entry.value, delta) }
 	}
 
-	private fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
+	private fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>, delta: Double) {
 		outputs.forEach { entry -> depositToNetwork(entry.key, entry.value, delta) }
 	}
 
-	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
+	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidPortMetadata>, delta: Double) {
 		if (!port.metaData.outputAllowed) return
 		val node = getNodeAtLocation(location) as? FluidPort ?: return
 
@@ -230,7 +230,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
 
-	private fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
+	private fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidPortMetadata>, delta: Double) {
 		if (networkContents.isEmpty()) return
 		if (!ioPort.metaData.inputAllowed) return
 
@@ -298,7 +298,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
+	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>) {
 		val contents = networkContents
 
 		if (contents.isEmpty()) {

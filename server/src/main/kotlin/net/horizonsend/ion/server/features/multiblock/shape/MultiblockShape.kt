@@ -489,7 +489,7 @@ class MultiblockShape {
 
 		fun assemblyCore() = customBlock(CustomBlockKeys.ASSEMBLY_CORE.getValue())
 
-		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
+		fun fluidPort() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 

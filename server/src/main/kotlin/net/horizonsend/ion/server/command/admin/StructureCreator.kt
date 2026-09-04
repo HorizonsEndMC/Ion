@@ -133,7 +133,7 @@ object StructureCreator : SLCommand() {
 			CustomBlockKeys.STEEL_BLOCK -> ".steelBlock()"
 			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
 			CustomBlockKeys.NETHERITE_CASING -> ".netheriteCasing()"
-			CustomBlockKeys.FLUID_INPUT -> ".fluidInput()"
+			CustomBlockKeys.FLUID_PORT -> ".fluidPort()"
 			else -> ".customBlock(CustomBlocksKeys.${registryKey.key}.getValue())"
 		}
 
