@@ -199,7 +199,7 @@ class AdvancedProbeWeaponSubsystem(
 					paramColor = HE_LIGHT_GRAY,
 					useQuotesAroundObjects = true,
 					name,
-					bracketed(text(location.toString(), distanceColor)),
+					bracketed(text("World: ${location.world.name}, x: ${location.x.toInt()} z: ${location.z.toInt()}", distanceColor)),
 					text(distance.toInt(), distanceColor)
 				)
 				shooter.sendMessage(line)

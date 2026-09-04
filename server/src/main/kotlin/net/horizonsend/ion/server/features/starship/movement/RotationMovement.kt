@@ -13,7 +13,7 @@ import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.sin
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 
 class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship), TranslationAccessor by RotationTranslation(null, if (clockwise) 90.0 else 270.0, starship::centerOfMass) {
 	private val theta: Double = if (clockwise) 90.0 else -90.0
@@ -25,7 +25,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		if (passenger is Player) {
 			newLoc.pitch = passenger.location.pitch
 
-			newLoc.yaw = if (passenger.getSettingOrThrow(PlayerSettings::playerRotateWithShip)) {
+			newLoc.yaw = if (passenger.getSetting(PlayerSettings::playerRotateWithShip) == true) {
 				newLoc.yaw + passenger.location.yaw
 			} else {
 				passenger.location.yaw
