@@ -1,9 +1,14 @@
 package net.horizonsend.ion.server.features.misc
 
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.ANVIL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.FENCE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.FENCE_GATE_TYPES
@@ -15,8 +20,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.state.BlockBehaviour
@@ -50,6 +57,11 @@ object GameplayTweaks : IonServerComponent() {
 
 		Tasks.syncRepeat(0L, 10L) {
 			damagePlayersAboveMaxHeight()
+		}
+		if (!ConfigurationFiles.legacySettings().master) {
+			Tasks.syncRepeat(0L, 20L) {
+				landArenaCleaner()
+			}
 		}
 	}
 
@@ -197,5 +209,33 @@ object GameplayTweaks : IonServerComponent() {
 //		}
 
 		Mass[material] = resistance * Mass.BLAST_RESIST_MASS_MULTIPLIER
+	}
+
+	// LAND ARENA GOON ANNIHILATOR 9000
+	/** Removes all annoying custom items people spam chat with in land arena */
+	private fun landArenaCleaner() {
+		for (player in Bukkit.getOnlinePlayers()) {
+			if (player.world.hasFlag(WorldFlag.ARENA)) {
+				for (item in player.inventory) {
+					if (item.isEmpty) continue
+					if (!item.enchantments.isEmpty()
+						|| item.displayNameString.contains("") // HE logo character people love to spam
+						|| item.type == Material.MACE
+						|| item.type == Material.CROSSBOW
+						|| item.type == Material.FIREWORK_ROCKET
+						|| item.type == Material.NETHERITE_SWORD
+						|| item.type == Material.DIAMOND_SWORD
+						|| item.type == Material.IRON_SWORD
+						|| item.type == Material.GOLDEN_SWORD
+						|| item.type == Material.COPPER_SWORD
+						|| item.type == Material.STONE_SWORD
+						|| item.type == Material.WOODEN_SWORD
+					)  {
+						player.inventory.remove(item)
+						player.sendMessage(text("An illegal item has been removed from your inventory.", HE_DARK_ORANGE))
+					}
+				}
+			}
+		}
 	}
 }
