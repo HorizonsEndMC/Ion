@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.control.movement.CruiseData
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising.startCruising
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising.stopCruising
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.keybind
 import net.kyori.adventure.text.Component.text
@@ -114,7 +115,7 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 
 		//if the player hits space bar and sneak at the same time, cancel cruising
 		if(currentInput.isJump && currentInput.isSneak){
-			StarshipCruising.stopCruising(starship.controller, starship)
+			stopCruising(starship.controller, starship)
 			ticksToBlockMovementFor = 5
 			return starship.cruiseData
 		}
@@ -166,6 +167,10 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 			startCruising(
 				starship.controller, starship, dir.normalize(), true
 			)
+		}
+		//if the player doesn't provide an input stop the ship moving
+		else {
+			stopCruising(starship.controller, starship)
 		}
 
 		return starship.cruiseData
