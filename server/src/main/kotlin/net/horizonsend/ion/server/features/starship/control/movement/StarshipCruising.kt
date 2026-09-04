@@ -188,10 +188,6 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		if (starship.isInterdicting && starship.controller !is AIController) {
-			starship.setIsInterdicting(false)
-		}
-
 		if (starship.isTeleporting) {
 			return
 		}
