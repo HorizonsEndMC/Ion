@@ -12,7 +12,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
@@ -479,7 +478,7 @@ class Starship(
 		return controller.movementHandler is DirectControlHandler
 	}
 
-	val isDirectCruiseControlEanble: Boolean get(){
+	val isDirectCruiseControlEnable: Boolean get(){
 		return controller.movementHandler is DirectCruiseControlHandler
 	}
 
