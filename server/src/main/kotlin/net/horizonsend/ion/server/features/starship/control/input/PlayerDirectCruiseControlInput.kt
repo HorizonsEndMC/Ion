@@ -182,7 +182,7 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 			)
 		}
 		//if the player doesn't provide an input stop the ship moving
-		else {
+		else if(StarshipCruising.isCruising(starship)){
 			stopCruising(starship.controller, starship)
 		}
 
