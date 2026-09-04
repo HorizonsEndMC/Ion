@@ -22,7 +22,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 
 	override fun movePassenger(passenger: Entity) {
 		val newLoc = displaceLocation(passenger.location)
-		if (passenger is Player) {
+		if (passenger is Player && passenger.isOnline) {
 			newLoc.pitch = passenger.location.pitch
 
 			newLoc.yaw = if (passenger.getSetting(PlayerSettings::playerRotateWithShip) == true) {
