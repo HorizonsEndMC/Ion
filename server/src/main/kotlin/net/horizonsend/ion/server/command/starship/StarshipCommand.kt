@@ -267,6 +267,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			} else {
 				intactCounts[simplerName] = intactCounts.getOrDefault(simplerName, 0) + 1
 			}
+		}
 
 		sender.sendRichMessage("<dark_gray><bold>=====================================")
 
@@ -285,14 +286,14 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 					percent >= 0.5 -> "<gold>"
 					percent >= 0.05 -> "<red>"
 					percent < 0.05 -> "<gray>"
-					else -> "<light_purple>"
+					else -> "<I have no idea how u achieved this but props man>"
 				}
 				sender.sendRichMessage("$color$name</${color.removePrefix("<")}: <white>$intact/$total")
 			}
 
 			sender.sendRichMessage("<dark_gray><bold>=====================================")
 		}
-	}
+
 
 	@Subcommand("coverage")
 	fun onHullInfo(sender: Player) {
