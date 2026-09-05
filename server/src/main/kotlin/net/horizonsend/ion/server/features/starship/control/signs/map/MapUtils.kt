@@ -64,26 +64,26 @@ fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {
 
 fun celestialBodiesInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
 	return Space.getAllCelestialBodies().filter {
-		it.spaceWorld == displayMap.location.world && it.location.toVector().distance(source) <= maxDistance
+		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance
 	}
 }
 
 fun starsInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
 	return Space.getStars().filter {
-		it.spaceWorld == displayMap.location.world && it.location.toVector().distance(source) <= maxDistance
+		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance
 	}
 }
 
 fun planetInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
 	return Space.getAllPlanets().filter {
-			it.spaceWorld == displayMap.location.world && it.location.toVector()
+			it.spaceWorld == world && it.location.toVector()
 				.distance(source) <= maxDistance
 	}
 }
 
 fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector, world: World): List<ServerConfiguration.HyperspaceBeacon> {
 	return ConfigurationFiles.serverConfiguration().beacons.filter {
-		it.spaceLocation.bukkitWorld() == displayMap.location.world &&
+		it.spaceLocation.bukkitWorld() == world &&
 			it.spaceLocation.toLocation().toVector()
 				.distance(centerOfMass) <= maxDistance
 	}
@@ -92,7 +92,7 @@ fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Ve
 fun bookmarksInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector, world: World): List<Bookmark> {
 	val player = displayMap.ship.playerPilot ?: return listOf()
 	return BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
-		it.worldName == player.world.name &&
+		it.worldName == world.name &&
 			Vector(it.x, it.y, it.z).distance(centerOfMass) <= maxDistance
 	}
 }

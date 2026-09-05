@@ -152,13 +152,13 @@
 			}
 			//Tick & Show players the entities
 			mapStateFeatures.toList().forEach { state->
+				state.tick()
 				//Hide all the entities from players not in the ship. Showing only players of the ship
 				for (entity in state.entities) {
 					for (player in ship.onlinePassengers) {
 						entity.isVisibleByDefault = false
 						player.showEntity(IonServer, entity)
 					}
-					state.tick()
 				}
 			}
 			commonButtons.forEach { button ->
@@ -1353,18 +1353,18 @@
 			val offsetX = rx - 0.5
 			val offsetZ = ry - 0.5
 
-			val centerOfMass = when(state){
+			val center = when(state){
 				MapState.LOCAL_MAP-> ship.centerOfMass.toVector()
 				MapState.SYSTEMS_MAP-> systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
 				else -> Vector()
 			}
 			val distance = when(state){
 				MapState.LOCAL_MAP -> maxDistance
-				MapState.SYSTEMS_MAP-> (systemForSystemMap?.worldBorder?.size ?: 2.0)/2.0
+				MapState.SYSTEMS_MAP-> (systemForSystemMap?.worldBorder?.size ?: 10000.0)
 				else-> 1000.0
 			}
-			val worldX = centerOfMass.x - offsetX * distance
-			val worldZ = centerOfMass.z - offsetZ * distance
+			val worldX = center.x + offsetX * distance
+			val worldZ = center.z - offsetZ * distance
 
 			return Location(location.world, worldX, 0.0, worldZ)
 		}
