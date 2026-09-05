@@ -58,26 +58,27 @@ fun celestialBodyLocalMapScale(body: CelestialBody, displayMap: DisplayMap) = wh
 
 fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {
 	return (if (sourceShip.playerPilot != null) {
-		Fleets.findByMember(sourceShip.playerPilot!!)?.getJointContacts() ?: sourceShip.getContacts()
-	} else sourceShip.getContacts()).filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance }
+		(Fleets.findByMember(sourceShip.playerPilot!!)?.getJointContacts() ?: sourceShip.getContacts())
+			.filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }
+	} else sourceShip.getContacts()).filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }
 }
 
 fun celestialBodiesInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
 	return Space.getAllCelestialBodies().filter {
-		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance
+		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance/2.0
 	}
 }
 
 fun starsInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
 	return Space.getStars().filter {
-		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance
+		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance/2.0
 	}
 }
 
 fun planetInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
 	return Space.getAllPlanets().filter {
 			it.spaceWorld == world && it.location.toVector()
-				.distance(source) <= maxDistance
+				.distance(source) <= maxDistance/2.0
 	}
 }
 
@@ -85,7 +86,7 @@ fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Ve
 	return ConfigurationFiles.serverConfiguration().beacons.filter {
 		it.spaceLocation.bukkitWorld() == world &&
 			it.spaceLocation.toLocation().toVector()
-				.distance(centerOfMass) <= maxDistance
+				.distance(centerOfMass) <= maxDistance/2.0
 	}
 }
 
@@ -93,7 +94,7 @@ fun bookmarksInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: 
 	val player = displayMap.ship.playerPilot ?: return listOf()
 	return BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
 		it.worldName == world.name &&
-			Vector(it.x, it.y, it.z).distance(centerOfMass) <= maxDistance
+			Vector(it.x, it.y, it.z).distance(centerOfMass) <= maxDistance/2.0
 	}
 }
 
