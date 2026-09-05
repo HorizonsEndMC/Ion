@@ -4,6 +4,8 @@ import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
@@ -27,13 +29,13 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -49,6 +51,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.DirectContr
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
@@ -114,6 +117,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -124,8 +128,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import java.time.Duration
-import java.util.LinkedList
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -187,6 +190,7 @@ class Starship(
 		if (statsEnabled) {
 			logStatistics(this)
 		}
+		displayMaps.forEach { it.tick() }
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -507,6 +511,7 @@ class Starship(
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
 	val commandBursts = LinkedList<AbstractCommandBurstSubsystem<*>>()
+	val displayMaps = LinkedList<DisplayMap>()
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
@@ -717,6 +722,7 @@ class Starship(
 	//region Passengers
 	private val passengers = HashSet<UUID>()
 	val passengerIDs get() = passengers.toList()
+	val entityPassengers = HashSet<Entity>()
 	val onlinePassengers get() = passengers.mapNotNull(Bukkit::getPlayer)
 
 	fun isPassenger(playerID: UUID): Boolean {
@@ -925,5 +931,23 @@ class Starship(
 		}
 
 		return false
+	}
+
+	fun getContacts() : List<Starship> {
+		return ActiveStarships.all().filter {
+			it.world == this.world
+				&& it.centerOfMass.toVector().distanceSquared(this.centerOfMass.toVector()) <= 2500.squared().coerceIn(0,it.balancing.contactsRange.squared())
+				&& it.controller !== this.controller
+				&& (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
+		}
+	}
+
+	fun getRelation(other: Starship): NationRelation.Level{
+			val viewerNation = PlayerCache.getIfOnline(this.playerPilot ?: return NationRelation.Level.NONE)?.nationOid
+				?: return NationRelation.Level.NONE
+			val otherNation = PlayerCache.getIfOnline(other.playerPilot ?: return NationRelation.Level.NONE)?.nationOid
+				?: return NationRelation.Level.NONE
+			this.controller.getColor()
+			return RelationCache[viewerNation, otherNation]
 	}
 }

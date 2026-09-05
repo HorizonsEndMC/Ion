@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.progression.achievements.AchievementL
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.space.signatures.WreckChestListener
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.subsystem.misc.IndustrialInvulnerabilityListener
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
@@ -39,7 +40,6 @@ import net.horizonsend.ion.server.listener.misc.PlayerDeathListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.listener.misc.RecipeModifications
 import net.horizonsend.ion.server.listener.misc.ResourcePackListener
-import net.horizonsend.ion.server.listener.misc.StuckInHyperspaceListener
 import net.horizonsend.ion.server.listener.nations.FriendlyFireListener
 import net.horizonsend.ion.server.listener.nations.MovementListener
 import org.bukkit.event.Listener
@@ -89,6 +89,7 @@ val listeners: List<Listener> = listOf(
 	WreckChestListener,
 	//StuckInHyperspaceListener,
 	IndustrialInvulnerabilityListener,
+	DisplayMap.Companion,
 
 	// Achievement Listeners
 	AchievementListeners(),

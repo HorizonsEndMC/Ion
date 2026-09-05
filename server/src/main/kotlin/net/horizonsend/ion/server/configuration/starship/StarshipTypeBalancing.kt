@@ -3,7 +3,6 @@
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
@@ -18,8 +17,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserR
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalSkirmishCommandBurstSubsystem
@@ -45,7 +44,7 @@ import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import java.util.LinkedList
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
@@ -292,6 +291,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 3,
 			warmupTime = 10,
 			interdictionRange = 1200,
+			contactsRange = 700,
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.35,
@@ -620,6 +620,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 4,
 			warmupTime = 8,
 			interdictionRange = 350,
+			contactsRange = 700,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.5,
@@ -1152,6 +1153,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
+			contactsRange = 700,
 			warmupTime = 10,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
@@ -1772,6 +1774,7 @@ sealed interface StarshipTypeBalancing {
 	val sneakFlyAccelDistance: Int
 	val maxSneakFlyAccel: Int
 	val interdictionRange: Int
+	var contactsRange: Int //specifies the maximum distance this ship can be seen on contacts
 	val jumpStrength: Double
 	val wellStrength: Double
 	val hyperspaceRangeMultiplier: Double
@@ -1800,6 +1803,7 @@ open class StanrdardStarshipTypeBalancing(
 
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
+	override var contactsRange: Int = 2500,
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
@@ -1827,6 +1831,7 @@ open class GroundStarshipBalancing(
 	override var sneakFlyAccelDistance: Int,
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
+	override var contactsRange: Int = 2500,
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,

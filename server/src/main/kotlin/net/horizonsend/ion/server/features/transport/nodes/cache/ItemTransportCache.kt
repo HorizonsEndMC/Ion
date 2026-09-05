@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.reflect.KClass
 
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) : TransportCache(holder),
