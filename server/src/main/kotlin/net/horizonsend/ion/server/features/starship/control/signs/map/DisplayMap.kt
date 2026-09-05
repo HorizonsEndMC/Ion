@@ -156,20 +156,16 @@
 				for (entity in state.entities) {
 					for (player in ship.onlinePassengers) {
 						entity.isVisibleByDefault = false
-						ship.onlinePassengers.forEach {
-							player.showEntity(IonServer, entity)
-							}
-						}
+						player.showEntity(IonServer, entity)
 					}
-				state.tick()
+					state.tick()
+				}
 			}
 			commonButtons.forEach { button ->
 				for (entity in button.entities) {
 					for (player in ship.onlinePassengers) {
 						entity.isVisibleByDefault = false
-						ship.onlinePassengers.forEach {
-							player.showEntity(IonServer, entity)
-						}
+						player.showEntity(IonServer, entity)
 					}
 				}
 			}
@@ -177,9 +173,7 @@
 				for (entity in feature.entities) {
 					for (player in ship.onlinePassengers) {
 						entity.isVisibleByDefault = false
-						ship.onlinePassengers.forEach {
-							player.showEntity(IonServer, entity)
-						}
+						player.showEntity(IonServer, entity)
 					}
 				}
 			}
