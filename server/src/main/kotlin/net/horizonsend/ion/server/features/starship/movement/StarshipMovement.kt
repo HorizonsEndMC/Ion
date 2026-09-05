@@ -288,8 +288,17 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 			}
 		}
 		starship.displayMaps.forEach { map ->
-			if(this !is RotationMovement) {
-				map.location = displaceLocation(map.location).setDirection(Vector(0, 0, 1))
+			val world = map.location.world
+			if(this is TranslateMovement) {
+				val oldX = map.location.x.toInt()
+				val oldY = map.location.y.toInt()
+				val oldZ = map.location.z.toInt()
+				map.location = Location(
+					world2,
+					this.displaceX(oldX, oldZ).d(),
+					this.displaceY(oldY).d(),
+					this.displaceZ(oldZ, oldX).d()
+				)
 			}
 			if(this is RotationMovement){
 				val rotation = (Math.PI / 2.0) * if (this.clockwise) -1.0 else 1.0
@@ -299,11 +308,17 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 				val oldY = map.location.y.toInt()
 				val oldZ = map.location.z.toInt()
 				map.location = Location(
-					map.ship.world,
+					world2,
 					this.displaceX(oldX, oldZ).d(),
 					this.displaceY(oldY).d(),
 					this.displaceZ(oldZ, oldX).d()
 				)
+			}
+
+			//Chunks are unloaded immediately, before we can actually teleport our entities. So we destroy the map and remake it to respawn the entities.
+			if(world2 != world){
+				map.despawn()
+				map.init()
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
@@ -61,26 +62,26 @@ fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {
 	} else sourceShip.getContacts()).filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance }
 }
 
-fun celestialBodiesInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector) : List<CelestialBody>{
+fun celestialBodiesInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
 	return Space.getAllCelestialBodies().filter {
 		it.spaceWorld == displayMap.location.world && it.location.toVector().distance(source) <= maxDistance
 	}
 }
 
-fun starsInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector) : List<CachedStar>{
+fun starsInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
 	return Space.getStars().filter {
 		it.spaceWorld == displayMap.location.world && it.location.toVector().distance(source) <= maxDistance
 	}
 }
 
-fun planetInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector) : List<CachedPlanet> {
+fun planetInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
 	return Space.getAllPlanets().filter {
 			it.spaceWorld == displayMap.location.world && it.location.toVector()
 				.distance(source) <= maxDistance
 	}
 }
 
-fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector): List<ServerConfiguration.HyperspaceBeacon> {
+fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector, world: World): List<ServerConfiguration.HyperspaceBeacon> {
 	return ConfigurationFiles.serverConfiguration().beacons.filter {
 		it.spaceLocation.bukkitWorld() == displayMap.location.world &&
 			it.spaceLocation.toLocation().toVector()
@@ -88,7 +89,7 @@ fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Ve
 	}
 }
 
-fun bookmarksInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector): List<Bookmark> {
+fun bookmarksInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector, world: World): List<Bookmark> {
 	val player = displayMap.ship.playerPilot ?: return listOf()
 	return BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
 		it.worldName == player.world.name &&

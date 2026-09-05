@@ -12,6 +12,8 @@
 	import net.horizonsend.ion.common.utils.text.asShadowColor
 	import net.horizonsend.ion.common.utils.text.ofChildren
 	import net.horizonsend.ion.common.utils.text.plainText
+	import net.horizonsend.ion.server.IonServer
+	import net.horizonsend.ion.server.configuration.ConfigurationFiles
 	import net.horizonsend.ion.server.configuration.ServerConfiguration
 	import net.horizonsend.ion.server.features.gui.GuiItem
 	import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
@@ -83,6 +85,7 @@
 		val mapStateFeatures = mutableListOf<MapFeature>()
 
 		fun init() {
+			if(mapInitialized) return
 			initializeBackgroundAndBorder()
 			setupSideBarButtons()
 			placeLocalMap()
@@ -104,13 +107,14 @@
 			if (ship.displayMaps.size > 2) {
 				return
 			}
+			if(ship.isTeleporting) return
 			if (!mapInitialized) init()
 			when(state){
 				MapState.LOCAL_MAP->{
 					try {
 						val shipsInRange = shipsInRange(maxDistance, ship)
 						val centerOfMass = ship.centerOfMass.toVector()
-						val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass)
+						val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass, this.location.world)
 						for (ship in shipsInRange) {
 							if (shipsTracked.containsKey(ship)) continue
 							else {
@@ -146,12 +150,44 @@
 					}
 				}
 			}
-			mapStateFeatures.toList().forEach {
-				it.tick()
+			//Tick & Show players the entities
+			mapStateFeatures.toList().forEach { state->
+				//Hide all the entities from players not in the ship. Showing only players of the ship
+				for (entity in state.entities) {
+					for (player in ship.onlinePassengers) {
+						entity.isVisibleByDefault = false
+						ship.onlinePassengers.forEach {
+							player.showEntity(IonServer, entity)
+							}
+						}
+					}
+				state.tick()
+			}
+			commonButtons.forEach { button ->
+				for (entity in button.entities) {
+					for (player in ship.onlinePassengers) {
+						entity.isVisibleByDefault = false
+						ship.onlinePassengers.forEach {
+							player.showEntity(IonServer, entity)
+						}
+					}
+				}
+			}
+			commonFeatures.forEach { feature ->
+				for (entity in feature.entities) {
+					for (player in ship.onlinePassengers) {
+						entity.isVisibleByDefault = false
+						ship.onlinePassengers.forEach {
+							player.showEntity(IonServer, entity)
+						}
+					}
+				}
 			}
 		}
 
-		private fun despawn() {
+		fun despawn() {
+			stateMap = null
+
 			mapStateFeatures.forEach { it.despawn() }
 			commonFeatures.forEach { it.despawn() }
 			commonButtons.forEach { it.despawn() }
@@ -160,6 +196,8 @@
 			commonFeatures.clear()
 			commonButtons.clear()
 			this.shipsTracked.clear()
+
+			mapInitialized = false
 		}
 
 		private fun initializeBackgroundAndBorder() {
@@ -199,12 +237,15 @@
 				) {
 					when (it.state) {
 						MapState.LOCAL_MAP -> {
-							it.state = MapState.GALACTIC_MAP
-							(it.commonButtons.find { it.identifier == "MAP_BUTTON" }?.getDisplayEntities()
-								?.first() as? ItemDisplay)?.setItemStack(
-								ItemStack(Material.PAPER).applyGuiModel(GuiItem.GENERIC_STARSHIP)
-							)
-							it.placeGalacticMap()
+							//if the world is not creative world
+							if(ConfigurationFiles.serverConfiguration().serverName?.lowercase()?.contains("creative") != true) {
+								it.state = MapState.GALACTIC_MAP
+								(it.commonButtons.find { it.identifier == "MAP_BUTTON" }?.getDisplayEntities()
+									?.first() as? ItemDisplay)?.setItemStack(
+									ItemStack(Material.PAPER).applyGuiModel(GuiItem.GENERIC_STARSHIP)
+								)
+								it.placeGalacticMap()
+							}
 						}
 
 						MapState.GALACTIC_MAP -> {
@@ -331,15 +372,16 @@
 			centralShipIcon.init()
 
 			val centerOfMass = ship.centerOfMass.toVector()
+			val world = this.location.world
 
 			//Add Ships
 			shipsInRange(maxDistance, ship).forEach { generateShipMapFeature(it) }
 			//Add CelestialBodies
-			celestialBodiesInRange(this, maxDistance, centerOfMass).forEach { generateCelestialBodyMapFeature(it) }
+			celestialBodiesInRange(this, maxDistance, centerOfMass, world).forEach { generateCelestialBodyMapFeature(it) }
 			//Add Beacons
-			beaconsInRange(this, maxDistance,centerOfMass).forEach { generateBeaconMapFeature(it) }
+			beaconsInRange(this, maxDistance,centerOfMass, world).forEach { generateBeaconMapFeature(it) }
 			//Add BookMarks
-			bookmarksInRange(this, maxDistance,centerOfMass).forEach { generateBookmarkMapFeature(it) }
+			bookmarksInRange(this, maxDistance,centerOfMass, world).forEach { generateBookmarkMapFeature(it) }
 
 			for (state in mapStateFeatures) {
 				ship.entityPassengers.addAll(state.entities)
@@ -1189,18 +1231,19 @@
 			maxDistanceMap.init()
 			backgroundMap.init()
 
-			val source = systemForSystemMap?.worldBorder?.center?.toVector()!!
-			planetInRange(this, 1_000_000.0, source).forEach {
+			val world = systemForSystemMap ?: return
+			val source = world.worldBorder.center.toVector()
+			planetInRange(this, 1_000_000.0, source, world).forEach {
 				generateCelestialBodyMapFeature(it)
 			}
-			starsInRange(this, 1_000_000.0, source).forEach {
+			starsInRange(this, 1_000_000.0, source, world).forEach {
 				generateCelestialBodyMapFeature(it)
 			}
-			beaconsInRange(this, 1_000_000.0, source).forEach {
+			beaconsInRange(this, 1_000_000.0, source, world).forEach {
 				generateBeaconMapFeature(it)
 			}
 
-			bookmarksInRange(this, 1_000_000.0, source).forEach {
+			bookmarksInRange(this, 1_000_000.0, source, world).forEach {
 				generateBookmarkMapFeature(it)
 			}
 
@@ -1386,9 +1429,12 @@
 					val worldPoint = map.getWorldClickLocation(rayOrigin, rayDirection) ?: continue
 
 					player.sendActionBar(
-						Component.text("Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}", NamedTextColor.DARK_PURPLE)
+						Component.text(
+							"Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}",
+							NamedTextColor.DARK_PURPLE
+						)
 					)
-					if(player.isSneaking) {
+					if (player.isSneaking) {
 						player.performCommand("jump ${worldPoint.blockX} ${worldPoint.blockZ}")
 					}
 					return
