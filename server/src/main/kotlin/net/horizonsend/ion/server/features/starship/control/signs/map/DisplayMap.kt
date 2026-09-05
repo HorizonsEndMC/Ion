@@ -15,6 +15,9 @@
 	import net.horizonsend.ion.server.IonServer
 	import net.horizonsend.ion.server.configuration.ConfigurationFiles
 	import net.horizonsend.ion.server.configuration.ServerConfiguration
+	import net.horizonsend.ion.server.features.client.display.HudIcons
+	import net.horizonsend.ion.server.features.client.display.HudIcons.PLANET_PREFIX
+	import net.horizonsend.ion.server.features.client.display.HudIcons.STAR_PREFIX
 	import net.horizonsend.ion.server.features.gui.GuiItem
 	import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 	import net.horizonsend.ion.server.features.space.body.CachedStar
@@ -38,6 +41,7 @@
 	import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 	import net.horizonsend.ion.server.listener.SLEventListener
 	import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+	import net.horizonsend.ion.server.miscellaneous.utils.setModel
 	import net.horizonsend.ion.server.miscellaneous.utils.updateData
 	import net.kyori.adventure.text.Component
 	import net.kyori.adventure.text.format.NamedTextColor
@@ -312,7 +316,6 @@
 		private fun placeLocalMap() {
 			mapStateFeatures.forEach { it.despawn() }
 			mapStateFeatures.clear()
-
 			val backgroundMap = MapFeature(
 				"LOCAL_MAP",
 				this,
@@ -425,13 +428,12 @@
 			val starScale = celestialBodyLocalMapScale(body, this)
 			val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
-			val itemStack: ItemStack? =
-				when (body) {
-					is CachedPlanet -> body.planetIconFactory.construct()
-					is CachedStar -> body.starIconFactory.construct()
-					else -> null
-				}
-			val component = null
+			val itemStack: ItemStack? = when(body){
+				is CachedPlanet -> HudIcons.getItemStack(PLANET_PREFIX.plus(identifier.lowercase()))
+				is CachedStar -> HudIcons.getItemStack(STAR_PREFIX.plus(identifier.lowercase()))
+				else -> null
+			}
+				val component = null
 
 			val cbf = CelestialBodyFeature(
 				identifier.uppercase(),

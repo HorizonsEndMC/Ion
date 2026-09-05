@@ -52,7 +52,7 @@ open class MapButtonDisplay(
 	}
 
 	open fun onClick() {
-		function.invoke(map)
+		function(map)
 	}
 
 	fun onDespawn() {
