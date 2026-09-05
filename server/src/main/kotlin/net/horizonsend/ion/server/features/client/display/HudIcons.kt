@@ -74,14 +74,14 @@ object HudIcons : IonServerComponent() {
 
     private const val ICON_SCALE = 20000.0
 
-    private const val SELECTOR_ID = "hud-selector"
-    private const val SELECTOR_TEXT_ID = "hud-selector-text"
-    private const val PLANET_PREFIX = "hud-planet-"
-    private const val STAR_PREFIX = "hud-star-"
-    private const val BEACON_PREFIX = "hud-beacon-"
-    private const val STATION_PREFIX = "hud-station-"
-    private const val SIEGE_STATION_PREFIX = "hud-siege-station-"
-    private const val BOOKMARK_PREFIX = "hud-bookmark-"
+    const val SELECTOR_ID = "hud-selector"
+    const val SELECTOR_TEXT_ID = "hud-selector-text"
+    const val PLANET_PREFIX = "hud-planet-"
+    const val STAR_PREFIX = "hud-star-"
+    const val BEACON_PREFIX = "hud-beacon-"
+    const val STATION_PREFIX = "hud-station-"
+    const val SIEGE_STATION_PREFIX = "hud-siege-station-"
+    const val BOOKMARK_PREFIX = "hud-bookmark-"
 
     // These vars are for saving the info of the closest
     private val lowestAngleMap = mutableMapOf<UUID, Float>()
@@ -122,7 +122,7 @@ object HudIcons : IonServerComponent() {
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance * 2) return null
 
-        entity.setItemStack(getItemStack(identifier))
+        entity.setItemStack(getItemStack(identifier.lowercase()))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = UPDATE_RATE.toInt()
@@ -452,7 +452,7 @@ object HudIcons : IonServerComponent() {
      * @return the custom planet icon ItemStack
      * @param name the name of the planet
      */
-    private fun getItemStack(name: String): ItemStack {
+	fun getItemStack(name: String): ItemStack {
         if (name.contains(PLANET_PREFIX)) {
             return Space.getPlanet(name.replace(PLANET_PREFIX, ""))?.planetIconFactory?.construct()
                 ?: CachedPlanet.DEFAULT_ITEM_FACTORY.construct()
@@ -460,11 +460,11 @@ object HudIcons : IonServerComponent() {
 
         else if (name.contains(STAR_PREFIX)) {
             // lazy fix until i can add real star textures to the rp
-            if (!name.contains("asteri_2")
-                && !name.contains("regulus_2")
-                && !name.contains("sirius_2")
-                && !name.contains("ilios_2")
-                && !name.contains("horizon_2")) {
+            if (!name.contains("asteri")
+                && !name.contains("regulus")
+                && !name.contains("sirius")
+                && !name.contains("ilios")
+                && !name.contains("horizon")) {
                 return CachedStar.DEFAULT_ITEM_FACTORY.construct()
             }
 
