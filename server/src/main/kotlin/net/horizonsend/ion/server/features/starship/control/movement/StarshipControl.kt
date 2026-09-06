@@ -33,11 +33,8 @@ object StarshipControl : IonServerComponent() {
 			.firstOrNull()
 			?: return false
 
-		// Don't allow battlecruisers to enter planets
-		if (starship.type == BATTLECRUISER && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
-		if (starship.type == StarshipType.BARGE && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
-		if (starship.type == StarshipType.LANCER_BATTLECRUISER && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
-		if (starship.type == StarshipType.INDUSTRIAL_COMMAND_SHIP && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
+		// Don't allow some ships to enter planets
+		if (!starship.type.balancing.isAllowedOnPlanets && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS)) return false
 
 		// Don't allow players that have recently entered planets to re-enter again
 		val controller = starship.controller

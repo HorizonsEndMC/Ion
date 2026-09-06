@@ -446,7 +446,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	 * Map visibility check
 	 */
 	private fun isInPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
-		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
+		if (starship?.type?.balancing?.dynmapVisibility == false) return false
 
 		val beacons = ConfigurationFiles.serverConfiguration().beacons
 			.filter { it.spaceLocation.world == player.world.name }
@@ -466,7 +466,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	 * Second, important visibility check (basically only for combat)
 	 */
 	private fun isInSuperPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
-		if (starship?.type == StarshipType.RECON_STARFIGHTER) return false
+		if (starship?.type?.balancing?.dynmapVisibility == false) return false
 		return CombatTimer.isPvpCombatTagged(player)
 	}
 
