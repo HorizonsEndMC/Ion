@@ -166,7 +166,7 @@ enum class StarshipType(
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	RECON_STARFIGHTER(
-		displayName = "Recon Fighter",
+		displayName = "Recon Craft",
 		needsFuel = false,
 		tech2 = true,
 		icon = SidebarIcon.STARFIGHTER_ICON.text,
