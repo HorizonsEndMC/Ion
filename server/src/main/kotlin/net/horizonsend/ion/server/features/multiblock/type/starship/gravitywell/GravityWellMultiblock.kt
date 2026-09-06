@@ -33,7 +33,7 @@ abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, Dis
 		if (StarshipCruising.isCruising(starship) && starship.initialBlockCount < 4800) {
 			return player.userError("This cannot be activated while cruising on ships smaller than 4800 blocks!")
 		}
-		if (starship.type != StarshipType.INTERDICTOR_GUNSHIP && starship.type != StarshipType.INTERDICTOR_CORVETTE && starship.type != StarshipType.INTERDICTOR_DESTROYER) {
+		if (!starship.type.balancing.canUseInterdictionWell) {
 			return player.userError("Only interdictors can use gravity wells!")
 		}
 
