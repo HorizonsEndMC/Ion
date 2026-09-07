@@ -333,11 +333,11 @@ object OptimizedMovement {
 //				lightModule.updateSectionStatus(SectionPos.of(chunk.x, sectionKey, chunk.z), false)
 			}
 
-			updateHeightMaps(nmsChunk)
+			//updateHeightMaps(nmsChunk)
 			nmsChunk.markUnsaved()
 		}
 
-		lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
+		//lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
 	}
 
 	/**
@@ -401,11 +401,10 @@ object OptimizedMovement {
 //				lightModule.updateSectionStatus(SectionPos.of(chunk.x, sectionKey, chunk.z), false)
 			}
 
-			updateHeightMaps(nmsChunk)
 			nmsChunk.markUnsaved()
 		}
 
-		lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
+		//lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
 
 		for ((index, tile) in capturedTiles) {
 			val blockKey = newPositionArray[index]
