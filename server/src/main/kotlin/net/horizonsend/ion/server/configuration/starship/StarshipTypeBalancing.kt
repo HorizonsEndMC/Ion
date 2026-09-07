@@ -1692,18 +1692,36 @@ data class NewStarshipBalancing(
 		val dreadnought: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 6000,
-			warmupTime = 30,
-			jumpStrength = 5.0,
-			wellStrength = 5.0,
+			interdictionRange = 7500,
+			warmupTime = 45,
+			jumpStrength = 6.0,
+			wellStrength = 6.0,
 			hyperspaceRangeMultiplier = 3.0,
-			cruiseSpeedMultiplier = 0.70,
+			cruiseSpeedMultiplier = 0.65,
 			shieldPowerMultiplier = 2.0,
 			weaponOverrides = listOf(
 				QuadTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 30000),
-					maxPerShot = 5
+					maxPerShot = 6
 				)
+					),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Dreadnoughts require a large reactor to pilot!"
+				),
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Dreadnoughts require a fuel tank to pilot!"
+				)
+					),
+			forbiddenMultiblocks = listOf(
+				IncompatibleSubsystemInfo(
+					DisruptorSubsystem::class.java,
+					"Interdiction Ships cannot use Disruptors!"
+				),
 			),
 			shipSounds = StarshipSounds(
 				pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
