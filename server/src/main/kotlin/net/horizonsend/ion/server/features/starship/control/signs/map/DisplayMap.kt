@@ -1425,16 +1425,30 @@
 
 					val worldPoint = map.getWorldClickLocation(rayOrigin, rayDirection) ?: continue
 
-					player.sendActionBar(
-						Component.text(
-							"Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}",
-							NamedTextColor.DARK_PURPLE
+					if (map.state == MapState.LOCAL_MAP || map.systemForSystemMap == map.location.world) {
+						player.sendActionBar(
+							Component.text(
+								"Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}",
+								NamedTextColor.DARK_PURPLE
+							)
 						)
-					)
-					if (player.isSneaking) {
-						player.performCommand("jump ${worldPoint.blockX} ${worldPoint.blockZ}")
+						if (player.isSneaking) {
+							player.performCommand("jump ${worldPoint.blockX} ${worldPoint.blockZ}")
+						}
+						return
 					}
-					return
+					else if (map.state == MapState.SYSTEMS_MAP) {
+						player.sendActionBar(
+							Component.text(
+								"Shift + Punch to route to: ${map.systemForSystemMap?.name} ${worldPoint.blockX}, ${worldPoint.blockZ}",
+								NamedTextColor.DARK_PURPLE
+							)
+						)
+						if (player.isSneaking) {
+							player.performCommand("route add ${map.systemForSystemMap?.name} ${worldPoint.blockX} ${worldPoint.blockZ}")
+						}
+						return
+					}
 				}
 			}
 
