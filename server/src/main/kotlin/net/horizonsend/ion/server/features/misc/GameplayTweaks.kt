@@ -217,7 +217,7 @@ object GameplayTweaks : IonServerComponent() {
 		for (player in Bukkit.getOnlinePlayers()) {
 			if (player.world.hasFlag(WorldFlag.ARENA)) {
 				for (item in player.inventory) {
-					if (item.isEmpty) continue
+					if (item == null || item.isEmpty) continue
 					if (!item.enchantments.isEmpty()
 						|| item.displayNameString.contains("") // HE logo character people love to spam
 						|| item.type == Material.MACE

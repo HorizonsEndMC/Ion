@@ -39,6 +39,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 				TeleportFlag.EntityState.RETAIN_VEHICLE
 			)
 		} else {
+			newLoc.yaw = newLoc.yaw + passenger.location.yaw
 			passenger.teleport(newLoc)
 		}
 	}
