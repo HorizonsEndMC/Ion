@@ -6,12 +6,14 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.rotateToFaceVector2d
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.client.display.HudIcons.FLUID_INFO_ID
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
@@ -27,13 +29,18 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraphEdge
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.minecraft.world.entity.Display
 import org.bukkit.Color
@@ -139,6 +146,23 @@ object Wrench : CustomItem(
 			text(network.getFlow(key).roundToHundredth()), text(" L/s", HE_MEDIUM_GRAY)
 		)
 
+		@Suppress("OverrideOnly")
+		if (debugAudience.audiences().contains(player)) {
+			network.getNode(key)?.let {
+				@Suppress("UnstableApiUsage")
+				for (edge in network.getGraph().outEdges(it).filterIsInstance<FluidGraphEdge>()) {
+					val centerLocAdj = toVec3i(getRelative(key, edge.direction)).toCenterVector().toLocation(player.world).add(0.0, 0.75, 0.0)
+
+					val text = template(ofChildren(
+						text("{0}"), newline(),
+						text("{1} L/s")
+					), useQuotesAroundObjects = false, edge.direction, edge.netFlow)
+
+					player.sendText(centerLocAdj, text, WRENCH_DISPLAY_TICK_INTERVAL.toLong() + 1)
+				}
+			}
+		}
+
 		val projectedLocation = targetedLocation.add(player.location.direction.clone().multiply(-1)).toLocation(player.world).add(0.0, 0.3, 0.0)
 		val scale = maxOf(player.eyeLocation.distance(projectedLocation).roundToInt() * 0.2f, 0.5f)
 
@@ -146,7 +170,7 @@ object Wrench : CustomItem(
 			createHudEntity(player, projectedLocation, text, scale)
 		else updateHudEntity(player, projectedLocation, text, scale)
 
-		Tasks.asyncDelay(WRENCH_DISPLAY_TICK_INTERVAL.toLong()) async2@{
+		Tasks.asyncDelay(WRENCH_DISPLAY_TICK_INTERVAL.toLong()) async2@ {
 			val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
 			val targeted = hitResult?.hitBlock ?: return@async2 removeEntity(player)
 			val key = toBlockKey(targeted.x, targeted.y, targeted.z)

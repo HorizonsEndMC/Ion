@@ -11,7 +11,10 @@ class FluidGraphEdge(
 	override val nodeOne: TransportNode,
 	override val nodeTwo: TransportNode
 ) : GraphEdge {
-	/** returns the net flow between the two nodes. If positive, it is towards node two, if negative, towards node one. */
+	/**
+	 * Returns the net flow between the two nodes. If positive, it is towards node two, if negative, towards node one.
+	 * Only used for display of the fluid in pipes.
+	 * */
 	var netFlow: Double = 0.0
 
 	val direction: BlockFace by lazy {

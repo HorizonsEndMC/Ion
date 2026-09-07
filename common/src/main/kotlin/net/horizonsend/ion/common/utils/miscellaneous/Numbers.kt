@@ -8,6 +8,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
 
+fun Double.roundToTenth(): Double = times(10.0).roundToInt().toDouble().div(10.0)
 fun Double.roundToHundredth(): Double = times(100.0).roundToInt().toDouble().div(100.0)
 fun Double.roundToTenThousanth(): Double = times(10000.0).roundToInt().toDouble().div(10000.0)
 

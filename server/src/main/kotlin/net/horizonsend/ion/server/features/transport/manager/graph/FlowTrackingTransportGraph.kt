@@ -65,9 +65,17 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 		lastSinks = sinks
 		lastSources = sources
 
-		if ((sinks.isEmpty())) return
+		if ((sinks.isEmpty())) {
+			// Zero out flow since there's nothing to flow to
+			for (node in positions) {
+ 				flowMap[node] = 0.0
+			}
+
+			return
+		}
 
 		if (sources.isEmpty()) {
+			// Don't zero out since there might be fluid in the pipes themselves
 			for (node in sinks) {
 				flowMap[node.location] = getFlowCapacity(node)
 			}

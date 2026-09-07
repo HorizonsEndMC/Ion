@@ -82,6 +82,8 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 	fun getAdjacentNodes(node: N) = localLock.readLock().withLock { networkGraph.adjacentNodes(node) }
 
+	fun getNode(key: BlockKey) = nodeMirror[key]
+
 	fun addNode(node: N) = localLock.writeLock().withLock {
 		if (isNodePresent(node.location)) throw IllegalStateException("Node already exists at ${toVec3i(node.location)} in graph!")
 		if (getGraphNodes().any { eixsting -> eixsting.location == node.location }) throw IllegalStateException("Node already exists at ${toVec3i(node.location)} in graph!")
