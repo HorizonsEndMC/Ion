@@ -17,7 +17,6 @@ import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3d
 import org.joml.Vector3f
-import kotlin.math.cos
 
 /**
  * Generates a feature for the following inputted properties

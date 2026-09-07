@@ -69,9 +69,9 @@
 		var state: MapState = MapState.LOCAL_MAP
 		var mapInitialized = false;
 
-		val absoluteMaxDistance = 10000.0
-		val absoluteMinimumMaxDistance = 1000.0
-		var maxDistance = 1000.0
+		val absoluteMaxDistance = 20000.0
+		val absoluteMinimumMaxDistance = 2000.0
+		var maxDistance = 4000.0
 
 		val shipsTracked = mutableMapOf<Starship, ShipMapFeature>()
 		val celestialBodiesTracked = mutableMapOf<CelestialBody, CelestialBodyFeature>()
@@ -277,14 +277,14 @@
 					null,
 					10.0,
 				) {
-					it.maxDistance += 1000.0
-					if (maxDistance >= absoluteMaxDistance+1000.0) {
-						maxDistance = absoluteMaxDistance
+					it.maxDistance -= 2000.0
+					if (maxDistance <= absoluteMinimumMaxDistance-2000.0) {
+						maxDistance = absoluteMinimumMaxDistance
 					}
 					(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
 						Component.text("Square Size: ${maxDistance/4.0}"),
 					)
-					ship.successAction("Set radius to ${it.maxDistance/2.0}m")
+					ship.successAction("Set radius to ${maxDistance/2.0}m")
 				}
 			)
 
@@ -301,14 +301,14 @@
 					null,
 					10.0,
 				) {
-					it.maxDistance -= 1000.0
-					if (maxDistance <= absoluteMinimumMaxDistance-1000.0) {
-						maxDistance = absoluteMinimumMaxDistance
+					it.maxDistance += 2000.0
+					if (maxDistance >= absoluteMaxDistance+2000.0) {
+						maxDistance = absoluteMaxDistance
 					}
 					(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
 						Component.text("Square Size: ${maxDistance/4.0}"),
 					)
-					ship.successAction("Set radius to ${maxDistance/2.0}m")
+					ship.successAction("Set radius to ${it.maxDistance/2.0}m")
 				}
 			)
 		}
