@@ -183,6 +183,10 @@ object SubsystemDetector {
 			StarshipSigns.MAP.onStarshipPilot(starship, sign)
 		}
 
+		if (sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("radar")) {
+			StarshipSigns.RADAR.onStarshipPilot(starship, sign)
+		}
+
 		if (sign.type.isWallSign && sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("node")) {
 			val inwardFace = sign.getFacing().oppositeFace
 			val location = sign.block.getRelative(inwardFace).location

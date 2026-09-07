@@ -32,9 +32,6 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.joml.Vector3d
 import java.util.*
-import kotlin.math.absoluteValue
-import kotlin.math.ln
-import kotlin.math.sign
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
 	CRUISE("[cruise]", arrayOf(
@@ -172,13 +169,6 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 	},
 
 	MAP("[map]", arrayOf(text("Map", DARK_AQUA, BOLD),null,null,null)){
-		private val prefixes = arrayOf(
-			text("n/a"),
-			text("Size", DARK_GREEN).append(text(":")).append(text(" ")),
-			text("Offset", NamedTextColor.BLACK).append(text(":")).append(text(" ")),
-			text("Rotation", GOLD).append(text(":")).append(text(" "))
-		)
-
 		override fun onStarshipPilot(starship: Starship, sign: Sign) {
 			addMapToStarship(starship, sign)
 		}
@@ -186,48 +176,24 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 		override fun onDetect(player: Player, sign: Sign): Boolean {
 			for (i in 1..3) {
 				val lineText = sign.front().line(i).plainText()
-				sign.front().line(i, prefixes[i].append(text(lineText, DARK_GRAY)))
+				sign.front().line(i, mapPrefixes[i].append(text(lineText, DARK_GRAY)))
 			}
 			return true
 		}
+	},
 
+	//ALIAS TO [MAP
+	RADAR("[radar]", arrayOf(text("Radar", DARK_AQUA, BOLD),null,null,null)){
+		override fun onStarshipPilot(starship: Starship, sign: Sign) {
+			addMapToStarship(starship, sign)
+		}
 
-		fun addMapToStarship(starship: Starship, sign: Sign) {
-			// Helper to strip the "label:" prefix and split the remaining values by whitespace
-			fun parseValues(line: String): List<String> {
-				val parts = line.split(":", limit = 2)
-				val valuesPart = if (parts.size == 2) parts[1] else parts[0]
-				return valuesPart.trim().split(" ").filter { it.isNotBlank() }
+		override fun onDetect(player: Player, sign: Sign): Boolean {
+			for (i in 1..3) {
+				val lineText = sign.front().line(i).plainText()
+				sign.front().line(i, mapPrefixes[i].append(text(lineText, DARK_GRAY)))
 			}
-
-			val size = parseValues(sign.lines[1])
-			var sizeX: Double? = null
-			var sizeY: Double? = null
-			try {
-				sizeX = size[0].replace("§8","").toDouble()
-				sizeY = size[1].trim().toDouble()
-			} catch (_: Exception){}
-
-
-			var offset: Vector3d? = null
-			val offsetText = parseValues(sign.lines[2])
-			try {
-				offset = Vector3d(offsetText[0].replace("§8","").toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
-
-			} catch (_: Exception) {}
-
-			var pitch = 0.0
-			try {
-				pitch = sign.lines[3].split(':')[1].replace("§8", "").replace("§6", "").trim().toDouble()
-			} catch (_: Exception) {}
-
-			val dir = sign.getFacing().direction.clone()
-			pitch = Math.toRadians(pitch)
-			val pitchAxis = dir.clone().crossProduct(Vector(0.0, 1.0, 0.0)).normalize()
-
-			dir.rotateAroundAxis(pitchAxis, pitch)
-			val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
-			starship.displayMaps.add(map)
+			return true
 		}
 	};
 
@@ -263,6 +229,51 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 
 		return starship
 	}
+
+	fun addMapToStarship(starship: Starship, sign: Sign) {
+		// Helper to strip the "label:" prefix and split the remaining values by whitespace
+		fun parseValues(line: String): List<String> {
+			val parts = line.split(":", limit = 2)
+			val valuesPart = if (parts.size == 2) parts[1] else parts[0]
+			return valuesPart.trim().split(" ").filter { it.isNotBlank() }
+		}
+
+		val size = parseValues(sign.lines[1])
+		var sizeX: Double? = null
+		var sizeY: Double? = null
+		try {
+			sizeX = size[0].replace("§8","").toDouble()
+			sizeY = size[1].trim().toDouble()
+		} catch (_: Exception){}
+
+
+		var offset: Vector3d? = null
+		val offsetText = parseValues(sign.lines[2])
+		try {
+			offset = Vector3d(offsetText[0].replace("§8","").toDouble(), offsetText[1].toDouble(), offsetText[2].toDouble())
+
+		} catch (_: Exception) {}
+
+		var pitch = 0.0
+		try {
+			pitch = sign.lines[3].split(':')[1].replace("§8", "").replace("§6", "").trim().toDouble()
+		} catch (_: Exception) {}
+
+		val dir = sign.getFacing().direction.clone()
+		pitch = Math.toRadians(pitch)
+		val pitchAxis = dir.clone().crossProduct(Vector(0.0, 1.0, 0.0)).normalize()
+
+		dir.rotateAroundAxis(pitchAxis, pitch)
+		val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
+		starship.displayMaps.add(map)
+	}
+
+	val mapPrefixes = arrayOf(
+		text("n/a"),
+		text("Size", DARK_GREEN).append(text(":")).append(text(" ")),
+		text("Offset", NamedTextColor.BLACK).append(text(":")).append(text(" ")),
+		text("Rotation", GOLD).append(text(":")).append(text(" "))
+	)
 
 	companion object {
 		fun informOfSteal(current: UUID, starship: ActiveControlledStarship, player: Player, set: String) {
