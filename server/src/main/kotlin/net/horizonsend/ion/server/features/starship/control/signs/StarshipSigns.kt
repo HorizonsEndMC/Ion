@@ -220,10 +220,6 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			try {
 				pitch = sign.lines[3].split(':')[1].replace("§8", "").replace("§6", "").trim().toDouble()
 			} catch (_: Exception) {}
-			if (pitch.absoluteValue>45.0){
-				pitch = 45*pitch.sign
-				starship.userError("Error: Display Maps angle may not be greater in magnitude then 45 degrees!")
-			}
 
 			val dir = sign.getFacing().direction.clone()
 			pitch = Math.toRadians(pitch)
@@ -232,7 +228,8 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 			dir.rotateAroundAxis(pitchAxis, pitch)
 			val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
 			starship.displayMaps.add(map)
-		}	};
+		}
+	};
 
 	open fun onDetect(player: Player, sign: Sign): Boolean = true
 

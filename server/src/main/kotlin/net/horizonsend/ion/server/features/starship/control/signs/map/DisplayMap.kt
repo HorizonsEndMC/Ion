@@ -1262,12 +1262,13 @@
 
 			// Fallback axis for when dir is (near) straight up/down, where forward x worldUp
 			// collapses to a zero vector and can't be normalized.
-			val reference = if (abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector
+			val reference = worldUpBasisVector
 
 			val right = forward.clone().crossProduct(reference).normalize()
 			val up = right.clone().crossProduct(forward).normalize()
 			return right to up
 		}
+
 
 		/*
 		The following maths serves to center a given displayEntity onto the center of the location given.
@@ -1278,7 +1279,7 @@
 			val (right, up) = displayBasis()
 			val oppositeDir = dir.clone().multiply(-1)
 
-			val shipRight = ship.forward.direction.normalize().crossProduct( if (abs(ship.forward.direction.normalize().y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector)
+			val shipRight = ship.forward.direction.normalize().crossProduct( worldUpBasisVector)
 			val shipOpposite = ship.forward.oppositeFace.direction
 
 			return location.clone().add(
