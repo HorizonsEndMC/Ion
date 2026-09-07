@@ -14,6 +14,8 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.features.starship.fleet.toFleetMember
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.keybind
@@ -229,6 +231,9 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 
 				targetShip.let {
 					if (it == starship) return //should prevent setting to yourself
+					if (starship.isInterdicting) return //cant be having them disrupting and interdicting
+					//should stop you disrupting your own fleet members.
+					if (it?.playerPilot != null && Fleets.findByMember(player)?.contains(it.playerPilot!!) == true) return
 					starship.disruptorTarget = it
 					starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${it?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
 				}

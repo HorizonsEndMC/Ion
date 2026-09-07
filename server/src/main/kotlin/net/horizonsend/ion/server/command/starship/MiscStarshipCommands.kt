@@ -429,13 +429,22 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		val targetStarship = ActiveStarships.getByIdentifier(identifier) ?: fail { "No ship found with identifier $identifier!" }
+		val targetStarship = ActiveStarships.getByIdentifier(identifier)
 		if (targetStarship == starship) fail { "Cannot disrupt your own ship!" }
-		if (starship.disruptorTarget == targetStarship) fail { "Already disrupting ${targetStarship.identifier}!" }
+		//if (starship.disruptorTarget == targetStarship) fail { "Already disrupting that target!" }
 		if (starship.isInterdicting) fail { "Cannot interdict and disrupt at the same time!" }
 
 
 		Interdiction.findDisruptor(starship) ?: fail { "Intact Disruptor not found!" }
+		/*
+		If there is no target starship, we pretend to the player that their disruption went through.
+		This is so they cannot figure out if a player is piloting a ship.
+		 */
+		if (targetStarship == null){
+			starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on target Starship!") }
+			starship.disruptorTarget = null
+			return
+		}
 
 		// This sets the disruption target so that it continuously checks and applies, but does not actually
 		// disrupt unless the below conditions are met
@@ -795,6 +804,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			else -> ActiveStarships.all()
 		}
 
+		//map of system name to amount of ships found.
+		val map = mutableMapOf<String, Int>()
+
 		for (starship in starships) {
 			val controller = starship.controller
 
@@ -823,13 +835,16 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				else -> controller.pilotName
 			}
 
+			map[starship.world.ion.getSpaceRegion().name] = (map[starship.world.ion.getSpaceRegion().name]?:0) + 1
+		}
+		for((world, amount) in map){
 			val line = template(
-				"A ship is being piloted in {0}",
+				"{0}: {1} piloted",
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
 				useQuotesAroundObjects = true,
-				starship.world.ion.getSpaceRegion().name
-			)//.hoverEvent(ofChildren(text("${starship.initialBlockCount} block "), starship.type.displayNameComponent)) hide block count and class
+				world.lowercase().replaceFirstChar { it.uppercase() }, amount
+			)
 
 			sender.sendMessage(line)
 		}
