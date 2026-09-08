@@ -35,7 +35,11 @@ open class MapButtonDisplay(
 	val function: (it: DisplayMap) -> Unit
 ) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
 	val interaction: Interaction = map.location.world.spawnEntity(
-		this.location().add(if (itemStack== null&&component==null) Vector(0.0,(1.0/512.0)/sizeY, 0.0) else Vector(0.0,-map.sizeY/16.0,0.0)),
+		this.location().add(
+			if (itemStack== null&&component==null) Vector(0.0,(1.0/512.0)/sizeY, 0.0)
+			else if(component==null) Vector(0.0,-map.sizeY/16.0,0.0)
+			else Vector(0.0,map.sizeY/16.0,0.0)
+		),
 		EntityType.INTERACTION
 	) as Interaction
 

@@ -64,7 +64,7 @@
 	import kotlin.math.abs
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
-		val shiftPerLayer = .005
+		val shiftPerLayer = .05
 
 		var state: MapState = MapState.LOCAL_MAP
 		var mapInitialized = false;
@@ -216,7 +216,7 @@
 				MapFeature(
 					"BORDER", this, 14.0/32.0,0.0,1.0,1.0, null,
 					MapTextIcon.BORDER_RIGHT_MISSING.component(),
-					1.0
+					.25
 				)
 			)
 		}
@@ -231,7 +231,7 @@
 						NamespacedKeys.packKey("achievement_icon/hyperspace")
 					),
 					null,
-					10.0
+					1.0
 				) {
 					when (it.state) {
 						MapState.LOCAL_MAP -> {
@@ -275,7 +275,7 @@
 					3.0 / 32.0,
 					ItemStack(Material.PAPER).applyGuiModel(GuiItem.PLUS),
 					null,
-					10.0,
+					1.0,
 				) {
 					it.maxDistance -= 2000.0
 					if (maxDistance <= absoluteMinimumMaxDistance-2000.0) {
@@ -299,7 +299,7 @@
 					3.0 / 32.0,
 					ItemStack(Material.PAPER).applyGuiModel(GuiItem.MINUS),
 					null,
-					10.0,
+					1.0,
 				) {
 					it.maxDistance += 2000.0
 					if (maxDistance >= absoluteMaxDistance+2000.0) {
@@ -328,7 +328,7 @@
 					NamespacedKeys.packKey("map/grid_lines")
 				),
 				null,
-				1.2
+				.2
 			)
 
 			stateMap = backgroundMap
@@ -345,19 +345,19 @@
 					Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(getSidebarKeyToUse(ship)),
 					Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
 				),
-				10.0
+				1.3
 			)
 
 			val maxDistanceMap = MapFeature(
 				"MAX_DISTANCE",
 				this,
 				15.0/32.0,
-				1.0/32.0,
+				2.0/32.0,
 				.03,
 				.03,
 				null,
 				Component.text("Square Size: ${maxDistance/4.0}"),
-				10.1
+				1.2
 			)
 
 			mapStateFeatures.add(maxDistanceMap)
@@ -411,7 +411,7 @@
 					Component.text(icon, color).font(getSidebarKeyToUse(ship)),
 					MapTextIcon.ONE_PIXEL.component(),
 					),
-				10.0,
+				1.5,
 				this.stateMap,
 				Component.text(""),
 				Color.fromARGB(color.asShadowColor(255).value()),
@@ -444,7 +444,7 @@
 				starScale,
 				component,
 				itemStack,
-				9.9,
+				1.3,
 				this.stateMap!!,
 				Component.text(identifier, null, BOLD),
 				Color.fromARGB(0,0,0,0),
@@ -471,7 +471,7 @@
 				beaconScale,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
-				9.9,
+				1.4,
 				this.stateMap!!,
 				Component.text(beacon.name, null, BOLD),
 				Color.fromARGB(0, 255, 255, 255),
@@ -498,7 +498,7 @@
 				beaconScale,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BOOKMARK),
-				9.9,
+				1.25,
 				this.stateMap!!,
 				Component.text(bookmark.name, null, BOLD),
 				Color.fromARGB(0, 255, 255, 255),
@@ -534,20 +534,20 @@
 					NamespacedKeys.packKey("map/systems")
 				),
 				null,
-				8.0
+				.3
 			)
 
 			val clearRoutes = MapButtonDisplay(
 				"CLEAR_ROUTE",
 				this,
 				15.0/32.0,
-				1.0/32.0,
+				2.0/32.0,
 				.04,.04,
 				null,
 				Component.text(
 					"[/Clear Route]", NamedTextColor.RED, BOLD
 				),
-				10.1,
+				1.0,
 				null,
 			){
 				if(ship.playerPilot!=null) {
@@ -571,7 +571,7 @@
 					0.12,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -585,7 +585,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -599,7 +599,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -613,7 +613,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -629,7 +629,7 @@
 					154.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -644,7 +644,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -658,7 +658,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -670,12 +670,12 @@
 					"ILIOS",
 					this,
 					.64648,
-					1.0 - .225,
+					0.0 - .225,
 					152.0 / 1024.0,
 					152.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -690,7 +690,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -704,7 +704,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -718,7 +718,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -732,7 +732,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -746,7 +746,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -760,7 +760,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -774,7 +774,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -788,7 +788,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -802,7 +802,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -816,7 +816,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -830,7 +830,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -844,7 +844,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -861,14 +861,14 @@
 					167.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
 
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"VXM-11",
+					"MERIDIAN",
 					this,
 					.068356,
 					1.0 - .5498,
@@ -876,7 +876,7 @@
 					50.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -890,7 +890,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -904,7 +904,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -918,7 +918,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -932,7 +932,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -946,13 +946,13 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"VXM-11",
+					"FAULT",
 					this,
 					.2783,
 					1.0 - .68066,
@@ -960,7 +960,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -974,7 +974,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -988,7 +988,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1002,7 +1002,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1019,7 +1019,7 @@
 					163.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1034,7 +1034,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1048,7 +1048,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1062,7 +1062,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1076,7 +1076,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1090,7 +1090,21 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
+					backgroundMap
+				) {}
+			)
+			mapStateFeatures.add(
+				SystemMapFeature(
+					"AXA-2",
+					this,
+					.76465,
+					1.0 - .57,
+					44.0 / 1024.0,
+					44.0 / 1024.0,
+					null,
+					null,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1104,7 +1118,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1118,7 +1132,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1132,7 +1146,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1146,7 +1160,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1160,7 +1174,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1174,7 +1188,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1207,18 +1221,18 @@
 					NamespacedKeys.packKey("map/grid_lines")
 				),
 				null,
-				1.2
+				.2
 			)
 			val maxDistanceMap = MapFeature(
 				"WORLD_BORDER",
 				this,
 				15.0/32.0,
-				1.0/32.0,
+				2/32.0,
 				.03,
 				.03,
 				null,
 				Component.text("System Size: ${systemForSystemMap!!.worldBorder.size.toInt()}m"),
-				10.1
+				2.0
 			)
 
 			mapStateFeatures.add(maxDistanceMap)
