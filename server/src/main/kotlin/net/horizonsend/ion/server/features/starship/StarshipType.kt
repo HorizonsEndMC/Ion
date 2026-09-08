@@ -872,7 +872,7 @@ enum class StarshipType(
 		disallowedWorldFlags = setOf(WorldFlag.PLANET_SIEGE_WORLD),
 	),
 	DREADNOUGHT(
-		displayName = "Dreadnought",
+		displayName = "Interdictor Dreadnought",
 		needsFuel = true,
 		tech2 = false,
 		icon = SidebarIcon.DREADNOUGHT_ICON.text,
