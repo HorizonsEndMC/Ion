@@ -468,8 +468,8 @@ class ShipFactoryPrintTask(
 		 *
 		 * I believe it occurs if a hopper block is a reference. The exception indicates that a BlockPhysicsUpdate
 		 * was caused, which must be called synchronously. The particular exception that I am looking at calls
-		 * the RandomizeableContainerBlockEntity version of setItem, which is only used in CrafterBlockEntity and
-		 * HopperBlockEntity.
+		 * the RandomizeableContainerBlockEntity version of setItem. Is there a way for setItem to ignore
+		 * block updates?
 		 *
 		 * I'm just going to set this sync for now until a better solution can be found.
 		 */
