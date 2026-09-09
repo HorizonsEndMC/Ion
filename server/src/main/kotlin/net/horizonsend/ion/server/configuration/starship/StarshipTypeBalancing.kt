@@ -3,7 +3,6 @@
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
@@ -18,8 +17,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserR
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.AbstractCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalShieldCommandBurstSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.command_burst.CapitalSkirmishCommandBurstSubsystem
@@ -45,7 +44,7 @@ import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import java.util.LinkedList
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
@@ -292,6 +291,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 3,
 			warmupTime = 10,
 			interdictionRange = 1200,
+			contactsRange = 700,
 			jumpStrength = 3.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.35,
@@ -428,7 +428,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
 			cruiseSpeedMultiplier = 0.45,
-			shieldPowerMultiplier = 0.10,
+			shieldPowerMultiplier = 0.90,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 3400),
@@ -489,9 +489,9 @@ data class NewStarshipBalancing(
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				HeavyTurretBalancing(
-					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
-					firePowerConsumption = 3333,
-					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
+					fireRestrictions = FireRestrictions(minBlockCount = 24000, maxBlockCount = 32000),
+					firePowerConsumption = 3333, maxPerShot = 4,
+					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 95.0)
 				),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
@@ -608,7 +608,7 @@ data class NewStarshipBalancing(
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				EMPMissileBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 1)
 			),
-			shieldPowerMultiplier = 0.4,
+			shieldPowerMultiplier = 0.55,
 			shieldRegenMultiplier = 0.7,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
@@ -620,6 +620,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 4,
 			warmupTime = 8,
 			interdictionRange = 350,
+			contactsRange = 700,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.5,
@@ -1001,8 +1002,8 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
-			shieldPowerMultiplier = 0.65,
-			shieldRegenMultiplier = 1.25,
+			shieldPowerMultiplier = 0.75,
+			shieldRegenMultiplier = 1.50,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -1029,12 +1030,12 @@ data class NewStarshipBalancing(
 				)))
 			),
 			weaponOverrides = listOf(
-				TriTurretBalancing(
-					fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 3400),
-					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
-				),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),
 				LightLogisticsCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2)
 			),
 			forbiddenMultiblocks = listOf(
@@ -1110,7 +1111,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
-			jumpStrength = 1.0,
+			jumpStrength = 2.0,
 			warmupTime = 15,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -1129,10 +1130,8 @@ data class NewStarshipBalancing(
 				)),
 			weaponOverrides = listOf(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
-				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
-				HeavyNeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true)),
-				AssaultTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, ), maxPerShot = 3,),
-				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),
+				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 17500),
+				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 4, firePowerConsumption = 1850),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
 			forbiddenMultiblocks = listOf(
@@ -1143,10 +1142,6 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
-				),
-				IncompatibleSubsystemInfo(
-					JumpBeaconSubsystem::class.java,
-					"This ship cannot use jump beacons!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1158,6 +1153,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
+			contactsRange = 700,
 			warmupTime = 10,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
@@ -1411,10 +1407,6 @@ data class NewStarshipBalancing(
 					"Only interdictors can use gravity wells!"
 				),
 				IncompatibleSubsystemInfo(
-					JumpBeaconSubsystem::class.java,
-					"This ship cannot use jump beacons!"
-				),
-				IncompatibleSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					"Tech 1 super-capitals cannot house tech 2 reactors!"
 				)
@@ -1448,8 +1440,8 @@ data class NewStarshipBalancing(
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.85,
-			shieldPowerMultiplier = 0.8,
-			shieldRegenMultiplier = 4.5,
+			shieldPowerMultiplier = 0.95,
+			shieldRegenMultiplier = 5.8,
 			commandBurstOverrides = listOf(
 				CapitalSkirmishCommandBurstBalancing(activateRestrictions = StarshipCommandBurstBalancing.ActivateRestrictions(canActivate = true, incompatibleMultiblocks = listOf(
 					IncompatibleSubsystemInfo(
@@ -1595,10 +1587,6 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
-				),
-				IncompatibleSubsystemInfo(
-					JumpBeaconSubsystem::class.java,
-				"This ship cannot use jump beacons!"
 				),
 				IncompatibleSubsystemInfo(
 					LargeReactorSubsystem::class.java,
@@ -1786,6 +1774,7 @@ sealed interface StarshipTypeBalancing {
 	val sneakFlyAccelDistance: Int
 	val maxSneakFlyAccel: Int
 	val interdictionRange: Int
+	var contactsRange: Int //specifies the maximum distance this ship can be seen on contacts
 	val jumpStrength: Double
 	val wellStrength: Double
 	val hyperspaceRangeMultiplier: Double
@@ -1814,6 +1803,7 @@ open class StanrdardStarshipTypeBalancing(
 
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
+	override var contactsRange: Int = 2500,
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
@@ -1841,6 +1831,7 @@ open class GroundStarshipBalancing(
 	override var sneakFlyAccelDistance: Int,
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
+	override var contactsRange: Int = 2500,
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,

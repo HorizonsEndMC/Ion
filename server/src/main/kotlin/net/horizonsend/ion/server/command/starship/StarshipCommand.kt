@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
-import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -16,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
@@ -37,7 +35,7 @@ import kotlin.math.roundToInt
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
-import net.horizonsend.ion.server.features.starship.StarshipType
+import kotlin.collections.set
 
 @CommandAlias("starship|starshipinfo")
 object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -253,6 +251,49 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 			sender.sendRichMessage("<gray>You have enough <light_purple><b>Chetherite</b></light_purple> <reset> <gray>for (<white>$maxjumps<gray>) jumps")
 		}
 	}
+
+	@Subcommand("Diagnostics")
+	fun shipDiagnostics(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+		val brokenCounts = mutableMapOf<String, Int>()
+		val intactCounts = mutableMapOf<String, Int>()
+
+		starship.subsystems.forEach { subsystem ->
+			val inTact = subsystem.isIntact()
+			val message = subsystem.toString()
+			val simplerName = message.substringAfterLast('.').substringBefore('@')
+			if (!inTact) {
+				brokenCounts[simplerName] = brokenCounts.getOrDefault(simplerName, 0) + 1
+			} else {
+				intactCounts[simplerName] = intactCounts.getOrDefault(simplerName, 0) + 1
+			}
+		}
+
+		sender.sendRichMessage("<dark_gray><bold>=====================================")
+
+			val allCounts = brokenCounts.keys + intactCounts.keys
+
+			allCounts.forEach { name ->
+				val broken = brokenCounts.getOrDefault(name, 0)
+				val intact = intactCounts.getOrDefault(name, 0)
+				val total = broken + intact
+
+				val percent = intact.toFloat() / total.toFloat()
+
+				val color = when {
+					percent >= 1.0 -> "<green>"
+					percent >= 0.75 -> "<yellow>"
+					percent >= 0.5 -> "<gold>"
+					percent >= 0.05 -> "<red>"
+					percent < 0.05 -> "<gray>"
+					else -> "<I have no idea how u achieved this but props man>"
+				}
+				sender.sendRichMessage("$color$name</${color.removePrefix("<")}: <white>$intact/$total")
+			}
+
+			sender.sendRichMessage("<dark_gray><bold>=====================================")
+		}
+
 
 	@Subcommand("coverage")
 	fun onHullInfo(sender: Player) {

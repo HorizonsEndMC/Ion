@@ -153,7 +153,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
-	const val SUPERCAPITAL_FUEL_CONSUMPTION = 9
+	const val SUPERCAPITAL_FUEL_CONSUMPTION = 4
 
 	private fun handleSupercapitalMechanics() {
 		// Consume fuel

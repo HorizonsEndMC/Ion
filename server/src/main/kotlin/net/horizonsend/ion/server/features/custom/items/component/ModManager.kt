@@ -100,9 +100,10 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 		override fun fromPrimitive(primitive: ByteArray, context: PersistentDataAdapterContext): Array<IonRegistryKey<ItemModification, out ItemModification>> {
 			val stringArray = stringArrayType.fromPrimitive(primitive, context)
 
-			return Array(stringArray.size) {
-				ItemModKeys[stringArray[it]]!!
-			}
+			// Bad data in someone's power armor modules causes everyone's power armor to shut down during the ticking
+			// tasks. Getting the mod keys from ItemModKeys used to be non-null asserted, so this basically handles
+			// any null value gracefully by not adding it to the ItemModification array.
+			return stringArray.mapNotNull { ItemModKeys[it] }.toTypedArray()
 		}
 	}
 

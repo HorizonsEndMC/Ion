@@ -36,6 +36,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener.isRegionDenied
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -205,7 +207,8 @@ object StarshipComputers : IonServerComponent() {
 			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP)) // passing this implies the player is part of the nation
 			|| (isMemberOfStation(player, data)?.hasPermission(player.slPlayerId, SpaceStationCache.SpaceStationPermission.MANAGE_STATION) == true) // passing this implies the player has access to a station
 			|| (isInsideUnprotectedNpcStation(data)) // Starship data is inside an NPC space station
-			|| (isNearbyHyperspaceBeacon(data))) // Starship data is nearby a beacon
+			|| (isNearbyHyperspaceBeacon(data)) // Starship data is nearby a beacon
+			|| (isInTradeWorldTerritory(data))) // Starship data is in a trade world
 	}
 
 	fun takeOwnership(player: Player, data: PlayerStarshipData) {
@@ -319,5 +322,9 @@ object StarshipComputers : IonServerComponent() {
 				false
 			}
 		} ?: false
+	}
+
+	private fun isInTradeWorldTerritory(data: PlayerStarshipData): Boolean {
+		return data.bukkitWorld().hasFlag(WorldFlag.DOMINION_TRADE_WORLD)
 	}
 }

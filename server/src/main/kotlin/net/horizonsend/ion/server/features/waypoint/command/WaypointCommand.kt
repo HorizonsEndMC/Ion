@@ -93,7 +93,7 @@ object WaypointCommand : SLCommand() {
         addVertexToRoute(sender, vertex)
     }
 
-    private fun addVertexToRoute(
+	fun addVertexToRoute(
         sender: Player,
         vertex: WaypointVertex
     ) {

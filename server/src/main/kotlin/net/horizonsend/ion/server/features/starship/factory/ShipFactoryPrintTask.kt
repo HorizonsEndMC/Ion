@@ -463,6 +463,19 @@ class ShipFactoryPrintTask(
 			return items
 		}
 
+		/**
+		 * consumeItemFromReferences causes exceptions if it is run async due to setItem().
+		 *
+		 * I believe it occurs if a hopper block is a reference. The exception indicates that a BlockPhysicsUpdate
+		 * was caused, which must be called synchronously. The particular exception that I am looking at calls
+		 * the RandomizeableContainerBlockEntity version of setItem. Is there a way for setItem to ignore
+		 * block updates?
+		 *
+		 * Update: It's due to comparators that are adjacent to networked chests. The comparator triggers the
+		 * block update
+		 *
+		 * I'm just going to set this sync for now until a better solution can be found.
+		 */
 		fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
 			var remaining = amount
 

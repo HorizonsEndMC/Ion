@@ -66,8 +66,8 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 	abstract fun getName(): Component
 
 	fun spawnParticles() {
-		val task = Tasks.syncRepeatTask(0L, 4L) {
-			for (endPoint in starship.centerOfMass.toLocation(starship.world).spherePoints(100.0, 300)) {
+		val task = Tasks.syncRepeatTask(0L, 2L) {
+			for (endPoint in starship.centerOfMass.toLocation(starship.world).spherePoints(100.0, 120)) {
 				starship.world.spawnParticle(
 					Particle.TRAIL,
 					starship.centerOfMass.toLocation(starship.world),

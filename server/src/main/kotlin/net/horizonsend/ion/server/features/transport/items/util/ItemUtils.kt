@@ -24,6 +24,7 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
 
 fun getTransferSpaceFor(inventory: Collection<CraftInventory>, itemStack: ItemStack): Int = inventory.sumOf {
 	getTransferSpaceFor(it, itemStack)

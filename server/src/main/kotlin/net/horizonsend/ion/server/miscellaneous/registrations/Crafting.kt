@@ -193,6 +193,7 @@ import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
+import org.bukkit.Material.BOOK
 import org.bukkit.Material.BOWL
 import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.CHARCOAL
@@ -317,6 +318,7 @@ import org.bukkit.Material.ROSE_BUSH
 import org.bukkit.Material.SUNFLOWER
 import org.bukkit.Material.WHITE_TULIP
 import org.bukkit.Material.WITHER_ROSE
+import org.bukkit.Material.WRITABLE_BOOK
 
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
@@ -378,12 +380,13 @@ object Crafting : IonServerComponent() {
 		shapeless("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), CraftingBookCategory.MISC, SEA_LANTERN)
 		shapeless("pink_petals", ItemStack(PINK_PETALS, 4), CraftingBookCategory.BUILDING, CHERRY_LEAVES)
 		shapeless("nether_warts", ItemStack(NETHER_WART, 9), CraftingBookCategory.BUILDING, NETHER_WART_BLOCK)
-		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), CraftingBookCategory.MISC, HONEYCOMB_BLOCK)
+		shapeless("honeycomb", ItemStack(HONEYCOMB, 4), CraftingBookCategory.MISC, HONEYCOMB_BLOCK)
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", CraftingBookCategory.BUILDING, 's' to STRING)
 		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ", CraftingBookCategory.BUILDING,'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y", CraftingBookCategory.BUILDING, 'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapeless("glowstone_dust", ItemStack(GLOWSTONE_DUST, 4), CraftingBookCategory.MISC, GLOWSTONE)
 		shapeless("resin", ItemStack(RESIN_CLUMP), CraftingBookCategory.MISC, ItemStack(HONEYCOMB, 2), ItemStack(COBBLESTONE, 2))
+		shapeless("writable_book", ItemStack(WRITABLE_BOOK), CraftingBookCategory.MISC, BOOK, FEATHER, BLACK_DYE)
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		Bukkit.removeRecipe(Material.IRON_CHAIN.key)

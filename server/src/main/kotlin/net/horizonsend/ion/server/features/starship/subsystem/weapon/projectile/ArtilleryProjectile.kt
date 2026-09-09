@@ -55,7 +55,7 @@ class ArtilleryProjectile(
 			)
 		}
 
-		origin.spherePoints(0.5, 5).forEach {
+		origin.spherePoints(0.5, 3).forEach {
 			it.world.spawnParticle(Particle.WAX_ON, it.x, it.y, it.z, 1, 0.1, 0.1, 0.1, 0.0, null, force)
 		}
 	}

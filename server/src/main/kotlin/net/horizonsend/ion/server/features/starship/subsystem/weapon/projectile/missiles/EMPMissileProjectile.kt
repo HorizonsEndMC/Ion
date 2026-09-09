@@ -143,7 +143,7 @@ class EMPMissileProjectile(
 	}
 
 	override fun onImpact() {
-		for (loc in location.circlePoints(2.0, 30, direction)) {
+		for (loc in location.circlePoints(2.0, 20, direction)) {
 			val radialVector = loc.toVector().subtract(location.toVector()).normalize()
 			loc.world.spawnParticle(
 				Particle.SOUL_FIRE_FLAME,
@@ -158,7 +158,7 @@ class EMPMissileProjectile(
 			)
 		}
 
-		(0 until 20).forEach { _ ->
+		(0 until 15).forEach { _ ->
 			val angle = Math.PI / 12
 			val opposite = direction.clone().multiply(-1)
 				.rotateAroundX(randomDouble(-angle, angle))
@@ -177,7 +177,7 @@ class EMPMissileProjectile(
 			)
 		}
 
-		(0 until 40).forEach { _ ->
+		(0 until 30).forEach { _ ->
 			val angle = Math.PI / 6
 			val opposite = direction.clone().multiply(-1)
 				.rotateAroundX(randomDouble(-angle, angle))
