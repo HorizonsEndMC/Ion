@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblo
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
@@ -55,7 +56,7 @@ abstract class ShipFactoryEntity(
 	y,
 	z,
 	structureDirection
-), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryPrintTask> {
+), StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryPrintTask> {
 	val settings = ShipFactorySettings.load(data)
 
 	override val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, persistent = false)
@@ -120,7 +121,7 @@ abstract class ShipFactoryEntity(
 		stopTask()
 	}
 
-	override fun tickAsync() {
+	override fun tick() {
 		tickBoundingBoxTasks()
 
 		if (!userManager.currentlyUsed()) return

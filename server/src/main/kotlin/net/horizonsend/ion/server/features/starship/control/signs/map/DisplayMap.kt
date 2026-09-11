@@ -69,9 +69,9 @@
 		var state: MapState = MapState.LOCAL_MAP
 		var mapInitialized = false;
 
-		val absoluteMaxDistance = 10000.0
-		val absoluteMinimumMaxDistance = 1000.0
-		var maxDistance = 1000.0
+		val absoluteMaxDistance = 20000.0
+		val absoluteMinimumMaxDistance = 2000.0
+		var maxDistance = 4000.0
 
 		val shipsTracked = mutableMapOf<Starship, ShipMapFeature>()
 		val celestialBodiesTracked = mutableMapOf<CelestialBody, CelestialBodyFeature>()
@@ -277,14 +277,14 @@
 					null,
 					10.0,
 				) {
-					it.maxDistance += 1000.0
-					if (maxDistance >= absoluteMaxDistance+1000.0) {
-						maxDistance = absoluteMaxDistance
+					it.maxDistance -= 2000.0
+					if (maxDistance <= absoluteMinimumMaxDistance-2000.0) {
+						maxDistance = absoluteMinimumMaxDistance
 					}
 					(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
 						Component.text("Square Size: ${maxDistance/4.0}"),
 					)
-					ship.successAction("Set radius to ${it.maxDistance/2.0}m")
+					ship.successAction("Set radius to ${maxDistance/2.0}m")
 				}
 			)
 
@@ -301,14 +301,14 @@
 					null,
 					10.0,
 				) {
-					it.maxDistance -= 1000.0
-					if (maxDistance <= absoluteMinimumMaxDistance-1000.0) {
-						maxDistance = absoluteMinimumMaxDistance
+					it.maxDistance += 2000.0
+					if (maxDistance >= absoluteMaxDistance+2000.0) {
+						maxDistance = absoluteMaxDistance
 					}
 					(mapStateFeatures.find { it.identifier == "MAX_DISTANCE"}?.entities?.first() as? TextDisplay)?.text(
 						Component.text("Square Size: ${maxDistance/4.0}"),
 					)
-					ship.successAction("Set radius to ${maxDistance/2.0}m")
+					ship.successAction("Set radius to ${it.maxDistance/2.0}m")
 				}
 			)
 		}
@@ -1262,12 +1262,13 @@
 
 			// Fallback axis for when dir is (near) straight up/down, where forward x worldUp
 			// collapses to a zero vector and can't be normalized.
-			val reference = if (abs(forward.y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector
+			val reference = worldUpBasisVector
 
 			val right = forward.clone().crossProduct(reference).normalize()
 			val up = right.clone().crossProduct(forward).normalize()
 			return right to up
 		}
+
 
 		/*
 		The following maths serves to center a given displayEntity onto the center of the location given.
@@ -1278,7 +1279,7 @@
 			val (right, up) = displayBasis()
 			val oppositeDir = dir.clone().multiply(-1)
 
-			val shipRight = ship.forward.direction.normalize().crossProduct( if (abs(ship.forward.direction.normalize().y) > 0.999) Vector(0.0, 0.0, 1.0) else worldUpBasisVector)
+			val shipRight = ship.forward.direction.normalize().crossProduct( worldUpBasisVector)
 			val shipOpposite = ship.forward.oppositeFace.direction
 
 			return location.clone().add(
@@ -1424,16 +1425,30 @@
 
 					val worldPoint = map.getWorldClickLocation(rayOrigin, rayDirection) ?: continue
 
-					player.sendActionBar(
-						Component.text(
-							"Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}",
-							NamedTextColor.DARK_PURPLE
+					if (map.state == MapState.LOCAL_MAP || map.systemForSystemMap == map.location.world) {
+						player.sendActionBar(
+							Component.text(
+								"Shift + Punch to jump to: ${worldPoint.blockX}, ${worldPoint.blockZ}",
+								NamedTextColor.DARK_PURPLE
+							)
 						)
-					)
-					if (player.isSneaking) {
-						player.performCommand("jump ${worldPoint.blockX} ${worldPoint.blockZ}")
+						if (player.isSneaking) {
+							player.performCommand("jump ${worldPoint.blockX} ${worldPoint.blockZ}")
+						}
+						return
 					}
-					return
+					else if (map.state == MapState.SYSTEMS_MAP) {
+						player.sendActionBar(
+							Component.text(
+								"Shift + Punch to route to: ${map.systemForSystemMap?.name} ${worldPoint.blockX}, ${worldPoint.blockZ}",
+								NamedTextColor.DARK_PURPLE
+							)
+						)
+						if (player.isSneaking) {
+							player.performCommand("route add ${map.systemForSystemMap?.name} ${worldPoint.blockX} ${worldPoint.blockZ}")
+						}
+						return
+					}
 				}
 			}
 

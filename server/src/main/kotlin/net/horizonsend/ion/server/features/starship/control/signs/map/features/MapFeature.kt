@@ -55,7 +55,7 @@ open class MapFeature(
 				?: 1.0) - (relativeFeature?.sizeY ?: 1.0) / 2.0)
 		)),
 		false,
-	).add(map.dir.clone().multiply(map.shiftPerLayer * offset))
+	).add(map.dir.clone().multiply(map.shiftPerLayer * offset)).add(Vector(0.0,map.dir.y,0.0).multiply(map.shiftPerLayer*offset))
 
 
 	open fun init() {
