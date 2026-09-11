@@ -41,7 +41,6 @@
 	import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 	import net.horizonsend.ion.server.listener.SLEventListener
 	import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-	import net.horizonsend.ion.server.miscellaneous.utils.setModel
 	import net.horizonsend.ion.server.miscellaneous.utils.updateData
 	import net.kyori.adventure.text.Component
 	import net.kyori.adventure.text.format.NamedTextColor
@@ -49,7 +48,6 @@
 	import org.bukkit.Location
 	import org.bukkit.Material
 	import org.bukkit.World
-	import org.bukkit.block.Sign
 	import org.bukkit.entity.EntityType
 	import org.bukkit.entity.ItemDisplay
 	import org.bukkit.entity.Player
@@ -59,12 +57,9 @@
 	import org.bukkit.event.player.PlayerInteractEntityEvent
 	import org.bukkit.event.player.PlayerInteractEvent
 	import org.bukkit.inventory.ItemStack
-	import org.bukkit.persistence.PersistentDataType
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
-	import org.joml.Vector3f
 	import kotlin.math.abs
-	import kotlin.math.max
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
 		val shiftPerLayer = .05
@@ -129,7 +124,7 @@
 					try {
 						val shipsInRange = shipsInRange(maxDistance, ship)
 						val centerOfMass = ship.centerOfMass.toVector()
-						val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass, this.location.world)
+						val bodiesInRange = celestialBodiesInRange(maxDistance, centerOfMass, this.location.world)
 						for (ship in shipsInRange) {
 							if (shipsTracked.containsKey(ship)) continue
 							else {
@@ -387,9 +382,9 @@
 			//Add Ships
 			shipsInRange(maxDistance, ship).forEach { generateShipMapFeature(it) }
 			//Add CelestialBodies
-			celestialBodiesInRange(this, maxDistance, centerOfMass, world).forEach { generateCelestialBodyMapFeature(it) }
+			celestialBodiesInRange(maxDistance, centerOfMass, world).forEach { generateCelestialBodyMapFeature(it) }
 			//Add Beacons
-			beaconsInRange(this, maxDistance,centerOfMass, world).forEach { generateBeaconMapFeature(it) }
+			beaconsInRange(maxDistance,centerOfMass, world).forEach { generateBeaconMapFeature(it) }
 			//Add BookMarks
 			bookmarksInRange(this, maxDistance,centerOfMass, world).forEach { generateBookmarkMapFeature(it) }
 
@@ -1256,13 +1251,13 @@
 
 			val world = systemForSystemMap ?: return
 			val source = world.worldBorder.center.toVector()
-			planetInRange(this, 1_000_000.0, source, world).forEach {
+			planetInRange(1_000_000.0, source, world).forEach {
 				generateCelestialBodyMapFeature(it)
 			}
-			starsInRange(this, 1_000_000.0, source, world).forEach {
+			starsInRange(1_000_000.0, source, world).forEach {
 				generateCelestialBodyMapFeature(it)
 			}
-			beaconsInRange(this, 1_000_000.0, source, world).forEach {
+			beaconsInRange(1_000_000.0, source, world).forEach {
 				generateBeaconMapFeature(it)
 			}
 
