@@ -69,26 +69,26 @@ fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {
 	} else sourceShip.getContacts()).filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }
 }
 
-fun celestialBodiesInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
+fun celestialBodiesInRange(maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
 	return Space.getAllCelestialBodies().filter {
 		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance/2.0
 	}
 }
 
-fun starsInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
+fun starsInRange(maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
 	return Space.getStars().filter {
 		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance/2.0
 	}
 }
 
-fun planetInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
+fun planetInRange(maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
 	return Space.getAllPlanets().filter {
 			it.spaceWorld == world && it.location.toVector()
 				.distance(source) <= maxDistance/2.0
 	}
 }
 
-fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector, world: World): List<ServerConfiguration.HyperspaceBeacon> {
+fun beaconsInRange(maxDistance: Double, centerOfMass: Vector, world: World): List<ServerConfiguration.HyperspaceBeacon> {
 	return ConfigurationFiles.serverConfiguration().beacons.filter {
 		it.spaceLocation.bukkitWorld() == world &&
 			it.spaceLocation.toLocation().toVector()
