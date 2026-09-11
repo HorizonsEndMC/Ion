@@ -32,6 +32,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.joml.Vector3d
 import java.util.*
+import kotlin.math.PI
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Component?>) {
 	CRUISE("[cruise]", arrayOf(
@@ -261,6 +262,11 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 
 		val dir = sign.getFacing().direction.clone()
 		pitch = Math.toRadians(pitch)
+		//This is a cheap fix I know. Fixes the map getting locked when facing south at 90 degrees pitch.
+		//For more info on why this is necessary, please consult the following https://en.wikipedia.org/wiki/Hairy_ball_theorem
+		if(pitch%(PI/2.0) == 0.0){
+			pitch-=0.0001
+		}
 		val pitchAxis = dir.clone().crossProduct(Vector(0.0, 1.0, 0.0)).normalize()
 
 		dir.rotateAroundAxis(pitchAxis, pitch)
