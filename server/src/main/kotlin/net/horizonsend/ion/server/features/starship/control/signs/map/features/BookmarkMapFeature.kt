@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import kotlin.math.absoluteValue
 
 class BookmarkMapFeature(
 	identifier: String,
@@ -34,13 +35,13 @@ class BookmarkMapFeature(
 				.multiply(1.0 / (map.systemForSystemMap?.worldBorder?.size ?: 10000.0)))
 			else -> Vector()
 		}
-		if(offset.length() > .5){
+		if(offset.x.absoluteValue > .5  || offset.z.absoluteValue > .5){
 			map.mapStateFeatures.remove(this)
 			map.bookmarkTracked.remove(bookmark)
 			this.despawn()
 		}
 
-		val beaconScale = .06
+		val bookmarkScale = .06
 
 		this.rx = .5-offset.x
 		this.ry = .5+offset.z
@@ -48,8 +49,8 @@ class BookmarkMapFeature(
 			this.entities.forEach { it.teleport(location()) }
 		}
 
-		this.sizeX = beaconScale
-		this.sizeY = beaconScale
+		this.sizeX = bookmarkScale
+		this.sizeY = bookmarkScale
 
 		super.tick()
 	}

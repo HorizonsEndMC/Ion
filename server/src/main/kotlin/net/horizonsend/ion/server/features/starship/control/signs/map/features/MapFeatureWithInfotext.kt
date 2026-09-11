@@ -11,6 +11,7 @@ import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
+import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3d
 import org.joml.Vector3f
@@ -39,15 +40,19 @@ open class MapFeatureWithInfotext(
 	var infoDisplay: TextDisplay? = null
 
 	open fun initInfoDisplay() {
-		val textDisplay = map.ship.world.spawnEntity(location(), EntityType.TEXT_DISPLAY) as TextDisplay
+		val textDisplay = map.ship.world.spawnEntity(
+			location().add(map.dir.clone().multiply(map.shiftPerLayer * offset * .1))
+				.add(Vector(0.0, map.dir.y, 0.0).multiply(map.shiftPerLayer * offset * .1)),
+			EntityType.TEXT_DISPLAY
+		) as TextDisplay
 		textDisplay.text(info)
 		textDisplay.backgroundColor = color
 		textDisplay.transformation = Transformation(
 			Vector3f(),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
 			Vector3d(
-				(sizeX)*.5 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
-				(sizeY)*.5 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
+				(sizeX) * .5 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
+				(sizeY) * .5 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
 				0.01
 			).toVector3f(),
 			Quaternionf()
@@ -61,16 +66,18 @@ open class MapFeatureWithInfotext(
 	}
 
 	override fun tick() {
-		if(!map.ship.isMoving) {
+		if (!map.ship.isMoving) {
 			this.entities.forEach { it.teleport(location()) }
 		}
 
 		this.infoDisplay?.transformation = Transformation(
-			Vector3f(0f, (-sizeY/64.0).toFloat(),0f).add(map.dir.clone().multiply(map.shiftPerLayer * offset).toVector3f()),
+			Vector3f(0f, (-sizeY / 64.0).toFloat(), 0f).add(
+				map.dir.clone().multiply(map.shiftPerLayer * offset).toVector3f()
+			),
 			ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f()),
 			Vector3d(
-				(sizeX)*.75 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
-				(sizeY)*.75 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
+				(sizeX) * .75 * map.sizeX * (relativeFeature?.sizeX ?: 1.0),
+				(sizeY) * .75 * map.sizeY * (relativeFeature?.sizeY ?: 1.0),
 				0.0001
 			).toVector3f(),
 			Quaternionf()
@@ -91,8 +98,7 @@ open class MapFeatureWithInfotext(
 				Quaternionf()
 
 			)
-		}
-		else if(display is ItemDisplay) {
+		} else if (display is ItemDisplay) {
 			display?.transformation = Transformation(
 				Vector3f(),
 				ClientDisplayEntities.rotateToFaceVector(map.dir.toVector3f().mul(-1f)),

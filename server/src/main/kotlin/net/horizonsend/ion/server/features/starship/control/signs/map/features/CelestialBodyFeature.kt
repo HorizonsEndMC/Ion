@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import kotlin.math.absoluteValue
 
 class CelestialBodyFeature(
 	identifier: String,
@@ -40,11 +41,7 @@ class CelestialBodyFeature(
 			MapState.SYSTEMS_MAP-> ((source.add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / (map.systemForSystemMap?.worldBorder?.size ?: 10000.0)))
 			else -> Vector()
 		}
-		if(offset.length() > .5){
-			map.mapStateFeatures.remove(this)
-			map.celestialBodiesTracked.remove(body)
-			this.despawn()
-		}
+
 		val bodyScale = when(this.map.state){
 			MapState.LOCAL_MAP -> celestialBodyLocalMapScale(body, map)
 			else -> when(this.body){
@@ -52,6 +49,13 @@ class CelestialBodyFeature(
 				is CachedPlanet -> 0.08
 				else -> 0.04
 			}
+		}
+
+		if((offset.x.absoluteValue + bodyScale/4.0) > .5  || (offset.z.absoluteValue + bodyScale/4) > .5){
+			map.mapStateFeatures.remove(this)
+			map.celestialBodiesTracked.remove(body)
+			println("offset: ${offset.x}, ${offset.z}, scale: $bodyScale")
+			this.despawn()
 		}
 
 		this.rx = .5-offset.x
