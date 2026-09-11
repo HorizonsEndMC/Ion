@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.feature
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
@@ -10,9 +11,13 @@ import net.horizonsend.ion.server.features.world.generation.feature.start.Featur
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.createBlockData
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.Material
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.type.PointedDripstone
 import org.bukkit.generator.ChunkGenerator
 import kotlin.math.abs
 import kotlin.random.Random
@@ -33,6 +38,10 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 		val center = Vec3i(start.x, start.y, start.z).toCenterVector()
 
 		val (oreMask, orePlacements) = generateOreMask(metaData, start, chunkPos.x, chunkPos.z)
+
+		// Array of packed x, y to min y levels
+		val minColumnY: MutableMap<Long, Int> = Long2ObjectOpenHashMap()
+		val maxColumnY: MutableMap<Long, Int> = Long2ObjectOpenHashMap()
 
 		for (x in 0..15) {
 			val realX = (chunkPos.x.shl(4) + x).toDouble()
@@ -55,9 +64,64 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 						continue
 					}
 
+					val packedXZ = ChunkPos.asLong(x, z)
+					trackExtents(packedXZ, realY, minColumnY, maxColumnY)
+
 					chunkData.setBlock(x, realY, z, blockState.createCraftBlockData())
 				}
 			}
+		}
+
+		val spikeCount = minColumnY.size / 100
+
+		repeat(spikeCount / 2) {
+			val (packed, minY) = minColumnY.entries.random()
+			generateTestSpike(chunkData, ChunkPos.getX(packed), minY, ChunkPos.getZ(packed), BlockFace.DOWN, randomInt(1, 8))
+		}
+		repeat(spikeCount / 2) {
+			val (packed, maxY) = maxColumnY.entries.random()
+			generateTestSpike(chunkData, ChunkPos.getX(packed), maxY, ChunkPos.getZ(packed), BlockFace.UP, randomInt(1, 8))
+		}
+	}
+
+	fun generateTestSpike(chunkData: ChunkGenerator.ChunkData, startX: Int, startY: Int, startZ: Int, direction: BlockFace, length: Int) {
+		var remaining = length
+
+		var y = startY
+
+		while (remaining > 0) {
+			y += direction.modY
+
+			val data = when (remaining) {
+				1 -> Material.POINTED_DRIPSTONE.createBlockData<PointedDripstone> { it.thickness = PointedDripstone.Thickness.TIP; it.verticalDirection = direction }
+				2 -> Material.POINTED_DRIPSTONE.createBlockData<PointedDripstone> { it.thickness = PointedDripstone.Thickness.FRUSTUM; it.verticalDirection = direction }
+				length -> Material.POINTED_DRIPSTONE.createBlockData<PointedDripstone> { it.thickness = PointedDripstone.Thickness.BASE; it.verticalDirection = direction }
+				else -> Material.POINTED_DRIPSTONE.createBlockData<PointedDripstone> { it.thickness = PointedDripstone.Thickness.MIDDLE; it.verticalDirection = direction }
+			}
+
+			chunkData.setBlock(startX, y, startZ, data)
+
+			remaining--
+		}
+	}
+
+	fun trackExtents(packedXZ: Long, realY: Int, minColumnY: MutableMap<Long, Int>, maxColumnY: MutableMap<Long, Int>) {
+		val minYForColumn = minColumnY[packedXZ]
+		if (minYForColumn != null) {
+			if (minYForColumn > realY) {
+				minColumnY[packedXZ] = realY
+			}
+		} else {
+			minColumnY[packedXZ] = realY
+		}
+
+		val maxYForColumn = maxColumnY[packedXZ]
+		if (maxYForColumn != null) {
+			if (maxYForColumn < realY) {
+				maxColumnY[packedXZ] = realY
+			}
+		} else {
+			maxColumnY[packedXZ] = realY
 		}
 	}
 

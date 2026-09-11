@@ -13,6 +13,7 @@ import org.bukkit.block.data.type.WallSign
 import org.bukkit.block.sign.Side
 import org.bukkit.block.sign.SignSide
 import java.util.EnumSet
+import java.util.function.Consumer
 
 /**
  * @see getNMSBlockSateSafe
@@ -153,3 +154,8 @@ fun Sign.getFacing(): BlockFace =
 
 fun Sign.front(): SignSide = getSide(Side.FRONT)
 fun Sign.back(): SignSide = getSide(Side.BACK)
+
+fun <T : BlockData> Material.createBlockData(consumer: Consumer<T>) = createBlockData {
+	@Suppress("UNCHECKED_CAST")
+	consumer.accept(it as T)
+}
