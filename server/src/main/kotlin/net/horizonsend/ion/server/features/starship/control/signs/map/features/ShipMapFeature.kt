@@ -55,6 +55,7 @@ class ShipMapFeature(
 	override fun tick(){
 		//check if the ship is out of range
 		val offset = (map.ship.centerOfMass.minus(ship.centerOfMass).toVector().setY(0).multiply(1.0/map.maxDistance))
+		//spherical offset for starships because thats how contacts is measured
 		if(offset.length() > .5){
 			map.mapStateFeatures.remove(this)
 			map.shipsTracked.remove(ship)

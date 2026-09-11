@@ -125,6 +125,8 @@
 						val shipsInRange = shipsInRange(maxDistance, ship)
 						val centerOfMass = ship.centerOfMass.toVector()
 						val bodiesInRange = celestialBodiesInRange(maxDistance, centerOfMass, this.location.world)
+						val beaconsInRange = beaconsInRange(maxDistance,centerOfMass, this.location.world)
+						val bookmarksInRange = bookmarksInRange(this,maxDistance,centerOfMass,this.location.world)
 						for (ship in shipsInRange) {
 							if (shipsTracked.containsKey(ship)) continue
 							else {
@@ -136,6 +138,20 @@
 							if (celestialBodiesTracked.containsKey(body)) continue
 							else {
 								celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+							}
+						}
+
+						for (beacon in beaconsInRange) {
+							if (beaconsTracked.containsKey(beacon)) continue
+							else {
+								beaconsTracked[beacon] = generateBeaconMapFeature(beacon)
+							}
+						}
+
+						for (bookmark in bookmarksInRange) {
+							if (bookmarkTracked.containsKey(bookmark)) continue
+							else {
+								bookmarkTracked[bookmark] = generateBookmarkMapFeature(bookmark)
 							}
 						}
 
@@ -160,6 +176,7 @@
 					}
 				}
 			}
+
 			//Tick & Show players the entities
 			mapStateFeatures.toList().forEach { state->
 				state.tick()
@@ -404,8 +421,14 @@
 			//Get the ships icon
 			val icon = other.type.icon
 
-			//find the offset of this ship from our ship
-			val offset = (ship.centerOfMass.minus(other.centerOfMass).toVector().setY(0).multiply(1.0 / maxDistance))
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			//check if the body is out of range
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.minus(other.centerOfMass).toVector().setY(0).multiply(1.0 / maxDistance))
+				MapState.SYSTEMS_MAP-> ((source.add(other.centerOfMass.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
 
 			val smf = ShipMapFeature(
 				ship.getDisplayName().plainText(),
@@ -434,7 +457,14 @@
 
 		private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature {
 			val starScale = celestialBodyLocalMapScale(body, this)
-			val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+				MapState.SYSTEMS_MAP-> ((source.add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
+
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
 			val itemStack: ItemStack? = when(body){
 				is CachedPlanet -> HudIcons.getItemStack(PLANET_PREFIX.plus(identifier.lowercase()))
@@ -468,25 +498,29 @@
 		}
 
 		private fun generateBeaconMapFeature(beacon: ServerConfiguration.HyperspaceBeacon) : BeaconMapFeature{
-			val beaconScale = 100.0/maxDistance
-			val offset = (ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+				MapState.SYSTEMS_MAP-> ((source.add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
 			val bmf = BeaconMapFeature(
 				beacon.name,
 				this,
 				.5 + offset.x,
 				.5 + offset.z,
-				beaconScale,
-				beaconScale,
+				.08,
+				.08,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
 				1.4,
 				this.stateMap!!,
-				Component.text(beacon.name, null, BOLD),
+				Component.text(beacon.name, NamedTextColor.BLACK, BOLD),
 				Color.fromARGB(0, 255, 255, 255),
 				beacon
 			){
-				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BeaconMapFeature] ?: return@BeaconMapFeature, beacon.name.replaceFirstChar { it.uppercase() }) ?: return@BeaconMapFeature
-				WaypointCommand.addVertexToRoute(ship.playerPilot?: return@BeaconMapFeature, vertex)
+				ship.playerPilot?.performCommand("route add ${beacon.name} ${beacon.spaceLocation.x} ${beacon.spaceLocation.z}")
 			}
 			mapStateFeatures.add(bmf)
 			beaconsTracked[beacon] = bmf
@@ -495,8 +529,17 @@
 		}
 
 		private fun generateBookmarkMapFeature(bookmark: Bookmark): BookmarkMapFeature{
-			val beaconScale = 100.0/maxDistance
-			val offset = (ship.centerOfMass.toVector().add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+			val beaconScale =  .06
+
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			//check if the body is out of range
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+				MapState.SYSTEMS_MAP-> ((source.add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
+
 			val bmf = BookmarkMapFeature(
 				bookmark.name,
 				this,
@@ -508,8 +551,8 @@
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BOOKMARK),
 				1.25,
 				this.stateMap!!,
-				Component.text(bookmark.name, null, BOLD),
-				Color.fromARGB(0, 255, 255, 255),
+				Component.text(bookmark.name, NamedTextColor.BLACK, BOLD),
+				Color.fromARGB(255, 255, 255, 255),
 				bookmark
 			){
 				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BookmarkMapFeature] ?: return@BookmarkMapFeature, bookmark.name.lowercase()) ?: return@BookmarkMapFeature
@@ -1262,6 +1305,7 @@
 			}
 
 			bookmarksInRange(this, 1_000_000.0, source, world).forEach {
+				println("x")
 				generateBookmarkMapFeature(it)
 			}
 
