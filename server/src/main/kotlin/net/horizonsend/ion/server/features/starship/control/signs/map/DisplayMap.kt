@@ -49,6 +49,7 @@
 	import org.bukkit.Location
 	import org.bukkit.Material
 	import org.bukkit.World
+	import org.bukkit.block.Sign
 	import org.bukkit.entity.EntityType
 	import org.bukkit.entity.ItemDisplay
 	import org.bukkit.entity.Player
@@ -58,10 +59,12 @@
 	import org.bukkit.event.player.PlayerInteractEntityEvent
 	import org.bukkit.event.player.PlayerInteractEvent
 	import org.bukkit.inventory.ItemStack
+	import org.bukkit.persistence.PersistentDataType
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
 	import org.joml.Vector3f
 	import kotlin.math.abs
+	import kotlin.math.max
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
 		val shiftPerLayer = .05
@@ -90,9 +93,17 @@
 
 		fun init() {
 			if(mapInitialized) return
+			val (shouldUse, state, size) = loadStateFromLocation(location)
+			if(shouldUse) {
+				this.state = state
+				this.maxDistance = size
+			}
 			initializeBackgroundAndBorder()
 			setupSideBarButtons()
-			placeLocalMap()
+			when(state){
+				MapState.LOCAL_MAP -> placeLocalMap()
+				else -> placeGalacticMap()
+			}
 
 			//Add entities to ship
 			for (mapFeatures in commonFeatures) {
@@ -184,6 +195,8 @@
 		}
 
 		fun despawn() {
+			saveStateToLocation(location, state, maxDistance)
+
 			stateMap = null
 
 			mapStateFeatures.forEach { it.despawn() }
@@ -1387,8 +1400,6 @@
 		}
 
 		companion object : SLEventListener() {
-			fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
-
 			@EventHandler
 			private fun onPlayerInteractWithInteraction(event: PlayerInteractEntityEvent) {
 				val interaction = event.rightClicked
