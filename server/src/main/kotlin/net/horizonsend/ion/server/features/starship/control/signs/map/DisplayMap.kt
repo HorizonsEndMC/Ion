@@ -134,6 +134,12 @@
 								shipsTracked[ship] = generateShipMapFeature(ship) ?: continue
 							}
 						}
+						val shipsNotInRange = shipsTracked.filterNot { shipsInRange.contains(it.key) }
+
+						shipsNotInRange.forEach {
+							it.value.despawn()
+							shipsTracked.remove(it.key)
+						}
 
 						for (body in bodiesInRange) {
 							if (celestialBodiesTracked.containsKey(body)) continue
@@ -220,6 +226,9 @@
 			commonFeatures.clear()
 			commonButtons.clear()
 			this.shipsTracked.clear()
+			this.beaconsTracked.clear()
+			this.bookmarkTracked.clear()
+			this.celestialBodiesTracked.clear()
 
 			mapInitialized = false
 		}

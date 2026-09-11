@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
 import org.bukkit.entity.TextDisplay
+import kotlin.math.absoluteValue
 
 /**
  * Ship map feature is the encapsulation of the Map feature of a starship on the map + the textDisplay with the info, and the
@@ -55,8 +56,8 @@ class ShipMapFeature(
 	override fun tick(){
 		//check if the ship is out of range
 		val offset = (map.ship.centerOfMass.minus(ship.centerOfMass).toVector().setY(0).multiply(1.0/map.maxDistance))
-		//spherical offset for starships because thats how contacts is measured
-		if(offset.length() > .5){
+
+		if(offset.x.absoluteValue > .5  || offset.z.absoluteValue > .5){
 			map.mapStateFeatures.remove(this)
 			map.shipsTracked.remove(ship)
 			this.despawn()
