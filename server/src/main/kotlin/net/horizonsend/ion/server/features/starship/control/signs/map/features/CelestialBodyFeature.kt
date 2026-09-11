@@ -54,7 +54,6 @@ class CelestialBodyFeature(
 		if((offset.x.absoluteValue + bodyScale/4.0) > .5  || (offset.z.absoluteValue + bodyScale/4) > .5){
 			map.mapStateFeatures.remove(this)
 			map.celestialBodiesTracked.remove(body)
-			println("offset: ${offset.x}, ${offset.z}, scale: $bodyScale")
 			this.despawn()
 		}
 
