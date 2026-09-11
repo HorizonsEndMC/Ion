@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.signs.map.features
 
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
-import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap.Companion.toVector3f
+import net.horizonsend.ion.server.features.starship.control.signs.map.toVector3f
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.entity.Display
