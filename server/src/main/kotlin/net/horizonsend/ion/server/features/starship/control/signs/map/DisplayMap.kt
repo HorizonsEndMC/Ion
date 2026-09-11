@@ -60,6 +60,7 @@
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
 	import kotlin.math.abs
+	import kotlin.math.absoluteValue
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
 		val shiftPerLayer = .05
@@ -130,28 +131,28 @@
 						for (ship in shipsInRange) {
 							if (shipsTracked.containsKey(ship)) continue
 							else {
-								shipsTracked[ship] = generateShipMapFeature(ship)
+								shipsTracked[ship] = generateShipMapFeature(ship) ?: continue
 							}
 						}
 
 						for (body in bodiesInRange) {
 							if (celestialBodiesTracked.containsKey(body)) continue
 							else {
-								celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+								celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body) ?: continue
 							}
 						}
 
 						for (beacon in beaconsInRange) {
 							if (beaconsTracked.containsKey(beacon)) continue
 							else {
-								beaconsTracked[beacon] = generateBeaconMapFeature(beacon)
+								beaconsTracked[beacon] = generateBeaconMapFeature(beacon) ?: continue
 							}
 						}
 
 						for (bookmark in bookmarksInRange) {
 							if (bookmarkTracked.containsKey(bookmark)) continue
 							else {
-								bookmarkTracked[bookmark] = generateBookmarkMapFeature(bookmark)
+								bookmarkTracked[bookmark] = generateBookmarkMapFeature(bookmark) ?: continue
 							}
 						}
 
@@ -410,7 +411,7 @@
 			}
 		}
 
-		private fun generateShipMapFeature(other: Starship): ShipMapFeature {
+		private fun generateShipMapFeature(other: Starship): ShipMapFeature? {
 			var color = ship.getRelation(other).color
 			if (other.playerPilot != null && ship.playerPilot != null) {
 				if (Fleets.findByMember(ship.playerPilot!!)?.contains(other.playerPilot!!) == true) {
@@ -428,6 +429,10 @@
 				MapState.LOCAL_MAP ->(ship.centerOfMass.minus(other.centerOfMass).toVector().setY(0).multiply(1.0 / maxDistance))
 				MapState.SYSTEMS_MAP-> ((source.add(other.centerOfMass.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
 				else -> Vector()
+			}
+
+			if(offset.length() > .5){
+				return null
 			}
 
 			val smf = ShipMapFeature(
@@ -455,14 +460,18 @@
 			return smf
 		}
 
-		private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature {
-			val starScale = celestialBodyLocalMapScale(body, this)
+		private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature? {
+			val bodyScale = celestialBodyLocalMapScale(body, this)
 			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
 
 			val offset = when(state){
 				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
 				MapState.SYSTEMS_MAP-> ((source.add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
 				else -> Vector()
+			}
+
+			if((offset.x.absoluteValue + bodyScale/4.0) > .5  || (offset.z.absoluteValue + bodyScale/4) > .5){
+				return null
 			}
 
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
@@ -478,8 +487,8 @@
 				this,
 				.5 + offset.x,
 				.5 + offset.z,
-				starScale,
-				starScale,
+				bodyScale,
+				bodyScale,
 				component,
 				itemStack,
 				1.3,
@@ -497,21 +506,28 @@
 			return cbf
 		}
 
-		private fun generateBeaconMapFeature(beacon: ServerConfiguration.HyperspaceBeacon) : BeaconMapFeature{
+		private fun generateBeaconMapFeature(beacon: ServerConfiguration.HyperspaceBeacon) : BeaconMapFeature? {
 			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			val beaconSize = 0.08
 
 			val offset = when(state){
 				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
 				MapState.SYSTEMS_MAP-> ((source.add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
 				else -> Vector()
 			}
+
+			if((offset.x.absoluteValue) > .5  || (offset.z.absoluteValue) > .5){
+				return null
+			}
+
 			val bmf = BeaconMapFeature(
 				beacon.name,
 				this,
 				.5 + offset.x,
 				.5 + offset.z,
-				.08,
-				.08,
+				beaconSize,
+				beaconSize,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
 				1.4,
@@ -528,7 +544,7 @@
 			return bmf
 		}
 
-		private fun generateBookmarkMapFeature(bookmark: Bookmark): BookmarkMapFeature{
+		private fun generateBookmarkMapFeature(bookmark: Bookmark): BookmarkMapFeature? {
 			val beaconScale =  .06
 
 			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
@@ -538,6 +554,10 @@
 				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
 				MapState.SYSTEMS_MAP-> ((source.add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
 				else -> Vector()
+			}
+
+			if((offset.x.absoluteValue) > .5  || (offset.z.absoluteValue) > .5){
+				return null
 			}
 
 			val bmf = BookmarkMapFeature(
