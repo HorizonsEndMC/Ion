@@ -9,6 +9,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.function.Consumer
@@ -20,7 +21,8 @@ class ItemFactory private constructor(
 	val maxStackSize: Int?,
 	val nameSupplier: Supplier<Component>?,
 	val loreSupplier: ((ItemStack) -> List<Component>)?,
-	val itemModifiers: List<Consumer<ItemStack>>
+	val itemModifiers: List<Consumer<ItemStack>>,
+	val itemFlags: List<ItemFlag>
 ) {
 	fun construct(): ItemStack {
 		val base = ItemStack(material)
@@ -31,6 +33,7 @@ class ItemFactory private constructor(
 		if (loreSupplier != null) base.setData(DataComponentTypes.LORE, ItemLore.lore(loreSupplier.invoke(base)))
 
 		itemModifiers.forEach { it.accept(base) }
+		itemFlags.forEach { base.addItemFlags(it) }
 
 		return base
 	}
@@ -49,6 +52,7 @@ class ItemFactory private constructor(
 			this.nameSupplier = from.nameSupplier
 			this.loreSupplier = from.loreSupplier
 			this.itemModifiers = from.itemModifiers.toMutableList()
+			this.itemFlags = from.itemFlags.toMutableList()
 		}
 
 		private var material = Material.WARPED_FUNGUS_ON_A_STICK
@@ -57,6 +61,7 @@ class ItemFactory private constructor(
 		private var nameSupplier: Supplier<Component>? = null
 		private var loreSupplier: ((ItemStack) -> List<Component>)? = null
 		private var itemModifiers: MutableList<Consumer<ItemStack>> = mutableListOf()
+		private var itemFlags: MutableList<ItemFlag> = mutableListOf()
 
 		fun setMaterial(material: Material): Builder {
 			this.material = material
@@ -89,6 +94,11 @@ class ItemFactory private constructor(
 			return this
 		}
 
+		fun addFlag(flag: ItemFlag): Builder {
+			this.itemFlags += flag
+			return this
+		}
+
 		fun <T: Any> addData(type: DataComponentType.Valued<T>, data: T): Builder {
 			this.itemModifiers += Consumer<ItemStack> {
 				it.setData(type, data)
@@ -115,6 +125,7 @@ class ItemFactory private constructor(
 				nameSupplier = this.nameSupplier,
 				loreSupplier = this.loreSupplier,
 				itemModifiers = this.itemModifiers,
+				itemFlags = this.itemFlags,
 			)
 		}
 	}
