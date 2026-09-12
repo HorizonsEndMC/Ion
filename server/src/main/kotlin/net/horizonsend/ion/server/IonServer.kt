@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
@@ -33,8 +35,11 @@ import org.bukkit.plugin.java.JavaPlugin
 import xyz.xenondevs.invui.InvUI
 import kotlin.system.measureTimeMillis
 
+
 object IonServer : JavaPlugin() {
 	val configProvider = ConfigurationFiles // Ensure initialization
+	var protocolManager: ProtocolManager? = null
+
 
 	override fun onLoad() {
 		WorldReset.onStartup()
@@ -70,6 +75,12 @@ object IonServer : JavaPlugin() {
 				is Player -> "to ${it.name}: "
 				else -> ""
 			}
+		}
+
+		try{
+			protocolManager = ProtocolLibrary.getProtocolManager()
+		}catch (e: Exception){
+			logger.severe("Could not load protocol manager! $e")
 		}
 
 		bootstrapCustomTranslations()
@@ -136,6 +147,12 @@ object IonServer : JavaPlugin() {
 		} catch (e: Exception) {
 			slF4JLogger.error("There was an error shutting down ${component.javaClass.simpleName}! ${e.message}")
 			e.printStackTrace()
+		}
+
+		try {
+			protocolManager?.removePacketListeners(this)
+		}catch (e: Exception){
+			logger.severe("Could not remove protocol manager! $e")
 		}
 
 		IonWorld.unregisterAll()

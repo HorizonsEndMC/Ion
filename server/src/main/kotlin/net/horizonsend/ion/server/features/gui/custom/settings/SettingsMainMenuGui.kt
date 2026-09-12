@@ -107,6 +107,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			createSettingsPage(player, "Misc Settings",
 				DBCachedBooleanToggle(text("Toggle Chest Shop Visibility"), "", GuiItem.BOOKMARK, false, PlayerSettings::chestShopDisplays),
 				DBCachedIntegerInput(0, 3, text("Mining Laser Effect Level"), "", GuiItem.BOOKMARK, 3, PlayerSettings::miningLaserEffectLevel),
+				DBCachedBooleanToggle(text("Toggle Light Updates (Use fullbright mods)"), "", GuiItem.STAR, true, PlayerSettings::doLightUpdates),
 			),
 		),
 		createSettingsPage(player, "Sound Settings",
