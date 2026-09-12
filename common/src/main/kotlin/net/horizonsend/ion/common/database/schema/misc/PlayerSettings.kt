@@ -100,6 +100,8 @@ data class PlayerSettings(
 	var fleetStatus: Boolean = true,
 	var chestShopDisplays: Boolean = true,
 	var miningLaserEffectLevel: Int = 3,
+	var doLightUpdates: Boolean = true,
+
 	var hudIconStarships: Boolean = true,
 	var hudIconSize: Int = 5,
 ) : DbObject {

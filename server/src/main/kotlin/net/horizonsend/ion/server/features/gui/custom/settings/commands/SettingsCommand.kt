@@ -348,6 +348,12 @@ object SettingsCommand : SLCommand() {
         handleBooleanToggleSetting(sender, PlayerSettings::hudIconBookmarks, enabled)
     }
 
+	@CommandAlias("graphics misc dolightupdates")
+	@CommandCompletion("true|false")
+	fun onSettingsGraphicsMicDoLightUpdates(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
+		handleBooleanToggleSetting(sender, PlayerSettings::doLightUpdates, enabled)
+	}
+
     @CommandAlias("graphics effects displayentities")
     @CommandCompletion("@clientDisplayEntitiesVisibility")
     fun onSettingsGraphicsEffectsDisplayEntities(sender: Player, value: ClientDisplayEntities.Visibility) = asyncCommand(sender) {
