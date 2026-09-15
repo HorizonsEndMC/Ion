@@ -783,9 +783,12 @@ object HudIcons : IonServerComponent() {
                     StarshipType.SHUTTLE -> SHUTTLE_ICON
                     StarshipType.TRANSPORT -> TRANSPORT_ICON
                     StarshipType.LIGHT_FREIGHTER -> LIGHT_FREIGHTER_ICON
+					StarshipType.BLOCKADE_RUNNER -> LIGHT_FREIGHTER_ICON
                     StarshipType.MEDIUM_FREIGHTER -> MEDIUM_FREIGHTER_ICON
                     StarshipType.HEAVY_FREIGHTER -> HEAVY_FREIGHTER_ICON
                     StarshipType.BARGE -> BARGE_ICON
+					StarshipType.JUMP_FREIGHTER -> BARGE_ICON
+					StarshipType.INDUSTRIAL_COMMAND_SHIP -> BARGE_ICON
                     StarshipType.AI_STARFIGHTER -> STARFIGHTER_ICON
                     StarshipType.AI_GUNSHIP -> GUNSHIP_ICON
                     StarshipType.AI_CORVETTE -> CORVETTE_ICON
