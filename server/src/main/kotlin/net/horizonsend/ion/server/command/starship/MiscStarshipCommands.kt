@@ -579,7 +579,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val origin: Vector = starship.centerOfMass.toVector()
 		val distance: Double = distance(origin.x, 0.0, origin.z, x1.toDouble(), 0.0, z1.toDouble())
 
-		if (distance > maxRange) {
+		if (distance > maxRange && destinationWorld == starship.world) {
 			val (normalizedX, _, normalizedZ) = normalize(x1 - origin.x, 0.0, z1 - origin.z)
 			x1 = (normalizedX * maxRange + origin.x).roundToInt()
 			z1 = (normalizedZ * maxRange + origin.z).roundToInt()
