@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSet
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting
-import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.kyori.adventure.text.Component
@@ -41,6 +40,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Rotate Player with the ship"), "Disables camera rotation, useful for aiming player guided missiles.", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::playerRotateWithShip),
 
 			DBCachedEnumCycle(PlayerInput.TertiaryButtonControl::class.java, text("Change Tertiary Control Function"), "Changes the functionality of the Tertiary Control (sprint key in dc)", GuiItem.LIST, 0, PlayerSettings::tertiaryButtonControl),
+			DBCachedBooleanToggle(text("Mining Lasers Follow Cursor"), "Enable to allow mining lasers to follow your cursor.", GuiItem.LIST, false, PlayerSettings::miningLasersTrackCursor)
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
@@ -107,6 +107,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			createSettingsPage(player, "Misc Settings",
 				DBCachedBooleanToggle(text("Toggle Chest Shop Visibility"), "", GuiItem.BOOKMARK, false, PlayerSettings::chestShopDisplays),
 				DBCachedIntegerInput(0, 3, text("Mining Laser Effect Level"), "", GuiItem.BOOKMARK, 3, PlayerSettings::miningLaserEffectLevel),
+				DBCachedBooleanToggle(text("Toggle Light Updates (Use fullbright mods)"), "", GuiItem.STAR, true, PlayerSettings::doLightUpdates),
 			),
 		),
 		createSettingsPage(player, "Sound Settings",

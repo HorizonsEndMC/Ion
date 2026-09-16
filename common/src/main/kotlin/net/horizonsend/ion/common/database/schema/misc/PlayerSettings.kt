@@ -100,8 +100,11 @@ data class PlayerSettings(
 	var fleetStatus: Boolean = true,
 	var chestShopDisplays: Boolean = true,
 	var miningLaserEffectLevel: Int = 3,
+	var doLightUpdates: Boolean = true,
+
 	var hudIconStarships: Boolean = true,
 	var hudIconSize: Int = 5,
+	var miningLasersTrackCursor: Boolean = false,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		const val MAX_CONTACTS_DISTANCE = 2500
