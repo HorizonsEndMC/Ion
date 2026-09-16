@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation.SinkAnimationBlock
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
@@ -90,14 +91,19 @@ class MiningLaserSubsystem(
 	}
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
-		// Calculate a vector in the direction from the fire point to the targeted block
-		val vectorToTarget = target.clone().subtract((entity.getFirePos()).toVector()).normalize().multiply(multiblock.range)
+		val vectorToTarget = vecFromLaserToTarget(target)
 
 		// Add this vector to the fire position to find the position in the direction at max range.
 		this.targetedBlock = (entity.getFirePos()).toVector().add(vectorToTarget)
+
 		setFiring(!isFiring)
 
 		// If it is within range, the raycast will move it forward.
+	}
+
+	private fun vecFromLaserToTarget(target: Vector): Vector {
+		// Calculate a vector in the direction from the fire point to the targeted block
+		return target.clone().subtract((entity.getFirePos()).toVector()).normalize().multiply(multiblock.range)
 	}
 
 	override fun onDestroy() {
@@ -178,7 +184,6 @@ class MiningLaserSubsystem(
 
 	fun fire() {
 		val initialPos = entity.getFirePos().toLocation(starship.world).toCenterLocation()
-		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 		val controller = starship.controller
 		val isTier1 = multiblock.tier == 1
 
@@ -195,6 +200,21 @@ class MiningLaserSubsystem(
 				starship.alertSubtitle("Mining Laser at $pos ran out of power and was disabled!")
 				return setFiring(false)
 			}
+		}
+
+		val player = starship.playerPilot
+		val trackCursor = player?.getSetting(PlayerSettings::miningLasersTrackCursor) ?: false
+
+		val targetVector = if (player != null && trackCursor) {
+			// Mining laser will follow player's cursor
+			val loc = player.eyeLocation
+			val dir = loc.direction.normalize()
+			val target = StarshipWeaponry.getTarget(loc, dir, starship, multiblock.range.toInt())
+
+			vecFromLaserToTarget(target)
+		} else {
+			// Mining laser will remain locked at the initial target
+			targetedBlock.clone().subtract(initialPos.toVector())
 		}
 
 		// Ray trace to get the hit position

@@ -104,6 +104,7 @@ data class PlayerSettings(
 
 	var hudIconStarships: Boolean = true,
 	var hudIconSize: Int = 5,
+	var miningLasersTrackCursor: Boolean = false,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		const val MAX_CONTACTS_DISTANCE = 2500
