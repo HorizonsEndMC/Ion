@@ -200,7 +200,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		ActiveStarships.all().filter {
 			(it.type == StarshipType.MISSILE_CRUISER ||
 			it.type == StarshipType.LOGISTICS_CRUISER ||
-			it.type == StarshipType.LANCER_BATTLECRUISER) &&
+			it.type == StarshipType.LANCER_BATTLECRUISER ||
+			it.type == StarshipType.INDUSTRIAL_COMMAND_SHIP ||
+			it.type == StarshipType.JUMP_FREIGHTER) &&
 			!it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<LargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
