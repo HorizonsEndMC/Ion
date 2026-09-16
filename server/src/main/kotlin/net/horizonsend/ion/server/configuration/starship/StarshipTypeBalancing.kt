@@ -1405,6 +1405,7 @@ data class NewStarshipBalancing(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 17500),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 			),
 			forbiddenMultiblocks = listOf(
@@ -1467,6 +1468,8 @@ data class NewStarshipBalancing(
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyLogisticsCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 14500), maxPerShot = 2)
 			),
@@ -1558,7 +1561,7 @@ data class NewStarshipBalancing(
 				,
 				IncompatibleSubsystemInfo(
 					IonTurretWeaponSubsystem::class.java,
-					"Logistics ships cannot have ion turrets!"
+					"Missile ships cannot have ion turrets!"
 				)
 			),
 			shipSounds = StarshipSounds(
