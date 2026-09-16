@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.general
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule.Companion.powerPrefix
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -32,7 +33,11 @@ class PowerCapacityIncrease(
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),
-		ApplicationPredicate.ClassPredicate(PowerChainsaw::class)
+		ApplicationPredicate.ClassPredicate(PowerChainsaw::class),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_HELMET),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_CHESTPLATE),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_LEGGINGS),
+		ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_BOOTS),
 	)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
