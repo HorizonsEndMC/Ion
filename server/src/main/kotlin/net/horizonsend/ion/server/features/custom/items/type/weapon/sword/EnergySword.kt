@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.sword
 
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.BlocksAttacks
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -12,12 +13,10 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.damageEntityListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.damagedHoldingListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
-import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.playerSwapHandsListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.prepareCraftListener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -30,10 +29,7 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
-import kotlin.collections.mapOf
 
 class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String, color: TextColor) : CustomItem(
 	key = key,
@@ -43,14 +39,17 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 		.setCustomModel("weapon/energy_sword/${type.lowercase()}_energy_sword")
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifiers(attributes)
+			.addModifiers(energySwordAttributes(PVPBalancingConfiguration.MeleeWeapons().energySwordBalancing))
 			.build()
 		)
 		.build()
 ) {
+	val balancing get() = ConfigurationFiles.pvpBalancing.get().meleeWeapons.energySwordBalancing
+
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
+		println()
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@EnergySword) { event, _, item ->
-			if(item.persistentDataContainer.get(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER) != LATEST_VERSION) migrateSword(item)
+			if(item.itemMeta.attributeModifiers?.equals(energySwordAttributes(balancing)) == false) migrateSword(item, balancing)
 			event.player.world.playSound(event.player.location, "energy_sword.swing", 1.0f, 1.0f)
 			if (event.action != Action.LEFT_CLICK_BLOCK) return@leftClickListener
 			val player = event.player
@@ -75,7 +74,7 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 
 		addComponent(CustomComponentTypes.LISTENER_DAMAGED_HOLDING, damagedHoldingListener(this@EnergySword) { event, customItem, item ->
 			//check to see if the customitem is out of date
-			if(item.persistentDataContainer.get(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER) != LATEST_VERSION) migrateSword(item)
+			if(item.itemMeta.attributeModifiers?.equals(energySwordAttributes(balancing)) == false) migrateSword(item, balancing)
 
 			val damaged = event.entity
 			if (damaged !is Player) return@damagedHoldingListener
@@ -97,11 +96,15 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 	companion object{
 		val LATEST_VERSION = 1
 
-		val attributes = mapOf<Attribute, AttributeModifier>(
-			Attribute.ATTACK_DAMAGE to AttributeModifier(NamespacedKeys.key("energy_sword_damage"), 10.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
-			Attribute.ATTACK_SPEED to AttributeModifier(NamespacedKeys.key("energy_sword_speed"), -2.4, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
-			Attribute.MOVEMENT_SPEED to AttributeModifier(NamespacedKeys.key("energy_sword_movement_speed"), .2, AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.MAINHAND),
-		)
+		fun energySwordAttributes(balancing: PVPBalancingConfiguration.MeleeWeapons.MeleeWeaponBalancing) = mapOf<Attribute, AttributeModifier>(
+			Attribute.ATTACK_DAMAGE to AttributeModifier(NamespacedKeys.key("energy_sword_damage"), balancing.damage, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
+			Attribute.ATTACK_SPEED to AttributeModifier(NamespacedKeys.key("energy_sword_speed"), balancing.attackSpeed, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
+			Attribute.MOVEMENT_SPEED to AttributeModifier(NamespacedKeys.key("energy_sword_movement_speed"), balancing.speedUp, AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.MAINHAND),
+			Attribute.ATTACK_KNOCKBACK to AttributeModifier(NamespacedKeys.key("energy_sword_knockback"), balancing.knockback, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
+			Attribute.ENTITY_INTERACTION_RANGE to AttributeModifier(NamespacedKeys.key("energy_sword_range"), balancing.entityInteractionRange, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
+			Attribute.SNEAKING_SPEED to AttributeModifier(NamespacedKeys.key("energy_sword_sneaking_speed"), balancing.sneakingSpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.MAINHAND),
+			Attribute.KNOCKBACK_RESISTANCE to AttributeModifier(NamespacedKeys.key("energy_sword_knockback_resistance"), balancing.knockBackResistance, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
+			)
 
 		fun ItemAttributeModifiers.Builder.addModifiers(attributesToModifiers: Map<Attribute, AttributeModifier>) : ItemAttributeModifiers.Builder {
 			attributesToModifiers.forEach {
@@ -110,13 +113,10 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 			return this
 		}
 
-		fun migrateSword(item: ItemStack) {
+		fun migrateSword(item: ItemStack, balancing: PVPBalancingConfiguration.MeleeWeapons.MeleeWeaponBalancing) {
 			item.setData(
-				DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().addModifiers(attributes).build(),
+				DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().addModifiers(energySwordAttributes(balancing)).build(),
 			)
-			item.updatePersistentDataContainer {
-				set(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, LATEST_VERSION)
-			}
 		}
 	}
 }

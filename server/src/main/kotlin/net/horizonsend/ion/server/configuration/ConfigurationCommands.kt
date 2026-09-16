@@ -33,6 +33,7 @@ object ConfigurationCommands : SLCommand() {
 
 	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
 	private val blasterTypes = PVPBalancingConfiguration.EnergyWeapons::class.memberProperties
+	private val meleeTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("starshipTypes") {
@@ -57,6 +58,10 @@ object ConfigurationCommands : SLCommand() {
 
 		manager.commandCompletions.registerCompletion("blasterTypes") {
 			blasterTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("meleeTypes") {
+			meleeTypes.map { it.name }
 		}
 	}
 
@@ -109,6 +114,32 @@ object ConfigurationCommands : SLCommand() {
 			value
 		)
 	}
+
+	@Subcommand("config get melee")
+	@CommandCompletion("@meleeTypes property value")
+	fun getMeleeProperties(sender: CommandSender, weaponName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			meleeTypes,
+			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
+			weaponName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set melee")
+	@CommandCompletion("@meleeTypes property value")
+	fun setMeleeProperties(sender: CommandSender, weaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			meleeTypes,
+			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
+			weaponName,
+			fieldName,
+			value
+		)
+	}
+
 
 	@Subcommand("config get starship weapon default")
 	@CommandCompletion("@starshipDefaultWeapons property")
