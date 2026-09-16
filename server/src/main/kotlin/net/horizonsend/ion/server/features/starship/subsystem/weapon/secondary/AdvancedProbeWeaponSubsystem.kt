@@ -89,7 +89,7 @@ class AdvancedProbeWeaponSubsystem(
 				it.controller is PlayerController &&
 					it.world == starship.world &&
 					it.centerOfMass.distanceSquared(starship.centerOfMass) < range * range &&
-					it.type != StarshipType.RECON_STARFIGHTER
+					it.type.balancing.probeVisibility
 			}
 			val totalShips = ships.size
 			for (ship in ships) {

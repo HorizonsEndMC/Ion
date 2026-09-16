@@ -621,6 +621,8 @@ data class NewStarshipBalancing(
 			warmupTime = 8,
 			interdictionRange = 350,
 			contactsRange = 700,
+			dynmapVisibility = false,
+			probeVisibility = false,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.5,
@@ -773,6 +775,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
+			canUseInterdictionWell = true,
 			jumpStrength = 1.0,
 			warmupTime = 10,
 			wellStrength = 1.0,
@@ -853,6 +856,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 1000,
+			canUseInterdictionWell = true,
 			jumpStrength = 1.0,
 			warmupTime = 10,
 			wellStrength = 2.0,
@@ -1154,6 +1158,7 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
 			contactsRange = 700,
+			dynmapVisibility = false,
 			warmupTime = 10,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
@@ -1350,6 +1355,7 @@ data class NewStarshipBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 2000,
+			canUseInterdictionWell = true,
 			warmupTime = 15,
 			jumpStrength = 1.0,
 			wellStrength = 3.0,
@@ -1774,7 +1780,10 @@ sealed interface StarshipTypeBalancing {
 	val sneakFlyAccelDistance: Int
 	val maxSneakFlyAccel: Int
 	val interdictionRange: Int
+	val canUseInterdictionWell: Boolean //specifies whether the user may use the gravity well multiblock on their ship.
 	var contactsRange: Int //specifies the maximum distance this ship can be seen on contacts
+	var dynmapVisibility: Boolean //specifies whether this ship may ever be seen on dynmap
+	var probeVisibility: Boolean
 	val jumpStrength: Double
 	val wellStrength: Double
 	val hyperspaceRangeMultiplier: Double
@@ -1788,6 +1797,8 @@ sealed interface StarshipTypeBalancing {
 
 	val weaponOverrides: List<StarshipWeaponBalancing<*>>
 	val commandBurstOverrides: List<StarshipCommandBurstBalancing>
+
+	val isAllowedOnPlanets: Boolean
 }
 
 @Serializable
@@ -1803,7 +1814,10 @@ open class StanrdardStarshipTypeBalancing(
 
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
+	override var canUseInterdictionWell: Boolean = false,
 	override var contactsRange: Int = 2500,
+	override var dynmapVisibility: Boolean  = true,
+	override var probeVisibility: Boolean = true,
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
@@ -1817,6 +1831,8 @@ open class StanrdardStarshipTypeBalancing(
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
 	override val commandBurstOverrides: List<StarshipCommandBurstBalancing> = listOf(),
+
+	override val isAllowedOnPlanets: Boolean = true
 ) : StarshipTypeBalancing
 
 @Serializable
@@ -1831,7 +1847,10 @@ open class GroundStarshipBalancing(
 	override var sneakFlyAccelDistance: Int,
 	override var maxSneakFlyAccel: Int,
 	override var interdictionRange: Int,
+	override var canUseInterdictionWell: Boolean = false,
 	override var contactsRange: Int = 2500,
+	override var dynmapVisibility: Boolean  = true,
+	override var probeVisibility: Boolean = true,
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
@@ -1845,6 +1864,8 @@ open class GroundStarshipBalancing(
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
 	override val commandBurstOverrides: List<StarshipCommandBurstBalancing> = listOf(),
+
+	override val isAllowedOnPlanets: Boolean = true
 ) : StarshipTypeBalancing
 
 @Serializable

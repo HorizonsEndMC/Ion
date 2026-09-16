@@ -13,12 +13,18 @@ import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
+import org.joml.Vector3d
+import org.joml.Vector3f
 import kotlin.math.pow
 
 //All of these are stored under the font Special
@@ -63,26 +69,26 @@ fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {
 	} else sourceShip.getContacts()).filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }
 }
 
-fun celestialBodiesInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
+fun celestialBodiesInRange(maxDistance: Double, source: Vector, world: World) : List<CelestialBody>{
 	return Space.getAllCelestialBodies().filter {
 		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance/2.0
 	}
 }
 
-fun starsInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
+fun starsInRange(maxDistance: Double, source: Vector, world: World) : List<CachedStar>{
 	return Space.getStars().filter {
 		it.spaceWorld == world && it.location.toVector().distance(source) <= maxDistance/2.0
 	}
 }
 
-fun planetInRange(displayMap: DisplayMap, maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
+fun planetInRange(maxDistance: Double, source: Vector, world: World) : List<CachedPlanet> {
 	return Space.getAllPlanets().filter {
 			it.spaceWorld == world && it.location.toVector()
 				.distance(source) <= maxDistance/2.0
 	}
 }
 
-fun beaconsInRange(displayMap: DisplayMap, maxDistance: Double, centerOfMass: Vector, world: World): List<ServerConfiguration.HyperspaceBeacon> {
+fun beaconsInRange(maxDistance: Double, centerOfMass: Vector, world: World): List<ServerConfiguration.HyperspaceBeacon> {
 	return ConfigurationFiles.serverConfiguration().beacons.filter {
 		it.spaceLocation.bukkitWorld() == world &&
 			it.spaceLocation.toLocation().toVector()
@@ -103,3 +109,33 @@ fun Bookmark.toVector() = Vector(x.toDouble(), y.toDouble(), z.toDouble())
 fun Transformation.clone(): Transformation =
 	Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)
 
+fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
+
+fun saveStateToLocation(location: Location, mapState: MapState, size: Double) : Boolean{
+	try {
+		val block = location.world.getBlockAt(location)
+		val state = block.state as? Sign ?: return false
+		val pdc = state.persistentDataContainer
+		pdc.set(NamespacedKeys.MAP_STATE, PersistentDataType.STRING, mapState.name)
+		pdc.set(NamespacedKeys.MAP_SIZE, PersistentDataType.DOUBLE, size)
+		return state.update()
+	}catch (_: Exception){
+	}
+
+	return false
+}
+
+fun loadStateFromLocation(location: Location): Triple<Boolean, MapState, Double>{
+	try {
+		val block = location.world.getBlockAt(location)
+		val state = block.state as? Sign ?: return Triple(false,MapState.LOCAL_MAP, 1.0)
+		val pdc = state.persistentDataContainer
+		val mapState = pdc.get(NamespacedKeys.MAP_STATE, PersistentDataType.STRING)
+		val size = pdc.get(NamespacedKeys.MAP_SIZE, PersistentDataType.DOUBLE)
+		if (mapState ==null || size == null) return Triple(false,MapState.LOCAL_MAP, 1.0)
+		val enumMapState = MapState.valueOf(mapState)
+		return Triple(true, enumMapState, size)
+	}catch (_: Exception){
+	}
+	return Triple(false,MapState.LOCAL_MAP, 1.0)
+}

@@ -41,7 +41,6 @@
 	import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 	import net.horizonsend.ion.server.listener.SLEventListener
 	import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-	import net.horizonsend.ion.server.miscellaneous.utils.setModel
 	import net.horizonsend.ion.server.miscellaneous.utils.updateData
 	import net.kyori.adventure.text.Component
 	import net.kyori.adventure.text.format.NamedTextColor
@@ -60,11 +59,11 @@
 	import org.bukkit.inventory.ItemStack
 	import org.bukkit.util.Vector
 	import org.joml.Vector3d
-	import org.joml.Vector3f
 	import kotlin.math.abs
+	import kotlin.math.absoluteValue
 
 	class DisplayMap(val ship: Starship, var location: Location, var dir: Vector, val sizeX: Double, val sizeY: Double, val offset: Vector3d) {
-		val shiftPerLayer = .005
+		val shiftPerLayer = .05
 
 		var state: MapState = MapState.LOCAL_MAP
 		var mapInitialized = false;
@@ -90,9 +89,17 @@
 
 		fun init() {
 			if(mapInitialized) return
+			val (shouldUse, state, size) = loadStateFromLocation(location)
+			if(shouldUse) {
+				this.state = state
+				this.maxDistance = size
+			}
 			initializeBackgroundAndBorder()
 			setupSideBarButtons()
-			placeLocalMap()
+			when(state){
+				MapState.LOCAL_MAP -> placeLocalMap()
+				else -> placeGalacticMap()
+			}
 
 			//Add entities to ship
 			for (mapFeatures in commonFeatures) {
@@ -118,18 +125,40 @@
 					try {
 						val shipsInRange = shipsInRange(maxDistance, ship)
 						val centerOfMass = ship.centerOfMass.toVector()
-						val bodiesInRange = celestialBodiesInRange(this, maxDistance, centerOfMass, this.location.world)
+						val bodiesInRange = celestialBodiesInRange(maxDistance, centerOfMass, this.location.world)
+						val beaconsInRange = beaconsInRange(maxDistance,centerOfMass, this.location.world)
+						val bookmarksInRange = bookmarksInRange(this,maxDistance,centerOfMass,this.location.world)
 						for (ship in shipsInRange) {
 							if (shipsTracked.containsKey(ship)) continue
 							else {
-								shipsTracked[ship] = generateShipMapFeature(ship)
+								shipsTracked[ship] = generateShipMapFeature(ship) ?: continue
 							}
+						}
+						val shipsNotInRange = shipsTracked.filterNot { shipsInRange.contains(it.key) }
+
+						shipsNotInRange.forEach {
+							it.value.despawn()
+							shipsTracked.remove(it.key)
 						}
 
 						for (body in bodiesInRange) {
 							if (celestialBodiesTracked.containsKey(body)) continue
 							else {
-								celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body)
+								celestialBodiesTracked[body] = generateCelestialBodyMapFeature(body) ?: continue
+							}
+						}
+
+						for (beacon in beaconsInRange) {
+							if (beaconsTracked.containsKey(beacon)) continue
+							else {
+								beaconsTracked[beacon] = generateBeaconMapFeature(beacon) ?: continue
+							}
+						}
+
+						for (bookmark in bookmarksInRange) {
+							if (bookmarkTracked.containsKey(bookmark)) continue
+							else {
+								bookmarkTracked[bookmark] = generateBookmarkMapFeature(bookmark) ?: continue
 							}
 						}
 
@@ -154,6 +183,7 @@
 					}
 				}
 			}
+
 			//Tick & Show players the entities
 			mapStateFeatures.toList().forEach { state->
 				state.tick()
@@ -184,6 +214,8 @@
 		}
 
 		fun despawn() {
+			saveStateToLocation(location, state, maxDistance)
+
 			stateMap = null
 
 			mapStateFeatures.forEach { it.despawn() }
@@ -194,6 +226,9 @@
 			commonFeatures.clear()
 			commonButtons.clear()
 			this.shipsTracked.clear()
+			this.beaconsTracked.clear()
+			this.bookmarkTracked.clear()
+			this.celestialBodiesTracked.clear()
 
 			mapInitialized = false
 		}
@@ -216,7 +251,7 @@
 				MapFeature(
 					"BORDER", this, 14.0/32.0,0.0,1.0,1.0, null,
 					MapTextIcon.BORDER_RIGHT_MISSING.component(),
-					1.0
+					.25
 				)
 			)
 		}
@@ -231,7 +266,7 @@
 						NamespacedKeys.packKey("achievement_icon/hyperspace")
 					),
 					null,
-					10.0
+					1.0
 				) {
 					when (it.state) {
 						MapState.LOCAL_MAP -> {
@@ -275,7 +310,7 @@
 					3.0 / 32.0,
 					ItemStack(Material.PAPER).applyGuiModel(GuiItem.PLUS),
 					null,
-					10.0,
+					1.0,
 				) {
 					it.maxDistance -= 2000.0
 					if (maxDistance <= absoluteMinimumMaxDistance-2000.0) {
@@ -299,7 +334,7 @@
 					3.0 / 32.0,
 					ItemStack(Material.PAPER).applyGuiModel(GuiItem.MINUS),
 					null,
-					10.0,
+					1.0,
 				) {
 					it.maxDistance += 2000.0
 					if (maxDistance >= absoluteMaxDistance+2000.0) {
@@ -328,7 +363,7 @@
 					NamespacedKeys.packKey("map/grid_lines")
 				),
 				null,
-				1.2
+				.2
 			)
 
 			stateMap = backgroundMap
@@ -345,19 +380,19 @@
 					Component.text(ship.type.icon, NamedTextColor.DARK_GREEN).font(getSidebarKeyToUse(ship)),
 					Component.text('\ueBF2').font(SPECIAL_FONT_KEY),
 				),
-				10.0
+				1.3
 			)
 
 			val maxDistanceMap = MapFeature(
 				"MAX_DISTANCE",
 				this,
 				15.0/32.0,
-				1.0/32.0,
+				2.0/32.0,
 				.03,
 				.03,
 				null,
 				Component.text("Square Size: ${maxDistance/4.0}"),
-				10.1
+				1.2
 			)
 
 			mapStateFeatures.add(maxDistanceMap)
@@ -374,9 +409,9 @@
 			//Add Ships
 			shipsInRange(maxDistance, ship).forEach { generateShipMapFeature(it) }
 			//Add CelestialBodies
-			celestialBodiesInRange(this, maxDistance, centerOfMass, world).forEach { generateCelestialBodyMapFeature(it) }
+			celestialBodiesInRange(maxDistance, centerOfMass, world).forEach { generateCelestialBodyMapFeature(it) }
 			//Add Beacons
-			beaconsInRange(this, maxDistance,centerOfMass, world).forEach { generateBeaconMapFeature(it) }
+			beaconsInRange(maxDistance,centerOfMass, world).forEach { generateBeaconMapFeature(it) }
 			//Add BookMarks
 			bookmarksInRange(this, maxDistance,centerOfMass, world).forEach { generateBookmarkMapFeature(it) }
 
@@ -385,7 +420,7 @@
 			}
 		}
 
-		private fun generateShipMapFeature(other: Starship): ShipMapFeature {
+		private fun generateShipMapFeature(other: Starship): ShipMapFeature? {
 			var color = ship.getRelation(other).color
 			if (other.playerPilot != null && ship.playerPilot != null) {
 				if (Fleets.findByMember(ship.playerPilot!!)?.contains(other.playerPilot!!) == true) {
@@ -396,8 +431,18 @@
 			//Get the ships icon
 			val icon = other.type.icon
 
-			//find the offset of this ship from our ship
-			val offset = (ship.centerOfMass.minus(other.centerOfMass).toVector().setY(0).multiply(1.0 / maxDistance))
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			//check if the body is out of range
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.minus(other.centerOfMass).toVector().setY(0).multiply(1.0 / maxDistance))
+				MapState.SYSTEMS_MAP-> ((source.add(other.centerOfMass.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
+
+			if(offset.length() > .5){
+				return null
+			}
 
 			val smf = ShipMapFeature(
 				ship.getDisplayName().plainText(),
@@ -411,7 +456,7 @@
 					Component.text(icon, color).font(getSidebarKeyToUse(ship)),
 					MapTextIcon.ONE_PIXEL.component(),
 					),
-				10.0,
+				1.5,
 				this.stateMap,
 				Component.text(""),
 				Color.fromARGB(color.asShadowColor(255).value()),
@@ -424,9 +469,20 @@
 			return smf
 		}
 
-		private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature {
-			val starScale = celestialBodyLocalMapScale(body, this)
-			val offset = (ship.centerOfMass.minus(body.location)).toVector().setY(0).multiply(1.0 / maxDistance)
+		private fun generateCelestialBodyMapFeature(body: CelestialBody) : CelestialBodyFeature? {
+			val bodyScale = celestialBodyLocalMapScale(body, this)
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+				MapState.SYSTEMS_MAP-> ((source.add(body.location.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
+
+			if((offset.x.absoluteValue + bodyScale/4.0) > .5  || (offset.z.absoluteValue + bodyScale/4) > .5){
+				return null
+			}
+
 			val identifier = (body as? NamedCelestialBody)?.name?.replaceFirstChar { it.uppercase() } ?: "UNKNOWN" //should never happen
 			val itemStack: ItemStack? = when(body){
 				is CachedPlanet -> HudIcons.getItemStack(PLANET_PREFIX.plus(identifier.lowercase()))
@@ -440,11 +496,11 @@
 				this,
 				.5 + offset.x,
 				.5 + offset.z,
-				starScale,
-				starScale,
+				bodyScale,
+				bodyScale,
 				component,
 				itemStack,
-				9.9,
+				1.3,
 				this.stateMap!!,
 				Component.text(identifier, null, BOLD),
 				Color.fromARGB(0,0,0,0),
@@ -459,26 +515,37 @@
 			return cbf
 		}
 
-		private fun generateBeaconMapFeature(beacon: ServerConfiguration.HyperspaceBeacon) : BeaconMapFeature{
-			val beaconScale = 100.0/maxDistance
-			val offset = (ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+		private fun generateBeaconMapFeature(beacon: ServerConfiguration.HyperspaceBeacon) : BeaconMapFeature? {
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			val beaconSize = 0.08
+
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+				MapState.SYSTEMS_MAP-> ((source.add(beacon.spaceLocation.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
+
+			if((offset.x.absoluteValue) > .5  || (offset.z.absoluteValue) > .5){
+				return null
+			}
+
 			val bmf = BeaconMapFeature(
 				beacon.name,
 				this,
 				.5 + offset.x,
 				.5 + offset.z,
-				beaconScale,
-				beaconScale,
+				beaconSize,
+				beaconSize,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
-				9.9,
+				1.4,
 				this.stateMap!!,
-				Component.text(beacon.name, null, BOLD),
+				Component.text(beacon.name, NamedTextColor.BLACK, BOLD),
 				Color.fromARGB(0, 255, 255, 255),
 				beacon
 			){
-				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BeaconMapFeature] ?: return@BeaconMapFeature, beacon.name.replaceFirstChar { it.uppercase() }) ?: return@BeaconMapFeature
-				WaypointCommand.addVertexToRoute(ship.playerPilot?: return@BeaconMapFeature, vertex)
+				ship.playerPilot?.performCommand("route add ${beacon.name} ${beacon.spaceLocation.x} ${beacon.spaceLocation.z}")
 			}
 			mapStateFeatures.add(bmf)
 			beaconsTracked[beacon] = bmf
@@ -486,9 +553,22 @@
 			return bmf
 		}
 
-		private fun generateBookmarkMapFeature(bookmark: Bookmark): BookmarkMapFeature{
-			val beaconScale = 100.0/maxDistance
-			val offset = (ship.centerOfMass.toVector().add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+		private fun generateBookmarkMapFeature(bookmark: Bookmark): BookmarkMapFeature? {
+			val beaconScale =  .06
+
+			val source = systemForSystemMap?.worldBorder?.center?.toVector() ?: Vector()
+
+			//check if the body is out of range
+			val offset = when(state){
+				MapState.LOCAL_MAP ->(ship.centerOfMass.toVector().add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / maxDistance)
+				MapState.SYSTEMS_MAP-> ((source.add(bookmark.toVector().multiply(-1))).setY(0).multiply(1.0 / (systemForSystemMap?.worldBorder?.size ?: 10000.0)))
+				else -> Vector()
+			}
+
+			if((offset.x.absoluteValue) > .5  || (offset.z.absoluteValue) > .5){
+				return null
+			}
+
 			val bmf = BookmarkMapFeature(
 				bookmark.name,
 				this,
@@ -498,10 +578,10 @@
 				beaconScale,
 				null,
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BOOKMARK),
-				9.9,
+				1.25,
 				this.stateMap!!,
-				Component.text(bookmark.name, null, BOLD),
-				Color.fromARGB(0, 255, 255, 255),
+				Component.text(bookmark.name, NamedTextColor.BLACK, BOLD),
+				Color.fromARGB(255, 255, 255, 255),
 				bookmark
 			){
 				val vertex = WaypointManager.getVertex(WaypointManager.playerGraphs[ship.playerPilot?.uniqueId?: return@BookmarkMapFeature] ?: return@BookmarkMapFeature, bookmark.name.lowercase()) ?: return@BookmarkMapFeature
@@ -534,20 +614,20 @@
 					NamespacedKeys.packKey("map/systems")
 				),
 				null,
-				8.0
+				.3
 			)
 
 			val clearRoutes = MapButtonDisplay(
 				"CLEAR_ROUTE",
 				this,
 				15.0/32.0,
-				1.0/32.0,
+				2.0/32.0,
 				.04,.04,
 				null,
 				Component.text(
 					"[/Clear Route]", NamedTextColor.RED, BOLD
 				),
-				10.1,
+				1.0,
 				null,
 			){
 				if(ship.playerPilot!=null) {
@@ -571,7 +651,7 @@
 					0.12,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -585,7 +665,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -599,7 +679,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -613,7 +693,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -629,7 +709,7 @@
 					154.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -644,7 +724,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -658,7 +738,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -675,7 +755,7 @@
 					152.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -690,7 +770,7 @@
 					58.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -704,7 +784,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -718,7 +798,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -732,7 +812,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -746,7 +826,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -760,7 +840,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -774,7 +854,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -788,7 +868,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -802,7 +882,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -816,7 +896,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -830,7 +910,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -844,7 +924,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -861,14 +941,14 @@
 					167.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
 
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"VXM-11",
+					"MERIDIAN",
 					this,
 					.068356,
 					1.0 - .5498,
@@ -876,7 +956,7 @@
 					50.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -890,7 +970,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -904,7 +984,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -918,7 +998,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -932,7 +1012,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -946,13 +1026,13 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"VXM-11",
+					"FAULT",
 					this,
 					.2783,
 					1.0 - .68066,
@@ -960,7 +1040,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -974,7 +1054,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -988,7 +1068,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1002,7 +1082,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1019,7 +1099,7 @@
 					163.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1034,7 +1114,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1048,7 +1128,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1062,7 +1142,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1076,7 +1156,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1090,7 +1170,21 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
+					backgroundMap
+				) {}
+			)
+			mapStateFeatures.add(
+				SystemMapFeature(
+					"AXA-2",
+					this,
+					.76465,
+					1.0 - .57,
+					44.0 / 1024.0,
+					44.0 / 1024.0,
+					null,
+					null,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1104,7 +1198,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1118,7 +1212,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1132,7 +1226,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1146,7 +1240,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1160,7 +1254,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1174,7 +1268,7 @@
 					44.0 / 1024.0,
 					null,
 					null,
-					8.0,
+					0.0,
 					backgroundMap
 				) {}
 			)
@@ -1207,18 +1301,18 @@
 					NamespacedKeys.packKey("map/grid_lines")
 				),
 				null,
-				1.2
+				.2
 			)
 			val maxDistanceMap = MapFeature(
 				"WORLD_BORDER",
 				this,
 				15.0/32.0,
-				1.0/32.0,
+				2/32.0,
 				.03,
 				.03,
 				null,
 				Component.text("System Size: ${systemForSystemMap!!.worldBorder.size.toInt()}m"),
-				10.1
+				2.0
 			)
 
 			mapStateFeatures.add(maxDistanceMap)
@@ -1229,17 +1323,18 @@
 
 			val world = systemForSystemMap ?: return
 			val source = world.worldBorder.center.toVector()
-			planetInRange(this, 1_000_000.0, source, world).forEach {
+			planetInRange(1_000_000.0, source, world).forEach {
 				generateCelestialBodyMapFeature(it)
 			}
-			starsInRange(this, 1_000_000.0, source, world).forEach {
+			starsInRange(1_000_000.0, source, world).forEach {
 				generateCelestialBodyMapFeature(it)
 			}
-			beaconsInRange(this, 1_000_000.0, source, world).forEach {
+			beaconsInRange(1_000_000.0, source, world).forEach {
 				generateBeaconMapFeature(it)
 			}
 
 			bookmarksInRange(this, 1_000_000.0, source, world).forEach {
+				println("x")
 				generateBookmarkMapFeature(it)
 			}
 
@@ -1373,8 +1468,6 @@
 		}
 
 		companion object : SLEventListener() {
-			fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
-
 			@EventHandler
 			private fun onPlayerInteractWithInteraction(event: PlayerInteractEntityEvent) {
 				val interaction = event.rightClicked

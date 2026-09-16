@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.DamageEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.get
@@ -26,10 +28,12 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -128,7 +132,7 @@ class RayTracedParticleProjectile(
 				// Headshots
 				if (balancing.shouldHeadshot && (hitEntity.eyeLocation.y - hitPosition.y) < (.3 * balancing.shotSize)) {
 					hasHeadshot = true
-					hitEntity.damage(damage * 1.5, shooter)
+					hitEntity.ionDamage(damage * 1.5, shooter)
 
 					hitLocation.world.spawnParticle(Particle.CRIT, hitLocation, 10)
 					shooter?.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
@@ -138,7 +142,7 @@ class RayTracedParticleProjectile(
 			}
 
 			if (!hasHeadshot) {
-				hitEntity.damage(damage, shooter)
+				hitEntity.ionDamage(damage, shooter)
 				shooter?.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 				if (!balancing.shouldPassThroughEntities) return true
 			}
@@ -149,7 +153,7 @@ class RayTracedParticleProjectile(
 		// Flying Entity Check
 		val flyingHitEntity = flyingRayTraceResult?.hitEntity
 		if (flyingHitEntity != null && flyingHitEntity is Damageable) {
-			flyingHitEntity.damage(damage, shooter)
+			flyingHitEntity.ionDamage(damage, shooter)
 
 			if (flyingHitEntity is Player) {
 				if (!glideDisabledPlayers.containsKey(flyingHitEntity.uniqueId)) {
@@ -163,12 +167,12 @@ class RayTracedParticleProjectile(
 					hitNation?.let { hitNation1 ->
 						RelationCache[
 							hitNation1, shootNation
-						].ordinal < 5
+						] >= NationRelation.Level.ALLY
 					}
 				} ?: false
 
 				// Ignore nation if in arena
-				if (!isSameNation || flyingHitEntity.world.hasFlag(WorldFlag.ARENA)) {
+				if ((isSameNation && flyingHitEntity.world.hasFlag(WorldFlag.ARENA)) || !isSameNation) {
 					glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
@@ -206,5 +210,20 @@ class RayTracedParticleProjectile(
 		location.add(directionVector)
 
 		return false
+	}
+
+	@Suppress("UnstableApiUsage")
+	private fun Damageable.ionDamage(damage: Double, damager: Entity?) {
+		if (damager == null) return
+		DamageEvent.doDamageEvent(
+			damage,
+			DamageCause.PROJECTILE,
+			this,
+			damager,
+			DamageType.PLAYER_ATTACK,
+			this.location,
+			false,
+			false
+		)
 	}
 }

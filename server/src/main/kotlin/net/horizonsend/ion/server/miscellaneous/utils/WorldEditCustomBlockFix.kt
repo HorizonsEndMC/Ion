@@ -114,11 +114,15 @@ fun Player.pasteClipboardCustomBlocks(ignoreAirBlocks: Boolean = false) {
 		return
 	}
 
-	world.worldEditSession { editSession ->
+	val weWorld = BukkitAdapter.adapt(world)
+	WorldEdit.getInstance().newEditSessionBuilder()
+		.world(weWorld)
+		.actor(user)
+		.build().use { editSession ->
 		val to = BukkitAdapter.adapt(location).toVector().toBlockPoint()
 		val clipboard = holder.clipboards.firstOrNull() ?: run {
 			sendMessage("Your clipboard is empty.")
-			return@worldEditSession
+			return
 		}
 		pasteClipboardCustomBlocks(clipboard, holder.transform, editSession, to, ignoreAirBlocks)
 		session.remember(editSession)

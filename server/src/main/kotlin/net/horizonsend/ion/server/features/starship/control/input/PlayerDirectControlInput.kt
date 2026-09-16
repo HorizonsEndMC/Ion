@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.starship.control.input
 //import net.horizonsend.ion.server.features.nations.NationBuffTypes
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
@@ -141,11 +143,18 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (input.isRight) strafe += 1.0
 		if (input.isForward) ascend += 1.0
 		if (input.isBackward) ascend -= 1.0
-		if(input.isJump) {
+		if(input.isSprint) {
 			if(player.server.currentTick-lastTertiaryInput > 10) {
-				handleTertiaryInput()
+				handleTertiaryInput(starship)
 				lastTertiaryInput = player.server.currentTick
 			}
+		}
+		if(input.isJump){
+			starship.informationAction("Drifting")
+			starship.reactor.powerDistributor.thrusterPortion = 0.1
+		}
+		else {
+			starship.reactor.powerDistributor.thrusterPortion = 0.5
 		}
 
 		// Convert to world-relative vector

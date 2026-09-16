@@ -62,7 +62,8 @@ abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock, Disp
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true) return
+		val starship = ActiveStarships.findByPilot(player)
+		if (starship?.isDirectControlEnabled == true || starship?.isDirectCruiseControlEnable == true) return
 		NavigationCommand.openNavigationGui(player)
 	}
 }

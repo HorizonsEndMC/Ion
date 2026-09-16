@@ -46,8 +46,11 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.control.input.AIDirectControlInput
 import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
 import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectCruiseControlInput
 import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.CruiseData
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.DirectCruiseControlHandler
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -170,6 +173,9 @@ class Starship(
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
 	val statusEffects: MutableMap<StarshipStatusEffectType, MutableList<StarshipStatusEffect>> = mutableMapOf()
 
+	var cruiseTickCount = 0
+	var moveThisShipThisTick = false
+
 	var world: World = data.bukkitWorld()
 		set(value) {
 			ActiveStarships.updateWorld(this, field, value)
@@ -183,6 +189,12 @@ class Starship(
 		subsystems.forEach { it.tick() }
 		shiftKinematicEstimator.removeData()
 		cruiseKinematicEstimator.removeData()
+
+		cruiseTickCount+=1
+		if(cruiseTickCount.toDouble() == 20*StarshipCruising.SECONDS_PER_CRUISE){
+			cruiseTickCount = 0
+			moveThisShipThisTick = true
+		}
 
 		if (forecastEnabled) {
 			displayForecast(this)
@@ -375,10 +387,14 @@ class Starship(
 	//endregion
 
 	//region Movement
-	var cruiseData = StarshipCruising.CruiseData(this)
+	var cruiseData = CruiseData(this)
 	var lastBlockedTime: Long = 0
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
 	var speedLimit = -1
+
+	//direct cruise, cruise speedup (brings direct cruise in line with shift fly speed in certain situations).
+	var directCruiseSpeedAddition: Double = 0.0
+
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
@@ -462,6 +478,10 @@ class Starship(
 		return controller.movementHandler is DirectControlHandler
 	}
 
+	val isDirectCruiseControlEnable: Boolean get(){
+		return controller.movementHandler is DirectCruiseControlHandler
+	}
+
 	var directControlCenter: Location? = null
 
 	// Stored on starship so it can't be reset by switching to dc and back
@@ -471,6 +491,12 @@ class Starship(
 	fun setDirectControlEnabled(enabled: Boolean) {
 		if (enabled && StarshipCruising.isCruising(this)) {
 			this.userErrorAction("Direct Control cannot be enabled while cruising")
+			return
+		}
+		if (this.initialBlockCount > 12501){
+			this.userErrorAction(
+				"Only ships of size 12500 or less can use direct control"
+			)
 			return
 		}
 		when (controller) {
@@ -483,6 +509,22 @@ class Starship(
 				val controller = controller as AIController
 				if (enabled) controller.movementHandler = DirectControlHandler(controller, AIDirectControlInput(controller)) else
 					controller.movementHandler = ShiftFlightHandler(controller, AIShiftFlightInput(controller))
+			}
+			else -> return
+		}
+	}
+
+	fun setDirectCruiseControlEnabled(enabled: Boolean){
+		if (enabled && this.isDirectControlEnabled) {
+			this.userErrorAction("Direct Cruise Control cannot be enabled while Direct Control is activated")
+			return
+		}
+		when (controller) {
+			is ActivePlayerController -> {
+				val controller = controller as ActivePlayerController
+				if (enabled) controller.movementHandler =
+					DirectCruiseControlHandler(controller, PlayerDirectCruiseControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
 			}
 			else -> return
 		}

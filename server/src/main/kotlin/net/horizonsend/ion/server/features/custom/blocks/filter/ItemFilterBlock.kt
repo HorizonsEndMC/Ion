@@ -96,7 +96,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 
 		state.nextStateUpdateTime = Long.MAX_VALUE
 
-		val storedFilterData = placedItem?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData)
+		val storedFilterData = placedItem?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData) ?: state.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData)
 		if (storedFilterData != null) state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
 
 		state.update()

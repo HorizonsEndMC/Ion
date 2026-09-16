@@ -579,7 +579,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val origin: Vector = starship.centerOfMass.toVector()
 		val distance: Double = distance(origin.x, 0.0, origin.z, x1.toDouble(), 0.0, z1.toDouble())
 
-		if (distance > maxRange) {
+		if (distance > maxRange && destinationWorld == starship.world) {
 			val (normalizedX, _, normalizedZ) = normalize(x1 - origin.x, 0.0, z1 - origin.z)
 			x1 = (normalizedX * maxRange + origin.x).roundToInt()
 			z1 = (normalizedZ * maxRange + origin.z).roundToInt()
@@ -721,17 +721,16 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(!starship.isDirectControlEnabled && !isHoldingController(sender)) {
 			"You need to hold a starship controller to enable direct control"
 		}
-		/*
-		if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) {
-			sender.serverError(
-				"Only ships of size ${StarshipType.DESTROYER.maxSize} or less can use direct control, " +
-					"this is mostly a performance thing, and will probably change in the future."
-			)
-			return
-		}
-		 */
 
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
+	}
+
+	@CommandAlias("cruisecontrol|cc|CC")
+	@Suppress("unused")
+	fun onCruiseControl(sender: Player){
+		val starship = getStarshipPiloting(sender)
+
+		starship.setDirectCruiseControlEnabled(!starship.isDirectCruiseControlEnable)
 	}
 
 	@Suppress("unused")

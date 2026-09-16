@@ -2,9 +2,7 @@
 
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.google.common.base.Function
-import io.papermc.paper.event.entity.EntityKnockbackEvent
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -19,7 +17,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.util.Vector
 import kotlin.math.max
 import kotlin.math.min
 
@@ -58,8 +55,10 @@ object DamageEvent {
 		modifierFunctions[DamageModifier.BLOCKING] = Function { damage: Double -> damage }
 		modifierFunctions[DamageModifier.RESISTANCE] = Function { damage: Double -> damage }
 
-		if (!goesThroughBlocking && (entity as? LivingEntity)?.activeItem?.type == Material.SHIELD){
-			damageModifiers[DamageModifier.BLOCKING] = -baseDamage
+		if (!goesThroughBlocking && (entity as? LivingEntity)?.activeItem?.type == Material.SHIELD ){
+			if (entity is Player && !entity.hasCooldown(Material.SHIELD)) {
+				damageModifiers[DamageModifier.BLOCKING] = -baseDamage
+			}
 		}
 
 		//If the player has resistance, on HE this will likely never happen however it never hurts to be prepared
@@ -73,6 +72,7 @@ object DamageEvent {
 		event.callEvent()
 		if (!event.isCancelled){
 			entity.damage(event.finalDamage, damager)
+
 		}
 
 		(entity as? Player)?.isSprinting =  wasSprinting ?: false //We dont want to stop the entity sprinting by accident
