@@ -15,8 +15,8 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		var energySwordBalancing: MeleeWeaponBalancing = MeleeWeaponBalancing(
-			damage = 7.25,
-			speedUp = 0.0,
+			damage = 7.0,
+			speedUp = 0.2,
 			attackSpeed = -2.4,
 			knockback = 0.0,
 			entityInteractionRange = 0.0,
@@ -98,7 +98,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 4.5,
+			damage = 3.5,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -188,7 +188,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 2.45,
+			damage = 1.9,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -218,8 +218,8 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val sniper: Singleshot = Singleshot(
-			damage = 25.0,
-			damageFalloffMultiplier = 29.0,
+			damage = 15.0,
+			damageFalloffMultiplier = 30.0,
 			capacity = 5,
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
@@ -282,7 +282,7 @@ data class PVPBalancingConfiguration(
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 0.2,
+			damage = 0.1,
 			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,
@@ -327,132 +327,132 @@ data class PVPBalancingConfiguration(
 	) {
 		@Serializable
 		data class Singleshot(
-			override var damage: Double,
-			override var explosionPower: Float = 0f,
-			override var damageFalloffMultiplier: Double,
-			override var capacity: Int,
-			override var ammoPerRefill: Int,
-			override var packetsPerShot: Int,
-			override var pitch: Float,
-			override var range: Double,
-			override var recoil: Float,
-			override var reload: Int,
-			override var shotSize: Double,
-			override var shouldAkimbo: Boolean,
-			override var shouldBypassHitTicks: Boolean,
-			override var shouldHeadshot: Boolean,
-			override var shouldPassThroughEntities: Boolean,
-			override var particleSize: Float,
-			override var speed: Double,
-			override var timeBetweenShots: Int,
-			override var shotDeviation: Double,
-			override var mobDamageMultiplier: Double,
-			override var consumesAmmo: Boolean,
-			override var displayDurability: Boolean = true,
-			override var magazineIdentifier: String,
-			override var refillType: String,
+			override val damage: Double,
+			override val explosionPower: Float = 0f,
+			override val damageFalloffMultiplier: Double,
+			override val capacity: Int,
+			override val ammoPerRefill: Int,
+			override val packetsPerShot: Int,
+			override val pitch: Float,
+			override val range: Double,
+			override val recoil: Float,
+			override val reload: Int,
+			override val shotSize: Double,
+			override val shouldAkimbo: Boolean,
+			override val shouldBypassHitTicks: Boolean,
+			override val shouldHeadshot: Boolean,
+			override val shouldPassThroughEntities: Boolean,
+			override val particleSize: Float,
+			override val speed: Double,
+			override val timeBetweenShots: Int,
+			override val shotDeviation: Double,
+			override val mobDamageMultiplier: Double,
+			override val consumesAmmo: Boolean,
+			override val displayDurability: Boolean = true,
+			override val magazineIdentifier: String,
+			override val refillType: String,
 
-			override var soundRange: Double,
-			override var soundReloadStart: SoundInfo,
-			override var soundReloadFinish: SoundInfo,
-			override var soundFire: SoundInfo,
-			override var soundWhizz: SoundInfo,
-			override var soundShell: SoundInfo,
+			override val soundRange: Double,
+			override val soundReloadStart: SoundInfo,
+			override val soundReloadFinish: SoundInfo,
+			override val soundFire: SoundInfo,
+			override val soundWhizz: SoundInfo,
+			override val soundShell: SoundInfo,
 
-			override var explosiveShot: Boolean = false
+			override val explosiveShot: Boolean = false
 		) : Balancing()
 
 		@Serializable
 		data class Multishot(
-			var shotCount: Int,
-			var offsetMax: Double,
-			var delay: Int,
+			val shotCount: Int,
+			val offsetMax: Double,
+			val delay: Int,
 
-			override var damage: Double,
-			override var explosionPower: Float = 0f,
-			override var damageFalloffMultiplier: Double,
-			override var capacity: Int,
-			override var ammoPerRefill: Int,
-			override var packetsPerShot: Int,
-			override var pitch: Float,
-			override var range: Double,
-			override var recoil: Float,
-			override var reload: Int,
-			override var shotSize: Double,
-			override var shouldAkimbo: Boolean,
-			override var shouldBypassHitTicks: Boolean,
-			override var shouldHeadshot: Boolean,
-			override var shouldPassThroughEntities: Boolean,
-			override var particleSize: Float,
-			override var speed: Double,
-			override var timeBetweenShots: Int,
-			override var shotDeviation: Double,
-			override var mobDamageMultiplier: Double,
-			override var consumesAmmo: Boolean,
-			override var displayDurability: Boolean = true,
-			override var magazineIdentifier: String,
-			override var refillType: String,
+			override val damage: Double,
+			override val explosionPower: Float = 0f,
+			override val damageFalloffMultiplier: Double,
+			override val capacity: Int,
+			override val ammoPerRefill: Int,
+			override val packetsPerShot: Int,
+			override val pitch: Float,
+			override val range: Double,
+			override val recoil: Float,
+			override val reload: Int,
+			override val shotSize: Double,
+			override val shouldAkimbo: Boolean,
+			override val shouldBypassHitTicks: Boolean,
+			override val shouldHeadshot: Boolean,
+			override val shouldPassThroughEntities: Boolean,
+			override val particleSize: Float,
+			override val speed: Double,
+			override val timeBetweenShots: Int,
+			override val shotDeviation: Double,
+			override val mobDamageMultiplier: Double,
+			override val consumesAmmo: Boolean,
+			override val displayDurability: Boolean = true,
+			override val magazineIdentifier: String,
+			override val refillType: String,
 
-			override var soundRange: Double,
-			override var soundReloadStart: SoundInfo,
-			override var soundReloadFinish: SoundInfo,
-			override var soundFire: SoundInfo,
-			override var soundWhizz: SoundInfo,
-			override var soundShell: SoundInfo,
+			override val soundRange: Double,
+			override val soundReloadStart: SoundInfo,
+			override val soundReloadFinish: SoundInfo,
+			override val soundFire: SoundInfo,
+			override val soundWhizz: SoundInfo,
+			override val soundShell: SoundInfo,
 
-			override var explosiveShot: Boolean = false
+			override val explosiveShot: Boolean = false
 		) : Balancing()
 
 		@Serializable
 		data class AmmoStorage(
-			override var capacity: Int,
-			override var refillType: String,
-			override var ammoPerRefill: Int,
-			override var displayDurability: Boolean = true
+			override val capacity: Int,
+			override val refillType: String,
+			override val ammoPerRefill: Int,
+			override val displayDurability: Boolean = true
 		) : AmmoStorageBalancing, AmmoLoaderUsable
 
 		abstract class Balancing : ProjectileBalancing, AmmoStorageBalancing {
-			abstract var magazineIdentifier: String
-			abstract var packetsPerShot: Int
-			abstract var pitch: Float
-			abstract var recoil: Float
-			abstract var reload: Int
-			abstract var shouldAkimbo: Boolean
-			abstract var timeBetweenShots: Int
-			abstract var consumesAmmo: Boolean
+			abstract val magazineIdentifier: String
+			abstract val packetsPerShot: Int
+			abstract val pitch: Float
+			abstract val recoil: Float
+			abstract val reload: Int
+			abstract val shouldAkimbo: Boolean
+			abstract val timeBetweenShots: Int
+			abstract val consumesAmmo: Boolean
 
-			abstract var soundRange: Double
-			abstract var soundFire: SoundInfo
-			abstract var soundWhizz: SoundInfo
-			abstract var soundShell: SoundInfo
-			abstract var soundReloadStart: SoundInfo
-			abstract var soundReloadFinish: SoundInfo
+			abstract val soundRange: Double
+			abstract val soundFire: SoundInfo
+			abstract val soundWhizz: SoundInfo
+			abstract val soundShell: SoundInfo
+			abstract val soundReloadStart: SoundInfo
+			abstract val soundReloadFinish: SoundInfo
 		}
 
 		interface ProjectileBalancing {
-			var speed: Double
-			var damage: Double
-			var explosionPower: Float
-			var damageFalloffMultiplier: Double
-			var shouldPassThroughEntities: Boolean
-			var shotSize: Double
-			var shouldBypassHitTicks: Boolean
-			var range: Double
-			var shouldHeadshot: Boolean
-			var mobDamageMultiplier: Double
-			var shotDeviation: Double
-			var explosiveShot: Boolean
-			var particleSize: Float
+			val speed: Double
+			val damage: Double
+			val explosionPower: Float
+			val damageFalloffMultiplier: Double
+			val shouldPassThroughEntities: Boolean
+			val shotSize: Double
+			val shouldBypassHitTicks: Boolean
+			val range: Double
+			val shouldHeadshot: Boolean
+			val mobDamageMultiplier: Double
+			val shotDeviation: Double
+			val explosiveShot: Boolean
+			val particleSize: Float
 		}
 
 		interface AmmoStorageBalancing : AmmoLoaderUsable {
-			var capacity: Int
-			var displayDurability: Boolean
+			val capacity: Int
+			val displayDurability: Boolean
 		}
 
 		interface AmmoLoaderUsable {
-			var refillType: String
-			var ammoPerRefill: Int
+			val refillType: String
+			val ammoPerRefill: Int
 		}
 	}
 }
