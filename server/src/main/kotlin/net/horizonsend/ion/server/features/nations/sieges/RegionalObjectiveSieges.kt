@@ -227,9 +227,9 @@ object RegionalObjectiveSieges : IonServerComponent() {
 		val ownerName = region.nation?.let { NationCache[it].name } ?: "None"
 
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(
-			"<gold>${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 45 minutes!"
+			"<gold>${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 30 minutes!"
 		))
-		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 45 minutes!")
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "${player.name} of $nationName has initiated a siege on ${region.type.name.replace('_', ' ')} ${region.name}! (Current Owner: $ownerName) The siege will last 30 minutes!")
 	}
 
 	private fun endSiege(siege: ActiveSiege) = asyncLocked {
