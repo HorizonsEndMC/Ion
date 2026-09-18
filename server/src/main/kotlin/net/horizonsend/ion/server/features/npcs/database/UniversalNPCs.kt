@@ -33,7 +33,7 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import java.util.UUID
 
 object UniversalNPCs : IonServerComponent(true) {
-	private val npcManager = NPCManager(log, "UniversalNPCs")
+	val npcManager = NPCManager(log, "UniversalNPCs")
 	private val wrapperMap: MutableMap<UUID, UniversalNPCWrapper<*, *>> = mutableMapOf()
 	private val typeMap: Multimap<UniversalNPCType<*>, UUID> = multimapOf()
 	private val oidMap: MutableMap<Oid<UniversalNPC>, UUID> = mutableMapOf()
