@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.player
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
+import net.citizensnpcs.api.npc.NPC
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -19,7 +20,10 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.economy.city.CityNPCs
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
+import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Interdiction
@@ -50,7 +54,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.time.Duration
-import java.util.UUID
+import java.util.*
 
 object CombatTimer : IonServerComponent() {
 	private val PVP_TIMER_MINS = Duration.ofMinutes(5)
@@ -278,10 +282,10 @@ object CombatTimer : IonServerComponent() {
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
 		// If the defender is an NPC, just give the attacker a combat NPC regardless
-		if (defender.hasMetadata("NPC") && tagAttacker) {
+		if (defender.isNPC && tagAttacker && CombatNPCs.manager.getNPC(defender) != null) {
 			refreshPvpTimer(attacker, reason)
 			return
-		}
+		} else if(CityNPCs.manager.getNPC(defender) != null || UniversalNPCs.npcManager.getNPC(defender) != null) return
 
 		val attackerFleet = Fleets.findByMember(attacker)
 		val defenderFleet = Fleets.findByMember(defender)
