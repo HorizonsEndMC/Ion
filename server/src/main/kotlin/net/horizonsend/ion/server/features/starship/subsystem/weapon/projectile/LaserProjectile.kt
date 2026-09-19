@@ -8,6 +8,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 abstract class LaserProjectile<out B : StarshipParticleProjectileBalancing>(
@@ -28,5 +29,12 @@ abstract class LaserProjectile<out B : StarshipParticleProjectileBalancing>(
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 
 		location.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+	}
+
+	fun Player.spawnPlayerSpecificParticle(x: Double, y: Double, z: Double, force: Boolean) {
+		val particle = Particle.DUST
+		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
+
+		this.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
 	}
 }
