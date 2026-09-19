@@ -94,7 +94,7 @@ class ThermonuclearMissileProjectile<B : StarshipTrackingProjectileBalancing>(
 	}
 
 	override fun onImpact() {
-		val task = Tasks.syncRepeatTask(0L, 2L) {
+		val task = Tasks.syncRepeatTask(0L, 5L) {
 			for (point in location.circlePoints(3.0, 10, direction)) {
 				point.world.spawnParticle(
 					Particle.DUST_COLOR_TRANSITION,
