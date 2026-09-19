@@ -33,7 +33,7 @@ class ScramblerProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		val shooterStarship = shooter.starship ?: return
 
-		val task = Tasks.syncRepeatTask(0L, 2L) {
+		val task = Tasks.syncRepeatTask(0L, 5L) {
 			val startLocation = subsystem.getFirePos().toLocation(location.world).toCenterLocation()
 
 			for (endLocation in impactLocation.circlePoints(10.0, 10, direction)) {
