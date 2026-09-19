@@ -101,6 +101,9 @@ data class PlayerSettings(
 	var chestShopDisplays: Boolean = true,
 	var miningLaserEffectLevel: Int = 3,
 	var doLightUpdates: Boolean = true,
+	var commandBurst: Int = 0,
+	var gaussCannons: Int = 0,
+	var autoCannons: Int = 0,
 
 	var hudIconStarships: Boolean = true,
 	var hudIconSize: Int = 5,

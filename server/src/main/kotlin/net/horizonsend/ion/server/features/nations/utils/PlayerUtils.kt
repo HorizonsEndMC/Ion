@@ -38,4 +38,6 @@ fun findOfflinePlayer(name: String?): OfflinePlayer? {
 
 fun toPlayersInRadius(origin: Location, radius: Double, consumer: Consumer<Player>) = origin.getNearbyPlayers(radius).forEach(consumer)
 
+fun toPlayersInRadiusMatchingPredicate(origin: Location, radius: Double, predicate:  (Player) -> Boolean,consumer: Consumer<Player>) = origin.getNearbyPlayers(radius).filter { predicate.invoke(it) }.forEach(consumer)
+
 val Player.isNPC get() = this.hasMetadata("NPC")

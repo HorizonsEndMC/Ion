@@ -16,7 +16,6 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SettingsMainMenuG
 import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
-import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -47,6 +46,18 @@ object SettingsCommand : SLCommand() {
         registerAsyncCompletion(manager, "audioRange") { _ ->
             AudioRange.entries.map { setting -> setting.name }
         }
+
+		registerAsyncCompletion(manager, "controlTertiaryControl") {_->
+			PlayerInput.TertiaryButtonControl.entries.map { setting -> setting.name }
+		}
+
+		registerAsyncCompletion(manager, "displayorparticle") {_->
+			SettingsMainMenuGui.Companion.DisplayOrParticle.entries.map { setting -> setting.name }
+		}
+
+		registerAsyncCompletion(manager, "particleSettings") {_->
+			SettingsMainMenuGui.Companion.ParticleSettings.entries.map { setting -> setting.name }
+		}
     }
 
     @Default
@@ -307,7 +318,7 @@ object SettingsCommand : SLCommand() {
         handleBooleanToggleSetting(sender, PlayerSettings::hudPlanetsSelector, enabled)
     }
 
-    @CommandAlias("grahpics hudicon iconsize")
+    @CommandAlias("graphics hudicon iconsize")
     @CommandCompletion("1|10")
     fun onSettingsGraphicsHudIconIconSize(sender: Player, value: Int) = asyncCommand(sender) {
         handleIntegerInputSetting(sender, PlayerSettings::hudIconSize, value, 1, 10)
@@ -371,6 +382,24 @@ object SettingsCommand : SLCommand() {
     fun onSettingsGraphicsEffectsFlareDuration(sender: Player, value: Int) = asyncCommand(sender) {
         handleIntegerInputSetting(sender, PlayerSettings::flareTime, value, 1, 100)
     }
+
+	@CommandAlias("graphics effects commandburst")
+	@CommandCompletion("@displayorparticle")
+	fun onSettingsGraphicsEffectsCommandBurst(sender: Player, value: SettingsMainMenuGui.Companion.DisplayOrParticle) = asyncCommand(sender) {
+		handleEnumCycleSetting(sender, PlayerSettings::commandBurst, value, SettingsMainMenuGui.Companion.DisplayOrParticle::class.java)
+	}
+
+	@CommandAlias("graphics effects gausscannon")
+	@CommandCompletion("@particleSettings")
+	fun onSettingsGraphicsEffectsGaussCannon(sender: Player, value: SettingsMainMenuGui.Companion.ParticleSettings) = asyncCommand(sender) {
+		handleEnumCycleSetting(sender, PlayerSettings::gaussCannons, value, SettingsMainMenuGui.Companion.ParticleSettings::class.java)
+	}
+
+	@CommandAlias("graphics effects autocannon")
+	@CommandCompletion("@particleSettings")
+	fun onSettingsGraphicsEffectsAutoCannon(sender: Player, value: SettingsMainMenuGui.Companion.ParticleSettings) = asyncCommand(sender) {
+		handleEnumCycleSetting(sender, PlayerSettings::autoCannons, value, SettingsMainMenuGui.Companion.ParticleSettings::class.java)
+	}
 
     @CommandAlias("sound enableadditionalsounds")
     @CommandCompletion("true|false")

@@ -102,7 +102,13 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedEnumCycle(ClientDisplayEntities.Visibility::class.java, text("Display Entities"), "Changes the visibility of display entity effects", GuiItem.LIST, 0, PlayerSettings::displayEntityVisibility),
 				DBCachedBooleanToggle(text("Toggle Alternative Shield Impact Particles"), "", GuiItem.BOOKMARK, false, PlayerSettings::useAlternateShieldHitParticle),
 				DBCachedIntegerInput(1,100, text("Flare Duration"),
-					"\"How long flares from hitting shields should last in ticks", GuiItem.BOOKMARK, 5, PlayerSettings::flareTime)
+					"\"How long flares from hitting shields should last in ticks", GuiItem.BOOKMARK, 5, PlayerSettings::flareTime),
+				DBCachedEnumCycle(DisplayOrParticle::class.java, text("Command Burst"), "Cycles the visual form Command Burst should take",
+					GuiItem.GEAR, 0, PlayerSettings::commandBurst),
+				DBCachedEnumCycle(ParticleSettings::class.java, text("Gauss Cannon"), "Cycles the visual form Gauss Cannons should take",
+					GuiItem.GEAR, 0, PlayerSettings::gaussCannons),
+				DBCachedEnumCycle(ParticleSettings::class.java, text("Auto Cannon"), "Cycles the visual form Auto Cannons should take",
+					GuiItem.GEAR, 0, PlayerSettings::autoCannons)
 			),
 			createSettingsPage(player, "Misc Settings",
 				DBCachedBooleanToggle(text("Toggle Chest Shop Visibility"), "", GuiItem.BOOKMARK, false, PlayerSettings::chestShopDisplays),
@@ -139,5 +145,18 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 
 	override fun getSecondLine(player: Player): Component {
 		return Component.empty()
+	}
+	companion object {
+		enum class DisplayOrParticle{
+			PARTICLE,
+			DISPLAY,
+			BOTH
+		}
+
+		enum class ParticleSettings{
+			ALL_PARTICLES,
+			HALF_PARTICLES,
+			REDUCED_PARTICLES,
+		}
 	}
 }
