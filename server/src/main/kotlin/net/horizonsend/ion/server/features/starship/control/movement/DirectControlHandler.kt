@@ -94,12 +94,10 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 			} else 0.0
 		} ?: 0.0
 		 */
-		val targetSpeed = if (starship.type.tech2) {
-			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier) * 1.15) * oversizeModifier /*+ nationDirectControlModifier*/
-		} else {
-			(calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier /*+ nationDirectControlModifier*/
-		}
+		var targetSpeed = (calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier /*+ nationDirectControlModifier*/
 
+		targetSpeed *= if (starship.type.tech2) 1.15 else 1.0
+		targetSpeed *= starship.correctiveFactorForDirectControlSpeed(data.selectedSpeed)
 		if (data.isBoosting) {
 			// Initialize forward movement
 			dx += (targetSpeed * direction.modX * 2).roundToInt()
