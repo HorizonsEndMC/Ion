@@ -98,6 +98,7 @@
 			setupSideBarButtons()
 			when(state){
 				MapState.LOCAL_MAP -> placeLocalMap()
+				MapState.SYSTEMS_MAP -> if(!shouldUse) placeSystemsMap() else placeGalacticMap()
 				else -> placeGalacticMap()
 			}
 
@@ -349,6 +350,7 @@
 		}
 
 		private fun placeLocalMap() {
+			this.state = MapState.LOCAL_MAP
 			mapStateFeatures.forEach { it.despawn() }
 			mapStateFeatures.clear()
 			val backgroundMap = MapFeature(
@@ -598,6 +600,7 @@
 		Then I realized the offsets were all upside down, and I had to do 1-offsetY to get the correct one
 		 */
 		private fun placeGalacticMap() {
+			this.state = MapState.GALACTIC_MAP
 			mapStateFeatures.forEach { it.despawn() }
 			mapStateFeatures.clear()
 
@@ -1282,6 +1285,7 @@
 		}
 
 		fun placeSystemsMap() {
+			this.state = MapState.SYSTEMS_MAP
 			mapStateFeatures.forEach { it.despawn() }
 			mapStateFeatures.clear()
 			if(systemForSystemMap == null){
