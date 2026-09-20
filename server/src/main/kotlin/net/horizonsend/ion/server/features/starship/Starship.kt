@@ -485,8 +485,11 @@ class Starship(
 	var directControlCenter: Location? = null
 
 	// Stored on starship so it can't be reset by switching to dc and back
-	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700)/*.coerceAtLeast(1)*/) * 30
+	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700)/*.coerceAtLeast(1)*/) * 60
 	var directControlCooldown = initialDirectControlCooldown
+	//new cooldown formula divided by old cooldown formula gives us a corrective factor dependent on block-count & slot speed.
+	//This yields us the factor to multiply by to yield the same speed.
+	fun correctiveFactorForDirectControlSpeed(slot: Double) = (300.0 + 60.0*(initialBlockCount/700)-8.0*slot)/((300.0 + 30.0*(initialBlockCount/700)-8.0*slot))
 
 	fun setDirectControlEnabled(enabled: Boolean) {
 		if (enabled && StarshipCruising.isCruising(this)) {
