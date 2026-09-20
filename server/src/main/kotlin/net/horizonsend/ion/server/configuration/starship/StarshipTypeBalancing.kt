@@ -140,6 +140,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -173,6 +189,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -209,6 +241,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -244,6 +292,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -276,6 +340,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -325,6 +405,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -356,6 +452,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -400,6 +512,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					DisruptorSubsystem::class.java,
 					"Only Warships can use Disruptors!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -454,6 +582,22 @@ data class NewStarshipBalancing(
 					DisruptorSubsystem::class.java,
 					"Only Warships can use Disruptors!"
 				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				)
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -504,6 +648,22 @@ data class NewStarshipBalancing(
 					DisruptorSubsystem::class.java,
 					"Only Warships can use Disruptors!"
 				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				)
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -561,6 +721,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -598,6 +774,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -640,8 +832,24 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpFieldGeneratorSubsystem::class.java,
 					"This ship cannot use a jump field generator!"
-				)
 				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				)
+			),
 			weaponOverrides = listOf(
 				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -677,6 +885,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -716,6 +940,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -764,6 +1004,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -804,6 +1060,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -837,6 +1109,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -869,6 +1157,22 @@ data class NewStarshipBalancing(
 					DisruptorSubsystem::class.java,
 					"Interdiction Ships cannot use Disruptors!"
 				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				)
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -939,6 +1243,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -990,6 +1310,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1099,6 +1435,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -1146,6 +1498,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1195,6 +1563,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1258,6 +1642,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					TriTurretWeaponSubsystem::class.java,
 					"Missile ships cannot have tri turrets!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1296,6 +1696,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1336,6 +1752,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			weaponOverrides = listOf(
@@ -1367,6 +1799,22 @@ data class NewStarshipBalancing(
 					DisruptorSubsystem::class.java,
 					"Interdiction Ships cannot use Disruptors!"
 				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				)
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -1415,6 +1863,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					"Tech 1 super-capitals cannot house tech 2 reactors!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -1559,6 +2023,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					IonTurretWeaponSubsystem::class.java,
 					"Logistics ships cannot have ion turrets!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
@@ -1597,6 +2077,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					LargeReactorSubsystem::class.java,
 					"Tech 1 super-capitals cannot house tech 2 reactors!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			requiredMultiblocks = listOf(
@@ -1661,6 +2157,22 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
 					"This ship cannot use jump beacons!"
+				),
+				IncompatibleSubsystemInfo(
+					ShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					SkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalShieldCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
+				),
+				IncompatibleSubsystemInfo(
+					CapitalSkirmishCommandBurstSubsystem::class.java,
+					"This ship cannot use command bursts!"
 				)
 			),
 			shipSounds = StarshipSounds(
