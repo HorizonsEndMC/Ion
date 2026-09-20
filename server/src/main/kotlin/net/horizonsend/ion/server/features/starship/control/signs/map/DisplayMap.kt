@@ -541,7 +541,7 @@
 				ItemStack(Material.PAPER).applyGuiModel(GuiItem.BEACON),
 				1.4,
 				this.stateMap!!,
-				Component.text(beacon.name, NamedTextColor.BLACK, BOLD),
+				Component.text(beacon.name, NamedTextColor.WHITE, BOLD),
 				Color.fromARGB(0, 255, 255, 255),
 				beacon
 			){
@@ -902,7 +902,7 @@
 			)
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"0Q-04",
+					"OQ-04",
 					this,
 					.9463,
 					1.0 - .25195,
@@ -1046,7 +1046,7 @@
 			)
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"F3L-1",
+					"F3L-I",
 					this,
 					.072265,
 					1.0 - .72070,
@@ -1148,7 +1148,7 @@
 			)
 			mapStateFeatures.add(
 				SystemMapFeature(
-					"TNS-44f",
+					"TNS-44",
 					this,
 					.76465,
 					1.0 - .487305,
