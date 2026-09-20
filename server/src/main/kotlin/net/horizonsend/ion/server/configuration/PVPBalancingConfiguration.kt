@@ -13,8 +13,8 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		var energySwordBalancing: MeleeWeaponBalancing = MeleeWeaponBalancing(
-			damage = 7.0,
-			speedUp = .2,
+			damage = 6.5,
+			speedUp = 0.0,
 			attackSpeed = -2.4,
 			knockback = 0.0,
 			entityInteractionRange = 0.0,
@@ -43,7 +43,7 @@ data class PVPBalancingConfiguration(
 			5,
 			30,
 			1,
-			25,
+			50,
 		),
 
 		val smokeGrenade: ThrowableBalancing = ThrowableBalancing(
@@ -71,7 +71,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 3.5,
+			damage = 4.25,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -101,7 +101,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val rifle: Singleshot = Singleshot(
-			damage = 6.9,
+			damage = 9.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 20,
 			ammoPerRefill = 20,
@@ -131,7 +131,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 1.9,
+			damage = 2.25,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -161,7 +161,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val sniper: Singleshot = Singleshot(
-			damage = 15.0,
+			damage = 25.0,
 			damageFalloffMultiplier = 30.0,
 			capacity = 5,
 			ammoPerRefill = 20,
@@ -191,7 +191,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 2.2,
+			damage = 3.0,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
