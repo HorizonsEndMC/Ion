@@ -4,6 +4,8 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.RegionalObjectiveSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
@@ -171,7 +173,16 @@ class SiegeRewardsGui(
 			val itemStack = fromItemString(item)
 
 			Tasks.async {
+				val dbRewards = SolarSiegeData.findOnePropById(data.id, SolarSiegeData::availableRewards) ?: mutableMapOf()
+
+				val dbAmount = dbRewards[item] ?: 0
 				val current = entry.rewards[item] ?: amount
+
+				if (current != dbAmount) {
+					viewer.userError("Siege rewards database does not match GUI! (Re-open the GUI)")
+					return@async
+				}
+
 				val withdrawAmount = minOf(current, limit)
 				val newAmount = current - withdrawAmount
 
