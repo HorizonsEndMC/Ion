@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.command.admin.SequenceAdminCommand.end
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
@@ -94,7 +94,7 @@ object PlayerDeathListener : SLEventListener() {
 		val killerColor = "<#" + Integer.toHexString((PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
 
 		val distance = killer.location.distance(victim.location)
-		val verb = when(killer.isFiveDollar()){
+		val verb = when(victim.isFiveDollar()){
 			true-> when(customItem) {
 			is EnergySword -> energySwordVerbs.random()
 			is Blaster<*> -> blasterVerbs[customItem.identifier]?.random() ?: "shot"
