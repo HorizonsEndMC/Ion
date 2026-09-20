@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.command.admin.SequenceAdminCommand.end
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
