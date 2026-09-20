@@ -152,12 +152,12 @@ object PowerArmorListener : SLEventListener() {
 		for (item in player.inventory.armorContents) {
 			val customItem = item?.customItem ?: continue
 
-			if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return continue
+			if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) continue
 			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
 
-			if (!mods.contains(ItemModKeys.SHOCK_ABSORBING)) return continue
+			if (!mods.contains(ItemModKeys.SHOCK_ABSORBING)) continue
 
-			if (customItem.hasComponent(POWER_STORAGE)) return continue
+			if (customItem.hasComponent(POWER_STORAGE)) continue
 			val power = customItem.getComponent(POWER_STORAGE).getPower(item)
 
 			if (power <= 0) continue

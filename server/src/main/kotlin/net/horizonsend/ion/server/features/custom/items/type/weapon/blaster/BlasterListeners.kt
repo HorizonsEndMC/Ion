@@ -22,40 +22,6 @@ import org.bukkit.potion.PotionEffectType
 import kotlin.math.roundToInt
 
 class BlasterListeners : SLEventListener() {
-	@Suppress("Unused")
-	@EventHandler(priority = EventPriority.LOWEST)
-	fun onDeath(event: PlayerDeathEvent) {
-		val victim = event.player
-		val killer = event.entity.killer ?: return
-		val customItem = killer.inventory.itemInMainHand.customItem ?: return
-
-		if (customItem !is Blaster<*>) return
-
-		val arena: String = if (killer.world.hasFlag(WorldFlag.ARENA)) "<#555555>[<#ffff66>Arena<#555555>]<reset> " else ""
-
-		val blaster = customItem.displayName
-		val victimColor = if (victim.hasMetadata("NPC")) "<#FFFFFF>" else "<#" + Integer.toHexString((PlayerCache[victim].nationOid?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
-
-		val killerColor = "<#" + Integer.toHexString((PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
-
-		val distance = killer.location.distance(victim.location)
-		val verb = when (customItem.identifier) {
-			"SNIPER" -> "sniped"
-			"SHOTGUN" -> "blasted"
-			"RIFLE" -> "shot"
-			"SUBMACHINE_BLASTER" -> "shredded"
-			"PISTOL" -> "pelted"
-			else -> "shot"
-		}
-
-		val newMessage = MiniMessage.miniMessage()
-			.deserialize(
-				"$arena$victimColor${victim.name}<reset> was $verb by $killerColor${killer.name}<reset> from ${distance.roundToInt()} blocks away, using "
-			)
-			.append(blaster)
-
-		event.deathMessage(newMessage)
-	}
 
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
