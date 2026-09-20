@@ -173,7 +173,12 @@ class SiegeRewardsGui(
 			val itemStack = fromItemString(item)
 
 			Tasks.async {
-				val dbRewards = SolarSiegeData.findOnePropById(data.id, SolarSiegeData::availableRewards) ?: mutableMapOf()
+				val dbRewards = when (entry) {
+					is RewardEntry.SolarRewardEntry ->
+						SolarSiegeData.findOnePropById(entry.id, SolarSiegeData::availableRewards) ?: mutableMapOf()
+					is RewardEntry.RegionalObjectiveRewardEntry ->
+						SolarSiegeData.findOnePropById(entry.id, RegionalObjectiveSiegeData::availableRewards) ?: mutableMapOf()
+				}
 
 				val dbAmount = dbRewards[item] ?: 0
 				val current = entry.rewards[item] ?: amount
