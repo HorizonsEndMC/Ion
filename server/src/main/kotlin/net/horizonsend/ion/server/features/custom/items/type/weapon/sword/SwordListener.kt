@@ -7,9 +7,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
-import net.horizonsend.ion.server.features.starship.control.signs.map.planetInRange
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.minimessage.MiniMessage

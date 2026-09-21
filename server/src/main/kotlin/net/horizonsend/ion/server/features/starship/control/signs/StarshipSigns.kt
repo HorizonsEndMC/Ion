@@ -9,7 +9,8 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
+import net.horizonsend.ion.server.features.starship.control.signs.display.Display
+import net.horizonsend.ion.server.features.starship.control.signs.display.DisplayMap
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.kyori.adventure.text.Component
@@ -271,7 +272,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<Compon
 
 		dir.rotateAroundAxis(pitchAxis, pitch)
 		val map = DisplayMap(starship, sign.location, dir, sizeX ?: 1.0, sizeY ?: 1.0, offset ?: Vector3d())
-		starship.displayMaps.add(map)
+		starship.displays.add(map)
 	}
 
 	val mapPrefixes = arrayOf(

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.movement
 
-import github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
@@ -34,7 +33,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rectangle
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import org.bukkit.Location
-import org.bukkit.Rotation
 import org.bukkit.World
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Entity
@@ -297,13 +295,13 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 				)
 			}
 		}
-		starship.displayMaps.forEach { map ->
-			val world = map.location.world
+		starship.displays.forEach { display ->
+			val world = display.location.world
 			if(this is TranslateMovement) {
-				val oldX = map.location.x.toInt()
-				val oldY = map.location.y.toInt()
-				val oldZ = map.location.z.toInt()
-				map.location = Location(
+				val oldX = display.location.x.toInt()
+				val oldY = display.location.y.toInt()
+				val oldZ = display.location.z.toInt()
+				display.location = Location(
 					world2,
 					this.displaceX(oldX, oldZ).d(),
 					this.displaceY(oldY).d(),
@@ -312,12 +310,12 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 			}
 			if(this is RotationMovement){
 				val rotation = (Math.PI / 2.0) * if (this.clockwise) -1.0 else 1.0
-				map.dir = map.dir.clone().rotateAroundY(rotation)
+				display.dir = display.dir.clone().rotateAroundY(rotation)
 
-				val oldX = map.location.x.toInt()
-				val oldY = map.location.y.toInt()
-				val oldZ = map.location.z.toInt()
-				map.location = Location(
+				val oldX = display.location.x.toInt()
+				val oldY = display.location.y.toInt()
+				val oldZ = display.location.z.toInt()
+				display.location = Location(
 					world2,
 					this.displaceX(oldX, oldZ).d(),
 					this.displaceY(oldY).d(),
@@ -327,8 +325,8 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 
 			//Chunks are unloaded immediately, before we can actually teleport our entities. So we destroy the map and remake it to respawn the entities.
 			if(world2 != world){
-				map.despawn()
-				map.init()
+				display.despawn()
+				display.init()
 			}
 		}
 	}

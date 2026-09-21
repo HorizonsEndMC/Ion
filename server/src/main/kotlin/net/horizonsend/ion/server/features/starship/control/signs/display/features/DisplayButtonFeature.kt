@@ -1,13 +1,10 @@
-package net.horizonsend.ion.server.features.starship.control.signs.map.features
+package net.horizonsend.ion.server.features.starship.control.signs.display.features
 
-import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Display
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Interaction
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import kotlin.math.pow
 
 /**
  * Generates a button and interaction for the following inputted properties
@@ -21,9 +18,9 @@ import kotlin.math.pow
  * @property offset is the space in the z relative axis you want the display to appear.
  * @property relativeFeature is the feature that this button should align with
  */
-open class MapButtonDisplay(
+open class DisplayButtonFeature(
 	identifier: String,
-	map: DisplayMap,
+	map: net.horizonsend.ion.server.features.starship.control.signs.display.Display,
 	rx: Double,
 	ry: Double,
 	sizeX: Double,
@@ -31,9 +28,9 @@ open class MapButtonDisplay(
 	itemStack: ItemStack? = null,
 	component: Component? = null,
 	offset: Double,
-	relativeFeature: MapFeature? = null,
-	val function: (it: DisplayMap) -> Unit
-) : MapFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
+	relativeFeature: DisplayFeature? = null,
+	val function: (it: net.horizonsend.ion.server.features.starship.control.signs.display.Display) -> Unit
+) : DisplayFeature(identifier, map, rx, ry, sizeX, sizeY, itemStack, component, offset, relativeFeature) {
 	val interaction: Interaction = map.location.world.spawnEntity(
 		this.location().add(
 			if (itemStack== null&&component==null) Vector(0.0,(1.0/512.0)/sizeY, 0.0)
@@ -46,18 +43,18 @@ open class MapButtonDisplay(
 	override fun init() {
 		//Setup for Interaction Entity
 		interaction.isResponsive = true
-		interaction.interactionWidth = (sizeX * map.sizeX * (relativeFeature?.sizeX ?: 1.0)).toFloat()
-		interaction.interactionHeight = (sizeY * map.sizeY * (relativeFeature?.sizeY ?: 1.0)).toFloat()
+		interaction.interactionWidth = (sizeX * display.sizeX * (relativeFeature?.sizeX ?: 1.0)).toFloat()
+		interaction.interactionHeight = (sizeY * display.sizeY * (relativeFeature?.sizeY ?: 1.0)).toFloat()
 		entities.add(interaction)
 		super.init()
 	}
 
-	fun getDisplayEntities(): List<Display> {
-		return entities.filterIsInstance<Display>()
+	fun getDisplayEntities(): List<org.bukkit.entity.Display> {
+		return entities.filterIsInstance<org.bukkit.entity.Display>()
 	}
 
 	open fun onClick() {
-		function(map)
+		function(display)
 	}
 
 	fun onDespawn() {

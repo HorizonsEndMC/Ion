@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.control.signs.map
+package net.horizonsend.ion.server.features.starship.control.signs.display
 
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
@@ -110,32 +110,3 @@ fun Transformation.clone(): Transformation =
 	Transformation(this.translation, this.leftRotation, this.scale, this.rightRotation)
 
 fun Vector3d.toVector3f() = Vector3f(this.x().toFloat(), this.y().toFloat(), this.z().toFloat())
-
-fun saveStateToLocation(location: Location, mapState: MapState, size: Double) : Boolean{
-	try {
-		val block = location.world.getBlockAt(location)
-		val state = block.state as? Sign ?: return false
-		val pdc = state.persistentDataContainer
-		pdc.set(NamespacedKeys.MAP_STATE, PersistentDataType.STRING, mapState.name)
-		pdc.set(NamespacedKeys.MAP_SIZE, PersistentDataType.DOUBLE, size)
-		return state.update()
-	}catch (_: Exception){
-	}
-
-	return false
-}
-
-fun loadStateFromLocation(location: Location): Triple<Boolean, MapState, Double>{
-	try {
-		val block = location.world.getBlockAt(location)
-		val state = block.state as? Sign ?: return Triple(false,MapState.LOCAL_MAP, 1.0)
-		val pdc = state.persistentDataContainer
-		val mapState = pdc.get(NamespacedKeys.MAP_STATE, PersistentDataType.STRING)
-		val size = pdc.get(NamespacedKeys.MAP_SIZE, PersistentDataType.DOUBLE)
-		if (mapState ==null || size == null) return Triple(false,MapState.LOCAL_MAP, 1.0)
-		val enumMapState = MapState.valueOf(mapState)
-		return Triple(true, enumMapState, size)
-	}catch (_: Exception){
-	}
-	return Triple(false,MapState.LOCAL_MAP, 1.0)
-}
