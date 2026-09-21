@@ -54,7 +54,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.DirectCruis
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.features.starship.control.signs.map.DisplayMap
+import net.horizonsend.ion.server.features.starship.control.signs.display.Display
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
@@ -202,7 +202,7 @@ class Starship(
 		if (statsEnabled) {
 			logStatistics(this)
 		}
-		displayMaps.forEach { it.tick() }
+		displays.forEach { it.tick() }
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -553,7 +553,7 @@ class Starship(
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
 	val commandBursts = LinkedList<AbstractCommandBurstSubsystem<*>>()
-	val displayMaps = LinkedList<DisplayMap>()
+	val displays = LinkedList<Display>()
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
