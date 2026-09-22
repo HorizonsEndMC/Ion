@@ -307,10 +307,6 @@ object SubsystemDetector {
 				starship.subsystems += IndustrialInvulnerabilityUnitSubsystem(starship, sign, multiblock)
 			}
 
-			is ShieldCommandBurstMultiblock -> {
-				starship.subsystems += ShieldCommandBurstSubsystem(starship, sign, multiblock)
-			}
-
 			is AbstractCommandBurstMultiblock -> {
 				detectCommandBurst(starship, sign, multiblock)
 			}

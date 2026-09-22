@@ -39,7 +39,7 @@ abstract class AbstractCommandBurstSubsystem<T : StarshipCommandBurstBalancing>(
 
 	fun canCreateSubsystem(): Boolean {
 		if (starship.type.eventShip) return true
-		if (!balancing.activateRestrictions.canActivate && !starship.type.eventShip) return false
+		if (!balancing.activateRestrictions.canActivate) return false
 		return starship.initialBlockCount in balancing.activateRestrictions.minBlockCount..balancing.activateRestrictions.maxBlockCount
 	}
 
