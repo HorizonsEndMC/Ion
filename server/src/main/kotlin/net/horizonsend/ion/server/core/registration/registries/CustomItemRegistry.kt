@@ -160,6 +160,15 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
             )
         )
+		register(
+			CustomItemKeys.BLASTER_REVOLVER, Blaster(
+				key = CustomItemKeys.BLASTER_REVOLVER,
+				displayName = Component.text("Blaster Revolver", NamedTextColor.RED, TextDecoration.BOLD),
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.GOLDEN_HOE).setCustomModel("weapon/blaster/revolver").build(),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::revolver
+			)
+		)
+
 
 		register(
             CustomItemKeys.BLASTER_RIFLE, Blaster(
@@ -170,7 +179,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             )
         )
 
-		register(CustomItemKeys.SUBMACHINE_BLASTER, object : Blaster<PVPBalancingConfiguration.EnergyWeapons.Singleshot>(
+		register(
+			CustomItemKeys.SUBMACHINE_BLASTER, object : Blaster<PVPBalancingConfiguration.EnergyWeapons.Singleshot>(
 			key = CustomItemKeys.SUBMACHINE_BLASTER,
 			itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/submachine_blaster").build(),
 			displayName = Component.text("Submachine Blaster", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),

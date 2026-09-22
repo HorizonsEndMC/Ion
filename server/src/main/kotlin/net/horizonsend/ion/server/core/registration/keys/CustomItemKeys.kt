@@ -2,6 +2,7 @@
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
@@ -23,7 +24,7 @@ import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Maga
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 
 object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, CustomItem::class) {
-	val DETONATOR = registerTypedKey<ThrowableCustomItem>("DETONATOR")
+    val DETONATOR = registerTypedKey<ThrowableCustomItem>("DETONATOR")
 	val SMOKE_GRENADE = registerTypedKey<ThrowableCustomItem>("SMOKE_GRENADE")
 	val PUMPKIN_GRENADE = registerTypedKey<ThrowableCustomItem>("PUMPKIN_GRENADE")
 
@@ -31,6 +32,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SPECIAL_MAGAZINE = registerTypedKey<Magazine>("SPECIAL_MAGAZINE")
 
 	val BLASTER_PISTOL = registerTypedKey<Blaster<Singleshot>>("BLASTER_PISTOL")
+	val BLASTER_REVOLVER = registerTypedKey<Blaster<Singleshot>>("BLASTER_REVOLVER")
 	val BLASTER_RIFLE = registerTypedKey<Blaster<Singleshot>>("BLASTER_RIFLE")
 	val SUBMACHINE_BLASTER = registerTypedKey<Blaster<Singleshot>>("SUBMACHINE_BLASTER")
 	val BLASTER_SHOTGUN = registerTypedKey<Blaster<Multishot>>("BLASTER_SHOTGUN")
