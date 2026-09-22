@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTERY_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_CANNON
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_PISTOL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_REVOLVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_RIFLE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SHOTGUN
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BLASTER_SNIPER
@@ -527,6 +528,15 @@ object Crafting : IonServerComponent() {
 			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
 			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 
+		}
+
+		shaped("revolver", BLASTER_REVOLVER.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("   ", "apb", "c  ")
+
+			setIngredient('a', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+			setIngredient('p', PISTOL_RECEIVER.getValue().constructItemStack())
+			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
+			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
 		}
 		shaped("rifle", BLASTER_RIFLE.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("   ", "apb", "ac ")
