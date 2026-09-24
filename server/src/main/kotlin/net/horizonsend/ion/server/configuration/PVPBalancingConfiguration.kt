@@ -10,7 +10,7 @@ data class PVPBalancingConfiguration(
 	val energyWeapons: EnergyWeapons = EnergyWeapons(),
 	val meleeWeapons: MeleeWeapons = MeleeWeapons(),
 	val throwables: Throwables = Throwables(),
-	val consumables: Consumables = Consumables()
+	val armour: Armor = Armor(),
 ) {
 	@Serializable
 	data class MeleeWeapons(
