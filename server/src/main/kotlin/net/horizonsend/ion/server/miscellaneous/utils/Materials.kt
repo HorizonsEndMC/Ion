@@ -120,6 +120,7 @@ val Material.isFence: Boolean get() = FENCE_TYPES.contains(this)
 val FENCE_GATE_TYPES = getMatchingMaterials { it.name.endsWith("_FENCE_GATE") }
 
 val SHELF_TYPES = getMatchingMaterials { it.name.endsWith("_SHELF") }
+val Material.isShelf: Boolean get() = SHELF_TYPES.contains(this)
 
 val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)

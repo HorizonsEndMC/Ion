@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
+import net.horizonsend.ion.server.miscellaneous.utils.isShelf
 import net.horizonsend.ion.server.miscellaneous.utils.isTintedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
@@ -132,6 +133,7 @@ object CreditPrintBlackList {
 		Material.MANGROVE_PLANKS,
 		Material.CRIMSON_PLANKS,
 		Material.WARPED_PLANKS,
+		Material.CHERRY_PLANKS,
 		Material.STONE,
 		Material.SMOOTH_STONE,
 		Material.SANDSTONE,
@@ -303,6 +305,7 @@ object CreditPrintBlackList {
 			|| data.material.isLog
 			|| data.material.isWood
 			|| data.material.isCarpet
+			|| data.material.isShelf
 			|| data.material.isBed
 			|| data.material.isFence) return true
 
