@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
@@ -620,6 +621,21 @@ class Starship(
 
 	fun setIsDisrupting(otherStarship: Starship?) {
 		Tasks.checkMainThread()
+
+		if (otherStarship == this) {
+			userError("Cannot disrupt your own ship!")
+			return
+		}
+		//if (starship.disruptorTarget == targetStarship) fail { "Already disrupting that target!" }
+		if (this.isInterdicting) {
+			userError("Cannot interdict and disrupt at the same time!")
+			return
+		}
+
+		if (Interdiction.findDisruptor(this) == null){
+			userError("Intact Disruptor not found!")
+			return
+		}
 
 		if (otherStarship == null) {
 			disruptorTarget = null
