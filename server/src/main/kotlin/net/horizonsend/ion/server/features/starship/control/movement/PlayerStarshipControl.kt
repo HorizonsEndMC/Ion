@@ -44,8 +44,9 @@ object PlayerStarshipControl : IonServerComponent() {
 
 	@EventHandler
 	fun onPlayerMove(event: PlayerMoveEvent) {
-		if (event.player.walkSpeed == 0.009f && PilotedStarships[event.player] == null) {
+		if ((event.player.walkSpeed == 0.009f || event.player.walkSpeed == 0.0f) && PilotedStarships[event.player] == null) {
 			event.player.walkSpeed = 0.2f
+			event.player.flySpeed = 0.06f
 		}
 	}
 }
