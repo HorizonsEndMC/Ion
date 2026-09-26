@@ -384,10 +384,8 @@ class DisplayMap(ship: Starship, location: Location, dir: Vector, sizeX: Double,
 
 	private fun generateShipMapFeature(other: Starship): ShipDisplayFeature? {
 		var color = ship.getRelation(other).color
-		if (other.playerPilot != null && ship.playerPilot != null) {
-			if (Fleets.findByMember(ship.playerPilot!!)?.contains(other.playerPilot!!) == true) {
-				color = NamedTextColor.BLUE
-			}
+		if ((other.playerPilot != null && ship.playerPilot != null) && Fleets.findByMember(ship.playerPilot!!)?.contains(other.playerPilot!!) == true) {
+			color = NamedTextColor.BLUE
 		}
 		val shipScale = shipScale(this)
 		//Get the ships icon

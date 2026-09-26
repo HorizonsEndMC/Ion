@@ -65,7 +65,7 @@ fun celestialBodyLocalMapScale(body: CelestialBody, displayMap: DisplayMap) = wh
 fun shipsInRange(maxDistance: Double, sourceShip: Starship): List<Starship> {
 	return (if (sourceShip.playerPilot != null) {
 		(Fleets.findByMember(sourceShip.playerPilot!!)?.getJointContacts() ?: sourceShip.getContacts())
-			.filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }
+			.filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }.filter { it.world == sourceShip.world }
 	} else sourceShip.getContacts()).filter { it.centerOfMass.distance(sourceShip.centerOfMass) < maxDistance/2.0 }
 }
 
