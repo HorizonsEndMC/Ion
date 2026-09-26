@@ -114,7 +114,7 @@ class BazaarTerminalIntegration(
 
 				val purchaseFutureResult = Bazaars.tryBuyFromSellOrder(task.player, document, count, remote) { itemStack, amount, cost, priceMult ->
 					{
-						task.consumedCredits += cost
+						task.consumedCredits.addAndGet(cost)
 						bazaarConsumedCredits += cost
 
 						val maxStackSize = itemStack.maxStackSize
@@ -138,7 +138,7 @@ class BazaarTerminalIntegration(
 						}
 
 						// Once it is sucessful, count it as consumed credits.
-						task.consumedCredits += printPrice
+						task.consumedCredits.addAndGet(printPrice)
 
 						bazaarPurchaseMessages.add(fullMessage)
 						InputResult.InputSuccess
