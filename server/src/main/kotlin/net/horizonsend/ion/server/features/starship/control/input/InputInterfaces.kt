@@ -3,19 +3,25 @@ package net.horizonsend.ion.server.features.starship.control.input
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.movement.CruiseData
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.features.starship.fleet.toFleetMember
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
+import org.litote.kmongo.mul
 import kotlin.collections.indexOf
 import kotlin.collections.set
 
@@ -72,13 +78,28 @@ interface PlayerInput {
 					it.centerOfMass.toCenterVector().distanceSquared(player.location.toVector()) <=
 						starship.balancing.interdictionRange * starship.balancing.interdictionRange &&
 						it != ActiveStarships.findByPassenger(player)
-				}.sortedBy { it.centerOfMass.toCenterVector().subtract(player.location.toVector()).angle(player.eyeLocation.direction) }.firstOrNull()
-
-				targetShip.let {
-					if (it == starship) return //should prevent setting to yourself
-					starship.disruptorTarget = it
-					starship.onlinePassengers.forEach { player -> player.success("Disruptor enabled on ${it?.identifier ?: "unknown starship; their hyperdrive is disabled as long as your starship is in range"}") }
+				}.minByOrNull {
+					it.centerOfMass.toCenterVector().subtract(player.location.toVector())
+						.angle(player.eyeLocation.direction)
 				}
+
+				if (targetShip == starship) return //should prevent setting to yourself
+				if (targetShip == null) {
+					starship.userErrorAction("Disruptor Target not found")
+					return
+				}
+				//ally or nation member
+				if (starship.getRelation(targetShip).ordinal >= 5){
+					starship.userErrorAction("Disruptor Target is an ally!")
+					return
+				}
+				val thisPilot = starship.playerPilot
+				val targetPilot = targetShip.playerPilot
+				if ((thisPilot!= null && targetPilot != null) && Fleets.findByMember(thisPilot)?.contains(targetPilot) == true) {
+					starship.userErrorAction("Disruptor Target is a member of your fleet!")
+					return
+				}
+				starship.setIsDisrupting(starship)
 				player.debugBanner("INTERACT EVENT DISRUPT TARGETING END")
 			}
 			TertiaryButtonControl.CHANGE_WEAPON_SET ->{
