@@ -32,6 +32,7 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipDefaultCommandBursts = ConfigurationFiles.starshipBalancing.get().commandBurstDefaults.commandBursts
 
 	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
+	private val consumableTypes = PVPBalancingConfiguration.Consumables::class.memberProperties
 	private val blasterTypes = PVPBalancingConfiguration.EnergyWeapons::class.memberProperties
 	private val meleeTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
 
@@ -54,6 +55,10 @@ object ConfigurationCommands : SLCommand() {
 
 		manager.commandCompletions.registerCompletion("throwablesTypes") {
 			throwableTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("consumablesTypes") {
+			consumableTypes.map { it.name }
 		}
 
 		manager.commandCompletions.registerCompletion("blasterTypes") {
@@ -85,6 +90,31 @@ object ConfigurationCommands : SLCommand() {
 			throwableTypes,
 			ConfigurationFiles.pvpBalancing.get().throwables,
 			throwableName,
+			fieldName,
+			value
+		)
+	}
+
+	@Subcommand("config get consumables")
+	@CommandCompletion("@consumablesTypes property")
+	fun getConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			consumableTypes,
+			ConfigurationFiles.pvpBalancing.get().consumables,
+			consumableName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set consumables")
+	@CommandCompletion("@consumablesTypes property value")
+	fun setConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			consumableTypes,
+			ConfigurationFiles.pvpBalancing.get().consumables,
+			consumableName,
 			fieldName,
 			value
 		)

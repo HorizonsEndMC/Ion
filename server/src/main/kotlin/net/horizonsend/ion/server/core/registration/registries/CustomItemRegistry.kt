@@ -27,10 +27,10 @@ import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.consumable.ConsumableItem
 import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCustomItem
-import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
@@ -76,6 +76,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerEnergySwords()
 		registerPlanetIcons()
 		registerFood()
+		registerCombatStims()
 		//registerNationBuffs()
 
 		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
@@ -342,6 +343,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		stackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
 		stackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
 		stackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
+		stackable(key = CustomItemKeys.EMPTY_CAPSULE, model = "", displayName = Component.text("Empty Capsule"))
 		stackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
 
 		stackable(key = CustomItemKeys.UNLOADED_SHELL, model = "industry/unloaded_shell", displayName = Component.text("Unloaded Shell"))
@@ -693,6 +695,15 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 Component.text("Boosts the user's running speed.")
             )
 		)
+		/* register(
+			CustomItemKeys.ARMOR_MODIFICATION_SWIFT_SNEAKING, ModificationItem(
+				CustomItemKeys.ARMOR_MODIFICATION_SWIFT_SNEAKING,
+				ItemModKeys.SWIFT_SNEAKING,
+				"power_armor/module/swift_sneaking",
+				ofChildren(Component.text("Swift Sneaking", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Boosts the user's sneaking speed.")
+			)
+		) */
 
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_1, ModificationItem(
@@ -882,7 +893,30 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.SIRIUS, displayName = Component.text("Sirius"), model = "planet/sirius")
 		unStackable(key = CustomItemKeys.PLANET_SELECTOR, displayName = Component.text("PLANET_SELECTOR"), model = "planet/planet_selector")
 	}
-
+	private fun registerCombatStims() {
+		register(
+			CustomItemKeys.HEALTH_STIM, ConsumableItem(
+				key = CustomItemKeys.HEALTH_STIM,
+				displayName = Component.text("Health Stim"),
+				stackSize = 16,
+				consumeSeconds = 0.5F,
+				consumeCooldown = 30,
+				lore = Component.text("A pill manufactured to provide relief to injuries sustained.", NamedTextColor.RED, ITALIC).wrap(200),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::healthStim,
+			)
+		)
+		register(
+			CustomItemKeys.STRENGTH_STIM, ConsumableItem(
+				key = CustomItemKeys.STRENGTH_STIM,
+				displayName = Component.text("Strength Stim"),
+				stackSize = 16,
+				consumeSeconds = 0.5F,
+				consumeCooldown = 30,
+				lore = Component.text("A pill manufactured to provide a attack buff.", NamedTextColor.GOLD, ITALIC).wrap(200),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::strengthStim,
+			)
+		)
+	}
 	private fun registerFood() {
 		register(
 			CustomItemKeys.HORIZON_FRIED_EGG, FoodItem(

@@ -3,12 +3,14 @@ package net.horizonsend.ion.server.configuration
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.kyori.adventure.sound.Sound
+import kotlin.Int
 
 @Serializable
 data class PVPBalancingConfiguration(
 	val energyWeapons: EnergyWeapons = EnergyWeapons(),
 	val meleeWeapons: MeleeWeapons = MeleeWeapons(),
-	val throwables: Throwables = Throwables()
+	val throwables: Throwables = Throwables(),
+	val consumables: Consumables = Consumables()
 ) {
 	@Serializable
 	data class MeleeWeapons(
@@ -65,6 +67,31 @@ data class PVPBalancingConfiguration(
 			var maxTicks: Int,
 			var tickInterval: Long,
 			var throwCooldownTicks: Int,
+		)
+	}
+
+	@Serializable
+	data class Consumables(
+		val healthStim: ConsumableBalancing = ConsumableBalancing(
+			timeBetweenConsumption = 600,
+			potionEffectType = "minecraft:instant_health",
+			potionEffectDuration = 0,
+			potionEffectAmplifier = 0,
+
+		),
+		val strengthStim: ConsumableBalancing = ConsumableBalancing(
+			timeBetweenConsumption = 600,
+			potionEffectType = "minecraft:strength",
+			potionEffectDuration = 300,
+			potionEffectAmplifier = 0,
+		),
+	){
+		@Serializable
+		data class ConsumableBalancing(
+			var timeBetweenConsumption: Int,
+			var potionEffectType: String,
+			var potionEffectDuration: Int,
+			var potionEffectAmplifier: Int,
 		)
 	}
 
