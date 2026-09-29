@@ -47,6 +47,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 	abstract val maxPower: Int
 	protected abstract val burnTime: Int
 	protected abstract val tierMaterial: Material
+	protected abstract val cookSpeedMultiplier: Double
 
 	override val signText = createSignText(
 		line1 = "$tierText &6Power",
@@ -142,6 +143,8 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 
 			// Extra 25 because scheduling is usually a bit behind, causes a bit of lost time otherwise
 			setBurningForTicks(multiblock.burnTime + 25)
+
+			setCookSpeedMultiplier(multiblock.cookSpeedMultiplier)
 		}
 
 		override fun loadFromSign(sign: Sign) {

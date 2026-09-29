@@ -6,5 +6,5 @@ object PowerFurnaceMultiblockTier1 : PowerFurnaceMultiblock("&7Tier 1") {
 	override val maxPower = 25_000
 	override val burnTime = 20
 	override val tierMaterial = Material.IRON_BLOCK
-	//Adjusted Burn Time to minimal values to fit in with server thematic.
+	override val cookSpeedMultiplier = 2.0
 }

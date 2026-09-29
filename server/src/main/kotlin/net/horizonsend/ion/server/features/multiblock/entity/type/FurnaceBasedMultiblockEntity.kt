@@ -82,4 +82,12 @@ interface FurnaceBasedMultiblockEntity {
 		furnace.cookTime = 0.toShort()
 		furnace.update()
 	}
+
+	fun setCookSpeedMultiplier(multiplier: Double) {
+		Tasks.checkMainThread()
+
+		val furnace = getFurnace() ?: return
+		furnace.cookSpeedMultiplier = multiplier.coerceIn(0.0, 200.0)
+		furnace.update()
+	}
 }
