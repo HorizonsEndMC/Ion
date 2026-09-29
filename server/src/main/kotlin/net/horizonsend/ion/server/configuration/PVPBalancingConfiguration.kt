@@ -98,7 +98,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 4.5,
+			damage = 4.25,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -128,7 +128,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val revolver: Singleshot = Singleshot(
-			damage = 11.5,
+			damage = 10.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 6,
 			ammoPerRefill = 20,
@@ -158,7 +158,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val rifle: Singleshot = Singleshot(
-			damage = 9.5,
+			damage = 9.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 20,
 			ammoPerRefill = 20,
@@ -188,7 +188,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 2.45,
+			damage = 2.25,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -219,7 +219,7 @@ data class PVPBalancingConfiguration(
 		),
 		val sniper: Singleshot = Singleshot(
 			damage = 25.0,
-			damageFalloffMultiplier = 29.0,
+			damageFalloffMultiplier = 30.0,
 			capacity = 5,
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
@@ -248,7 +248,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 3.25,
+			damage = 3.0,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -282,7 +282,7 @@ data class PVPBalancingConfiguration(
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 0.2,
+			damage = 0.1,
 			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,
