@@ -73,17 +73,17 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class Consumables(
 		val healthStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 600,
-			potionEffectType = "minecraft:instant_health",
-			potionEffectDuration = 0,
-			potionEffectAmplifier = 0,
+			timeBetweenConsumption = 500, // Every 20 ticks = 1 second cooldown till able to use again
+			potionEffectType = "minecraft:regeneration", // To change effects, just change the name of minecraft:potioneffect
+			potionEffectDuration = 200, // Every 20 ticks = 1 second of effects
+			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
 
 		),
 		val strengthStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 600,
-			potionEffectType = "minecraft:strength",
-			potionEffectDuration = 300,
-			potionEffectAmplifier = 0,
+			timeBetweenConsumption = 500, // Every 20 ticks = 1 second cooldown till able to use again
+			potionEffectType = "minecraft:strength", // To change effects, just change the name of minecraft:potioneffect
+			potionEffectDuration = 300, // Every 20 ticks = 1 second of effects
+			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
 		),
 	){
 		@Serializable
