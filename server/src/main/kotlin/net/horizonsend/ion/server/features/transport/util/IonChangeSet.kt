@@ -42,13 +42,13 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
  	
 	// Moving multiblock sign processing to addTileCreate fixed non-detection when pasting (previous was in add())
 	override fun addTileCreate(tag: FaweCompoundTag?) {
-		if (tag == null) return
-
-		val data = tag.linTag()
-		val tileType = data.value()["id"]?.value()
-		if (tileType != "minecraft:sign") return
-
-		processMultiblock(NbtUtils.getInt(data, "x"), NbtUtils.getInt(data, "y"), NbtUtils.getInt(data, "z"))
+		if (tag != null) {
+			val data = tag.linTag()
+			val tileType = data.value()["id"]?.value()
+			if (tileType == "minecraft:sign") {
+				processMultiblock(NbtUtils.getInt(data, "x"), NbtUtils.getInt(data, "y"), NbtUtils.getInt(data, "z"))
+			}
+		}
 	}
 	override fun addTileRemove(tag: FaweCompoundTag?) {}
 	override fun addEntityRemove(tag: FaweCompoundTag?) {}
