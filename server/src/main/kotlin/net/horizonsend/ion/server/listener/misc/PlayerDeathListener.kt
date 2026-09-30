@@ -94,7 +94,7 @@ object PlayerDeathListener : SLEventListener() {
 		val killerColor = "<#" + Integer.toHexString((PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
 
 		val distance = killer.location.distance(victim.location)
-		val verb = when(victim.isFiveDollar()){
+		val verb = when(killer.isFiveDollar()){
 			true-> when(customItem) {
 			is EnergySword -> energySwordVerbs.random()
 			is Blaster<*> -> blasterVerbs[customItem.identifier]?.random() ?: "shot"
