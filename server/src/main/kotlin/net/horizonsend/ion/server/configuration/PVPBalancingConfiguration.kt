@@ -15,7 +15,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		var energySwordBalancing: MeleeWeaponBalancing = MeleeWeaponBalancing(
-			damage = 6.5,
+			damage = 7.25,
 			speedUp = 0.0,
 			attackSpeed = -2.4,
 			knockback = 0.0,
@@ -39,9 +39,9 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class Throwables(
 		val detonator: ThrowableBalancing = ThrowableBalancing(
-			80.0,
+			65.0,
 			4.0,
-			1.0,
+			1.05,
 			5,
 			30,
 			1,
@@ -73,14 +73,14 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class Consumables(
 		val healthStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 500, // Every 20 ticks = 1 second cooldown till able to use again
-			potionEffectType = "minecraft:regeneration", // To change effects, just change the name of minecraft:potioneffect
-			potionEffectDuration = 200, // Every 20 ticks = 1 second of effects
-			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
+			timeBetweenConsumption = 300, // Every 20 ticks = 1 second cooldown till able to use again
+			potionEffectType = "minecraft:instant_health", // To change effects, just change the name of minecraft:potioneffect
+			potionEffectDuration = 1, // For health stim, we don't want to change this
+			potionEffectAmplifier = 1, // Starts at 0 (1) | amp 1 = effect strength of 2
 
 		),
 		val strengthStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 500, // Every 20 ticks = 1 second cooldown till able to use again
+			timeBetweenConsumption = 480, // Every 20 ticks = 1 second cooldown till able to use again
 			potionEffectType = "minecraft:strength", // To change effects, just change the name of minecraft:potioneffect
 			potionEffectDuration = 300, // Every 20 ticks = 1 second of effects
 			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
@@ -98,7 +98,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 4.25,
+			damage = 4.5,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -112,7 +112,7 @@ data class PVPBalancingConfiguration(
 			shouldBypassHitTicks = true,
 			shouldHeadshot = false,
 			shouldPassThroughEntities = false,
-			speed = 7.0,
+			speed = 7.25,
 			timeBetweenShots = 6,
 			shotDeviation = 0.0,
 			mobDamageMultiplier = 1.0,
@@ -128,7 +128,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val revolver: Singleshot = Singleshot(
-			damage = 10.0,
+			damage = 11.5,
 			damageFalloffMultiplier = 0.0,
 			capacity = 6,
 			ammoPerRefill = 20,
@@ -149,7 +149,7 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.pistol.reload.start", volume = 1f, pitch = 0.8f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.pistol.reload.finish", volume = 1f, pitch = 1.1f,  source = Sound.Source.PLAYER),
-			soundFire = SoundInfo("horizonsend:blaster.pistol.shoot", volume = 1f, pitch = 1.75f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.pistol.shoot", volume = 1f, pitch = 0.5f, source = Sound.Source.PLAYER),
 			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
 			soundShell = SoundInfo("horizonsend:blaster.pistol.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.30f,
@@ -158,7 +158,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val rifle: Singleshot = Singleshot(
-			damage = 9.0,
+			damage = 9.5,
 			damageFalloffMultiplier = 0.0,
 			capacity = 20,
 			ammoPerRefill = 20,
@@ -188,7 +188,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 2.25,
+			damage = 2.45,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -219,7 +219,7 @@ data class PVPBalancingConfiguration(
 		),
 		val sniper: Singleshot = Singleshot(
 			damage = 25.0,
-			damageFalloffMultiplier = 30.0,
+			damageFalloffMultiplier = 29.0,
 			capacity = 5,
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
@@ -232,7 +232,7 @@ data class PVPBalancingConfiguration(
 			shouldBypassHitTicks = false,
 			shouldHeadshot = true,
 			shouldPassThroughEntities = true,
-			speed = 15.0,
+			speed = 17.5,
 			timeBetweenShots = 40,
 			shotDeviation = 0.0,
 			mobDamageMultiplier = 2.0,
@@ -248,7 +248,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 3.0,
+			damage = 3.25,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -282,7 +282,7 @@ data class PVPBalancingConfiguration(
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 0.1,
+			damage = 0.2,
 			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,

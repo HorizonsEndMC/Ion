@@ -40,7 +40,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val BLASTER_SNIPER = registerTypedKey<Blaster<Singleshot>>("BLASTER_SNIPER")
 	val BLASTER_CANNON = registerTypedKey<Blaster<Singleshot>>("BLASTER_CANNON")
 
-	val EMPTY_CAPSULE = registerKey("EMPTY_CAPSULE")
+	val EMPTY_STIM = registerKey("EMPTY_STIM")
 	val HEALTH_STIM = registerTypedKey<ConsumableItem>("HEALTH_STIM")
 	val STRENGTH_STIM = registerTypedKey<ConsumableItem>("STRENGTH_STIM")
 

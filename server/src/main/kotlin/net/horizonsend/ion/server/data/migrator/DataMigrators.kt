@@ -856,7 +856,7 @@ object DataMigrators : IonServerComponent() {
 							Attribute.ARMOR,
 							AttributeModifier(
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_BOOTS.key),
-								2.0,
+								2.5,
 								AttributeModifier.Operation.ADD_NUMBER,
 								CustomItemKeys.POWER_ARMOR_BOOTS.getValue().slot.group
 							)
@@ -875,7 +875,7 @@ object DataMigrators : IonServerComponent() {
 							Attribute.ARMOR,
 							AttributeModifier(
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_LEGGINGS.key),
-								2.0,
+								3.0,
 								AttributeModifier.Operation.ADD_NUMBER,
 								CustomItemKeys.POWER_ARMOR_LEGGINGS.getValue().slot.group
 							)
@@ -894,7 +894,7 @@ object DataMigrators : IonServerComponent() {
 							Attribute.ARMOR,
 							AttributeModifier(
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_CHESTPLATE.key),
-								2.0,
+								4.0,
 								AttributeModifier.Operation.ADD_NUMBER,
 								CustomItemKeys.POWER_ARMOR_CHESTPLATE.getValue().slot.group
 							)
@@ -913,7 +913,7 @@ object DataMigrators : IonServerComponent() {
 							Attribute.ARMOR,
 							AttributeModifier(
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_HELMET.key),
-								2.0,
+								2.5,
 								AttributeModifier.Operation.ADD_NUMBER,
 								CustomItemKeys.POWER_ARMOR_HELMET.getValue().slot.group
 							)
