@@ -911,6 +911,17 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::strengthStim,
 			)
 		)
+		register(
+			CustomItemKeys.RESISTANCE_STIM, ConsumableItem(
+				key = CustomItemKeys.RESISTANCE_STIM,
+				displayName = Component.text("Resistance Stim"),
+				stackSize = 8,
+				consumeSeconds = 0.1F,
+				consumeCooldown = 15,
+				lore = Component.text("A stim created to provide a resistance buff.", NamedTextColor.GOLD, ITALIC).wrap(200),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::resistanceStim,
+			)
+		)
 	}
 	private fun registerFood() {
 		register(

@@ -875,7 +875,7 @@ object DataMigrators : IonServerComponent() {
 							Attribute.ARMOR,
 							AttributeModifier(
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_LEGGINGS.key),
-								3.0,
+								2.5,
 								AttributeModifier.Operation.ADD_NUMBER,
 								CustomItemKeys.POWER_ARMOR_LEGGINGS.getValue().slot.group
 							)
@@ -894,7 +894,7 @@ object DataMigrators : IonServerComponent() {
 							Attribute.ARMOR,
 							AttributeModifier(
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_CHESTPLATE.key),
-								4.0,
+								2.5,
 								AttributeModifier.Operation.ADD_NUMBER,
 								CustomItemKeys.POWER_ARMOR_CHESTPLATE.getValue().slot.group
 							)

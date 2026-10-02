@@ -179,8 +179,6 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.EMPTY_STIM
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEALTH_STIM
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STRENGTH_STIM
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES

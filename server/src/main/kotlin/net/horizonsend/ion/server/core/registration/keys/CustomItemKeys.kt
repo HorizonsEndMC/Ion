@@ -43,6 +43,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val EMPTY_STIM = registerKey("EMPTY_STIM")
 	val HEALTH_STIM = registerTypedKey<ConsumableItem>("HEALTH_STIM")
 	val STRENGTH_STIM = registerTypedKey<ConsumableItem>("STRENGTH_STIM")
+	val RESISTANCE_STIM = registerTypedKey<ConsumableItem>("RESISTANCE_STIM")
 
 	val GUN_BARREL = registerKey("GUN_BARREL")
 	val CIRCUITRY = registerKey("CIRCUITRY")
