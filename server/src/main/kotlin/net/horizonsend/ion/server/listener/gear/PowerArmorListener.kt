@@ -2,9 +2,20 @@ package net.horizonsend.ion.server.listener.gear
 
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
+import com.sk89q.worldedit.util.formatting.text.format.TextColor
+import github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.DyedItemColor
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.successActionMessage
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.command.starship.RainbowProjectileCommand
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
@@ -17,6 +28,12 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
+import net.horizonsend.ion.server.miscellaneous.utils.gayColors
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -34,37 +51,40 @@ fun hasMovedInLastSecond(player: Player): Boolean {
 	return lastMoved.containsKey(player.uniqueId) && Instant.now().toEpochMilli() - (lastMoved[player.uniqueId] ?: 0) < 1000
 }
 
-object PowerArmorListener : SLEventListener() {
+object PowerArmorListener : SLEventListener(){
+
+	@Suppress("UnstableApiUsage")
 	@EventHandler
 	fun onEquipPowerArmor(event: PlayerArmorChangeEvent) {
 		val player: Player = event.player
-		val slot: PlayerArmorChangeEvent.SlotType = event.slotType
 
 		Tasks.sync {
-//			if (!player.isOnline) {
-//				return@sync
-//			}
-//
-//			val item: ItemStack = player.inventory.armorContents[3 - slot.ordinal] ?: return@sync
-//			val customItem: CustomItems.PowerArmorItem = CustomItems[item] as? CustomItems.PowerArmorItem ?: return@sync
-//
-//			val meta = item.itemMeta as LeatherArmorMeta
-//			if (meta.displayName != customItem.displayName) {
-//				return@sync
-//			}
-//
-//			val nation = PlayerCache[player].nationOid?.let(NationCache::get) ?: return@sync
-//			val nationColor = nation.color
-//
-//			if (meta.color.asRGB() == nationColor) {
-//				return@sync
-//			}
-//
-//			val bukkitColor: Color = Color.fromRGB(nationColor)
-//			meta.setColor(bukkitColor)
-//			item.itemMeta = meta
-//			player.updateInventory()
-//			player action "&7&oPower armor color changed to match nation color (rename it in an anvil to fix this)"
+			if (!player.isOnline) {
+				return@sync
+			}
+
+			val item: ItemStack = player.inventory.getItem(event.slot)
+			val customItem = item.customItem ?: return@sync
+			if (item.customItem !is PowerArmorItem) return@sync
+
+			val nation = PlayerCache[player].nationOid?.let(NationCache::get) ?: return@sync
+			val nationColor = nation.color
+
+			//if it is already the right colour, no need to redo it
+			if (item.getData(DataComponentTypes.DYED_COLOR)?.color()?.asRGB() == nationColor) {
+				return@sync
+			}
+
+			//if the name is modified we do not dye the armour
+			if (item.displayNameComponent.plainText() != customItem.displayName.plainText()) {
+				return@sync
+			}
+
+			val bukkitColor: Color = Color.fromRGB(nationColor)
+
+			item.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(bukkitColor))
+
+			player.successActionMessage("Power armor color changed to match nation color (rename it in an anvil to fix this)")
 		}
 	}
 
