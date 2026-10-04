@@ -79,7 +79,9 @@ class ShipDisplayFeature(
 		val icon = ship.type.icon
 
 		var color = ship.getRelation(ship).color
-		if ((ship.playerPilot != null && ship.playerPilot != null) && Fleets.findByMember(display.ship.playerPilot!!)?.contains(ship.playerPilot!!) == true) {
+		val playerPilot = ship.playerPilot
+		val displayPlayerPilot = display.ship.playerPilot
+		if (playerPilot != null && displayPlayerPilot != null && Fleets.findByMember(displayPlayerPilot)?.contains(playerPilot) == true) {
 				color = NamedTextColor.BLUE
 		}
 
