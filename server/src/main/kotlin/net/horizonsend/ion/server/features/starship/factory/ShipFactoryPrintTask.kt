@@ -18,7 +18,6 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
-import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -29,20 +28,13 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedS
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryGui
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
-import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
-import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
-import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.CreditPrintBlackList
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -63,16 +55,14 @@ import net.starlegacy.javautil.BannerUtils.BannerData
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.Material
 import org.bukkit.block.Banner
+import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.block.TileState
-import org.bukkit.block.Vault
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataContainer
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -339,7 +329,6 @@ class ShipFactoryPrintTask(
 			val blockData = blockMap.remove(entry) ?: continue
 			val signData = signMap.remove(entry)
 			val bannerData = bannerMap.remove(entry)
-			val itemFilterData = filters.remove(entry)
 
 			val block = entity.world.getBlockAt(getX(entry), getY(entry), getZ(entry))
 
@@ -356,7 +345,7 @@ class ShipFactoryPrintTask(
 			if (!event.callEvent()) continue
 
 			placements++
-			placeBlock(entry, blockData, signData, bannerData, itemFilterData)
+			placeBlock(entry, blockData, signData, bannerData)
 		}
 
 		if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
@@ -366,13 +355,7 @@ class ShipFactoryPrintTask(
 		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(tickCredits)
 	}
 
-	private fun placeBlock(
-		printPosition: BlockKey,
-		data: BlockData,
-		signData: SignData?,
-		bannerData: BannerData?,
-		itemFilterData:  FilterData<*, *>?
-	) {
+	private fun placeBlock(printPosition: BlockKey, data: BlockData, signData: SignData?, bannerData: BannerData?) {
 		var placedData = data
 
 		val (x, y, z) = toVec3i(printPosition)
@@ -388,12 +371,6 @@ class ShipFactoryPrintTask(
 
 		if (ExtractorManager.isExtractorData(data)) {
 			NewTransport.addExtractor(world, x, y, z)
-		}
-
-		if(itemFilterData != null) {
-			val state = block.state as TileState
-			state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, itemFilterData)
-			state.update()
 		}
 
 		data.customBlock?.placeCallback(null, block)
