@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import com.google.common.util.concurrent.AtomicDouble
-import com.googlecode.cqengine.ConcurrentIndexedCollection
 import io.papermc.paper.registry.RegistryAccess.registryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
@@ -70,7 +69,6 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class ShipFactoryPrintTask(
@@ -85,7 +83,7 @@ class ShipFactoryPrintTask(
 	override val taskEntity: ShipFactoryEntity get() = entity
 
 	/** Counts of missing materials */
-	private val missingMaterials = ConcurrentHashMap<PrintItem, AtomicInteger>()
+	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
 
 	/** Total number of blocks that were skipped due to obstruction */
 	private var skippedBlocks = AtomicInteger(0)
@@ -99,8 +97,6 @@ class ShipFactoryPrintTask(
 	private var queueLoaded = false
 	/** Stores the number of blocks that were initially in the queue, can be used to obtain a percentage completion. */
 	private var startBlocks = 0
-
-	val blocksBeingProcessed = ConcurrentIndexedCollection<BlockKey>()
 
 	override fun onEnable() {
 		loadBlockQueue()
@@ -147,7 +143,7 @@ class ShipFactoryPrintTask(
 		val tickCredits = AtomicDouble(0.0)
 
 		// Blocks that are gonna be printed
-		val toPrint = ConcurrentIndexedCollection<BlockKey>()
+		val toPrint = mutableListOf<BlockKey>()
 
 		// Per multiblock print limit
 		val printLimit = entity.multiblock.blockPlacementsPerTick
@@ -166,7 +162,7 @@ class ShipFactoryPrintTask(
 		integration.forEach { it.startNewTransaction(this) }
 
 		// Find the first blocks that can be placed with the available resources, up to the limit
-		blockQueue.stream().filter { !blocksBeingProcessed.contains(it) }.parallel().forEach { block ->
+		blockQueue.stream().parallel().forEach { block ->
 			if (isDisabled) {
 				isDisabled = false
 				return@forEach
@@ -187,7 +183,6 @@ class ShipFactoryPrintTask(
 
 			val printItem = PrintItem[blockData]
 			if (printItem == null) {
-				blockQueue.remove(printPosition)
 				IonServer.slF4JLogger.warn("$blockData has no print item!")
 				return@forEach
 			}
@@ -202,7 +197,6 @@ class ShipFactoryPrintTask(
 				)
 			) {
 				skippedBlocks.incrementAndGet()
-				blockQueue.remove(printPosition)
 				return@forEach
 			}
 
@@ -214,33 +208,41 @@ class ShipFactoryPrintTask(
 			//Check if the current block can be credit printed
 			val isNotCreditPrintable = CreditPrintBlackList.isInBlacklist(blockData) || !CreditPrintBlackList.isInWhitelist(blockData)
 
-			blocksBeingProcessed.add(printPosition)
-
 			// Try material print first regardless of credit printability
 			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount)
 			if (success) {
+				if (toPrint.size >= printLimit) return@forEach
 				toPrint.add(printPosition)
-				printedBlocks.incrementAndGet()
+				skippedBlocks.incrementAndGet()
 				consumedPower.addAndGet(50)
 				return@forEach
 			}
 
 			// If no items available and block is credit printable, try credit print
 			if (!isNotCreditPrintable && creditPrintingEnabled) {
-				if (availableCredits.minus(tickCredits.get()) < price) {
-					markItemMissing(printItem, requiredAmount)
-					blocksBeingProcessed.remove(printPosition)
-					return@forEach
+				if (toPrint.size >= printLimit) return@forEach
+				var reserved = false
+				while (true) {
+					val current = tickCredits.get()
+					if (availableCredits - current < price) {
+						markItemMissing(printItem, requiredAmount)
+						break
+					}
+					if (tickCredits.compareAndSet(current, current + price)) {
+						reserved = true
+						break
+					}
+					// Another thread updated tickCredits in the meantime; retry with the fresh value.
 				}
+
+				if (!reserved) return@forEach
+
 				toPrint.add(printPosition)
 				printedBlocks.incrementAndGet()
-				tickCredits.addAndGet(price)
 				consumedCredits.addAndGet(price)
 				consumedPower.addAndGet(50)
 				return@forEach
 			}
-
-			blocksBeingProcessed.remove(printPosition)
 		}
 
 		// If the block map is empty, printing has finished
@@ -265,9 +267,7 @@ class ShipFactoryPrintTask(
 		val consumptionFailures = integration.flatMapTo(mutableSetOf()) { it.commitTransaction(this) }
 
 		Tasks.sync {
-			val printThese = toPrint.minus(consumptionFailures)
-			printBlocks(printThese.toList(), tickCredits.get())
-			blocksBeingProcessed.removeAll(printThese)
+			printBlocks(toPrint.minus(consumptionFailures), tickCredits.get())
 		}
 
 		if (hasFinished) {
@@ -497,11 +497,7 @@ class ShipFactoryPrintTask(
 
 			for (reference in references) {
 				val lock = InventoryLockRegistry.tryLockAll(listOf(reference.inventory)) ?: continue
-				val item = reference.get()
-				if (item == null){
-					lock.forEach { it.unlock() }
-					continue
-				}
+				val item = reference.get() ?: continue
 				val stackAmount = item.amount
 
 				if (remaining >= stackAmount) {
@@ -621,7 +617,7 @@ class ShipFactoryPrintTask(
 	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>, skippedBlocks: Int) {
 		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
 
-		val sorted = missingMaterials.entries.toList().sortedByDescending { it.value.get() }
+		val sorted = missingMaterials.entries.toList().sortedBy { it.value.get() }
 
 		player.userError("Missing Materials: ")
 
