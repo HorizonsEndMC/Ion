@@ -1059,7 +1059,7 @@ data class IonTurretBalancing(
 @Serializable
 data class PointDefenseBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(),
-	override var fireCooldownNanos: Long = TimeUnit.SECONDS.toMillis(10),
+	override var fireCooldownNanos: Long = TimeUnit.SECONDS.toMillis(5),
 	override var firePowerConsumption: Int = 500,
 	override var isForwardOnly: Boolean = false,
 	override var range: Double = 120.0,
@@ -1078,7 +1078,7 @@ data class PointDefenseBalancing(
         override var explosionPower: Float = 0.0f,
         override var starshipShieldDamageMultiplier: Double = 0.0,
         override var areaShieldDamageMultiplier: Double = 0.0,
-        override val entityDamage: EntityDamage = RegularDamage(30.0),
+        override val entityDamage: EntityDamage = RegularDamage(18.5),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override var particleThickness: Double = 0.35

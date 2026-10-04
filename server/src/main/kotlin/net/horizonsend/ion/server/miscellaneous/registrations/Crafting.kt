@@ -179,6 +179,9 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.EMPTY_STIM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STRENGTH_STIM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEALTH_STIM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RESISTANCE_STIM
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
@@ -282,6 +285,7 @@ import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WHEAT
 import org.bukkit.Material.YELLOW_CONCRETE
+import org.bukkit.Material.FIRE_CHARGE
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
@@ -950,13 +954,26 @@ object Crafting : IonServerComponent() {
 		registerArmorRecipe(POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *")
 		registerArmorRecipe(POWER_ARMOR_BOOTS, "* *", "*b*")
 
-		fun registerStimRecipe(result: IonRegistryKey<CustomItem, out CustomItem>, vararg shape: String) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+		fun registerEmptyStim(result: IonRegistryKey<CustomItem, out CustomItem>, vararg shape: String) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("iii", "aga", " i ")
 			setIngredient('a', ALUMINUM_INGOT)
-			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
+			setIngredient('g', GLASS_PANE)
 			setIngredient('i', IRON_INGOT)
 		}
-		registerStimRecipe(EMPTY_STIM)
+		registerEmptyStim(EMPTY_STIM)
+
+		shapeless("strength_stim", STRENGTH_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
+			ItemStack.of(FIRE_CHARGE,1),
+			EMPTY_STIM.getValue().constructItemStack(1)
+		)
+		shapeless("health_stim", HEALTH_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
+			ItemStack.of(ROTTEN_FLESH,1),
+			EMPTY_STIM.getValue().constructItemStack(1)
+		)
+		shapeless("resistance_stim", RESISTANCE_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
+			ItemStack.of(Material.TURTLE_SCUTE,1),
+			EMPTY_STIM.getValue().constructItemStack(1)
+		)
 
 		fun registerPowerArmorModule(result: IonRegistryKey<CustomItem, out CustomItem>, center: RecipeChoice) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("aga", "g*g", "aga")

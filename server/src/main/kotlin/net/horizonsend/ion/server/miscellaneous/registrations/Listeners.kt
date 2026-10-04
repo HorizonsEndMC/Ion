@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.listener.fixers.EdenFixer9000
 import net.horizonsend.ion.server.listener.fixers.GameplayTweaksListeners
 import net.horizonsend.ion.server.listener.gear.DoubleJumpListener
 import net.horizonsend.ion.server.listener.gear.PowerArmorListener
+import net.horizonsend.ion.server.listener.gear.VanillaCombatItemListener
 import net.horizonsend.ion.server.listener.misc.BlockListener
 import net.horizonsend.ion.server.listener.misc.BowHitListener
 import net.horizonsend.ion.server.listener.misc.ChatListener
@@ -60,6 +61,7 @@ val listeners: List<Listener> = listOf(
 
 	DoubleJumpListener,
 	PowerArmorListener,
+	VanillaCombatItemListener,
 
 	// Ion
 	BlasterListeners(),
