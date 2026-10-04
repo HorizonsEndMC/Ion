@@ -160,7 +160,7 @@ class NavigationModule(
 		starship.debug("Initiating hyperspace jump to ${jumpLocation.world.name} ($x1, $z1)")
 		starship.debug("Current location:$world ${location.x} ${location.z}")
 
-		val offset = ln(distance).toInt()
+		val offset = ln(distance).coerceAtLeast(1.0).toInt()
 
 		// don't let it be perfectly accurate
 		x1 += randomInt(-offset, offset)
