@@ -23,6 +23,8 @@ data class PVPBalancingConfiguration(
 			entityInteractionRange = 0.0,
 			sneakingSpeed = 0.0,
 			knockBackResistance = 0.0,
+			stepHeight = 0.0,
+			blockCooldownTime = 15,
 		)
 	){
 		@Serializable
@@ -34,6 +36,8 @@ data class PVPBalancingConfiguration(
 			var entityInteractionRange: Double,//addition
 			var sneakingSpeed: Double,//multiplier
 			var knockBackResistance: Double,//addition
+			var stepHeight: Double, //addition
+			var blockCooldownTime: Int, //setter
 		)
 	}
 
