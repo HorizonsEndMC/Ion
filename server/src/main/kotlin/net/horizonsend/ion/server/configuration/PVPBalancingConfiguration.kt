@@ -348,7 +348,7 @@ data class PVPBalancingConfiguration(
 			range = 40.0,
 			recoil = 1.0f,
 			reload = 30,
-			shotSize = 0.225,
+			shotSize = 0.25,
 			shouldAkimbo = false,
 			shouldBypassHitTicks = true,
 			shouldHeadshot = false,
