@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.util
 import com.fastasyncworldedit.core.history.changeset.AbstractChangeSet
 import com.fastasyncworldedit.core.history.changeset.ChangeExchangeCoordinator
 import com.fastasyncworldedit.core.nbt.FaweCompoundTag
+import com.fastasyncworldedit.core.util.NbtUtils
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.inventory.BlockBag
 import com.sk89q.worldedit.history.change.Change
@@ -29,7 +30,6 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 			val oldData = BukkitAdapter.adapt(BlockTypesCache.states[combinedFrom])
 			val newType = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo].blockType)
 
-			if (newType.isWallSign) processMultiblock(x, y, z)
 			if (newType.isAir) {
 				MultiblockEntities.removeMultiblockEntity(bukkitWorld, x, y, z)
 
@@ -39,8 +39,17 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 			}
 		}
 	}
-
-	override fun addTileCreate(tag: FaweCompoundTag?) {}
+ 	
+	// Moving multiblock sign processing to addTileCreate fixed non-detection when pasting (previous was in add())
+	override fun addTileCreate(tag: FaweCompoundTag?) {
+		if (tag != null) {
+			val data = tag.linTag()
+			val tileType = data.value()["id"]?.value()
+			if (tileType == "minecraft:sign") {
+				processMultiblock(NbtUtils.getInt(data, "x"), NbtUtils.getInt(data, "y"), NbtUtils.getInt(data, "z"))
+			}
+		}
+	}
 	override fun addTileRemove(tag: FaweCompoundTag?) {}
 	override fun addEntityRemove(tag: FaweCompoundTag?) {}
 	override fun addEntityCreate(tag: FaweCompoundTag?) {}

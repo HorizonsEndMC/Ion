@@ -56,7 +56,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) :
 	}
 
 	fun handleExtractorTick(task: TransportTask, location: BlockKey, meta: ItemExtractorMetaData?) {
-		val sources = getSources(location)
+		val sources = getSources(location).map { it.first }.toSet()
 		if (sources.isEmpty()) {
 			return
 		}
@@ -335,8 +335,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) :
 		}
 	}
 
-	fun getSources(extractorLocation: BlockKey): Set<CraftInventory> {
-		val inventories = mutableSetOf<CraftInventory>()
+	fun getSources(extractorLocation: BlockKey): Set<Pair<CraftInventory, BlockKey>> {
+		val inventories = mutableSetOf<Pair<CraftInventory, BlockKey>>()
 
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inventoryLocation = getRelative(extractorLocation, face)
@@ -348,7 +348,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>) :
 			) continue
 			val inv = getInventory(inventoryLocation) ?: continue
 			if (inv.isEmpty) continue
-			inventories.add(inv)
+			inventories.add(Pair(inv, inventoryLocation))
 		}
 
 		return inventories
