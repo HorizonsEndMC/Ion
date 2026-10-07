@@ -66,24 +66,146 @@ object ProbeStarshipWeaponMultiblockMirrored : SignlessStarshipWeaponMultiblock<
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {
-				x(0).sponge()
-				x(1).powerInput()
+				x(-1).sponge()
+				x(0).powerInput()
 			}
 		}
 		z(1) {
 			y(0) {
-				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).dispenser()
+				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
+				x(0).dispenser()
 			}
 		}
 		z(2) {
 			y(0) {
-				x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
 			}
 		}
 		z(3) {
 			y(0) {
-				x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.END_ROD.createBlockData()))
+				x(-1).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.END_ROD.createBlockData()))
+			}
+		}
+	}
+}
+
+// Below is the vertical versions of the probe launchers
+
+object VerticalProbeStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ProbeWeaponSubsystem>(), DisplayNameMultilblock {
+	override val key: String = "probe"
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): ProbeWeaponSubsystem {
+		return ProbeWeaponSubsystem(starship, pos, face)
+	}
+
+	override val displayName: Component
+		get() = text("Vertical Probe Launcher")
+	override val description: Component
+		get() = text("Fires a scanner probe that detects nearby signatures.")
+
+	override fun MultiblockShape.buildStructure() {
+		z(0) {
+			y(0) {
+				x(0).powerInput()
+			}
+		}
+		z(1) {
+			y(0) {
+				x(0).dispenser()
+			}
+		}
+		z(0) {
+			y(1) {
+				x(0).sponge()
+			}
+		}
+		z(1) {
+			y(1) {
+				x(0).grindstone(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.FORWARD,
+						example = Material.GRINDSTONE.createBlockData()
+					)
+				)
+			}
+		}
+		z(2) {
+			y(1) {
+				x(0).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.FORWARD,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
+			}
+		}
+		z(3) {
+			y(1) {
+				x(0).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.BACKWARD,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
+			}
+		}
+	}
+}
+
+object VerticalProbeStarshipWeaponMultiblockMirrored : SignlessStarshipWeaponMultiblock<ProbeWeaponSubsystem>(), DisplayNameMultilblock {
+	override val key: String = "probe"
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): ProbeWeaponSubsystem {
+		return ProbeWeaponSubsystem(starship, pos, face)
+	}
+
+	override val displayName: Component
+		get() = text("Vertical Probe Launcher(Mirrored)")
+	override val description: Component
+		get() = text("Fires a scanner probe that detects nearby signatures.")
+
+	override fun MultiblockShape.buildStructure() {
+		z(0) {
+			y(0) {
+				x(0).powerInput()
+			}
+		}
+		z(1) {
+			y(0) {
+				x(0).dispenser()
+			}
+		}
+		z(0) {
+			y(-1) {
+				x(0).sponge()
+			}
+		}
+		z(1) {
+			y(-1) {
+				x(0).grindstone(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.FORWARD,
+						example = Material.GRINDSTONE.createBlockData()
+					)
+				)
+			}
+		}
+		z(2) {
+			y(-1) {
+				x(0).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.FORWARD,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
+			}
+		}
+		z(3) {
+			y(-1) {
+				x(0).endRod(
+					PrepackagedPreset.simpleDirectional(
+						RelativeFace.BACKWARD,
+						example = Material.END_ROD.createBlockData()
+					)
+				)
 			}
 		}
 	}

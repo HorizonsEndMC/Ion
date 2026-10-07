@@ -194,8 +194,12 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AdvancedProbeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AdvancedProbeStarshipWeaponMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.VerticalAdvancedProbeStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.VerticalAdvancedProbeStarshipWeaponMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ProbeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ProbeStarshipWeaponMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.VerticalProbeStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.VerticalProbeStarshipWeaponMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopSwarmMissileStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopThermonuclearMissileWeaponMultiblock
@@ -380,8 +384,12 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PointDefenseStarshipWeaponMultiblockBottom)
 		registerMultiblock(ProbeStarshipWeaponMultiblock)
 		registerMultiblock(ProbeStarshipWeaponMultiblockMirrored)
+		registerMultiblock(VerticalProbeStarshipWeaponMultiblock)
+		registerMultiblock(VerticalProbeStarshipWeaponMultiblockMirrored)
 		registerMultiblock(AdvancedProbeStarshipWeaponMultiblock)
 		registerMultiblock(AdvancedProbeStarshipWeaponMultiblockMirrored)
+		registerMultiblock(VerticalAdvancedProbeStarshipWeaponMultiblock)
+		registerMultiblock(VerticalAdvancedProbeStarshipWeaponMultiblockMirrored)
 		registerMultiblock(TopLightTurretMultiblock)
 		registerMultiblock(BottomLightTurretMultiblock)
 		registerMultiblock(TopHeavyTurretMultiblock)
