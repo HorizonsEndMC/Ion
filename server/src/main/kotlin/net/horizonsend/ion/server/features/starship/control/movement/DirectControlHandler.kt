@@ -96,7 +96,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		 */
 		var targetSpeed = (calculateSpeed(data.selectedSpeed) * (1 + speedModifier) * (1 - slowModifier)) * oversizeModifier /*+ nationDirectControlModifier*/
 
-		targetSpeed *= if (starship.type.tech2) 1.15 else 1.0
+		targetSpeed *= starship.type.balancing.directControlSpeedMultiplier
 		targetSpeed *= starship.correctiveFactorForDirectControlSpeed(data.selectedSpeed)
 		if (data.isBoosting) {
 			// Initialize forward movement
