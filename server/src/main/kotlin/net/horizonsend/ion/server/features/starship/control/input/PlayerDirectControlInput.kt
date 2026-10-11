@@ -118,7 +118,7 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		 */
 
 		val speed = ((10.0f * baseSpeed * (1 + speedModifier) * (1 - slowModifier) * (1000.0f / cooldown) *
-			(if(isBoosting) 2.0f else 1f) * (if(starship.type.tech2) 1.15f else 1f) * oversizeModifier * starship.correctiveFactorForDirectControlSpeed(newSlot.d())).roundToInt() / 10.0)
+			(if(isBoosting) 2.0f else 1f) * starship.type.balancing.directControlSpeedMultiplier * oversizeModifier * starship.correctiveFactorForDirectControlSpeed(newSlot.d())).roundToInt() / 10.0)
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}
