@@ -886,7 +886,7 @@ data class NewStarshipBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
 				),
-				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000), maxPerShot = 3)
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4500), maxPerShot = 3)
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
