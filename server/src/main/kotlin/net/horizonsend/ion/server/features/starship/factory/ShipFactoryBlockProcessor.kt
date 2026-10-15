@@ -4,8 +4,17 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMaps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.features.transport.filters.FilterData
+import net.horizonsend.ion.server.features.transport.filters.FilterMeta
+import net.horizonsend.ion.server.features.transport.filters.FilterType
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyBlockUtils.getRotatedBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -14,13 +23,23 @@ import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.starlegacy.javautil.BannerUtils
 import net.starlegacy.javautil.BannerUtils.BannerData
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.block.Rotation
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.javautil.SignUtils
 import net.starlegacy.javautil.SignUtils.SignData
+import org.bukkit.Material
+import org.bukkit.block.TileState
 import org.bukkit.block.data.BlockData
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
+import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.persistence.PersistentDataType
+import org.enginehub.linbus.tree.LinTagType
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -37,6 +56,7 @@ abstract class ShipFactoryBlockProcessor(
 	val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 	protected val signMap: MutableMap<BlockKey, SignData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 	protected val bannerMap: MutableMap<BlockKey, BannerData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
+	protected val filters: MutableMap<BlockKey, FilterData<*, *>?> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 
 	var blockQueue = ConcurrentLinkedQueue<Long>()
 
@@ -65,6 +85,25 @@ abstract class ShipFactoryBlockProcessor(
 
 			if (data.material.name.endsWith("_BANNER")) {
 				bannerMap[worldKey] = BannerUtils.readBannerData(baseBlock.nbt)
+			}
+
+			if(data.material == Material.VAULT && data.customBlock == ItemFilterBlock) {
+				val nbt = baseBlock.nbt
+				val publicValues = nbt
+					?.findTag("PublicBukkitValues", LinTagType.compoundTag())
+					?: nbt?.findTag("components", LinTagType.compoundTag())
+						?.findTag("minecraft:custom_data", LinTagType.compoundTag())
+						?.findTag("PublicBukkitValues", LinTagType.compoundTag())
+				if(publicValues != null) {
+					val pdc = (data.createBlockState() as TileState).persistentDataContainer
+					val nmsTag = publicValues.nms() as CompoundTag
+					(pdc as CraftPersistentDataContainer).putAll(nmsTag)
+
+					val filterData: FilterData<*, *>? = pdc.get(NamespacedKeys.FILTER_DATA, FilterData)
+					if (filterData != null) {
+						filters[worldKey] = filterData
+					}
+				}
 			}
 
 			blockQueue.add(worldKey)
