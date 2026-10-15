@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.starship.factory
 
-import com.google.common.util.concurrent.AtomicDouble
-import com.googlecode.cqengine.ConcurrentIndexedCollection
 import io.papermc.paper.registry.RegistryAccess.registryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
@@ -20,6 +18,7 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -30,13 +29,17 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedS
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryGui
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterData
-import net.horizonsend.ion.server.features.transport.items.util.InventoryLockRegistry
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.CreditPrintBlackList
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -62,15 +65,16 @@ import org.bukkit.Material
 import org.bukkit.block.Banner
 import org.bukkit.block.Sign
 import org.bukkit.block.TileState
+import org.bukkit.block.Vault
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import java.util.*
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
+import org.bukkit.persistence.PersistentDataContainer
+import java.util.Collections
+import java.util.IdentityHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class ShipFactoryPrintTask(
@@ -85,22 +89,22 @@ class ShipFactoryPrintTask(
 	override val taskEntity: ShipFactoryEntity get() = entity
 
 	/** Counts of missing materials */
-	private val missingMaterials = ConcurrentHashMap<PrintItem, AtomicInteger>()
+	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
+
+	private val referencesMarkedForRemoval = mutableMapOf<ItemReference, AtomicInteger>()
 
 	/** Total number of blocks that were skipped due to obstruction */
-	private var skippedBlocks = AtomicInteger(0)
+	private var skippedBlocks = 0
 	/** Total number of blocks that placed successfully */
-	private var printedBlocks = AtomicInteger(0)
+	private var printedBlocks = 0
 
 	/** Total number of credits used while printing */
-	var consumedCredits = AtomicDouble(0.0)
+	var consumedCredits = 0.0
 
 	/** Holds whether the queue has been fully loaded. Prevents ticking while loading. */
 	private var queueLoaded = false
 	/** Stores the number of blocks that were initially in the queue, can be used to obtain a percentage completion. */
 	private var startBlocks = 0
-
-	val blocksBeingProcessed = ConcurrentIndexedCollection<BlockKey>()
 
 	override fun onEnable() {
 		loadBlockQueue()
@@ -144,10 +148,10 @@ class ShipFactoryPrintTask(
 	private fun runTick() {
 		if (!queueLoaded) return
 		missingMaterials.clear()
-		val tickCredits = AtomicDouble(0.0)
+		var tickCredits = 0.0
 
 		// Blocks that are gonna be printed
-		val toPrint = ConcurrentIndexedCollection<BlockKey>()
+		val toPrint = mutableListOf<BlockKey>()
 
 		// Per multiblock print limit
 		val printLimit = entity.multiblock.blockPlacementsPerTick
@@ -162,34 +166,34 @@ class ShipFactoryPrintTask(
 		// Check if the player has any credits
 		checkAvailablecredits(availableCredits, 0.001)
 
-		val consumedPower = AtomicInteger(0)
+		var consumedPower = 0
 		integration.forEach { it.startNewTransaction(this) }
 
 		// Find the first blocks that can be placed with the available resources, up to the limit
-		blockQueue.stream().filter { !blocksBeingProcessed.contains(it) }.parallel().forEach { block ->
+		val keyIterator = blockQueue.iterator()
+		while (keyIterator.hasNext()) {
 			if (isDisabled) {
 				isDisabled = false
-				return@forEach
+				break
 			}
 
-			val printPosition: BlockKey = block
-			if (toPrint.size >= printLimit) return@forEach
+			val printPosition: BlockKey = keyIterator.next()
+			if (toPrint.size >= printLimit) break
 
-			val blockData = blockMap[printPosition] ?: return@forEach
+			val blockData = blockMap[printPosition] ?: continue
 
 			val vec3i = toVec3i(printPosition)
 			val worldBlockData = entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z)
 			if (worldBlockData == blockData) {
 				// Save an iteration
-				blockQueue.remove(printPosition)
-				return@forEach
+				keyIterator.remove()
+				continue
 			}
 
 			val printItem = PrintItem[blockData]
 			if (printItem == null) {
-				blockQueue.remove(printPosition)
 				IonServer.slF4JLogger.warn("$blockData has no print item!")
-				return@forEach
+				continue
 			}
 
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
@@ -201,56 +205,50 @@ class ShipFactoryPrintTask(
 					requiredAmount = requiredAmount
 				)
 			) {
-				skippedBlocks.incrementAndGet()
-				blockQueue.remove(printPosition)
-				return@forEach
+				skippedBlocks++
+				continue
 			}
 
 			// Check for power consumption. This check will only apply if it is an advanced ship factory.
-			if (!checkPowerConsumption(consumedPower.get())) return@forEach
+			if (!checkPowerConsumption(consumedPower)) break
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
 			//Check if the current block can be credit printed
 			val isNotCreditPrintable = CreditPrintBlackList.isInBlacklist(blockData) || !CreditPrintBlackList.isInWhitelist(blockData)
 
-			blocksBeingProcessed.add(printPosition)
-
 			// Try material print first regardless of credit printability
 			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount)
 			if (success) {
 				toPrint.add(printPosition)
-				printedBlocks.incrementAndGet()
-				consumedPower.addAndGet(50)
-				return@forEach
+				printedBlocks++
+				consumedPower += 50
+				continue
 			}
 
 			// If no items available and block is credit printable, try credit print
 			if (!isNotCreditPrintable && creditPrintingEnabled) {
-				if (availableCredits.minus(tickCredits.get()) < price) {
+				if (availableCredits - tickCredits < price) {
 					markItemMissing(printItem, requiredAmount)
-					blocksBeingProcessed.remove(printPosition)
-					return@forEach
+					continue
 				}
 				toPrint.add(printPosition)
-				printedBlocks.incrementAndGet()
-				tickCredits.addAndGet(price)
-				consumedCredits.addAndGet(price)
-				consumedPower.addAndGet(50)
-				return@forEach
+				printedBlocks++
+				tickCredits += price
+				consumedCredits += price
+				consumedPower += 50
+				continue
 			}
-
-			blocksBeingProcessed.remove(printPosition)
 		}
 
 		// If the block map is empty, printing has finished
 		// If the total number of skipped blocks and printed blocks equals the size of the block queue, it is
-		val hasFinished = blockQueue.isEmpty() || (startBlocks - (skippedBlocks.get() + printedBlocks.get()) == 0)
+		val hasFinished = blockQueue.isEmpty() || (startBlocks - (skippedBlocks + printedBlocks) == 0)
 
 		// Premature failure condition - out of materials
 		if (toPrint.isEmpty() && !hasFinished) {
 			if (missingMaterials.isNotEmpty()) {
-				sendMissing(missingMaterials, skippedBlocks.get())
+				sendMissing(missingMaterials, skippedBlocks)
 				updateGuiButton(InputResult.FailureReason(listOf(
 					text("Missing Materials!", RED),
 					template(text("Printing consumed {0}", GREEN), consumedCredits.toCreditComponent())
@@ -265,21 +263,27 @@ class ShipFactoryPrintTask(
 		val consumptionFailures = integration.flatMapTo(mutableSetOf()) { it.commitTransaction(this) }
 
 		Tasks.sync {
-			val printThese = toPrint.minus(consumptionFailures)
-			printBlocks(printThese.toList(), tickCredits.get())
-			blocksBeingProcessed.removeAll(printThese)
+			val iterator = referencesMarkedForRemoval.iterator()
+			while (iterator.hasNext()) {
+				val reference = iterator.next()
+				reference.key.inventory.getItem(reference.key.index)?.subtract(reference.value.get())
+
+				iterator.remove()
+			}
+
+			printBlocks(toPrint.minus(consumptionFailures), tickCredits)
 		}
 
 		if (hasFinished) {
 			if (missingMaterials.isNotEmpty()) {
-				sendMissing(missingMaterials, skippedBlocks.get())
+				sendMissing(missingMaterials, skippedBlocks)
 			}
 
 			player.success("Ship factory has finished printing.")
 			sendCreditConsumption()
 			updateGuiButton(InputResult.SuccessReason(listOf(
 				text("Ship factory has finished printing.", GREEN),
-				template(text("Printing consumed {0}", GREEN), consumedCredits.get().roundToHundredth().toCreditComponent())
+				template(text("Printing consumed {0}", GREEN), consumedCredits.roundToHundredth().toCreditComponent())
 			)))
 
 			integration.forEach { it.sendReport(this, true) }
@@ -492,16 +496,34 @@ class ShipFactoryPrintTask(
 			return items
 		}
 
+		private fun markItemsForConsumptionFromReferences(
+			references: Collection<ItemReference>,
+			amount: Int,
+			markedForRemoval: MutableMap<ItemReference, AtomicInteger>
+		): Int {
+			var remaining = amount
+
+			for (reference in references) {
+				if (remaining == 0) continue
+
+				if (markedForRemoval[reference] != null) continue // inventory slot was already marked; skip
+
+				val item = reference.get() ?: continue
+				val stackAmount = item.amount
+				val toRemove = minOf(stackAmount, remaining)
+
+				markedForRemoval[reference] = AtomicInteger(toRemove)
+				remaining -= toRemove
+			}
+
+			return remaining
+		}
+
 		fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
 			var remaining = amount
 
 			for (reference in references) {
-				val lock = InventoryLockRegistry.tryLockAll(listOf(reference.inventory)) ?: continue
-				val item = reference.get()
-				if (item == null){
-					lock.forEach { it.unlock() }
-					continue
-				}
+				val item = reference.get() ?: continue
 				val stackAmount = item.amount
 
 				if (remaining >= stackAmount) {
@@ -512,13 +534,25 @@ class ShipFactoryPrintTask(
 					item.amount -= toRemove
 					remaining -= toRemove
 				}
-				lock.forEach { it.unlock() }
 			}
 
 			return remaining
 		}
 	}
 
+	/**
+	 * Checks whether the required items to place a block are available across provided inventories or integrations.
+	 *
+	 * If available, marks the necessary items for consumption and updates remaining counts.
+	 * If partially or fully unavailable, attempts to fulfill remaining requirements via integrations
+	 * or records the missing amount in [missingMaterials].
+	 *
+	 * @param printPosition The coordinate where the block will be placed.
+	 * @param availableItems Aggregated map of items available in accessible inventories.
+	 * @param printItem The item representation corresponding to the block.
+	 * @param requiredAmount The quantity of the item needed for printing.
+	 * @return `true` if all required materials could be sourced and staged for consumption, `false` otherwise.
+	 */
 	private fun checkAvailableItems(
 		printPosition: BlockKey,
 		availableItems: Map<PrintItem, AvailableItemInformation>,
@@ -533,23 +567,23 @@ class ShipFactoryPrintTask(
 				return false
 			}
 
+		// When inventories hold less than the required amount, attempt partial fulfillment via integration
 		if (resourceInformation.amount.get() < requiredAmount) {
-			// the missing amount was being calculated incorrectly, resulting in duped items
 			val availableFromInventories = resourceInformation.amount.get()
 			val missing = requiredAmount - availableFromInventories
 
-			// Try and make a partial purchase with the missing amount
+			// Try to handle the deficit through integration transactions
 			if (!integration.any { it.canAddTransaction(printItem, printPosition, missing) }) {
 				markItemMissing(printItem, missing)
 				return false
 			} else {
 				resourceInformation.amount.addAndGet(-availableFromInventories)
 
-				val partialConsumeFuture = CompletableFuture<Int>()
-				Tasks.sync {
-					partialConsumeFuture.complete(consumeItemFromReferences(resourceInformation.references, availableFromInventories))
-				}
-				val missingFromInventories = partialConsumeFuture.get()
+				val missingFromInventories = markItemsForConsumptionFromReferences(
+					resourceInformation.references,
+					availableFromInventories,
+					referencesMarkedForRemoval
+				)
 
 				if (missingFromInventories == 0) return true
 
@@ -558,8 +592,10 @@ class ShipFactoryPrintTask(
 			}
 		}
 
+		// Deduct the full amount from available stock
 		resourceInformation.amount.addAndGet(-requiredAmount)
 
+		// Reduce previously tracked missing count if materials have become available
 		if (missingMaterials.containsKey(printItem)) {
 			val atomic = missingMaterials[printItem]
 
@@ -568,14 +604,11 @@ class ShipFactoryPrintTask(
 			}
 		}
 
+		// Mark individual inventory references for item consumption
 		val references = resourceInformation.references
-		val getMissing = CompletableFuture<Int>()
-		Tasks.sync {
-			getMissing.complete(consumeItemFromReferences(references, requiredAmount))
-		}
+		val missing = markItemsForConsumptionFromReferences(references, requiredAmount, referencesMarkedForRemoval)
 
-		val missing = getMissing.get()
-
+		// If some items could not be marked from inventory references, attempt integration fallback
 		if (missing > 0) {
 			resourceInformation.amount.addAndGet(missing)
 
@@ -621,7 +654,7 @@ class ShipFactoryPrintTask(
 	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>, skippedBlocks: Int) {
 		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
 
-		val sorted = missingMaterials.entries.toList().sortedByDescending { it.value.get() }
+		val sorted = missingMaterials.entries.toList().sortedBy { it.value.get() }
 
 		player.userError("Missing Materials: ")
 
@@ -646,7 +679,7 @@ class ShipFactoryPrintTask(
 
 	private fun updatePercentageStatus() {
 		val blueprintName = text(entity.blueprintName)
-		val percentValue = ((startBlocks - (skippedBlocks.get() + printedBlocks.get())) / startBlocks.toDouble())
+		val percentValue = ((startBlocks - (skippedBlocks + printedBlocks)) / startBlocks.toDouble())
 		val percent = formatProgress(WHITE, percentValue)
 
 		val formatted = ofChildren(blueprintName, text(": ", HEColorScheme.HE_DARK_GRAY), percent)

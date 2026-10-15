@@ -177,7 +177,7 @@ class SiegeRewardsGui(
 					is RewardEntry.SolarRewardEntry ->
 						SolarSiegeData.findOnePropById(entry.id, SolarSiegeData::availableRewards) ?: mutableMapOf()
 					is RewardEntry.RegionalObjectiveRewardEntry ->
-						SolarSiegeData.findOnePropById(entry.id, RegionalObjectiveSiegeData::availableRewards) ?: mutableMapOf()
+						RegionalObjectiveSiegeData.findOnePropById(entry.id, RegionalObjectiveSiegeData::availableRewards) ?: mutableMapOf()
 				}
 
 				val dbAmount = dbRewards[item] ?: 0
