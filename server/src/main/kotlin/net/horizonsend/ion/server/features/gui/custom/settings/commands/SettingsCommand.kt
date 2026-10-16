@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
+import net.horizonsend.ion.server.features.starship.control.input.CruiseControlMovementMode
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
@@ -51,6 +52,10 @@ object SettingsCommand : SLCommand() {
 			PlayerInput.TertiaryButtonControl.entries.map { setting -> setting.name }
 		}
 
+        registerAsyncCompletion(manager, "cruiseControlMovementMode") { _ ->
+            CruiseControlMovementMode.entries.map { setting -> setting.name }
+        }
+
 		registerAsyncCompletion(manager, "displayorparticle") {_->
 			SettingsMainMenuGui.Companion.DisplayOrParticle.entries.map { setting -> setting.name }
 		}
@@ -70,6 +75,18 @@ object SettingsCommand : SLCommand() {
     @CommandCompletion("true|false")
     fun onSettingsControlDcOverridesCruise(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
         handleBooleanToggleSetting(sender, PlayerSettings::useAlternateDCCruise, enabled)
+    }
+
+    @CommandAlias("control cruisecontrolmovementmode")
+    @CommandCompletion("@cruiseControlMovementMode")
+    fun onSettingsControlCruiseControlMovementMode(sender: Player, value: CruiseControlMovementMode) = asyncCommand(sender) {
+        handleEnumCycleSetting(sender, PlayerSettings::cruiseControlMovementMode, value, CruiseControlMovementMode::class.java)
+    }
+
+    @CommandAlias("control cruisecontrolvariablespeedhotbar")
+    @CommandCompletion("true|false")
+    fun onSettingsControlCruiseControlVariableSpeedHotbar(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
+        handleBooleanToggleSetting(sender, PlayerSettings::cruiseControlVariableSpeedHotbar, enabled)
     }
 
     @CommandAlias("control dcrefreshrate")
