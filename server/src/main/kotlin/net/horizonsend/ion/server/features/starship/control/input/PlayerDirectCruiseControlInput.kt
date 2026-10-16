@@ -61,7 +61,7 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 			text("ON ", GRAY),
 			text(
 				if (movementMode == CruiseControlMovementMode.LOCK) 
-				"[TEST Use /cc to turn it off - tap W/A/D to lock direction - use S to brake - hold sneak ("
+				"[Use /cc to turn it off - tap W/A/D to lock direction - use S to brake - hold sneak ("
 			 	else "[Use /cc to turn it off - use W/A/S/D to maneuver - hold sneak (", YELLOW),
 			keybind("key.sneak", YELLOW),
 			text(") to move down - hold jump(", YELLOW),
