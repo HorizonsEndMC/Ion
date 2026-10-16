@@ -16,7 +16,7 @@ class CruiseData(
 ) {
     var lastBlockCount = starship.initialBlockCount
 
-    fun accelerate(maxSpeed: Int, thrusterPower: Double) {
+    fun accelerate(maxSpeed: Int, thrusterPower: Double, speedMultiplier: Double = 1.0) {
         val speedModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SPEED)?.strength ?: 0.0
         val slowModifier = starship.getStrongestActiveStatusEffectFromType(StarshipStatusEffectTypes.CRUISE_SLOW)?.strength ?: 0.0
         /*
@@ -37,7 +37,7 @@ class CruiseData(
         val limitedTarget = (targetSpeed * (1 + speedModifier) * (1 - slowModifier) * starship.disabledThrusterRatio + /*nationCruiseModifier + */dominionBpsModifier + starship.directCruiseSpeedAddition).toInt()
 
         val dir = this.targetDir ?: Vector()
-        val speed = if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)
+        val speed = (if (maxSpeed <= 0) limitedTarget else min(limitedTarget, maxSpeed)).toDouble() * speedMultiplier
         val newVelocity = dir.clone().multiply(speed)
 
         moveTowards(velocity, newVelocity, getRealAccel(thrusterPower) * StarshipCruising.SECONDS_PER_CRUISE)

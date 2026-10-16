@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSet
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting
+import net.horizonsend.ion.server.features.starship.control.input.CruiseControlMovementMode
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.kyori.adventure.text.Component
@@ -31,6 +32,8 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
     override val buttonsList = listOf(
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
+			DBCachedEnumCycle(CruiseControlMovementMode::class.java, text("/CC Movement Mode"), "HOLD = hold to move. LOCK latches direction when tapping W, A, or D; S cancels lock.", GuiItem.GUNSHIP, 0, PlayerSettings::cruiseControlMovementMode),
+			DBCachedBooleanToggle(text("/CC Speed Bar"), "Selects cruise speed with hotbar slots 1-9. Only applies when Cruise Control Movement Mode is LOCK.", GuiItem.GUNSHIP, false, PlayerSettings::cruiseControlVariableSpeedHotbar),
 			DBCachedIntegerInput(-1,1_000_000, text("DC Refresh Rate"),
 				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate),
 			DBCachedBooleanToggle(text("Enable Floating While DC"), "Enabling this setting allows your character to float while in DC for a smoother experience.", GuiItem.LIST, true, PlayerSettings::floatWhileDc),
