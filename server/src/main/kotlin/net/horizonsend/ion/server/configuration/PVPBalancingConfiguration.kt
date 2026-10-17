@@ -46,7 +46,7 @@ data class PVPBalancingConfiguration(
 		val detonator: ThrowableBalancing = ThrowableBalancing(
 			65.0,
 			4.0,
-			1.05,
+			1.0,
 			5,
 			30,
 			1,
@@ -184,7 +184,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val revolver: Singleshot = Singleshot(
-			damage = 11.5,
+			damage = 10.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 6,
 			ammoPerRefill = 20,
@@ -345,7 +345,7 @@ data class PVPBalancingConfiguration(
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 1f,
-			range = 40.0,
+			range = 35.0,
 			recoil = 1.0f,
 			reload = 30,
 			shotSize = 0.25,
