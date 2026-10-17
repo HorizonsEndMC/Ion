@@ -46,7 +46,7 @@ data class PVPBalancingConfiguration(
 		val detonator: ThrowableBalancing = ThrowableBalancing(
 			65.0,
 			4.0,
-			1.05,
+			1.0,
 			5,
 			30,
 			1,
@@ -154,7 +154,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 4.5,
+			damage = 4.4,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
@@ -184,7 +184,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val revolver: Singleshot = Singleshot(
-			damage = 11.5,
+			damage = 10.0,
 			damageFalloffMultiplier = 0.0,
 			capacity = 6,
 			ammoPerRefill = 20,
@@ -244,7 +244,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 2.35,
+			damage = 2.30,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
