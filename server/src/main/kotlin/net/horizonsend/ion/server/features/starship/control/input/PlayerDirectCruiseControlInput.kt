@@ -91,7 +91,7 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 	override fun destroy() {
 		controller.sendMessage(ofChildren(text("Cruise Control: ", GRAY), text("OFF ", NamedTextColor.RED), text("[Use /cc to turn it on]", YELLOW)))
 		
-		variableCruiseSpeedMultiplier = 1
+		variableCruiseSpeedMultiplier = 1.0
 		player.walkSpeed = 0.2f // default
 		player.flySpeed = 0.06f
 		player.isFlying = false
