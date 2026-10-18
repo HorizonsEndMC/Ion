@@ -16,7 +16,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class MeleeWeapons(
 		var energySwordBalancing: MeleeWeaponBalancing = MeleeWeaponBalancing(
-			damage = 6.8,
+			damage = 7.0,
 			speedUp = 0.0,
 			attackSpeed = -2.4,
 			knockback = 0.0,
@@ -113,7 +113,7 @@ data class PVPBalancingConfiguration(
 			scale = 0.0,
 			entityReach = 0.0,
 			blockReach = 0.0,
-			armor = 2.5,
+			armor = 3.0,
 			toughness = 0.0,
 			knockBackResistance = 0.0,
 			power = 50000,
