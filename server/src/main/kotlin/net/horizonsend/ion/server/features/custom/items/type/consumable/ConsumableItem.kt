@@ -40,6 +40,7 @@ class ConsumableItem(
 	ItemFactory
 		.builder()
 		.setMaterial(Material.BAKED_POTATO)
+		.setCustomModel(itemModel)
 		.setMaxStackSize(stackSize)
 		.addData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
 			.consumeSeconds(consumeSeconds)
