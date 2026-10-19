@@ -25,6 +25,7 @@ import java.util.function.Supplier
 class ConsumableItem(
 	key: IonRegistryKey<CustomItem, ConsumableItem>,
 	displayName: Component,
+	itemModel : String,
 	stackSize: Int,
 	consumeSeconds: Float,
 	sound: Key = Key.key("minecraft", "entity.generic.eat"),
@@ -38,7 +39,7 @@ class ConsumableItem(
 	displayName,
 	ItemFactory
 		.builder()
-		.setMaterial(Material.SWEET_BERRIES)
+		.setMaterial(Material.BAKED_POTATO)
 		.setMaxStackSize(stackSize)
 		.addData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
 			.consumeSeconds(consumeSeconds)

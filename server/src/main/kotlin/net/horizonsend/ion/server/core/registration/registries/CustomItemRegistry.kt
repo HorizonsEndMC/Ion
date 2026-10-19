@@ -343,7 +343,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		stackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
 		stackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
 		stackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
-		stackable(key = CustomItemKeys.EMPTY_STIM, model = "", displayName = Component.text("Empty Stim"))
+		stackable(key = CustomItemKeys.EMPTY_STIM, model = "consumable/empty_stim", displayName = Component.text("Empty Stim", NamedTextColor.GRAY))
 		stackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
 
 		stackable(key = CustomItemKeys.UNLOADED_SHELL, model = "industry/unloaded_shell", displayName = Component.text("Unloaded Shell"))
@@ -901,7 +901,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.HEALTH_STIM, ConsumableItem(
 				key = CustomItemKeys.HEALTH_STIM,
-				displayName = Component.text("Health Stim"),
+				displayName = ofChildren(Component.text("Health ", NamedTextColor.RED), Component.text("Stim", NamedTextColor.WHITE)),
+				itemModel = "consumable/health_stim",
 				stackSize = 8,
 				consumeSeconds = 0.1F,
 				consumeCooldown = 15,
@@ -912,22 +913,24 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
 			CustomItemKeys.STRENGTH_STIM, ConsumableItem(
 				key = CustomItemKeys.STRENGTH_STIM,
-				displayName = Component.text("Strength Stim"),
+				displayName = ofChildren(Component.text("Strength ", NamedTextColor.GOLD), Component.text("Stim", NamedTextColor.WHITE)),
+				itemModel = "consumable/strength_stim",
 				stackSize = 8,
 				consumeSeconds = 0.1F,
 				consumeCooldown = 15,
-				lore = Component.text("A stim created to provide a attack buff.", NamedTextColor.GOLD, ITALIC).wrap(200),
+				lore = Component.text("A stim created to provide a attack buff.", NamedTextColor.RED, ITALIC).wrap(200),
 				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::strengthStim,
 			)
 		)
 		register(
 			CustomItemKeys.RESISTANCE_STIM, ConsumableItem(
 				key = CustomItemKeys.RESISTANCE_STIM,
-				displayName = Component.text("Resistance Stim"),
+				displayName = ofChildren(Component.text("Resistance ", NamedTextColor.AQUA), Component.text("Stim", NamedTextColor.WHITE)),
+				itemModel = "consumable/resistance_stim",
 				stackSize = 8,
 				consumeSeconds = 0.1F,
 				consumeCooldown = 15,
-				lore = Component.text("A stim created to provide a resistance buff.", NamedTextColor.GOLD, ITALIC).wrap(200),
+				lore = Component.text("A stim created to provide a resistance buff.", NamedTextColor.DARK_AQUA, ITALIC).wrap(200),
 				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::resistanceStim,
 			)
 		)
