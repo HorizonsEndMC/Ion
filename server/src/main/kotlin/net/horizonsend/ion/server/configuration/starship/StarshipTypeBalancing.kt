@@ -1,4 +1,4 @@
-﻿package net.horizonsend.ion.server.configuration.starship
+package net.horizonsend.ion.server.configuration.starship
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -287,6 +287,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val blockadeRunner: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 10,
 			maxSneakFlyAccel = 3,
 			warmupTime = 10,
@@ -420,6 +421,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val jumpFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			warmupTime = 60,
@@ -473,6 +475,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val industrialCommandShip: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			warmupTime = 60,
@@ -572,6 +575,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val scramblerStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			warmupTime = 10,
@@ -616,6 +620,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val reconStarfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
 			warmupTime = 8,
@@ -728,6 +733,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val assaultGunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
@@ -772,6 +778,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val interdictorGunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 500,
@@ -853,6 +860,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val interdictorCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 1000,
@@ -886,7 +894,7 @@ data class NewStarshipBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
 				),
-				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000), maxPerShot = 3)
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4500), maxPerShot = 3)
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -894,6 +902,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val stasisCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.10,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
@@ -947,6 +956,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val assaultCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
@@ -998,6 +1008,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val logisticsCorvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 650,
@@ -1112,6 +1123,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val assaultFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
@@ -1154,6 +1166,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val blackOpsFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.25,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
@@ -1163,7 +1176,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.55,
+			shieldPowerMultiplier = 0.65,
 			shieldRegenMultiplier = 0.85,
 			cruiseSpeedMultiplier = 1.45,
 			requiredMultiblocks = listOf(
@@ -1180,7 +1193,7 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
-				GaussCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
+				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
 			forbiddenMultiblocks = listOf(
@@ -1203,6 +1216,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val missileFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.20,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
 			interdictionRange = 850,
@@ -1304,6 +1318,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val assaultDestroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1000,
@@ -1352,6 +1367,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val interdictorDestroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 2000,
@@ -1439,6 +1455,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val logisticsCruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1512,6 +1529,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val missileCruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1623,6 +1641,7 @@ data class NewStarshipBalancing(
 			)
 		),
 		val lancerBattlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1500,
@@ -1790,6 +1809,7 @@ sealed interface StarshipTypeBalancing {
 	val jumpStrength: Double
 	val wellStrength: Double
 	val hyperspaceRangeMultiplier: Double
+	val directControlSpeedMultiplier: Double
 	val cruiseSpeedMultiplier: Double
 	val maxCruiseSpeed: Int
 	val shieldPowerMultiplier: Double
@@ -1824,6 +1844,7 @@ open class StanrdardStarshipTypeBalancing(
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
+	override var directControlSpeedMultiplier: Double = 1.0,
 	override var cruiseSpeedMultiplier: Double = 1.0,
 	override var maxCruiseSpeed: Int = Int.MAX_VALUE,
 	override var shieldPowerMultiplier: Double = 1.0,
@@ -1857,6 +1878,7 @@ open class GroundStarshipBalancing(
 	override var jumpStrength: Double,
 	override var wellStrength: Double,
 	override var hyperspaceRangeMultiplier: Double,
+	override var directControlSpeedMultiplier: Double = 1.0,
 	override var cruiseSpeedMultiplier: Double = 1.0,
 	override var maxCruiseSpeed: Int = Int.MAX_VALUE,
 	override var shieldPowerMultiplier: Double = 1.0,
