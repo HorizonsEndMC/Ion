@@ -44,7 +44,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class Throwables(
 		val detonator: ThrowableBalancing = ThrowableBalancing(
-			65.0,
+			70.0,
 			4.0,
 			1.0,
 			5,
@@ -78,22 +78,22 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class Consumables(
 		val healthStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 400, // Every 20 ticks = 1 second cooldown till able to use again
+			timeBetweenConsumption = 200, // Every 20 ticks = 1 second cooldown till able to use again
 			potionEffectType = "minecraft:instant_health", // To change effects, just change the name of minecraft:potioneffect
 			potionEffectDuration = 1, // For health stim, we don't want to change this
 			potionEffectAmplifier = 1, // Starts at 0 (1) | amp 1 = effect strength of 2
 
 		),
 		val strengthStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 400, // Every 20 ticks = 1 second cooldown till able to use again
+			timeBetweenConsumption = 200, // Every 20 ticks = 1 second cooldown till able to use again
 			potionEffectType = "minecraft:strength", // To change effects, just change the name of minecraft:potioneffect
 			potionEffectDuration = 200, // Every 20 ticks = 1 second of effects
 			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
 		),
 		val resistanceStim: ConsumableBalancing = ConsumableBalancing(
-			timeBetweenConsumption = 400, // Every 20 ticks = 1 second cooldown till able to use again
+			timeBetweenConsumption = 200, // Every 20 ticks = 1 second cooldown till able to use again
 			potionEffectType = "minecraft:resistance", // To change effects, just change the name of minecraft:potioneffect
-			potionEffectDuration = 300, // Every 20 ticks = 1 second of effects
+			potionEffectDuration = 200, // Every 20 ticks = 1 second of effects
 			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
 		),
 	){
@@ -154,7 +154,7 @@ data class PVPBalancingConfiguration(
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
-			damage = 4.4,
+			damage = 4.25,
 			damageFalloffMultiplier = 0.0,
 			capacity = 10,
 			ammoPerRefill = 20,
