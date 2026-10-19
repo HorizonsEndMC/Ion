@@ -963,15 +963,15 @@ object Crafting : IonServerComponent() {
 		registerEmptyStim(EMPTY_STIM)
 
 		shapeless("strength_stim", STRENGTH_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
-			ItemStack.of(FIRE_CHARGE,1),
+			ItemStack.of(GOLD_INGOT,1),
 			EMPTY_STIM.getValue().constructItemStack(1)
 		)
 		shapeless("health_stim", HEALTH_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
-			ItemStack.of(ROTTEN_FLESH,1),
+			ItemStack.of(REDSTONE,1),
 			EMPTY_STIM.getValue().constructItemStack(1)
 		)
 		shapeless("resistance_stim", RESISTANCE_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
-			ItemStack.of(Material.TURTLE_SCUTE,1),
+			ItemStack.of(Material.NETHERITE_INGOT,1),
 			EMPTY_STIM.getValue().constructItemStack(1)
 		)
 
