@@ -17,6 +17,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier
 import org.bukkit.potion.PotionEffectType
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
+import org.bukkit.Bukkit
 import kotlin.math.max
 import kotlin.math.min
 
@@ -55,8 +58,8 @@ object DamageEvent {
 		modifierFunctions[DamageModifier.BLOCKING] = Function { damage: Double -> damage }
 		modifierFunctions[DamageModifier.RESISTANCE] = Function { damage: Double -> damage }
 
-		if (!goesThroughBlocking && (entity as? LivingEntity)?.activeItem?.type == Material.SHIELD ){
-			if (entity is Player && !entity.hasCooldown(Material.SHIELD)) {
+		if (!goesThroughBlocking && (entity as? LivingEntity)?.activeItem?.customItem is EnergySword ){
+				if (entity is Player && !entity.hasCooldown(Material.SHIELD)) {
 				damageModifiers[DamageModifier.BLOCKING] = -baseDamage
 			}
 		}

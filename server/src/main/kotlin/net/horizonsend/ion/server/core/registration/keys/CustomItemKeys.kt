@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
+import net.horizonsend.ion.server.features.custom.items.type.consumable.ConsumableItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
@@ -38,6 +39,11 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val BLASTER_SHOTGUN = registerTypedKey<Blaster<Multishot>>("BLASTER_SHOTGUN")
 	val BLASTER_SNIPER = registerTypedKey<Blaster<Singleshot>>("BLASTER_SNIPER")
 	val BLASTER_CANNON = registerTypedKey<Blaster<Singleshot>>("BLASTER_CANNON")
+
+	val EMPTY_STIM = registerKey("EMPTY_STIM")
+	val HEALTH_STIM = registerTypedKey<ConsumableItem>("HEALTH_STIM")
+	val STRENGTH_STIM = registerTypedKey<ConsumableItem>("STRENGTH_STIM")
+	val RESISTANCE_STIM = registerTypedKey<ConsumableItem>("RESISTANCE_STIM")
 
 	val GUN_BARREL = registerKey("GUN_BARREL")
 	val CIRCUITRY = registerKey("CIRCUITRY")

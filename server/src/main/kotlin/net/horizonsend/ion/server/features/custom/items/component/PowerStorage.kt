@@ -16,7 +16,7 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
-class PowerStorage(private val basePowerCapacity: Int, private val basePowerUsage: Int, val displayDurability: Boolean) : CustomItemComponent, LoreManager {
+class PowerStorage(private var basePowerCapacity: Int, private val basePowerUsage: Int, val displayDurability: Boolean) : CustomItemComponent, LoreManager {
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		setPower(customItem, baseItem, basePowerCapacity)
 	}
@@ -25,6 +25,9 @@ class PowerStorage(private val basePowerCapacity: Int, private val basePowerUsag
 		return basePowerCapacity + customItem.getAttributes(itemStack).filterIsInstance<AdditionalPowerStorage>().sumOf { it.amount }
 	}
 
+	fun setMaxPower(customItem: CustomItem, itemStack: ItemStack, newBasePower: Int){
+		basePowerCapacity = newBasePower
+	}
 	fun setPower(customItem: CustomItem, itemStack: ItemStack, amount: Int) {
 		val capacity = getMaxPower(customItem, itemStack)
 		val corrected = amount.coerceAtMost(capacity)

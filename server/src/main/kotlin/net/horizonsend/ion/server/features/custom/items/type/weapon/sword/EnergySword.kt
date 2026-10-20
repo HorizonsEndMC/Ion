@@ -86,7 +86,7 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 			Tasks.syncDelay(1) { damaged.velocity = velocity }
 
 			event.damage = 0.0
-			damaged.setCooldown(SHIELD, 15)
+			damaged.setCooldown(SHIELD, balancing.blockCooldownTime)
 			damaged.clearActiveItem()
 			damaged.setArrowsInBody(/* count = */ 0, /* fireEvent = */ false)
 
@@ -94,7 +94,6 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 		})
 	}
 	companion object{
-		val LATEST_VERSION = 1
 
 		fun energySwordAttributes(balancing: PVPBalancingConfiguration.MeleeWeapons.MeleeWeaponBalancing) = mapOf<Attribute, AttributeModifier>(
 			Attribute.ATTACK_DAMAGE to AttributeModifier(NamespacedKeys.key("energy_sword_damage"), balancing.damage, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
@@ -104,6 +103,7 @@ class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String,
 			Attribute.ENTITY_INTERACTION_RANGE to AttributeModifier(NamespacedKeys.key("energy_sword_range"), balancing.entityInteractionRange, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
 			Attribute.SNEAKING_SPEED to AttributeModifier(NamespacedKeys.key("energy_sword_sneaking_speed"), balancing.sneakingSpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.MAINHAND),
 			Attribute.KNOCKBACK_RESISTANCE to AttributeModifier(NamespacedKeys.key("energy_sword_knockback_resistance"), balancing.knockBackResistance, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
+			Attribute.STEP_HEIGHT to AttributeModifier(NamespacedKeys.key("energy_sword_step_height"), balancing.stepHeight, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND),
 			)
 
 		fun ItemAttributeModifiers.Builder.addModifiers(attributesToModifiers: Map<Attribute, AttributeModifier>) : ItemAttributeModifiers.Builder {

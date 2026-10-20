@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schemat
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidConfigurations
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
+import kotlin.io.path.Path
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createType
@@ -32,8 +33,10 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipDefaultCommandBursts = ConfigurationFiles.starshipBalancing.get().commandBurstDefaults.commandBursts
 
 	private val throwableTypes = PVPBalancingConfiguration.Throwables::class.memberProperties
+	private val consumableTypes = PVPBalancingConfiguration.Consumables::class.memberProperties
 	private val blasterTypes = PVPBalancingConfiguration.EnergyWeapons::class.memberProperties
 	private val meleeTypes = PVPBalancingConfiguration.MeleeWeapons::class.memberProperties
+	private val armorTypes = PVPBalancingConfiguration.Armor::class.memberProperties
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("starshipTypes") {
@@ -56,12 +59,20 @@ object ConfigurationCommands : SLCommand() {
 			throwableTypes.map { it.name }
 		}
 
+		manager.commandCompletions.registerCompletion("consumablesTypes") {
+			consumableTypes.map { it.name }
+		}
+
 		manager.commandCompletions.registerCompletion("blasterTypes") {
 			blasterTypes.map { it.name }
 		}
 
 		manager.commandCompletions.registerCompletion("meleeTypes") {
 			meleeTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("armorTypes") {
+			armorTypes.map { it.name }
 		}
 	}
 
@@ -85,6 +96,31 @@ object ConfigurationCommands : SLCommand() {
 			throwableTypes,
 			ConfigurationFiles.pvpBalancing.get().throwables,
 			throwableName,
+			fieldName,
+			value
+		)
+	}
+
+	@Subcommand("config get consumables")
+	@CommandCompletion("@consumablesTypes property")
+	fun getConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			consumableTypes,
+			ConfigurationFiles.pvpBalancing.get().consumables,
+			consumableName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set consumables")
+	@CommandCompletion("@consumablesTypes property value")
+	fun setConsumablesProperties(sender: CommandSender, consumableName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			consumableTypes,
+			ConfigurationFiles.pvpBalancing.get().consumables,
+			consumableName,
 			fieldName,
 			value
 		)
@@ -134,6 +170,31 @@ object ConfigurationCommands : SLCommand() {
 			sender,
 			meleeTypes,
 			ConfigurationFiles.pvpBalancing.get().meleeWeapons,
+			weaponName,
+			fieldName,
+			value
+		)
+	}
+
+	@Subcommand("config get armor")
+	@CommandCompletion("@armorTypes property value")
+	fun getArmorProperties(sender: CommandSender, weaponName: String, fieldName: String) = asyncCommand(sender) {
+		getConfigProperty(
+			sender,
+			armorTypes,
+			ConfigurationFiles.pvpBalancing.get().armour,
+			weaponName,
+			fieldName
+		)
+	}
+
+	@Subcommand("config set armor")
+	@CommandCompletion("@armorTypes property value")
+	fun setArmorProperties(sender: CommandSender, weaponName: String, fieldName: String, value: String) = asyncCommand(sender) {
+		setConfigProperty(
+			sender,
+			armorTypes,
+			ConfigurationFiles.pvpBalancing.get().armour,
 			weaponName,
 			fieldName,
 			value

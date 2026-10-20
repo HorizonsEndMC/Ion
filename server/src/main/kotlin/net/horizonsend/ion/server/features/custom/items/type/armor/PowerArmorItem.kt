@@ -4,8 +4,10 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -19,6 +21,7 @@ import net.horizonsend.ion.server.features.custom.items.component.TickReceiverMo
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword.Companion.addModifiers
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -36,16 +39,20 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 import kotlin.math.cos
 import kotlin.math.sin
 
+@Suppress("UnstableApiUsage")
 class PowerArmorItem(
 	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
-	val slot: EquipmentSlot
+	val slot: EquipmentSlot,
+	val balancingsupplier: Supplier<PVPBalancingConfiguration.Armor.ArmorBalancing>
 ) : CustomItem(
 	key,
 	displayName,
@@ -55,11 +62,6 @@ class PowerArmorItem(
 		.setCustomModel(itemModel)
 		.setMaxStackSize(1)
 		.addData(DataComponentTypes.UNBREAKABLE)
-		.addModifier { item ->
-			item.editMeta { meta ->
-				meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE)
-			}
-		}
 		.addData(DataComponentTypes.EQUIPPABLE, Equippable
 			.equippable(slot)
 			.damageOnHurt(false)
@@ -70,14 +72,22 @@ class PowerArmorItem(
 		)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
-//			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
-			.build())
+			.addModifiers(attributeList(balancingsupplier.get(), key.key, slot))
+			.build()
+		)
+		.addFlag(ItemFlag.HIDE_UNBREAKABLE)
 		.build()
+	//.addFlag(ItemFlag.HIDE_ATTRIBUTES) //todo add this back after testing
 ) {
+	val balancing get() = balancingsupplier.get()
+
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(POWER_STORAGE, PowerStorage(50000, 0, true))
 		addComponent(MOD_MANAGER, ModManager(maxMods = 1))
+
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(40) {entity, itemStack, _, _ ->
+			if(itemStack.itemMeta.attributeModifiers?.equals(attributeList(balancingsupplier.get(), key.key, slot)) == false) refreshModifiersFromBalancing(itemStack)
+		})
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(
 			this@PowerArmorItem,
@@ -178,4 +188,49 @@ class PowerArmorItem(
 			entity.world.playSound(entity.location, Sound.BLOCK_FIRE_AMBIENT, 1.0f, 2.0f)
 		}
 	}
+
+	fun refreshModifiersFromBalancing(itemStack: ItemStack) {
+		val attributeList = attributeList(balancingsupplier.get(), key.key, slot)
+		val existing = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
+
+		val builder = ItemAttributeModifiers.itemAttributes()
+
+		if (existing != null) {
+			for (modifier in existing.modifiers()) {
+				val newModifier = attributeList[modifier.attribute()] ?: modifier.modifier()
+				builder.addModifier(modifier.attribute(), newModifier)
+			}
+		}
+		itemStack.setData(
+			DataComponentTypes.ATTRIBUTE_MODIFIERS, builder.build(),)
+		//.addFlag(ItemFlag.HIDE_ATTRIBUTES) //todo add this back after testing
+
+		getComponent(POWER_STORAGE).setMaxPower(itemStack.customItem ?: return, itemStack, balancing.power)
+	}
+	companion object {
+		fun attributeList(
+			balancing: PVPBalancingConfiguration.Armor.ArmorBalancing,
+			key: String,
+			slot: EquipmentSlot
+		) : MutableMap<Attribute, AttributeModifier> {
+			return mutableMapOf(
+				Attribute.MOVEMENT_SPEED to AttributeModifier(NamespacedKeys.key(key), balancing.speed , AttributeModifier.Operation.MULTIPLY_SCALAR_1, slot.group),
+				Attribute.SNEAKING_SPEED to AttributeModifier(NamespacedKeys.key(key), balancing.sneakSpeed , AttributeModifier.Operation.MULTIPLY_SCALAR_1, slot.group),
+				Attribute.SCALE to AttributeModifier(NamespacedKeys.key(key), balancing.scale , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.ENTITY_INTERACTION_RANGE to AttributeModifier(NamespacedKeys.key(key), balancing.entityReach , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.BLOCK_INTERACTION_RANGE to AttributeModifier(NamespacedKeys.key(key), balancing.blockReach , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.ARMOR to AttributeModifier(NamespacedKeys.key(key), balancing.armor , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.ARMOR_TOUGHNESS to AttributeModifier(NamespacedKeys.key(key), balancing.toughness, AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.KNOCKBACK_RESISTANCE to AttributeModifier(NamespacedKeys.key(key), balancing.knockBackResistance , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.STEP_HEIGHT to AttributeModifier(NamespacedKeys.key(key), balancing.stepHeight, AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.MAX_HEALTH to AttributeModifier(NamespacedKeys.key(key), balancing.maxHealth , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.JUMP_STRENGTH to AttributeModifier(NamespacedKeys.key(key), balancing.jumpStrength , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.FLYING_SPEED to AttributeModifier(NamespacedKeys.key(key), balancing.flyingSpeed , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.GRAVITY to AttributeModifier(NamespacedKeys.key(key), balancing.gravity , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.OXYGEN_BONUS to AttributeModifier(NamespacedKeys.key(key), balancing.oxygenBonus , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+				Attribute.WATER_MOVEMENT_EFFICIENCY to AttributeModifier(NamespacedKeys.key(key), balancing.waterMovementEfficiency , AttributeModifier.Operation.ADD_NUMBER, slot.group),
+			)
+		}
+	}
 }
+
