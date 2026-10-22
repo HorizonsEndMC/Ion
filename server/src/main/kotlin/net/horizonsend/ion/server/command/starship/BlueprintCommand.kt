@@ -12,6 +12,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
@@ -78,7 +79,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			Blueprint.col.find(
 				or(
 					Blueprint::trustedPlayers contains slPlayerId,
-					Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation
+					Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation,
+					Blueprint::trustedSettlements contains SLPlayer[slPlayerId]?.settlement
 				)
 			).map { it.name }.toList()
 		}
@@ -166,7 +168,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			and(
 				or(
 					Blueprint::trustedPlayers contains sender,
-					Blueprint::trustedNations contains SLPlayer[sender]?.nation
+					Blueprint::trustedNations contains SLPlayer[sender]?.nation,
+					Blueprint::trustedSettlements contains SLPlayer[sender]?.settlement
 				),
 				Blueprint::name eq name
 			)
@@ -217,6 +220,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		if (blueprint.trustedNations.isNotEmpty()) {
 			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { NationCache[it].name }}")
 		}
+		if (blueprint.trustedSettlements.isNotEmpty()) {
+			list.add("<gray>Trusted Settlements<dark_gray>: <aqua> ${blueprint.trustedSettlements.joinToString { SettlementCache[it].name }}")
+		}
 		return list
 	}
 
@@ -250,7 +256,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val accessibleBlueprints = or(
 			Blueprint::trustedPlayers contains slPlayerId,
-			Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation
+			Blueprint::trustedNations contains SLPlayer[slPlayerId]?.nation,
+			Blueprint::trustedSettlements contains SLPlayer[slPlayerId]?.settlement
 		)
 
 		failIf(!Blueprint.any(accessibleBlueprints)) { "You have no shared blueprints!" }
@@ -287,7 +294,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val accessibleBlueprints = or(
 			Blueprint::trustedPlayers contains target._id,
-			Blueprint::trustedNations contains SLPlayer[target._id]?.nation
+			Blueprint::trustedNations contains SLPlayer[target._id]?.nation,
+			Blueprint::trustedSettlements contains SLPlayer[target._id]?.settlement
 		)
 
 		failIf(!Blueprint.any(accessibleBlueprints)) {
@@ -657,6 +665,36 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		blueprint.trustedNations.remove(nationId)
 		saveBlueprint(blueprint)
 		sender.success("Un-trusted nation $nation from blueprint $name")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("trust settlement")
+	@CommandCompletion("@blueprints @settlement")
+	fun onTrustSettlement(sender: Player, name: String, settlement: String) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, name)
+		val settlementId = resolveSettlement(settlement)
+		failIf(blueprint.trustedSettlements.contains(settlementId)) {
+			"$settlement is already trusted, you might be looking for /blueprint untrust settlement $name $settlement"
+		}
+		blueprint.trustedSettlements.add(settlementId)
+		saveBlueprint(blueprint)
+		sender.success("Trusted settlement $settlement to blueprint $name")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("untrust settlement")
+	@CommandCompletion("@blueprints @settlements")
+	fun onUntrustSettlement(sender: Player, name: String, settlement: String) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, name)
+		val settlementId = resolveSettlement(settlement)
+		failIf(!blueprint.trustedSettlements.contains(settlementId)) {
+			"$settlement is not trusted, you might be looking for /blueprint trust settlement $name $settlement"
+		}
+		blueprint.trustedSettlements.remove(settlementId)
+		saveBlueprint(blueprint)
+		sender.success("Un-trusted settlement $settlement from blueprint $name")
 	}
 
 	@Subcommand("rename")

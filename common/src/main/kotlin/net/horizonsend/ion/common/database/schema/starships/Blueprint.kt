@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.utils.DBVec3i
 import org.litote.kmongo.and
@@ -25,7 +26,8 @@ data class Blueprint(
 	var size: Int,
 	override var blockData: String, // base64 representation of the schematic
 	var trustedPlayers: MutableSet<SLPlayerId> = mutableSetOf(),
-	var trustedNations: MutableSet<Oid<Nation>> = mutableSetOf()
+	var trustedNations: MutableSet<Oid<Nation>> = mutableSetOf(),
+	var trustedSettlements: MutableSet<Oid<Settlement>> = mutableSetOf()
 ) : DbObject, BlueprintLike {
 	companion object : OidDbObjectCompanion<Blueprint>(Blueprint::class, setup = {
 		ensureIndex(Blueprint::owner)

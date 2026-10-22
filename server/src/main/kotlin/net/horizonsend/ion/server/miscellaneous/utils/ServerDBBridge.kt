@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.BlueprintLike
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
@@ -58,21 +59,23 @@ fun BlueprintLike.loadClipboard(): Clipboard {
 
 fun Blueprint.canAccess(player: Player): Boolean {
 	val slPlayerId = player.slPlayerId
-	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
+	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid) || trustedSettlements.contains(PlayerCache[player].settlementOid)
 }
 
 fun Blueprint.Companion.canAccess(player: Player, id: Oid<Blueprint>): Boolean {
 	val slPlayerId = player.slPlayerId
 
-	val props = findPropsById(id, Blueprint::owner, Blueprint::trustedPlayers, Blueprint::trustedNations) ?: return false
+	val props = findPropsById(id, Blueprint::owner, Blueprint::trustedPlayers, Blueprint::trustedNations, Blueprint::trustedSettlements) ?: return false
 	val owner = props[Blueprint::owner]
 	val trustedPlayers = props[Blueprint::trustedPlayers]
 	val trustedNations = props[Blueprint::trustedNations]
+	val trustedSettlement = props[Blueprint::trustedSettlements]
 
 	if (slPlayerId == owner) return true
 	if (trustedPlayers.contains(slPlayerId)) return true
 
 	if (trustedNations.map { it.id }.contains(PlayerCache[player].nationOid.toString())) return true
+	if (trustedSettlement.map { it.id }.contains(PlayerCache[player].settlementOid.toString())) return true
 
 	return false
 }
