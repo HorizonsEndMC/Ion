@@ -259,7 +259,8 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		val playerBlueprints = if (entity.settings.useSharedBlueprints) {
 			Blueprint.find(or(
 				Blueprint::trustedPlayers contains player.slPlayerId,
-				Blueprint::trustedNations contains SLPlayer[player.slPlayerId]?.nation
+				Blueprint::trustedNations contains SLPlayer[player.slPlayerId]?.nation,
+				Blueprint::trustedSettlements contains SLPlayer[player.slPlayerId]?.settlement
 			)).toList()
 		} else {
 			Blueprint.find(Blueprint::owner eq player.slPlayerId).toList()
