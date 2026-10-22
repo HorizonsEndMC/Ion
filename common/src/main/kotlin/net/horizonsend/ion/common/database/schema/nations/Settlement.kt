@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.database.updateAll
 import org.bson.conversions.Bson
@@ -168,6 +169,10 @@ data class Settlement(
 				Territory.col.updateAll(sess, pull(Territory::trustedSettlements, settlementId))
 
 				SettlementSpaceStation.col.deleteMany(sess,SettlementSpaceStation::owner eq settlementId)
+
+				//updates blueprints trusted to the settlement
+
+				Blueprint.col.updateMany(sess, Blueprint::trustedSettlements contains settlementId, pull(Blueprint::trustedSettlements, settlementId))
 
 				// remove invite from nations
 				Nation.col.updateAll(sess, pull(Nation::invites, settlementId))
