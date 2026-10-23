@@ -258,7 +258,7 @@ data class HeavyNeutralizerBalancing(
 
 	@Serializable
 	data class HeavyNeutralizerProjectileBalancing(
-		override var range: Double = 200.0,
+		override var range: Double = 215.0,
 		override var speed: Double = 65.0,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
@@ -483,7 +483,7 @@ data class WebifierBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.webifier.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
-		override var effectStrength: Double = 0.45,
+		override var effectStrength: Double = 0.40,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(4L),
 		override var maxDegrees: Double = 210.0,
 		override var detonationRange: Double = 2.25,
@@ -565,7 +565,7 @@ data class EMPMissileBalancing(
 		override var turnRate: Double = 1.0,
 		override var acceleration: Double = 10.0,
 		override var particleThickness: Double = 0.1,
-		override var effectStrength: Double = 0.10,
+		override var effectStrength: Double = 0.15,
 		override var effectDurationMillis: Long = TimeUnit.SECONDS.toMillis(10L),
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing, StarshipStatusEffectProjectileBalancing {
 		@Transient
@@ -1135,8 +1135,8 @@ data class ScramblerBalancing(
 
 	override var convergeDistance: Double = 16.0,
 	override var projectileSpawnDistance: Int = 3,
-	override var angleRadiansHorizontal: Double = 180.0,
-	override var angleRadiansVertical: Double = 180.0,
+	override var angleRadiansHorizontal: Double = 150.0,
+	override var angleRadiansVertical: Double = 150.0,
 
 	override val projectile: ScramblerProjectileBalancing = ScramblerProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<ScramblerBalancing.ScramblerProjectileBalancing> {
