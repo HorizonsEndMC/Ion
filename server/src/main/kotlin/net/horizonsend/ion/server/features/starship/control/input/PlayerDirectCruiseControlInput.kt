@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
-import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -22,6 +21,8 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.minecraft.world.entity.Relative
 import org.bukkit.Material
+import org.bukkit.Input
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
@@ -29,8 +30,18 @@ import kotlin.math.PI
 import kotlin.math.ceil
 import kotlin.math.max
 
+enum class CruiseControlMovementMode {
+	HOLD,
+	LOCK,
+}
+
 class PlayerDirectCruiseControlInput(override val controller: PlayerController): PlayerInput, DirectCruiseControlInput{
 	override val player get() = controller.player
+
+	private var movementMode = CruiseControlMovementMode.HOLD
+	private var lockVariableHotbarEnabled = false
+	private var variableCruiseSpeedMultiplier = 1.0
+	private var speedDisplayTicks = 0
 
 	private var lastTertiaryInput = 0
 
@@ -38,14 +49,21 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 	var ticksToBlockMovementFor = 0
 
 	override fun create() {
+		movementMode = getMovementMode()
+		lockVariableHotbarEnabled = isVariableHotbarEnabled(movementMode)
+		variableCruiseSpeedMultiplier = if (lockVariableHotbarEnabled) player.inventory.heldItemSlot / 8.0 else 1.0
+
 		val message = ofChildren(
 			text("Cruise Control: ", GRAY),
 			text("ON ", GRAY),
-			text("[Use /cc to turn it off - use W/A/S/D to maneuver - hold sneak (", YELLOW),
+			text(
+				if (movementMode == CruiseControlMovementMode.LOCK) 
+				"[Use /cc to turn it off - tap W/A/D to lock direction - use S to brake - hold sneak ("
+			 	else "[Use /cc to turn it off - use W/A/S/D to maneuver - hold sneak (", YELLOW),
 			keybind("key.sneak", YELLOW),
 			text(") to move down - hold jump(", YELLOW),
 			keybind("key.jump", YELLOW),
-			text(") to move up - hold both to stop cruising]", YELLOW)
+			text(") to move up" + if (movementMode == CruiseControlMovementMode.HOLD) " - hold both to stop cruising]" else "", YELLOW)
 		)
 
 		controller.sendMessage(message)
@@ -70,6 +88,8 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 	override fun destroy() {
 		controller.sendMessage(ofChildren(text("Cruise Control: ", GRAY), text("OFF ", NamedTextColor.RED), text("[Use /cc to turn it on]", YELLOW)))
 
+		starship.directCruiseSpeedAddition = 0.0
+		variableCruiseSpeedMultiplier = 1.0
 		player.walkSpeed = 0.2f // default
 		player.flySpeed = 0.06f
 		player.isFlying = false
@@ -79,6 +99,11 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 		//if the player is not holding a clock, do not accept anything
 		if (player.inventory.itemInMainHand.type != Material.CLOCK) return starship.cruiseData
 		val currentInput = player.currentInput
+	
+		if (lockVariableHotbarEnabled && ++speedDisplayTicks >= 20) {
+			speedDisplayTicks = 0
+			showVariableSpeed()
+		}
 
 		var center = starship.directControlCenter
 		if (center == null) {
@@ -92,37 +117,16 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 
 		val shiftFlySpeed = max(starship.type.balancing.maxSneakFlyAccel.d(), 1.0).div(effectiveCooldown).times(2000.0).toInt().toDouble()
 
-		var dir = player.eyeLocation.direction.setY(0).normalize()
-		dir.setY(0)
-		if(currentInput.isForward){
-			starship.directCruiseSpeedAddition = shiftFlySpeed
+		val horizontalDirection = determineHorizontalDirection(currentInput, player.eyeLocation.direction)
+		val direction = when (movementMode) {
+			CruiseControlMovementMode.HOLD -> {
+				updateHoldSpeedAddition(currentInput, shiftFlySpeed)
+				val baseDirection = if (hasHorizontalMovementInput(currentInput)) horizontalDirection else Vector()
+				val verticalDistance = shiftFlySpeed / starship.cruiseData.targetSpeed.coerceAtLeast(1)
+				determineMovementDirection(currentInput, baseDirection, verticalDistance)
+			}
+			CruiseControlMovementMode.LOCK -> horizontalDirection
 		}
-		else {
-			starship.directCruiseSpeedAddition = 0.0
-		}
-
-		//Handle forward diagonal, and Left
-		if(currentInput.isLeft && currentInput.isForward) dir.rotateAroundY(PI/4)
-		else if(currentInput.isBackward && currentInput.isLeft) dir.rotateAroundY(3*PI/4)
-		else if(currentInput.isLeft) dir.rotateAroundY(PI/2)
-
-		//handle Forward diagnonal, and right
-		else if(currentInput.isRight && currentInput.isForward) dir.rotateAroundY(-PI/4)
-		else if(currentInput.isBackward && currentInput.isRight) dir.rotateAroundY(-3*PI/4)
-		else if(currentInput.isRight)dir.rotateAroundY(-PI/2)
-		else if(currentInput.isBackward) dir.multiply(-1)
-
-		//handle side cruising + vertical element
-		val verticalDistance = shiftFlySpeed/starship.cruiseData.targetSpeed
-		if(currentInput.isJump) dir.add(Vector(0.0, verticalDistance, 0.0))
-		if(currentInput.isSneak) dir.add(Vector(0.0, -verticalDistance, 0.0))
-
-		//handle just vertical element on its own. No side cruising
-		if((currentInput.isSneak || currentInput.isJump) && !(currentInput.isForward || currentInput.isRight || currentInput.isBackward || currentInput.isLeft)){
-			dir = Vector(0.0,verticalDistance.times(if(currentInput.isSneak) -1.0 else 1.0),0.0)
-		}
-		//if there is a vertical element, do not let the directCruiseSpeedAddition be added
-		if (currentInput.isSneak || currentInput.isJump) starship.directCruiseSpeedAddition = 0.0
 
 		//handle tertiary control
 		if(currentInput.isSprint) {
@@ -150,7 +154,7 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 		}
 
 		// If player moved, teleport them back to dc center
-		if (currentInput.isForward || currentInput.isBackward || currentInput.isLeft || currentInput.isRight || currentInput.isJump || currentInput.isSneak) {
+		if (hasMovementInput(currentInput)) {
 			val newLoc = center.clone()
 
 			player.minecraft.teleportTo(
@@ -174,19 +178,101 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 			return starship.cruiseData
 		}
 
-		//If the player gives an input, change our direction
-		if(currentInput.isForward || currentInput.isBackward || currentInput.isLeft || currentInput.isRight || currentInput.isJump || currentInput.isSneak) {
-			ticksToBlockMovementFor +=2
-			startCruising(
-				starship.controller, starship, dir, true
-			)
-		}
-		//if the player doesn't provide an input stop the ship moving
-		else if(StarshipCruising.isCruising(starship)){
-			stopCruising(starship.controller, starship)
+		when (movementMode) {
+			CruiseControlMovementMode.HOLD -> handleHoldMovement(currentInput, direction)
+			CruiseControlMovementMode.LOCK -> handleLockedMovement(currentInput, direction, shiftFlySpeed)
 		}
 
 		return starship.cruiseData
+	}
+
+	private fun determineHorizontalDirection(input: Input, facingDirection: Vector): Vector {
+		val direction = facingDirection.clone().setY(0).normalize()
+		direction.setY(0)
+
+		when {
+			input.isLeft && input.isForward -> direction.rotateAroundY(PI / 4)
+			input.isBackward && input.isLeft -> direction.rotateAroundY(3 * PI / 4)
+			input.isLeft -> direction.rotateAroundY(PI / 2)
+			input.isRight && input.isForward -> direction.rotateAroundY(-PI / 4)
+			input.isBackward && input.isRight -> direction.rotateAroundY(-3 * PI / 4)
+			input.isRight -> direction.rotateAroundY(-PI / 2)
+			input.isBackward -> direction.multiply(-1)
+		}
+
+		return direction
+	}
+
+	private fun determineMovementDirection(input: Input, baseHorizontalDirection: Vector, verticalDistance: Double): Vector {
+		val verticalInput = (if (input.isJump) 1 else 0) - (if (input.isSneak) 1 else 0)
+		return baseHorizontalDirection.clone().setY(verticalInput * verticalDistance)
+	}
+
+	private fun updateHoldSpeedAddition(input: Input, shiftFlySpeed: Double) {
+		starship.directCruiseSpeedAddition = if (input.isForward && !input.isJump && !input.isSneak) shiftFlySpeed else 0.0
+	}
+
+	private fun hasHorizontalMovementInput(input: Input): Boolean =
+		input.isForward || input.isBackward || input.isLeft || input.isRight
+
+	private fun hasMovementInput(input: Input): Boolean =
+		hasHorizontalMovementInput(input) || input.isJump || input.isSneak
+
+	private fun handleHoldMovement(input: Input, direction: Vector) {
+		if (hasMovementInput(input)) {
+			ticksToBlockMovementFor += 2
+			if (direction.lengthSquared() != 0.0) {
+				startCruising(starship.controller, starship, direction, true)
+				return
+			}
+		}
+		if (StarshipCruising.isCruising(starship)) {
+			stopCruising(starship.controller, starship)
+		}
+	}
+
+	private fun handleLockedMovement(input: Input, direction: Vector, shiftFlySpeed: Double) {
+		if (input.isBackward) {
+			starship.directCruiseSpeedAddition = 0.0
+			stopCruising(controller, starship)
+			return
+		}
+
+		val targetDirection = starship.cruiseData.targetDir
+		val hasHorizontalInput = hasHorizontalMovementInput(input)
+
+		val baseDirection = if (hasHorizontalInput) direction else targetDirection ?: Vector()
+		val verticalDistance = shiftFlySpeed / starship.cruiseData.targetSpeed.coerceAtLeast(1)
+		val requestedDirection = determineMovementDirection(input, baseDirection, verticalDistance)
+
+		if (requestedDirection.lengthSquared() == 0.0) {
+			if (targetDirection != null) stopCruising(controller, starship)
+		} else if (hasHorizontalInput || targetDirection == null || requestedDirection.y != targetDirection.y) {
+			startCruising(controller, starship, requestedDirection, true)
+		}
+
+		val activeDirection = starship.cruiseData.targetDir
+		val hasHorizontalDirection = activeDirection != null &&
+			(activeDirection.x != 0.0 || activeDirection.z != 0.0)
+		starship.directCruiseSpeedAddition = if (hasHorizontalDirection && !input.isJump && !input.isSneak) shiftFlySpeed else 0.0
+	}
+
+	override fun handlePlayerHoldItem(event: PlayerItemHeldEvent) {
+		if (!lockVariableHotbarEnabled
+			|| player.inventory.itemInMainHand.type != Material.CLOCK) return
+
+		val inventory = player.inventory
+		val previousItem = inventory.getItem(event.previousSlot)
+		val selectedItem = inventory.getItem(event.newSlot)
+		inventory.setItem(event.newSlot, previousItem)
+		inventory.setItem(event.previousSlot, selectedItem)
+
+		variableCruiseSpeedMultiplier = event.newSlot / 8.0
+		showVariableSpeed()
+	}
+
+	private fun showVariableSpeed() {
+		player.sendActionBar(text("Cruise Speed: ${variableCruiseSpeedMultiplier * 100}%", NamedTextColor.AQUA))
 	}
 
 	override fun handleJump(event: PlayerJumpEvent) {
@@ -194,4 +280,20 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 	}
 
 	override fun handleSneak(event: PlayerToggleSneakEvent) {}
+
+	fun isVariableSpeedControlEnabled(): Boolean {
+		return lockVariableHotbarEnabled
+	}
+
+	fun getVariableCruiseSpeedMultiplier(): Double {
+		return variableCruiseSpeedMultiplier
+	}
+
+	private fun getMovementMode(): CruiseControlMovementMode = CruiseControlMovementMode.entries[player.getSettingOrThrow(PlayerSettings::cruiseControlMovementMode)]
+
+	
+	// Variable hotbar only allowed in LOCK movement mode
+	private fun isVariableHotbarEnabled(mode: CruiseControlMovementMode): Boolean =
+		mode == CruiseControlMovementMode.LOCK && player.getSettingOrThrow(PlayerSettings::cruiseControlVariableSpeedHotbar)
+
 }

@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.NoOpCont
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectCruiseControlInput
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -78,7 +79,15 @@ object StarshipCruising : IonServerComponent() {
 			else 0.0
 		} ?: 0.0
 
-		starship.cruiseData.accelerate(starship.speedLimit, starship.reactor.powerDistributor.thrusterPortion)
+		val variableCruiseInput = (starship.controller.movementHandler.input as? PlayerDirectCruiseControlInput)
+			?.takeIf { it.isVariableSpeedControlEnabled() }
+
+		starship.cruiseData.accelerate(
+			starship.speedLimit,
+			starship.reactor.powerDistributor.thrusterPortion,
+			variableCruiseInput?.getVariableCruiseSpeedMultiplier() ?: 1.0
+		)
+
 		val velocity = starship.cruiseData.velocity
 		val speed = velocity.length()
 
@@ -168,7 +177,7 @@ object StarshipCruising : IonServerComponent() {
 
 		maxSpeed /= 2 //This change was done to save the server from imploding from chunk loading lag.
 		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
-		maxSpeed = minOf(maxSpeed, starship.balancing.maxCruiseSpeed)
+		maxSpeed = minOf(maxSpeed, starship.balancing.maxCruiseSpeed).coerceAtLeast(1)
 
 		val wasCruising = isCruisingAndAccelerating(starship)
 
