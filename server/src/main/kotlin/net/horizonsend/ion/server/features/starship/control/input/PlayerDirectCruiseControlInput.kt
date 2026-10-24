@@ -239,7 +239,7 @@ class PlayerDirectCruiseControlInput(override val controller: PlayerController):
 		}
 
 		val targetDirection = starship.cruiseData.targetDir
-		val hasHorizontalInput = input.isForward || input.isLeft || input.isRight
+		val hasHorizontalInput = hasHorizontalMovementInput(input)
 
 		val baseDirection = if (hasHorizontalInput) direction else targetDirection ?: Vector()
 		val verticalDistance = shiftFlySpeed / starship.cruiseData.targetSpeed.coerceAtLeast(1)
