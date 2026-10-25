@@ -426,10 +426,10 @@ data class NewStarshipBalancing(
 			maxSneakFlyAccel = 3,
 			warmupTime = 60,
 			interdictionRange = 4500,
-			jumpStrength = 3.0,
+			jumpStrength = 4.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 3.0,
-			cruiseSpeedMultiplier = 0.45,
+			cruiseSpeedMultiplier = 1.0,
 			shieldPowerMultiplier = 0.90,
 			weaponOverrides = listOf(
 				TriTurretBalancing(
@@ -437,7 +437,7 @@ data class NewStarshipBalancing(
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				HeavyTurretBalancing(
-					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
+					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 32000),
 					firePowerConsumption = 3333,
 					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
 				),
