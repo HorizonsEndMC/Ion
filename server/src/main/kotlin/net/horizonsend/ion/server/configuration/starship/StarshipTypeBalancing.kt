@@ -1192,8 +1192,9 @@ data class NewStarshipBalancing(
 				)),
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 3000),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
-				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3),
+				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 2500),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
 			forbiddenMultiblocks = listOf(
@@ -1204,10 +1205,6 @@ data class NewStarshipBalancing(
 				IncompatibleSubsystemInfo(
 					GravityWellSubsystem::class.java,
 					"Only interdictors can use gravity wells!"
-				),
-				IncompatibleSubsystemInfo(
-					JumpBeaconSubsystem::class.java,
-					"This ship cannot use jump beacons!"
 				)
 			),
 			shipSounds = StarshipSounds(
