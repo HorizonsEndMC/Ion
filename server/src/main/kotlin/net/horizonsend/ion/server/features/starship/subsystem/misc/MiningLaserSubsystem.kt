@@ -268,8 +268,8 @@ class MiningLaserSubsystem(
 		var animated = 0
 
 		var maxBroken = multiblock.maxBroken
-		if (playerShooter != null && SolarSieges.checkZoneBenefits(playerShooter)) maxBroken = (maxBroken * 1.2).roundToInt()
-
+//		if (playerShooter != null && SolarSieges.checkZoneBenefits(playerShooter)) maxBroken = (maxBroken * 1.2).roundToInt()
+		
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			maxBroken = maxBroken,
 			toDestroy = blocks,
