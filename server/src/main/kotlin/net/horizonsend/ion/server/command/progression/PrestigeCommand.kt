@@ -37,12 +37,15 @@ object PrestigeCommand : SLCommand() {
 	fun onConfirm(sender: Player, @Optional cost: Double?) {
 		requireEconomyEnabled()
 		requireNotInCombat(sender)
+        requireMoney(sender, COST, "prestige")
+
+        // Just to make sure nobody is piloting a ship they'd then be ineligible for.
 		failIf(ActiveStarships.findByPilot(sender) != null) { "You can't prestige while piloting a starship!" }
-		requireMoney(sender, COST, "prestige")
 
 		val playerData = PlayerXPLevelCache[sender]
 		val level = playerData.level
 		val prestige = playerData.prestige
+
 		failIf(level != MAX_LEVEL) { "You must be level $MAX_LEVEL to prestige." }
 		failIf(prestige == Int.MAX_VALUE) { "Your prestige cannot be increased further. Touch grass." }
 
