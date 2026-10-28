@@ -269,7 +269,7 @@ class MiningLaserSubsystem(
 
 		var maxBroken = multiblock.maxBroken
 //		if (playerShooter != null && SolarSieges.checkZoneBenefits(playerShooter)) maxBroken = (maxBroken * 1.2).roundToInt()
-		
+
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			maxBroken = maxBroken,
 			toDestroy = blocks,
@@ -334,7 +334,7 @@ class MiningLaserSubsystem(
 		val toDestroy = mutableListOf<Block>()
 
 		var radius = multiblock.mineRadius
-		if (playerShooter != null && SolarSieges.checkZoneBenefits(playerShooter)) radius = (radius * 1.2).roundToInt()
+//		if (playerShooter != null && SolarSieges.checkZoneBenefits(playerShooter)) radius = (radius * 1.2).roundToInt()
 
 		val radiusSquared = radius * radius
 
