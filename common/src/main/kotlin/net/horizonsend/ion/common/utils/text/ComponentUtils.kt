@@ -486,7 +486,7 @@ fun bootstrapCustomTranslations() {
 	store.register("death.attack.oriomium_rocket", Locale.US, MessageFormat("{0} was killed by oriomium rocket", Locale.US))
 	store.register("death.attack.torpedo", Locale.US, MessageFormat("{0} was mistaken for a Starship by torpedo", Locale.US))
 	store.register("death.attack.point_defense", Locale.US, MessageFormat("{0} was killed by point defense", Locale.US))
-	store.register("death.attack.swarm_missile", Locale.US, MessageFormat("{0} was succumbed to a storm of missiles", Locale.US))
+	store.register("death.attack.swarm_missile", Locale.US, MessageFormat("{0} succumbed to a storm of missiles", Locale.US))
 	store.register("death.attack.scrambler", Locale.US, MessageFormat("{0} was §kscrambled§r", Locale.US))
 	store.register("death.attack.thermonuclear_missile", Locale.US, MessageFormat("{0} fell into a nuclear meltdown", Locale.US))
 	store.register("death.attack.webifier", Locale.US, MessageFormat("{0} was brought into permanent stasis", Locale.US))
