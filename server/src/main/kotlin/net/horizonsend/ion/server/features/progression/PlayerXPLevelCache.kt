@@ -43,6 +43,9 @@ object PlayerXPLevelCache : IonServerComponent() {
 
 			change[SLPlayer::power]?.int()
 				?.let { power -> map[id.uuid]?.cachedPower = power }
+
+			change[SLPlayer::prestige]?.int()
+				?.let { prestige -> map[id.uuid]?.cachedPrestige = prestige }
 		}
 	}
 
@@ -52,10 +55,11 @@ object PlayerXPLevelCache : IonServerComponent() {
 
 	/** A data class which stores cached data on online players.
 	 * Shouldn't be updated directly, database should be updated and caches should be refreshed. */
-	data class CachedAdvancePlayer(val uniqueId: UUID, var cachedXP: Int, var cachedLevel: Int, var cachedPower: Int) {
+	data class CachedAdvancePlayer(val uniqueId: UUID, var cachedXP: Int, var cachedLevel: Int, var cachedPower: Int, var cachedPrestige: Int) {
 		val xp get() = cachedXP
 		val level get() = cachedLevel
 		val power get() = cachedPower
+		val prestige get() = cachedPrestige
 	}
 
 	private val map = ConcurrentHashMap<UUID, CachedAdvancePlayer>()
@@ -67,7 +71,8 @@ object PlayerXPLevelCache : IonServerComponent() {
 
 		val power = SLPlayer.getPower(uniqueId.slPlayerId) ?: error("Cached advancement data had no matching database mirror! UUID $uniqueId")
 
-		return@computeIfAbsent CachedAdvancePlayer(uniqueId, xp, level, power)
+		val prestige = SLPlayer.getPrestige(uniqueId.slPlayerId) ?: 0
+		return@computeIfAbsent CachedAdvancePlayer(uniqueId, xp, level, power, prestige)
 	}
 
 	private fun onJoin(playerID: UUID) {
@@ -116,6 +121,14 @@ object PlayerXPLevelCache : IonServerComponent() {
 	/** Calls database and gets the player's level. Shouldn't be called from the main thread. */
 	fun fetchLevel(uniqueId: UUID): Int {
 		return SLPlayer.getLevel(uniqueId.slPlayerId) ?: error("Expected $uniqueId to exist")
+	}
+
+	fun fetchPrestige(uniqueId: UUID): Int {
+		return SLPlayer.getPrestige(uniqueId.slPlayerId) ?: 0
+	}
+
+	fun setPrestige(playerID: UUID, prestige: Int) {
+		SLPlayer.setPrestige(playerID.slPlayerId, prestige)
 	}
 
 	/** Calls database and gets the player's XP. Shouldn't be called from the main thread. */

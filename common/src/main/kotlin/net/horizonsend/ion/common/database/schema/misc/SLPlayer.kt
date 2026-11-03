@@ -52,6 +52,7 @@ data class SLPlayer(
 
 	var xp: Int = 0,
 	val level: Int = 1,
+	val prestige: Int = 0,
 	var power: Int = 20,
 
 	var chetheritePurchases: Int = 0,
@@ -185,6 +186,11 @@ data class SLPlayer(
 		fun getLevel(id: SLPlayerId): Int? = findPropById(id, SLPlayer::level)
 
 		fun getPower(id: SLPlayerId): Int? = findPropById(id, SLPlayer::power)
+
+		fun getPrestige(id: SLPlayerId): Int? = findPropById(id, SLPlayer::prestige)
+
+		fun setPrestige(id: SLPlayerId, prestige: Int): UpdateResult =
+			updateById(id, org.litote.kmongo.setValue(SLPlayer::prestige, prestige))
 
 		private fun ensureChetheritePurchaseFields(id: SLPlayerId) {
 			col.updateOne(
