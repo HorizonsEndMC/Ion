@@ -865,7 +865,7 @@ data class HeavyTurretBalancing(
 data class AutocannonBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000),
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
-	override var firePowerConsumption: Int = 1000,
+	override var firePowerConsumption: Int = 2667,
 	override var isForwardOnly: Boolean = false,
 	override var inaccuracyDegrees: Double = 2.0,
 	override var maxPerShot: Int? = null,
@@ -1222,7 +1222,7 @@ data class ArtilleryBalancing(
 		override var range: Double = 250.0,
 		override var speed: Double = 90.0,
 		override var explosionPower: Float = 4f,
-		override var starshipShieldDamageMultiplier: Double = 14.0,
+		override var starshipShieldDamageMultiplier: Double = 15.0,
 		override var areaShieldDamageMultiplier: Double = 3.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.artillery.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
