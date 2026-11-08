@@ -71,7 +71,7 @@ import java.util.UUID
 import kotlin.math.ceil
 import kotlin.plus
 
-@CommandAlias("bazaar|ah|auctionhouse|shop|buy")
+@CommandAlias("bazaar|ah|auctionhouse|shop|buy|bz")
 object BazaarCommand : SLCommand() {
 	private val exportCooldown: MutableMap<UUID, Long> = mutableMapOf()
 	private const val TIME_BETWEEN_EXPORTS_MIN = 15L
