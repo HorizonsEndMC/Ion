@@ -29,7 +29,9 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSu
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpBeaconSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.JumpFieldGeneratorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.AssaultTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.AutocannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.GaussCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.IonTurretWeaponSubsystem
@@ -1197,6 +1199,14 @@ data class NewStarshipBalancing(
 				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 2500),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
+			incompatibleWeaponSets = listOf(
+				IncompatibleWeaponSetInfo(
+					listOf(
+						HeavyTurretWeaponSubsystem::class.java,
+						AutocannonWeaponSubsystem::class.java
+					)
+				)
+			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
@@ -1814,6 +1824,7 @@ sealed interface StarshipTypeBalancing {
 
 	val requiredMultiblocks: List<RequiredSubsystemInfo>
 	val forbiddenMultiblocks: List<IncompatibleSubsystemInfo>
+	val incompatibleWeaponSets: List<IncompatibleWeaponSetInfo>
 
 	val weaponOverrides: List<StarshipWeaponBalancing<*>>
 	val commandBurstOverrides: List<StarshipCommandBurstBalancing>
@@ -1849,6 +1860,7 @@ open class StanrdardStarshipTypeBalancing(
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
 	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
+	override val incompatibleWeaponSets: List<IncompatibleWeaponSetInfo> = listOf(),
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
 	override val commandBurstOverrides: List<StarshipCommandBurstBalancing> = listOf(),
@@ -1883,6 +1895,7 @@ open class GroundStarshipBalancing(
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
 	override val forbiddenMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
+	override val incompatibleWeaponSets: List<IncompatibleWeaponSetInfo> = listOf(),
 
 	override val weaponOverrides: List<StarshipWeaponBalancing<*>> = listOf(),
 	override val commandBurstOverrides: List<StarshipCommandBurstBalancing> = listOf(),
@@ -1914,6 +1927,15 @@ data class IncompatibleSubsystemInfo(
 	 **/
 	fun checkRequirements(subsystems: LinkedList<StarshipSubsystem>): Boolean {
 		return (subsystems.groupBy { it.javaClass }[subsystem]?.count() ?: 0) <= 0
+	}
+}
+
+@Serializable
+data class IncompatibleWeaponSetInfo(
+	val subsystems: List<@Serializable(with = SubsystemSerializer::class) Class<out @Contextual StarshipSubsystem>>
+) {
+	fun checkRequirements(weapons: List<FiredSubsystem>): Boolean {
+		return weapons.map { it.javaClass }.distinct().count { it in subsystems } <= 1
 	}
 }
 

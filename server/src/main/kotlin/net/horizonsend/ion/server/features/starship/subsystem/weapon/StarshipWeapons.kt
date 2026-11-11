@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
 object StarshipWeapons {
@@ -130,6 +131,10 @@ object StarshipWeapons {
 
 			ship.debugRed("shooting")
 			shot.shoot()
+
+			if (firedSet.isEmpty() && weapon is BalancedWeaponSubsystem<*>) {
+				cooldownIncompatibleWeapons(ship, weapon)
+			}
 
 			ship.debug("taking resources")
 			consumeResources(weapon, boostPower, ship)
@@ -256,5 +261,28 @@ object StarshipWeapons {
 		}
 
 		return reactor.weaponCapacitor.tryConsume(powerUsage)
+	}
+
+	/**
+	 * Locks out other weapon classes in matching incompatibility groups for this weapon's
+	 * reload time plus a 250ms buffer - prevents weaving and multicrew exploits
+	 */
+	private fun cooldownIncompatibleWeapons(ship: ActiveStarship, fired: BalancedWeaponSubsystem<*>) {
+		val incompatibleGroups = ship.balancing.incompatibleWeaponSets
+		if (incompatibleGroups.isEmpty()) return
+
+		// w/o added 250ms buffer did not feel impactful enough to prevent rapid swapping
+		val lockEnd = System.nanoTime() + fired.fireCooldownNanos + TimeUnit.MILLISECONDS.toNanos(250)
+
+		for (group in incompatibleGroups) {
+			if (fired.javaClass !in group.subsystems) continue
+
+			for (other in ship.weapons) {
+				if (other !is BalancedWeaponSubsystem<*>) continue
+				if (other.javaClass == fired.javaClass || other.javaClass !in group.subsystems) continue
+
+				other.lastFire = maxOf(other.lastFire, lockEnd - other.fireCooldownNanos)
+			}
+		}
 	}
 }
