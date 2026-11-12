@@ -135,6 +135,7 @@ data class SLPlayer(
 	var skipBazaarSingleEntryMenus: Boolean = false,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
+	var blockedDiscordUsers: Set<String> = setOf(),
 	var wasKilledOn: Set<String> = setOf()
 ) : DbObject {
 	enum class ChetheritePurchaseResult {

@@ -9,10 +9,14 @@ import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
 import github.scarsz.discordsrv.dependencies.jda.api.JDA
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
+import github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component as DiscordComponent
+import github.scarsz.discordsrv.dependencies.kyori.adventure.text.event.HoverEvent as DiscordHoverEvent
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.command.misc.DiscordBlockCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
@@ -34,6 +38,7 @@ object Discord : IonServerComponent(true) {
 
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("DiscordSRV")) return
+		registerGtoggleListener()
 
 		Tasks.asyncRepeat(20L * 60L, 20L * 60L, ::checkJda)
 
@@ -46,8 +51,6 @@ object Discord : IonServerComponent(true) {
 
 		JDA = jda
 		enabled = true
-
-		registerGtoggleListener()
 	}
 
 	private val channelMap: MutableMap<Long, TextChannel?> = mutableMapOf()
@@ -92,7 +95,22 @@ object Discord : IonServerComponent(true) {
 
 	@Subscribe
 	fun onDiscordGuildMessagePreBroadcast(event: DiscordGuildMessagePreBroadcastEvent) {
-		event.recipients.removeAll { it is Player && GToggleCommand.isEnabled(it) }
+		val displayName = DiscordSRV.getPlugin().mainGuild?.getMember(event.author)?.effectiveName
+		val blockedIdentifiers = listOfNotNull(event.author.name, event.author.id, displayName)
+
+		event.message = event.message.hoverEvent(
+			DiscordHoverEvent.showText(DiscordComponent.text("Discord User: ${event.author.name}"))
+		)
+
+		event.recipients.removeAll { recipient ->
+			if (recipient !is Player) return@removeAll false
+
+			GToggleCommand.isEnabled(recipient) ||
+				DiscordBlockCommand.isDiscordHidden(recipient) ||
+				PlayerCache.getIfOnline(recipient)?.blockedDiscordUsers?.any { blockedUser ->
+					blockedIdentifiers.any { it.equals(blockedUser, ignoreCase = true) }
+				} == true
+		}
 	}
 
 	fun checkJda() {
@@ -102,8 +120,6 @@ object Discord : IonServerComponent(true) {
 
         JDA = jda
 		enabled = true
-
-		registerGtoggleListener()
 	}
 }
 
