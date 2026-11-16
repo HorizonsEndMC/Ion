@@ -579,6 +579,9 @@ object Bazaars : IonServerComponent() {
 		val priceResult = checkValidPrice(individualPrice)
 		if (!priceResult.isSuccess()) return priceResult
 
+		val quanityResult =checkValidQuantity(orderQuantity)
+		if(!quanityResult.isSuccess()) return quanityResult
+
 		val stringResult = checkValidString(itemString)
 		if (!stringResult.isSuccess()) return stringResult
 
