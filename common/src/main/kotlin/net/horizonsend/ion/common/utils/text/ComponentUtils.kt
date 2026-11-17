@@ -491,7 +491,6 @@ fun bootstrapCustomTranslations() {
 	store.register("death.attack.thermonuclear_missile", Locale.US, MessageFormat("{0} fell into a nuclear meltdown", Locale.US))
 	store.register("death.attack.webifier", Locale.US, MessageFormat("{0} was brought into permanent stasis", Locale.US))
 	store.register("death.attack.neutralizer", Locale.US, MessageFormat("{0} was neutralized", Locale.US))
-	store.register("death.attack.heavy_neutralizer", Locale.US, MessageFormat("{0} and their surroundings were neutralized", Locale.US))
 
 	GlobalTranslator.translator().addSource(store)
 }
