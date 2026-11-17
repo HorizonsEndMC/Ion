@@ -208,6 +208,34 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("prestige get")
+	@CommandCompletion("@players")
+	@CommandPermission("advance.admin.prestige")
+	fun onPrestigeGet(sender: CommandSender, player: String) = asyncCommand(sender) {
+		val playerId = resolveOfflinePlayer(player)
+		val prestige = SLPlayer.getPrestige(playerId.slPlayerId) ?: 0
+
+		sender.information("$player's prestige is $prestige")
+
+		Bukkit.getPlayer(playerId)?.let {
+			val cached = PlayerXPLevelCache[playerId] ?: throw ConditionFailedException("$player has no cache!")
+			if (cached.prestige != prestige) throw ConditionFailedException("$player's cached prestige is ${cached.prestige} instead of $prestige")
+		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("prestige set")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.prestige")
+	fun onPrestigeSet(sender: CommandSender, player: String, prestige: Int) = asyncCommand(sender) {
+		failIf(prestige < 0) { "Prestige cannot be negative." }
+		val playerId = resolveOfflinePlayer(player)
+		val oldPrestige = PlayerXPLevelCache.fetchPrestige(playerId)
+		PlayerXPLevelCache.setPrestige(playerId, prestige)
+		sender.success("Changed $player's prestige from $oldPrestige to $prestige.")
+	}
+
+	@Suppress("Unused")
 	@Subcommand("listplayers")
 	fun onListPlayers(sender: CommandSender) = asyncCommand(sender) {
 		val ids: List<UUID> = SLPlayer.all().map { it._id.uuid }.toList()

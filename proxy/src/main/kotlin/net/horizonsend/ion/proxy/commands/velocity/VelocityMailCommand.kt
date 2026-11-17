@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.commands.ProxyCommand
 import net.horizonsend.ion.proxy.features.misc.ProxyInbox
+import net.horizonsend.ion.proxy.utils.ProxyMutes.checkMute
 import net.horizonsend.ion.proxy.utils.slPlayerId
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.kyori.adventure.text.Component
@@ -37,6 +38,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
+import java.util.concurrent.CompletableFuture
 
 @CommandAlias("mail|inbox|messages")
 object VelocityMailCommand : ProxyCommand() {
@@ -140,8 +142,21 @@ object VelocityMailCommand : ProxyCommand() {
 	@CommandCompletion("@allPlayers @nothing")
 	fun sendMail(sender: Player, recipientName: String, content: String) = asyncCommand(sender) {
 		val player = resolveOfflinePlayer(recipientName)
-		val playerName = text().color(WHITE).append(WrappedPlayer(sender).getDisplayName()).build()
-		ProxyInbox.sendMessage(recipient = player.slPlayerId, senderName = playerName, subject = null, content = text(content))
-		sender.success("Sent message to $recipientName")
+		val muted: CompletableFuture<Boolean> = checkMute(sender.uniqueId)
+
+		muted.whenComplete { muted, exception ->
+			if (exception != null) throw exception
+
+			if (muted) return@whenComplete
+
+			val playerName = text().color(WHITE).append(WrappedPlayer(sender).getDisplayName()).build()
+			ProxyInbox.sendMessage(
+				recipient = player.slPlayerId,
+				senderName = playerName,
+				subject = null,
+				content = text(content)
+			)
+			sender.success("Sent message to $recipientName")
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
+import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.core.IonServerComponent
@@ -44,6 +45,15 @@ object StarshipWeaponry : IonServerComponent() {
 		manual: Boolean = true
 	) {
 		starship.debug("Common manual firing")
+		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
+
+		// If light weapons are being fired, check for incompatible weapon sets
+		if (lightWeapons) {
+			if (starship.balancing.incompatibleWeaponSets.any { !it.checkRequirements(weapons) }) {
+				shooter.userErrorActionMessage("You cannot fire these light weapons on the same weaponset!")
+				return
+			}
+		}
 
 		starship.customTurrets.forEach { turret ->
 			if (!turret.isIntact()) return@forEach
@@ -53,8 +63,6 @@ object StarshipWeaponry : IonServerComponent() {
 
 			turret.orientToTarget(dir)
 		}
-
-		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
 		starship.debug("Weapons: ${weapons.joinToString { it.javaClass.simpleName }}")
 

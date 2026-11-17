@@ -58,6 +58,8 @@ data class PlayerSettings(
 	var showItemSearchItem: Boolean = true,
 	var protectionMessagesEnabled: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
+	var cruiseControlMovementMode: Int = 0,
+	var cruiseControlVariableSpeedHotbar: Boolean = false,
 	var dcRefreshRate: Int = -1,
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,

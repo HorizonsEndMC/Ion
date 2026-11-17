@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingO
 import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
@@ -398,6 +399,7 @@ enum class ChatChannel(
 
 			settlementAction(NationsChatMessage(
 				senderLevel = Levels[player],
+				senderPrestige = PlayerXPLevelCache[player].prestige,
 				channel = this,
 				nationsid = settlement,
 				settlementName = formatSettlementName(settlement),
@@ -428,6 +430,7 @@ enum class ChatChannel(
 
 			nationAction(NationsChatMessage(
 				senderLevel = Levels[player],
+				senderPrestige = PlayerXPLevelCache[player].prestige,
 				channel = this,
 				nationsid = nation,
 				settlementName = formatSettlementName(settlement),
@@ -462,6 +465,7 @@ enum class ChatChannel(
 
 			allyAction(NationsChatMessage(
 				senderLevel = Levels[player],
+				senderPrestige = PlayerXPLevelCache[player].prestige,
 				channel = this,
 				nationsid = nation,
 				settlementName = formatSettlementName(settlement),
@@ -602,6 +606,7 @@ enum class ChatChannel(
 		channelColor: TextColor
 	): NormalChatMessage = NormalChatMessage(
 		senderLevel = Levels[event.player],
+		senderPrestige = PlayerXPLevelCache[event.player].prestige,
 		channel = channel,
 		luckPermsPrefix = event.player.common().getPrefix(),
 		playerDisplayName = event.player.displayName(),
@@ -615,6 +620,7 @@ enum class ChatChannel(
 
 private fun playerInfo(player: Player): String =
 	"""
+	Prestige: ${PlayerXPLevelCache[player].prestige}
 	Level: ${Levels[player]}
 	XP: ${SLXP[player]}
 	Nation: ${PlayerCache[player].nationOid?.let(NationCache::get)?.name}

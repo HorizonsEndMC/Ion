@@ -21,6 +21,7 @@ import net.horizonsend.ion.common.database.schema.nations.RoleCompanion
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.database.uuid
 import org.litote.kmongo.`in`
 import java.util.UUID
@@ -41,6 +42,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var lastDeathTimestamp: Long?,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
+		var blockedDiscordUsers: Set<String> = setOf(),
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -144,6 +146,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::blockedDiscordUsers]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.blockedDiscordUsers = it.mappedSet { it.string() }
+				}
+			}
+
 			change[SLPlayer::lastDeathTimestamp]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -207,6 +217,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			nationTag = nationTag,
 			bounty = data.bounty,
 			blockedPlayerIDs = data.blockedPlayerIDs,
+			blockedDiscordUsers = data.blockedDiscordUsers,
 			lastDeathTimestamp = data.lastDeathTimestamp
 		)
 	}

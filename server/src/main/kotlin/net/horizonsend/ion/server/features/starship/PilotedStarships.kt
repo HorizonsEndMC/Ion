@@ -212,7 +212,11 @@ object PilotedStarships : IonServerComponent() {
 		Tasks.checkMainThread()
 		val controller = starship.controller
 
-		starship.setDirectControlEnabled(false)
+		if (starship.isDirectControlEnabled) {
+			starship.setDirectControlEnabled(false)
+		} else if (starship.isDirectCruiseControlEnable) {
+			starship.setDirectCruiseControlEnabled(false)
+		}
 
 		val unpilotedController = when (controller) {
 			is PlayerController -> UnpilotedController(controller)

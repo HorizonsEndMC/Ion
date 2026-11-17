@@ -2,14 +2,12 @@ package net.horizonsend.ion.server.features.chat.messages
 
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.orEmpty
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.TextColor
 
 class NationsChatMessage<A : DbObject>(
@@ -31,8 +29,9 @@ class NationsChatMessage<A : DbObject>(
 	override val message: Component,
 	override val playerInfo: Component,
 
-	override val color: TextColor
-) : ChatMessage(senderLevel, channel.name) {
+	override val color: TextColor,
+	senderPrestige: Int = 0
+) : ChatMessage(senderLevel, channel.name, senderPrestige) {
 
 	fun buildChatComponent(
 		useLevelsPrefix: Boolean,
@@ -47,7 +46,7 @@ class NationsChatMessage<A : DbObject>(
 		val builder = text()
 		builder.hoverEvent(playerInfo)
 
-		if (useLevelsPrefix) builder.append(bracketed(text(senderLevel, AQUA)), space())
+		if (useLevelsPrefix) builder.append(progressionPrefix(), space())
 		if (useChannelPrefix) {
 			if (useShortenedPrefix) {
 				builder.append(channel.shortenedChannelPrefix, space())

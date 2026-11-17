@@ -46,7 +46,8 @@ class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, 
 			return Blueprint.find(
 				or(
 					Blueprint::trustedPlayers contains target,
-					Blueprint::trustedNations contains net.horizonsend.ion.common.database.schema.misc.SLPlayer[target]?.nation
+					Blueprint::trustedNations contains net.horizonsend.ion.common.database.schema.misc.SLPlayer[target]?.nation,
+					Blueprint::trustedSettlements contains net.horizonsend.ion.common.database.schema.misc.SLPlayer[target]?.settlement
 				)
 			).descendingSort(sortTypes[filterType]).toList()
 		}
