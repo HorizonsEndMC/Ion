@@ -699,6 +699,15 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 Component.text("Boosts the user's running speed.")
             )
 		)
+		/* register(
+			CustomItemKeys.ARMOR_MODIFICATION_SWIFT_SNEAKING, ModificationItem(
+				CustomItemKeys.ARMOR_MODIFICATION_SWIFT_SNEAKING,
+				ItemModKeys.SWIFT_SNEAKING,
+				"power_armor/module/swift_sneaking",
+				ofChildren(Component.text("Swift Sneaking", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Boosts the user's sneaking speed.")
+			)
+		) */
 
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_1, ModificationItem(

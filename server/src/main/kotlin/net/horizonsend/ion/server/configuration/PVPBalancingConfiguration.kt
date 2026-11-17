@@ -304,7 +304,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 3.0,
+			damage = 3.1,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -338,8 +338,8 @@ data class PVPBalancingConfiguration(
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 0.1,
-			explosionPower = 4.0f,
+			damage = 0.15,
+			explosionPower = 4.15f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,
 			ammoPerRefill = 20,
