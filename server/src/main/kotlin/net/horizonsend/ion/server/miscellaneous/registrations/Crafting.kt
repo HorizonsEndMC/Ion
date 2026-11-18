@@ -196,6 +196,8 @@ import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BOOK
 import org.bukkit.Material.BOWL
+import org.bukkit.Material.BROWN_EGG
+import org.bukkit.Material.BLUE_EGG
 import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.CHARCOAL
 import org.bukkit.Material.CHERRY_LEAVES
@@ -1296,6 +1298,8 @@ object Crafting : IonServerComponent() {
 		}
 
 		registerFurnaceRecipe(EGG, HORIZON_FRIED_EGG)
+		registerFurnaceRecipe(BLUE_EGG, HORIZON_FRIED_EGG)
+		registerFurnaceRecipe(BROWN_EGG, HORIZON_FRIED_EGG)
 		registerFurnaceRecipe(GROUND_BEEF, COOKED_GROUND_BEEF)
 		registerFurnaceRecipe(PEPPERONI_PIZZA, COOKED_PEPPERONI_PIZZA)
 	}
