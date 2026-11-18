@@ -136,7 +136,7 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 	}
 
 	inline operator fun <reified Z, reified R : Collection<Z>> get(path: String): List<StringId<*>> {
-		val unwrapped = get<R>(path) as Collection<Z>
+	    val unwrapped = get<R>(path) as? Collection<Z> ?: return emptyList()
 
 		if (Z::class.isSubclassOf(StringId::class) ) {
 			@Suppress("UNCHECKED_CAST")
