@@ -52,7 +52,8 @@ data class Blueprint(
 		}
 
 		fun fixTrustedSettlements() {
-			col.updateMany(Blueprint::trustedSettlements eq null, setValue(Blueprint::trustedSettlements, setOf()))
+			col.updateMany(Blueprint::trustedSettlements eq null,
+				setValue(Blueprint::trustedSettlements, mutableSetOf()))
 		}
 	}
 
