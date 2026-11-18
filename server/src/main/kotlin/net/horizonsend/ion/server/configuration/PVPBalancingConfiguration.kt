@@ -3,23 +3,28 @@ package net.horizonsend.ion.server.configuration
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.kyori.adventure.sound.Sound
+import kotlin.Int
 
 @Serializable
 data class PVPBalancingConfiguration(
 	val energyWeapons: EnergyWeapons = EnergyWeapons(),
 	val meleeWeapons: MeleeWeapons = MeleeWeapons(),
-	val throwables: Throwables = Throwables()
+	val throwables: Throwables = Throwables(),
+	val consumables: Consumables = Consumables(),
+	val armour: Armor = Armor(),
 ) {
 	@Serializable
 	data class MeleeWeapons(
 		var energySwordBalancing: MeleeWeaponBalancing = MeleeWeaponBalancing(
-			damage = 6.5,
+			damage = 7.0,
 			speedUp = 0.0,
 			attackSpeed = -2.4,
 			knockback = 0.0,
 			entityInteractionRange = 0.0,
 			sneakingSpeed = 0.0,
 			knockBackResistance = 0.0,
+			stepHeight = 0.0,
+			blockCooldownTime = 15,
 		)
 	){
 		@Serializable
@@ -31,13 +36,15 @@ data class PVPBalancingConfiguration(
 			var entityInteractionRange: Double,//addition
 			var sneakingSpeed: Double,//multiplier
 			var knockBackResistance: Double,//addition
+			var stepHeight: Double, //addition
+			var blockCooldownTime: Int, //setter
 		)
 	}
 
 	@Serializable
 	data class Throwables(
 		val detonator: ThrowableBalancing = ThrowableBalancing(
-			80.0,
+			70.0,
 			4.0,
 			1.0,
 			5,
@@ -69,6 +76,82 @@ data class PVPBalancingConfiguration(
 	}
 
 	@Serializable
+	data class Consumables(
+		val healthStim: ConsumableBalancing = ConsumableBalancing(
+			timeBetweenConsumption = 200, // Every 20 ticks = 1 second cooldown till able to use again
+			potionEffectType = "minecraft:instant_health", // To change effects, just change the name of minecraft:potioneffect
+			potionEffectDuration = 1, // For health stim, we don't want to change this
+			potionEffectAmplifier = 1, // Starts at 0 (1) | amp 1 = effect strength of 2
+
+		),
+		val strengthStim: ConsumableBalancing = ConsumableBalancing(
+			timeBetweenConsumption = 200, // Every 20 ticks = 1 second cooldown till able to use again
+			potionEffectType = "minecraft:strength", // To change effects, just change the name of minecraft:potioneffect
+			potionEffectDuration = 200, // Every 20 ticks = 1 second of effects
+			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
+		),
+		val resistanceStim: ConsumableBalancing = ConsumableBalancing(
+			timeBetweenConsumption = 200, // Every 20 ticks = 1 second cooldown till able to use again
+			potionEffectType = "minecraft:resistance", // To change effects, just change the name of minecraft:potioneffect
+			potionEffectDuration = 200, // Every 20 ticks = 1 second of effects
+			potionEffectAmplifier = 0, // Starts at 0 (1) | amp 1 = effect strength of 2
+		),
+	){
+		@Serializable
+		data class ConsumableBalancing(
+			var timeBetweenConsumption: Int,
+			var potionEffectType: String,
+			var potionEffectDuration: Int,
+			var potionEffectAmplifier: Int,
+		)
+	}
+	@Serializable
+	data class Armor(
+		val mediumPowerArmor: ArmorBalancing = ArmorBalancing(
+			speed = 0.0,
+			sneakSpeed = 0.0,
+			scale = 0.0,
+			entityReach = 0.0,
+			blockReach = 0.0,
+			armor = 3.0,
+			toughness = 0.0,
+			knockBackResistance = 0.0,
+			power = 50000,
+			powerConsumedPerSecond = 4,
+			stepHeight = 0.0,
+			maxHealth = 0.0,
+			jumpStrength = 0.0,
+			flyingSpeed = 0.0,
+			gravity = 0.0,
+			oxygenBonus = 0.0,
+			waterMovementEfficiency = 0.0,
+			maxPrimaryModules = 1,
+		)
+	){
+		@Serializable
+		data class ArmorBalancing(
+			var speed: Double, //Percentage increase or decrease
+			var sneakSpeed: Double, //Percentage increase or decrease
+			var scale: Double, //Scalar add
+			var entityReach: Double, //Scalar add
+			var blockReach: Double, //Scalar add
+			var armor: Double, //Scalar add
+			var toughness: Double, //Scalar add
+			var knockBackResistance: Double, //Scalar add x10, 0.2 here is 2 ingame
+			var power: Int, //Pure number
+			var powerConsumedPerSecond: Int,
+			var stepHeight: Double,//Scalar add
+			var maxHealth: Double,//Scalar add
+			var jumpStrength: Double,//Scalar add
+			var flyingSpeed: Double,//Scalar add
+			var gravity: Double,//Scalar add
+			var oxygenBonus: Double,//Scalar add
+			var waterMovementEfficiency: Double,//Scalar add
+			var maxPrimaryModules: Int,
+		)
+	}
+
+	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
 			damage = 4.25,
@@ -85,7 +168,7 @@ data class PVPBalancingConfiguration(
 			shouldBypassHitTicks = true,
 			shouldHeadshot = false,
 			shouldPassThroughEntities = false,
-			speed = 7.0,
+			speed = 7.25,
 			timeBetweenShots = 6,
 			shotDeviation = 0.0,
 			mobDamageMultiplier = 1.0,
@@ -122,7 +205,7 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.pistol.reload.start", volume = 1f, pitch = 0.8f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.pistol.reload.finish", volume = 1f, pitch = 1.1f,  source = Sound.Source.PLAYER),
-			soundFire = SoundInfo("horizonsend:blaster.pistol.shoot", volume = 1f, pitch = 1.75f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.pistol.shoot", volume = 1f, pitch = 0.5f, source = Sound.Source.PLAYER),
 			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
 			soundShell = SoundInfo("horizonsend:blaster.pistol.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.30f,
@@ -161,7 +244,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
-			damage = 2.25,
+			damage = 2.30,
 			damageFalloffMultiplier = 0.0,
 			capacity = 45,
 			ammoPerRefill = 20,
@@ -205,7 +288,7 @@ data class PVPBalancingConfiguration(
 			shouldBypassHitTicks = false,
 			shouldHeadshot = true,
 			shouldPassThroughEntities = true,
-			speed = 15.0,
+			speed = 17.5,
 			timeBetweenShots = 40,
 			shotDeviation = 0.0,
 			mobDamageMultiplier = 2.0,
@@ -221,7 +304,7 @@ data class PVPBalancingConfiguration(
 			refillType = "minecraft:emerald",
 		),
 		val shotgun: Multishot = Multishot(
-			damage = 3.0,
+			damage = 3.1,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			capacity = 4,
@@ -255,14 +338,14 @@ data class PVPBalancingConfiguration(
 		),
 
 		val cannon: Singleshot = Singleshot(
-			damage = 0.1,
-			explosionPower = 4.0f,
+			damage = 0.15,
+			explosionPower = 4.15f,
 			damageFalloffMultiplier = 0.0,
 			capacity = 60,
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 1f,
-			range = 30.0,
+			range = 35.0,
 			recoil = 1.0f,
 			reload = 30,
 			shotSize = 0.25,
@@ -270,8 +353,8 @@ data class PVPBalancingConfiguration(
 			shouldBypassHitTicks = true,
 			shouldHeadshot = false,
 			shouldPassThroughEntities = false,
-			speed = 4.0,
-			timeBetweenShots = 12,
+			speed = 4.5,
+			timeBetweenShots = 15,
 			shotDeviation = 0.07,
 			mobDamageMultiplier = 2.0,
 			consumesAmmo = true,
