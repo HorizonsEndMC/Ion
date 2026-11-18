@@ -180,8 +180,7 @@ object DBManager : IonComponent() {
 
 		BankedItem.init()
 
-		// TODO: REMOVE LATER ONCE THIS RUNS ON THE LIVE SERVER!!!
-		Blueprint.fixTrustedSettlements()
+		//Blueprint.fixTrustedSettlements()
 	}
 
 	override fun onDisable() {
