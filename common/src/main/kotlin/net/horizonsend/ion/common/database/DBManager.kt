@@ -179,6 +179,9 @@ object DBManager : IonComponent() {
 		Bookmark.init()
 
 		BankedItem.init()
+
+		// TODO: REMOVE LATER ONCE THIS RUNS ON THE LIVE SERVER!!!
+		Blueprint.fixTrustedSettlements()
 	}
 
 	override fun onDisable() {
