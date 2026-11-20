@@ -223,6 +223,7 @@ class CancelListeners : SLEventListener() {
 	fun onExplode(event: EntityExplodeEvent) {
 		event.blockList().removeAll {
 			it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.BARGE_REACTOR_CORE ||
 				it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE ||
 				it.customBlock?.key == CustomBlockKeys.MINI_REACTOR_CORE ||
 				it.customBlock?.key == CustomBlockKeys.SMALL_REACTOR_CORE ||
@@ -235,6 +236,7 @@ class CancelListeners : SLEventListener() {
 	fun onExplode(event: BlockExplodeEvent) {
 		event.blockList().removeAll {
 			it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE ||
+				it.customBlock?.key == CustomBlockKeys.BARGE_REACTOR_CORE ||
 				it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE ||
 				it.customBlock?.key == CustomBlockKeys.MINI_REACTOR_CORE ||
 				it.customBlock?.key == CustomBlockKeys.SMALL_REACTOR_CORE ||
