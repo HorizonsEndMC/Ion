@@ -179,6 +179,8 @@ object DBManager : IonComponent() {
 		Bookmark.init()
 
 		BankedItem.init()
+
+		//Blueprint.fixTrustedSettlements()
 	}
 
 	override fun onDisable() {

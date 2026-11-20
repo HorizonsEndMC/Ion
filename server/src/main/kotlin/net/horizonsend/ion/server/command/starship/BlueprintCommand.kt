@@ -602,8 +602,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("trust player")
 	@CommandCompletion("@blueprints @players")
-	fun onTrustPlayer(sender: Player, name: String, player: String) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+	fun onTrustPlayer(sender: Player, name: String, player: String) = asyncCommand(sender) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val slPlayerId = playerId.slPlayerId
@@ -623,8 +623,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("untrust player")
 	@CommandCompletion("@blueprints @players")
-	fun onUntrustPlayer(sender: Player, name: String, player: String) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+	fun onUntrustPlayer(sender: Player, name: String, player: String) = asyncCommand(sender) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val slPlayerId = playerId.slPlayerId
@@ -640,8 +640,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("trust nation")
 	@CommandCompletion("@blueprints @nations")
-	fun onTrustNation(sender: Player, name: String, nation: String) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+	fun onTrustNation(sender: Player, name: String, nation: String) = asyncCommand(sender) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val nationId = resolveNation(nation)
 		failIf(blueprint.trustedNations.contains(nationId)) {
@@ -655,8 +655,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("untrust nation")
 	@CommandCompletion("@blueprints @nations")
-	fun onUntrustNation(sender: Player, name: String, nation: String) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+	fun onUntrustNation(sender: Player, name: String, nation: String) = asyncCommand(sender) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val nationId = resolveNation(nation)
 		failIf(!blueprint.trustedNations.contains(nationId)) {
@@ -669,9 +669,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("trust settlement")
-	@CommandCompletion("@blueprints @settlement")
-	fun onTrustSettlement(sender: Player, name: String, settlement: String) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+	@CommandCompletion("@blueprints @settlements")
+	fun onTrustSettlement(sender: Player, name: String, settlement: String) = asyncCommand(sender) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val settlementId = resolveSettlement(settlement)
 		failIf(blueprint.trustedSettlements.contains(settlementId)) {
@@ -685,8 +685,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("untrust settlement")
 	@CommandCompletion("@blueprints @settlements")
-	fun onUntrustSettlement(sender: Player, name: String, settlement: String) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+	fun onUntrustSettlement(sender: Player, name: String, settlement: String) = asyncCommand(sender) {
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val settlementId = resolveSettlement(settlement)
 		failIf(!blueprint.trustedSettlements.contains(settlementId)) {

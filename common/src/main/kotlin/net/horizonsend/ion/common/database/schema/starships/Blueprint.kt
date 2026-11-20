@@ -16,6 +16,7 @@ import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
+import org.litote.kmongo.setValue
 
 data class Blueprint(
 	override val _id: Oid<Blueprint>,
@@ -48,6 +49,11 @@ data class Blueprint(
 			Blueprint.col.insertOne(Blueprint(id, owner, name, type, pilotLoc, size, data))
 
 			return id
+		}
+
+		fun fixTrustedSettlements() {
+			col.updateMany(Blueprint::trustedSettlements eq null,
+				setValue(Blueprint::trustedSettlements, mutableSetOf()))
 		}
 	}
 
