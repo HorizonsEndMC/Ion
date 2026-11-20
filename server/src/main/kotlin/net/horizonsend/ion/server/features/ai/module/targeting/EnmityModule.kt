@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.module.targeting
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.command.starship.ai.IonAggroToggleCommand.aiIgnoredPlayers
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.module.AIModule
@@ -34,6 +35,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.GameMode
+import org.bukkit.entity.Player
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.function.Supplier
 import kotlin.math.cbrt
@@ -324,8 +326,18 @@ open class EnmityModule(
 		for (target in enmityList) {
 			val aiTarget = target.target
 			when (aiTarget) {
-				is StarshipTarget -> if (aiTarget.ship !in ActiveStarships.all()) markedForRemoval.add(target)
-				is PlayerTarget -> if (!aiTarget.player.isOnline) markedForRemoval.add(target)
+				is StarshipTarget -> {
+					val player = (aiTarget.ship.controller as? PlayerController)?.player
+					if (aiTarget.ship !in ActiveStarships.all() || (player != null && isAIIgnored(player))) {
+						markedForRemoval.add(target)
+					}
+				}
+				is PlayerTarget -> {
+					val player = aiTarget.player
+					if (!player.isOnline || isAIIgnored(player)) {
+						markedForRemoval.add(target)
+					}
+				}
 			}
 		}
 
@@ -404,6 +416,8 @@ open class EnmityModule(
 		fun targetFilter(starship: Starship, aiTarget: AITarget, targetMode: AITarget.TargetMode): Boolean {
 			when {
 				aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController -> {
+					val player = (aiTarget.ship.controller as PlayerController).player
+					if (isAIIgnored(player)) return false
 					return targetMode != AITarget.TargetMode.AI_ONLY
 				}
 
@@ -423,10 +437,17 @@ open class EnmityModule(
 				}
 
 				aiTarget is PlayerTarget && targetMode != AITarget.TargetMode.AI_ONLY -> {
+					if (isAIIgnored(aiTarget.player)) return false
 					return true
 				}
 			}
 			return false
+		}
+
+		private fun isAIIgnored(player: Player): Boolean {
+			return player.isOnline &&
+				player.hasPermission("group.dutymode") &&
+				player.uniqueId in aiIgnoredPlayers
 		}
 
 		/** returns true if the faction is different*/
