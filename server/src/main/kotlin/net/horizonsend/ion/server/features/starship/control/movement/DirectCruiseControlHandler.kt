@@ -17,6 +17,7 @@ class DirectCruiseControlHandler(controller: Controller, override val input: Dir
 
 	override fun destroy() {
 		starship.cruiseData.targetSpeed = 0
+		starship.cruiseData.targetDir = null
 		input.destroy()
 	}
 
