@@ -1109,10 +1109,10 @@ data class PulseCannonBalancing(
 
 	@Serializable
 	data class PulseCannonProjectileBalancing(
-        override var range: Double = 160.0,
-        override var speed: Double = 230.0,
+        override var range: Double = 180.0,
+        override var speed: Double = 300.0,
         override var explosionPower: Float = 2.0f,
-        override var starshipShieldDamageMultiplier: Double = 1.8,
+        override var starshipShieldDamageMultiplier: Double = 1.2,
         override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
@@ -1185,9 +1185,9 @@ data class PlasmaCannonBalancing(
 	data class PlasmaCannonProjectileBalancing(
         override var range: Double = 160.0,
         override var speed: Double = 400.0,
-        override var explosionPower: Float = 3f,
+        override var explosionPower: Float = 4f,
         override var starshipShieldDamageMultiplier: Double = 2.0,
-        override var areaShieldDamageMultiplier: Double = 3.0,
+        override var areaShieldDamageMultiplier: Double = 2.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
