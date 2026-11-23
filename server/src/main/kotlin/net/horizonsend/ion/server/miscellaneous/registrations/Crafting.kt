@@ -178,6 +178,10 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VEGETARI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_BLOCK
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.EMPTY_STIM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STRENGTH_STIM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HEALTH_STIM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RESISTANCE_STIM
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
@@ -326,7 +330,7 @@ object Crafting : IonServerComponent() {
 	val listOfCustomRecipes = mutableListOf<NamespacedKey>()
 
 	override fun onEnable() {
-	registerOreFurnaceRecipes()
+		registerOreFurnaceRecipes()
 		registerFoodFurnaceRecipes()
 		registerTools()
 		registerMisc()
@@ -531,9 +535,9 @@ object Crafting : IonServerComponent() {
 		}
 
 		shaped("revolver", BLASTER_REVOLVER.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
-			shape("   ", "apb", "c  ")
+			shape("   ", "tpb", "c  ")
 
-			setIngredient('a', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.getValue().constructItemStack()))
 			setIngredient('p', PISTOL_RECEIVER.getValue().constructItemStack())
 			setIngredient('b', GUN_BARREL.getValue().constructItemStack())
 			setIngredient('c', CIRCUITRY.getValue().constructItemStack())
@@ -949,6 +953,27 @@ object Crafting : IonServerComponent() {
 		registerArmorRecipe(POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *")
 		registerArmorRecipe(POWER_ARMOR_BOOTS, "* *", "*b*")
 
+		fun registerEmptyStim(result: IonRegistryKey<CustomItem, out CustomItem>, vararg shape: String) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
+			shape("iii", "aga", " i ")
+			setIngredient('a', ALUMINUM_INGOT)
+			setIngredient('g', GLASS_PANE)
+			setIngredient('i', IRON_INGOT)
+		}
+		registerEmptyStim(EMPTY_STIM)
+
+		shapeless("strength_stim", STRENGTH_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
+			ItemStack.of(GOLD_INGOT,1),
+			EMPTY_STIM.getValue().constructItemStack(1)
+		)
+		shapeless("health_stim", HEALTH_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
+			ItemStack.of(REDSTONE,1),
+			EMPTY_STIM.getValue().constructItemStack(1)
+		)
+		shapeless("resistance_stim", RESISTANCE_STIM.getValue().constructItemStack(),CraftingBookCategory.MISC,
+			ItemStack.of(Material.NETHERITE_INGOT,1),
+			EMPTY_STIM.getValue().constructItemStack(1)
+		)
+
 		fun registerPowerArmorModule(result: IonRegistryKey<CustomItem, out CustomItem>, center: RecipeChoice) = shaped(result.key.lowercase(), result.getValue().constructItemStack(), CraftingBookCategory.EQUIPMENT) {
 			shape("aga", "g*g", "aga")
 			setIngredient('a', ALUMINUM_INGOT)
@@ -1023,180 +1048,180 @@ object Crafting : IonServerComponent() {
 		//Flowers and fauna
 
 		shaped("dandelion", ItemStack(Material.DANDELION, 8), CraftingBookCategory.BUILDING) {
-	    shape("ppp", "pfp", "pup")
+			shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.DANDELION)
-	    setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.DANDELION)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
 		shaped("poppy", ItemStack(Material.POPPY, 8), CraftingBookCategory.BUILDING) {
-	    shape("ppp", "pfp", "pup")
+			shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.POPPY)
-	    setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.POPPY)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8), CraftingBookCategory.BUILDING) {
-	    shape("ppp", "pfp", "pup")
+		shaped("blue_orchid", ItemStack(Material.BLUE_ORCHID, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.BLUE_ORCHID)
-	    setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.BLUE_ORCHID)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("allium", ItemStack(Material.ALLIUM, 8), CraftingBookCategory.BUILDING) {
-	    shape("ppp", "pfp", "pup")
+		shaped("allium", ItemStack(Material.ALLIUM, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	    setIngredient('p', Material.MANGROVE_PROPAGULE)
-	    setIngredient('f', Material.ALLIUM)
-	    setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.ALLIUM)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("azure_bluet", ItemStack(Material.AZURE_BLUET, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.AZURE_BLUET)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.AZURE_BLUET)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("red_tulip", ItemStack(Material.RED_TULIP, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("red_tulip", ItemStack(Material.RED_TULIP, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.RED_TULIP)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.RED_TULIP)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("pink_tulip", ItemStack(Material.PINK_TULIP, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.PINK_TULIP)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.PINK_TULIP)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
 		shaped("orange_tulip", ItemStack(Material.ORANGE_TULIP, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.ORANGE_TULIP)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.ORANGE_TULIP)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("white_tulip", ItemStack(Material.WHITE_TULIP, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.WHITE_TULIP)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.WHITE_TULIP)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("oxeye_daisy", ItemStack(Material.OXEYE_DAISY, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.OXEYE_DAISY)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.OXEYE_DAISY)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("cornflower", ItemStack(Material.CORNFLOWER, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("cornflower", ItemStack(Material.CORNFLOWER, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.CORNFLOWER)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.CORNFLOWER)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("lily_of_the_valley", ItemStack(Material.LILY_OF_THE_VALLEY, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.LILY_OF_THE_VALLEY)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.LILY_OF_THE_VALLEY)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("sunflower", ItemStack(Material.SUNFLOWER, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("sunflower", ItemStack(Material.SUNFLOWER, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.SUNFLOWER)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.SUNFLOWER)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("lilac", ItemStack(Material.LILAC, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("lilac", ItemStack(Material.LILAC, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.LILAC)
-	      setIngredient('u', URANIUM)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.LILAC)
+			setIngredient('u', URANIUM)
+		}
 
 		shaped("rose_bush", ItemStack(Material.ROSE_BUSH, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+			shape("ppp", "pfp", "pup")
 
-          setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.ROSE_BUSH)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.ROSE_BUSH)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("peony", ItemStack(Material.PEONY, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("peony", ItemStack(Material.PEONY, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.PEONY)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.PEONY)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("hanging_roots", ItemStack(Material.HANGING_ROOTS, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.HANGING_ROOTS)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.HANGING_ROOTS)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("dead_bush", ItemStack(Material.DEAD_BUSH, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.STICK)
-	      setIngredient('f', Material.DEAD_BUSH)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.STICK)
+			setIngredient('f', Material.DEAD_BUSH)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("lily_pad", ItemStack(Material.LILY_PAD, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("lily_pad", ItemStack(Material.LILY_PAD, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.LILY_PAD)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.LILY_PAD)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("red_mushroom", ItemStack(Material.RED_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.RED_MUSHROOM)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.RED_MUSHROOM)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("brown_mushroom", ItemStack(Material.BROWN_MUSHROOM, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.MANGROVE_PROPAGULE)
-	      setIngredient('f', Material.BROWN_MUSHROOM)
-	      setIngredient('u', Material.SHORT_GRASS)
-        }
+			setIngredient('p', Material.MANGROVE_PROPAGULE)
+			setIngredient('f', Material.BROWN_MUSHROOM)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 
-        shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8), CraftingBookCategory.BUILDING) {
-	      shape("ppp", "pfp", "pup")
+		shaped("wither_rose", ItemStack(Material.WITHER_ROSE, 8), CraftingBookCategory.BUILDING) {
+			shape("ppp", "pfp", "pup")
 
-	      setIngredient('p', Material.CRYING_OBSIDIAN)
-	      setIngredient('f', Material.ROSE_BUSH)
-	      setIngredient('u', Material.SHORT_GRASS)
-      }
+			setIngredient('p', Material.CRYING_OBSIDIAN)
+			setIngredient('f', Material.ROSE_BUSH)
+			setIngredient('u', Material.SHORT_GRASS)
+		}
 	}
 
 	@EventHandler

@@ -27,10 +27,10 @@ import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.consumable.ConsumableItem
 import net.horizonsend.ion.server.features.custom.items.type.food.FoodItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCustomItem
-import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
@@ -76,6 +76,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerEnergySwords()
 		registerPlanetIcons()
 		registerFood()
+		registerCombatStims()
 		//registerNationBuffs()
 
 		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
@@ -83,7 +84,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(CustomItemKeys.DEBUG_LINE_RED, displayName = Component.text("DEBUG_LINE_RED"), model = "debug/debug_line_red")
 		unStackable(CustomItemKeys.DEBUG_LINE_BLUE, displayName = Component.text("DEBUG_LINE_BLUE"), model = "debug/debug_line_blue")
 
-        CustomItemListeners.sortCustomItemListeners()
+		CustomItemListeners.sortCustomItemListeners()
 	}
 
 	private fun registerThrowables() {
@@ -100,21 +101,21 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerThrowable(
 			CustomItemKeys.DETONATOR,
 			"throwables/detonator",
-            ofChildren(Component.text("Thermal ", NamedTextColor.RED), Component.text("Detonator", NamedTextColor.GRAY)),
+			ofChildren(Component.text("Thermal ", NamedTextColor.RED), Component.text("Detonator", NamedTextColor.GRAY)),
 			ConfigurationFiles.pvpBalancing().throwables::detonator
 		) { item, maxTicks, source -> ThrownDetonator(item, maxTicks, source, ConfigurationFiles.pvpBalancing().throwables::detonator) }
 
 		registerThrowable(
 			CustomItemKeys.SMOKE_GRENADE,
 			"throwables/detonator",
-            ofChildren(Component.text("Smoke ", NamedTextColor.DARK_GREEN), Component.text("Grenade", NamedTextColor.GRAY)),
+			ofChildren(Component.text("Smoke ", NamedTextColor.DARK_GREEN), Component.text("Grenade", NamedTextColor.GRAY)),
 			ConfigurationFiles.pvpBalancing().throwables::smokeGrenade
 		) { item, maxTicks, source -> ThrownSmokeGrenade(item, maxTicks, source) }
 
 		register(CustomItemKeys.PUMPKIN_GRENADE, object : ThrowableCustomItem(
 			CustomItemKeys.PUMPKIN_GRENADE,
 			"",
-            ofChildren(Component.text("Pumpkin ", NamedTextColor.GOLD), Component.text("Grenade", NamedTextColor.GREEN)),
+			ofChildren(Component.text("Pumpkin ", NamedTextColor.GOLD), Component.text("Grenade", NamedTextColor.GREEN)),
 			ConfigurationFiles.pvpBalancing().throwables::detonator
 		) {
 			override val baseItemFactory: ItemFactory = ItemFactory.Preset.builder(ItemFactory.Preset.builder().setMaterial(Material.PUMPKIN).build())
@@ -135,31 +136,31 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 	private fun registerGuns() {
 		register(
-            CustomItemKeys.STANDARD_MAGAZINE, Magazine(
-                key = CustomItemKeys.STANDARD_MAGAZINE,
-                displayName = Component.text("Standard Magazine").decoration(TextDecoration.ITALIC, false),
-                itemFactory = ItemFactory.Preset.unStackableCustomItem("weapon/blaster/standard_magazine"),
-                balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine
-            )
-        )
+			CustomItemKeys.STANDARD_MAGAZINE, Magazine(
+				key = CustomItemKeys.STANDARD_MAGAZINE,
+				displayName = Component.text("Standard Magazine").decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.Preset.unStackableCustomItem("weapon/blaster/standard_magazine"),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine
+			)
+		)
 
 		register(
-            CustomItemKeys.SPECIAL_MAGAZINE, Magazine(
-                key = CustomItemKeys.SPECIAL_MAGAZINE,
-                displayName = Component.text("Special Magazine").decoration(TextDecoration.ITALIC, false),
-                itemFactory = ItemFactory.Preset.unStackableCustomItem("weapon/blaster/special_magazine"),
-                balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine
-            )
-        )
+			CustomItemKeys.SPECIAL_MAGAZINE, Magazine(
+				key = CustomItemKeys.SPECIAL_MAGAZINE,
+				displayName = Component.text("Special Magazine").decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.Preset.unStackableCustomItem("weapon/blaster/special_magazine"),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine
+			)
+		)
 
 		register(
-            CustomItemKeys.BLASTER_PISTOL, Blaster(
-                key = CustomItemKeys.BLASTER_PISTOL,
-                displayName = Component.text("Blaster Pistol", NamedTextColor.RED, TextDecoration.BOLD),
-                itemFactory = ItemFactory.Preset.builder().setMaterial(Material.DIAMOND_HOE).setCustomModel("weapon/blaster/pistol").build(),
-                balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
-            )
-        )
+			CustomItemKeys.BLASTER_PISTOL, Blaster(
+				key = CustomItemKeys.BLASTER_PISTOL,
+				displayName = Component.text("Blaster Pistol", NamedTextColor.RED, TextDecoration.BOLD),
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.DIAMOND_HOE).setCustomModel("weapon/blaster/pistol").build(),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
+			)
+		)
 		register(
 			CustomItemKeys.BLASTER_REVOLVER, Blaster(
 				key = CustomItemKeys.BLASTER_REVOLVER,
@@ -171,32 +172,32 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 
 		register(
-            CustomItemKeys.BLASTER_RIFLE, Blaster(
-                key = CustomItemKeys.BLASTER_RIFLE,
-                displayName = Component.text("Blaster Rifle", NamedTextColor.RED, TextDecoration.BOLD),
-                itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/rifle").build(),
-                balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
-            )
-        )
+			CustomItemKeys.BLASTER_RIFLE, Blaster(
+				key = CustomItemKeys.BLASTER_RIFLE,
+				displayName = Component.text("Blaster Rifle", NamedTextColor.RED, TextDecoration.BOLD),
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/rifle").build(),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
+			)
+		)
 
 		register(
 			CustomItemKeys.SUBMACHINE_BLASTER, object : Blaster<PVPBalancingConfiguration.EnergyWeapons.Singleshot>(
-			key = CustomItemKeys.SUBMACHINE_BLASTER,
-			itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/submachine_blaster").build(),
-			displayName = Component.text("Submachine Blaster", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
-			balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::submachineBlaster
-		) {
-			// Allows fire above 300 rpm
-			override fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
-				val repeatCount = if (balancing.timeBetweenShots >= 4) 1 else (4.0 / balancing.timeBetweenShots).roundToInt()
-				val division = 4.0 / balancing.timeBetweenShots
+				key = CustomItemKeys.SUBMACHINE_BLASTER,
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/submachine_blaster").build(),
+				displayName = Component.text("Submachine Blaster", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::submachineBlaster
+			) {
+				// Allows fire above 300 rpm
+				override fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
+					val repeatCount = if (balancing.timeBetweenShots >= 4) 1 else (4.0 / balancing.timeBetweenShots).roundToInt()
+					val division = 4.0 / balancing.timeBetweenShots
 
-				for (count in 0 until repeatCount) {
-					val delay = (count * division).toLong()
-					if (delay > 0) Tasks.syncDelay(delay) { super.fire(shooter, blasterItem) } else super.fire(shooter, blasterItem)
+					for (count in 0 until repeatCount) {
+						val delay = (count * division).toLong()
+						if (delay > 0) Tasks.syncDelay(delay) { super.fire(shooter, blasterItem) } else super.fire(shooter, blasterItem)
+					}
 				}
-			}
-		})
+			})
 
 		register(CustomItemKeys.BLASTER_SHOTGUN, object : Blaster<PVPBalancingConfiguration.EnergyWeapons.Multishot>(
 			key = CustomItemKeys.BLASTER_SHOTGUN,
@@ -210,22 +211,22 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		})
 
 		register(
-            CustomItemKeys.BLASTER_SNIPER, Blaster(
-                key = CustomItemKeys.BLASTER_SNIPER,
-                displayName = Component.text("Blaster Sniper", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
-                itemFactory = ItemFactory.Preset.builder().setMaterial(Material.GOLDEN_HOE).setCustomModel("weapon/blaster/sniper").build(),
-                balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
-            )
-        )
+			CustomItemKeys.BLASTER_SNIPER, Blaster(
+				key = CustomItemKeys.BLASTER_SNIPER,
+				displayName = Component.text("Blaster Sniper", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.GOLDEN_HOE).setCustomModel("weapon/blaster/sniper").build(),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
+			)
+		)
 
 		register(
-            CustomItemKeys.BLASTER_CANNON, Blaster(
-                key = CustomItemKeys.BLASTER_CANNON,
-                displayName = Component.text("Blaster Cannon", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
-                itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/cannon").build(),
-                balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
-            )
-        )
+			CustomItemKeys.BLASTER_CANNON, Blaster(
+				key = CustomItemKeys.BLASTER_CANNON,
+				displayName = Component.text("Blaster Cannon", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false),
+				itemFactory = ItemFactory.Preset.builder().setMaterial(Material.IRON_HOE).setCustomModel("weapon/blaster/cannon").build(),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
+			)
+		)
 	}
 
 	private fun registerGunParts() {
@@ -243,9 +244,9 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 	// Minerals start
 	private fun registerMinerals() {
 		fun registerRawOre(key: IonRegistryKey<CustomItem, out CustomItem>, name: String) = simple(key,
-            Component.text("Raw ${name.replaceFirstChar { it.uppercase() }}"),
-            ItemFactory.Preset.stackableCustomItem(model = "mineral/raw_$name")
-        )
+			Component.text("Raw ${name.replaceFirstChar { it.uppercase() }}"),
+			ItemFactory.Preset.stackableCustomItem(model = "mineral/raw_$name")
+		)
 		fun registerOreIngot(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, useSuffix: Boolean) =
 			simple(key, Component.text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), ItemFactory.Preset.stackableCustomItem(model = "mineral/$name"))
 
@@ -342,6 +343,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		stackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = Component.text("Steel Module"))
 		stackable(key = CustomItemKeys.STEEL_ASSEMBLY, model = "industry/steel_assembly", displayName = Component.text("Steel Assembly"))
 		stackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
+		stackable(key = CustomItemKeys.EMPTY_STIM, model = "consumable/empty_stim", displayName = Component.text("Empty Stim", NamedTextColor.GRAY))
 		stackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
 
 		stackable(key = CustomItemKeys.UNLOADED_SHELL, model = "industry/unloaded_shell", displayName = Component.text("Unloaded Shell"))
@@ -381,16 +383,16 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 	private fun registerShipCores() {
 		customBlockItem(key = CustomItemKeys.BATTLECRUISER_REACTOR_CORE, model = "starship/battlecruiser_reactor_core", displayName = Component.text(
-            "Battlecruiser Reactor Core",
-            NamedTextColor.WHITE,
-            TextDecoration.BOLD
-        ), customBlock = CustomBlockKeys.BATTLECRUISER_REACTOR_CORE)
+			"Battlecruiser Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.BATTLECRUISER_REACTOR_CORE)
 		customBlockItem(key = CustomItemKeys.BARGE_REACTOR_CORE, model = "starship/barge_reactor_core", displayName = Component.text("Barge Reactor Core", NamedTextColor.WHITE, TextDecoration.BOLD), customBlock = CustomBlockKeys.BARGE_REACTOR_CORE)
 		customBlockItem(key = CustomItemKeys.CRUISER_REACTOR_CORE, model = "starship/cruiser_reactor_core", displayName = Component.text(
-            "Cruiser Reactor Core",
-            NamedTextColor.WHITE,
-            TextDecoration.BOLD
-        ), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
+			"Cruiser Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
 		customBlockItem(key = CustomItemKeys.MINI_REACTOR_CORE, model = "starship/mini_reactor_core", displayName = Component.text(
 			"Mini Reactor Core",
 			NamedTextColor.WHITE,
@@ -432,46 +434,46 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 		unStackable(CustomItemKeys.GAS_CANISTER_EMPTY, model = "gas/gas_canister_empty", displayName = Component.text("Empty Gas Canister"))
 		register(
-            CustomItemKeys.GAS_CANISTER_HYDROGEN,
-            GasCanister(CustomItemKeys.GAS_CANISTER_HYDROGEN, "gas/gas_canister_hydrogen", canisterName(Component.text("Hydrogen", NamedTextColor.RED)), AtmosphericGasKeys.HYDROGEN)
-        )
-		register(
-		CustomItemKeys.GAS_CANISTER_XENON,
-		GasCanister(CustomItemKeys.GAS_CANISTER_XENON, "gas/gas_canister_xenon", canisterName(Component.text("Xenon", NamedTextColor.GOLD)), AtmosphericGasKeys.XENON)
+			CustomItemKeys.GAS_CANISTER_HYDROGEN,
+			GasCanister(CustomItemKeys.GAS_CANISTER_HYDROGEN, "gas/gas_canister_hydrogen", canisterName(Component.text("Hydrogen", NamedTextColor.RED)), AtmosphericGasKeys.HYDROGEN)
 		)
 		register(
-            CustomItemKeys.GAS_CANISTER_NITROGEN,
-            GasCanister(CustomItemKeys.GAS_CANISTER_NITROGEN, "gas/gas_canister_nitrogen", canisterName(Component.text("Nitrogen", NamedTextColor.RED)), AtmosphericGasKeys.NITROGEN)
-        )
+			CustomItemKeys.GAS_CANISTER_XENON,
+			GasCanister(CustomItemKeys.GAS_CANISTER_XENON, "gas/gas_canister_xenon", canisterName(Component.text("Xenon", NamedTextColor.GOLD)), AtmosphericGasKeys.XENON)
+		)
 		register(
-            CustomItemKeys.GAS_CANISTER_METHANE,
-            GasCanister(CustomItemKeys.GAS_CANISTER_METHANE, "gas/gas_canister_methane", canisterName(Component.text("Methane", NamedTextColor.RED)), AtmosphericGasKeys.METHANE)
-        )
+			CustomItemKeys.GAS_CANISTER_NITROGEN,
+			GasCanister(CustomItemKeys.GAS_CANISTER_NITROGEN, "gas/gas_canister_nitrogen", canisterName(Component.text("Nitrogen", NamedTextColor.RED)), AtmosphericGasKeys.NITROGEN)
+		)
 		register(
-            CustomItemKeys.GAS_CANISTER_OXYGEN,
-            GasCanister(CustomItemKeys.GAS_CANISTER_OXYGEN, "gas/gas_canister_oxygen", canisterName(Component.text("Oxygen", NamedTextColor.YELLOW)), AtmosphericGasKeys.OXYGEN)
-        )
+			CustomItemKeys.GAS_CANISTER_METHANE,
+			GasCanister(CustomItemKeys.GAS_CANISTER_METHANE, "gas/gas_canister_methane", canisterName(Component.text("Methane", NamedTextColor.RED)), AtmosphericGasKeys.METHANE)
+		)
 		register(
-            CustomItemKeys.GAS_CANISTER_CHLORINE,
-            GasCanister(CustomItemKeys.GAS_CANISTER_CHLORINE, "gas/gas_canister_chlorine", canisterName(Component.text("Chlorine", NamedTextColor.YELLOW)), AtmosphericGasKeys.CHLORINE)
-        )
+			CustomItemKeys.GAS_CANISTER_OXYGEN,
+			GasCanister(CustomItemKeys.GAS_CANISTER_OXYGEN, "gas/gas_canister_oxygen", canisterName(Component.text("Oxygen", NamedTextColor.YELLOW)), AtmosphericGasKeys.OXYGEN)
+		)
 		register(
-            CustomItemKeys.GAS_CANISTER_FLUORINE,
-            GasCanister(CustomItemKeys.GAS_CANISTER_FLUORINE, "gas/gas_canister_fluorine", canisterName(Component.text("Fluorine", NamedTextColor.YELLOW)), AtmosphericGasKeys.FLUORINE)
-        )
+			CustomItemKeys.GAS_CANISTER_CHLORINE,
+			GasCanister(CustomItemKeys.GAS_CANISTER_CHLORINE, "gas/gas_canister_chlorine", canisterName(Component.text("Chlorine", NamedTextColor.YELLOW)), AtmosphericGasKeys.CHLORINE)
+		)
 		register(
-            CustomItemKeys.GAS_CANISTER_HELIUM,
-            GasCanister(CustomItemKeys.GAS_CANISTER_HELIUM, "gas/gas_canister_helium", canisterName(Component.text("Helium", NamedTextColor.BLUE)), AtmosphericGasKeys.HELIUM)
-        )
+			CustomItemKeys.GAS_CANISTER_FLUORINE,
+			GasCanister(CustomItemKeys.GAS_CANISTER_FLUORINE, "gas/gas_canister_fluorine", canisterName(Component.text("Fluorine", NamedTextColor.YELLOW)), AtmosphericGasKeys.FLUORINE)
+		)
 		register(
-            CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE,
-            GasCanister(
-                CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE,
-                "gas/gas_canister_carbon_dioxide",
-                canisterName(Component.text("Carbon Dioxide", NamedTextColor.BLUE)),
-                AtmosphericGasKeys.CARBON_DIOXIDE
-            )
-        )
+			CustomItemKeys.GAS_CANISTER_HELIUM,
+			GasCanister(CustomItemKeys.GAS_CANISTER_HELIUM, "gas/gas_canister_helium", canisterName(Component.text("Helium", NamedTextColor.BLUE)), AtmosphericGasKeys.HELIUM)
+		)
+		register(
+			CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE,
+			GasCanister(
+				CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE,
+				"gas/gas_canister_carbon_dioxide",
+				canisterName(Component.text("Carbon Dioxide", NamedTextColor.BLUE)),
+				AtmosphericGasKeys.CARBON_DIOXIDE
+			)
+		)
 	}
 
 	private fun registerTools() {
@@ -487,7 +489,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 		register(
 			CustomItemKeys.MULTIBLOCK_WORKBENCH,
-            CustomBlockItem(CustomItemKeys.MULTIBLOCK_WORKBENCH, "misc/multiblock_workbench", Component.text("Multiblock Workbench"), CustomBlockKeys.MULTIBLOCK_WORKBENCH)
+			CustomBlockItem(CustomItemKeys.MULTIBLOCK_WORKBENCH, "misc/multiblock_workbench", Component.text("Multiblock Workbench"), CustomBlockKeys.MULTIBLOCK_WORKBENCH)
 		)
 		register(CustomItemKeys.WRENCH, Wrench)
 
@@ -495,134 +497,138 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.ITEM_FILTER, "misc/item_filter", Component.text("Item Filter"), CustomBlockKeys.ITEM_FILTER)
 
 		fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
-            Component.text("$tierName ", tierColor),
-            Component.text("Power ", NamedTextColor.GOLD),
-            Component.text(toolName, NamedTextColor.GRAY)
-        )
+			Component.text("$tierName ", tierColor),
+			Component.text("Power ", NamedTextColor.GOLD),
+			Component.text(toolName, NamedTextColor.GRAY)
+		)
 
 		register(
-            CustomItemKeys.POWER_DRILL_BASIC, PowerDrill(
-                key = CustomItemKeys.POWER_DRILL_BASIC,
-                displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Drill"),
-                modLimit = 2,
-                basePowerCapacity = 50_000,
-                model = "tool/power_drill_basic"
-            )
-        )
+			CustomItemKeys.POWER_DRILL_BASIC, PowerDrill(
+				key = CustomItemKeys.POWER_DRILL_BASIC,
+				displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Drill"),
+				modLimit = 2,
+				basePowerCapacity = 50_000,
+				model = "tool/power_drill_basic"
+			)
+		)
 
 		register(
-            CustomItemKeys.POWER_DRILL_ENHANCED, PowerDrill(
-                key = CustomItemKeys.POWER_DRILL_ENHANCED,
-                displayName = formatToolName("Enhanced", TextColor.fromHexString("#00FFA1")!!, "Drill"),
-                modLimit = 4,
-                basePowerCapacity = 75_000,
-                model = "tool/power_drill_enhanced"
-            )
-        )
+			CustomItemKeys.POWER_DRILL_ENHANCED, PowerDrill(
+				key = CustomItemKeys.POWER_DRILL_ENHANCED,
+				displayName = formatToolName("Enhanced", TextColor.fromHexString("#00FFA1")!!, "Drill"),
+				modLimit = 4,
+				basePowerCapacity = 75_000,
+				model = "tool/power_drill_enhanced"
+			)
+		)
 
 		register(
-            CustomItemKeys.POWER_DRILL_ADVANCED, PowerDrill(
-                key = CustomItemKeys.POWER_DRILL_ADVANCED,
-                displayName = formatToolName("Advanced", TextColor.fromHexString("#B12BC9")!!, "Drill"),
-                modLimit = 6,
-                basePowerCapacity = 100_000,
-                model = "tool/power_drill_advanced"
-            )
-        )
+			CustomItemKeys.POWER_DRILL_ADVANCED, PowerDrill(
+				key = CustomItemKeys.POWER_DRILL_ADVANCED,
+				displayName = formatToolName("Advanced", TextColor.fromHexString("#B12BC9")!!, "Drill"),
+				modLimit = 6,
+				basePowerCapacity = 100_000,
+				model = "tool/power_drill_advanced"
+			)
+		)
 
 		register(
-            CustomItemKeys.POWER_CHAINSAW_BASIC, PowerChainsaw(
-                key = CustomItemKeys.POWER_CHAINSAW_BASIC,
-                displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Chainsaw"),
-                modLimit = 2,
-                basePowerCapacity = 50_000,
-                model = "tool/power_chainsaw_basic",
-                initialBlocksBroken = 50
-            )
-        )
+			CustomItemKeys.POWER_CHAINSAW_BASIC, PowerChainsaw(
+				key = CustomItemKeys.POWER_CHAINSAW_BASIC,
+				displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Chainsaw"),
+				modLimit = 2,
+				basePowerCapacity = 50_000,
+				model = "tool/power_chainsaw_basic",
+				initialBlocksBroken = 50
+			)
+		)
 		register(
-            CustomItemKeys.POWER_CHAINSAW_ENHANCED, PowerChainsaw(
-                key = CustomItemKeys.POWER_CHAINSAW_ENHANCED,
-                displayName = formatToolName("Enhanced", TextColor.fromHexString("#00FFA1")!!, "Chainsaw"),
-                modLimit = 4,
-                basePowerCapacity = 75_000,
-                model = "tool/power_chainsaw_enhanced",
-                initialBlocksBroken = 100
-            )
-        )
+			CustomItemKeys.POWER_CHAINSAW_ENHANCED, PowerChainsaw(
+				key = CustomItemKeys.POWER_CHAINSAW_ENHANCED,
+				displayName = formatToolName("Enhanced", TextColor.fromHexString("#00FFA1")!!, "Chainsaw"),
+				modLimit = 4,
+				basePowerCapacity = 75_000,
+				model = "tool/power_chainsaw_enhanced",
+				initialBlocksBroken = 100
+			)
+		)
 		register(
-            CustomItemKeys.POWER_CHAINSAW_ADVANCED, PowerChainsaw(
-                key = CustomItemKeys.POWER_CHAINSAW_ADVANCED,
-                displayName = formatToolName("Advanced", TextColor.fromHexString("#B12BC9")!!, "Chainsaw"),
-                modLimit = 6,
-                basePowerCapacity = 100_000,
-                model = "tool/power_chainsaw_advanced",
-                initialBlocksBroken = 150
-            )
-        )
+			CustomItemKeys.POWER_CHAINSAW_ADVANCED, PowerChainsaw(
+				key = CustomItemKeys.POWER_CHAINSAW_ADVANCED,
+				displayName = formatToolName("Advanced", TextColor.fromHexString("#B12BC9")!!, "Chainsaw"),
+				modLimit = 6,
+				basePowerCapacity = 100_000,
+				model = "tool/power_chainsaw_advanced",
+				initialBlocksBroken = 150
+			)
+		)
 
 		register(
-            CustomItemKeys.POWER_HOE_BASIC, PowerHoe(
-                key = CustomItemKeys.POWER_HOE_BASIC,
-                displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Hoe"),
-                modLimit = 2,
-                basePowerCapacity = 50_000,
-                model = "tool/power_hoe_basic"
-            )
-        )
+			CustomItemKeys.POWER_HOE_BASIC, PowerHoe(
+				key = CustomItemKeys.POWER_HOE_BASIC,
+				displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Hoe"),
+				modLimit = 2,
+				basePowerCapacity = 50_000,
+				model = "tool/power_hoe_basic"
+			)
+		)
 		register(
-            CustomItemKeys.POWER_HOE_ENHANCED, PowerHoe(
-                key = CustomItemKeys.POWER_HOE_ENHANCED,
-                displayName = formatToolName("Enhanced", TextColor.fromHexString("#00FFA1")!!, "Hoe"),
-                modLimit = 4,
-                basePowerCapacity = 75_000,
-                model = "tool/power_hoe_enhanced"
-            )
-        )
+			CustomItemKeys.POWER_HOE_ENHANCED, PowerHoe(
+				key = CustomItemKeys.POWER_HOE_ENHANCED,
+				displayName = formatToolName("Enhanced", TextColor.fromHexString("#00FFA1")!!, "Hoe"),
+				modLimit = 4,
+				basePowerCapacity = 75_000,
+				model = "tool/power_hoe_enhanced"
+			)
+		)
 		register(
-            CustomItemKeys.POWER_HOE_ADVANCED, PowerHoe(
-                key = CustomItemKeys.POWER_HOE_ADVANCED,
-                displayName = formatToolName("Advanced", TextColor.fromHexString("#B12BC9")!!, "Hoe"),
-                modLimit = 6,
-                basePowerCapacity = 100_000,
-                model = "tool/power_hoe_advanced"
-            )
-        )
+			CustomItemKeys.POWER_HOE_ADVANCED, PowerHoe(
+				key = CustomItemKeys.POWER_HOE_ADVANCED,
+				displayName = formatToolName("Advanced", TextColor.fromHexString("#B12BC9")!!, "Hoe"),
+				modLimit = 6,
+				basePowerCapacity = 100_000,
+				model = "tool/power_hoe_advanced"
+			)
+		)
 
 		register(CustomItemKeys.PERSONAL_TRANSPORTER, PersonalTransporter)
 
 		register(
-            CustomItemKeys.POWER_ARMOR_HELMET, PowerArmorItem(
-                CustomItemKeys.POWER_ARMOR_HELMET,
-                ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Helmet", NamedTextColor.GRAY)),
-                "power_armor/power_armor_helmet",
-                EquipmentSlot.HEAD
-            )
-        )
+			CustomItemKeys.POWER_ARMOR_HELMET, PowerArmorItem(
+				CustomItemKeys.POWER_ARMOR_HELMET,
+				ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Helmet", NamedTextColor.GRAY)),
+				"power_armor/power_armor_helmet",
+				EquipmentSlot.HEAD,
+				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor
+			)
+		)
 		register(
-            CustomItemKeys.POWER_ARMOR_CHESTPLATE, PowerArmorItem(
-                CustomItemKeys.POWER_ARMOR_CHESTPLATE,
-                ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Chestplate", NamedTextColor.GRAY)),
-                "power_armor/power_armor_chestplate",
-                EquipmentSlot.CHEST
-            )
-        )
+			CustomItemKeys.POWER_ARMOR_CHESTPLATE, PowerArmorItem(
+				CustomItemKeys.POWER_ARMOR_CHESTPLATE,
+				ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Chestplate", NamedTextColor.GRAY)),
+				"power_armor/power_armor_chestplate",
+				EquipmentSlot.CHEST,
+				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor
+			)
+		)
 		register(
-            CustomItemKeys.POWER_ARMOR_LEGGINGS, PowerArmorItem(
-                CustomItemKeys.POWER_ARMOR_LEGGINGS,
-                ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Leggings", NamedTextColor.GRAY)),
-                "power_armor/power_armor_leggings",
-                EquipmentSlot.LEGS
-            )
-        )
+			CustomItemKeys.POWER_ARMOR_LEGGINGS, PowerArmorItem(
+				CustomItemKeys.POWER_ARMOR_LEGGINGS,
+				ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Leggings", NamedTextColor.GRAY)),
+				"power_armor/power_armor_leggings",
+				EquipmentSlot.LEGS,
+				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor
+			)
+		)
 		register(
-            CustomItemKeys.POWER_ARMOR_BOOTS, PowerArmorItem(
-                CustomItemKeys.POWER_ARMOR_BOOTS,
-                ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Boots", NamedTextColor.GRAY)),
-                "power_armor/power_armor_boots",
-                EquipmentSlot.FEET
-            )
-        )
+			CustomItemKeys.POWER_ARMOR_BOOTS, PowerArmorItem(
+				CustomItemKeys.POWER_ARMOR_BOOTS,
+				ofChildren(Component.text("Power ", NamedTextColor.GOLD), Component.text("Boots", NamedTextColor.GRAY)),
+				"power_armor/power_armor_boots",
+				EquipmentSlot.FEET,
+				ConfigurationFiles.pvpBalancing().armour::mediumPowerArmor
+			)
+		)
 	}
 
 	private fun registerEnergySwords() {
@@ -639,217 +645,216 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 	private fun registerModificationItems() {
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT, ModificationItem(
-                CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT,
-                ItemModKeys.ENVIRONMENT,
-                "power_armor/module/environment",
-                ofChildren(Component.text("Enviornment", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Allows the user to survive inhospitable planetary enviornments.")
-            )
+				CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT,
+				ItemModKeys.ENVIRONMENT,
+				"power_armor/module/environment",
+				ofChildren(Component.text("Enviornment", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Allows the user to survive inhospitable planetary enviornments.")
+			)
 		)
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_NIGHT_VISION, ModificationItem(
-                CustomItemKeys.ARMOR_MODIFICATION_NIGHT_VISION,
-                ItemModKeys.NIGHT_VISION,
-                "power_armor/module/night_vision",
-                ofChildren(Component.text("Night Vision", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Allows the user to see in dark enviornments. ")
-            )
+				CustomItemKeys.ARMOR_MODIFICATION_NIGHT_VISION,
+				ItemModKeys.NIGHT_VISION,
+				"power_armor/module/night_vision",
+				ofChildren(Component.text("Night Vision", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Allows the user to see in dark enviornments. ")
+			)
 		)
 		register(
-            CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD,
-            ModificationItem(
-                CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD,
-                ItemModKeys.PRESSURE_FIELD,
-                "power_armor/module/pressure_field",
-                ofChildren(Component.text("Pressure Field", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Allows the user to breathe in space.")
-            )
+			CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD,
+			ModificationItem(
+				CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD,
+				ItemModKeys.PRESSURE_FIELD,
+				"power_armor/module/pressure_field",
+				ofChildren(Component.text("Pressure Field", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Allows the user to breathe in space.")
+			)
 		)
 		register(
-            CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING,
-            ModificationItem(
-                CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING,
-                ItemModKeys.ROCKET_BOOSTING,
-                "power_armor/module/rocket_boosting",
-                ofChildren(Component.text("Rocket Boosting", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Allows propelled flight.")
-            )
+			CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING,
+			ModificationItem(
+				CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING,
+				ItemModKeys.ROCKET_BOOSTING,
+				"power_armor/module/rocket_boosting",
+				ofChildren(Component.text("Rocket Boosting", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Allows propelled flight.")
+			)
 		)
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING, ModificationItem(
-                CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING,
-                ItemModKeys.SHOCK_ABSORBING,
-                "power_armor/module/shock_absorbing",
-                ofChildren(Component.text("Shock Absorbing", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Reduces knockback.")
-            )
+				CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING,
+				ItemModKeys.SHOCK_ABSORBING,
+				"power_armor/module/shock_absorbing",
+				ofChildren(Component.text("Shock Absorbing", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Reduces knockback.")
+			)
 		)
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING, ModificationItem(
-                CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING,
-                ItemModKeys.SPEED_BOOSTING,
-                "power_armor/module/speed_boosting",
-                ofChildren(Component.text("Speed Boosting", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
-                Component.text("Boosts the user's running speed.")
-            )
+				CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING,
+				ItemModKeys.SPEED_BOOSTING,
+				"power_armor/module/speed_boosting",
+				ofChildren(Component.text("Speed Boosting", NamedTextColor.GRAY), Component.text(" Module", NamedTextColor.GOLD)),
+				Component.text("Boosts the user's running speed.")
+			)
 		)
-
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_1, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_RANGE_1,
-                ItemModKeys.AOE_1,
-                "tool/modification/drill_aoe_1",
-                Component.text("Range Addon +1"),
-                Component.text("Expands the working area by 1 block", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_RANGE_1,
+				ItemModKeys.AOE_1,
+				"tool/modification/drill_aoe_1",
+				Component.text("Range Addon +1"),
+				Component.text("Expands the working area by 1 block", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_2, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_RANGE_2,
-                ItemModKeys.AOE_2,
-                "tool/modification/drill_aoe_2",
-                Component.text("Range Addon +2"),
-                Component.text("Expands the working area by 2 blocks", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_RANGE_2,
+				ItemModKeys.AOE_2,
+				"tool/modification/drill_aoe_2",
+				Component.text("Range Addon +2"),
+				Component.text("Expands the working area by 2 blocks", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25,
-                ItemModKeys.VEIN_MINER_25,
-                "tool/modification/drill_vein_miner_25",
-                Component.text("Vein Miner"),
-                Component.text("Allows a drill to mine veins of connected blocks, up to 25.", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25,
+				ItemModKeys.VEIN_MINER_25,
+				"tool/modification/drill_vein_miner_25",
+				Component.text("Vein Miner"),
+				Component.text("Allows a drill to mine veins of connected blocks, up to 25.", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD,
-                ItemModKeys.SILK_TOUCH,
-                "tool/modification/silk_touch",
-                Component.text("Silk Touch Modifier"),
-                Component.text("Applies silk touch to drops", NamedTextColor.GRAY),
-                Component.text("Incurs a power usage penalty", NamedTextColor.RED)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD,
+				ItemModKeys.SILK_TOUCH,
+				"tool/modification/silk_touch",
+				Component.text("Silk Touch Modifier"),
+				Component.text("Applies silk touch to drops", NamedTextColor.GRAY),
+				Component.text("Incurs a power usage penalty", NamedTextColor.RED)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT,
-                ItemModKeys.AUTO_SMELT,
-                "tool/modification/auto_smelt",
-                Component.text("Auto Smelt Modifier"),
-                Component.text("Sears the drops before they hit the ground", NamedTextColor.GRAY),
-                Component.text("Incurs a power usage penalty", NamedTextColor.RED)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT,
+				ItemModKeys.AUTO_SMELT,
+				"tool/modification/auto_smelt",
+				Component.text("Auto Smelt Modifier"),
+				Component.text("Sears the drops before they hit the ground", NamedTextColor.GRAY),
+				Component.text("Incurs a power usage penalty", NamedTextColor.RED)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1,
-                ItemModKeys.FORTUNE_1,
-                "tool/modification/fortune_1",
-                Component.text("Fortune 1 Modifier"),
-                Component.text("Applies fortune 1 touch to drops", NamedTextColor.GRAY),
-                Component.text("Incurs a power usage penalty", NamedTextColor.RED)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1,
+				ItemModKeys.FORTUNE_1,
+				"tool/modification/fortune_1",
+				Component.text("Fortune 1 Modifier"),
+				Component.text("Applies fortune 1 touch to drops", NamedTextColor.GRAY),
+				Component.text("Incurs a power usage penalty", NamedTextColor.RED)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2,
-                ItemModKeys.FORTUNE_2,
-                "tool/modification/fortune_2",
-                Component.text("Fortune 2 Modifier"),
-                Component.text("Applies fortune 2 touch to drops", NamedTextColor.GRAY),
-                Component.text("Incurs a power usage penalty", NamedTextColor.RED)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2,
+				ItemModKeys.FORTUNE_2,
+				"tool/modification/fortune_2",
+				Component.text("Fortune 2 Modifier"),
+				Component.text("Applies fortune 2 touch to drops", NamedTextColor.GRAY),
+				Component.text("Incurs a power usage penalty", NamedTextColor.RED)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3,
-                ItemModKeys.FORTUNE_3,
-                "tool/modification/fortune_3",
-                Component.text("Fortune 3 Modifier"),
-                Component.text("Applies fortune 3 touch to drops", NamedTextColor.GRAY),
-                Component.text("Incurs a power usage penalty", NamedTextColor.RED)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3,
+				ItemModKeys.FORTUNE_3,
+				"tool/modification/fortune_3",
+				Component.text("Fortune 3 Modifier"),
+				Component.text("Applies fortune 3 touch to drops", NamedTextColor.GRAY),
+				Component.text("Incurs a power usage penalty", NamedTextColor.RED)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25,
-                ItemModKeys.POWER_CAPACITY_25,
-                "tool/modification/power_capacity_25",
-                Component.text("Small Auxiliary battery"),
-                ofChildren(
-                    Component.text("Increases power storage by ", HEColorScheme.Companion.HE_MEDIUM_GRAY),
-                    PowerEntityDisplayModule.Companion.powerPrefix,
-                    Component.text(25000, NamedTextColor.GREEN)
-                )
-            )
+				CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25,
+				ItemModKeys.POWER_CAPACITY_25,
+				"tool/modification/power_capacity_25",
+				Component.text("Small Auxiliary battery"),
+				ofChildren(
+					Component.text("Increases power storage by ", HEColorScheme.Companion.HE_MEDIUM_GRAY),
+					PowerEntityDisplayModule.Companion.powerPrefix,
+					Component.text(25000, NamedTextColor.GREEN)
+				)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50,
-                ItemModKeys.POWER_CAPACITY_50,
-                "tool/modification/power_capacity_50",
-                Component.text("Medium Auxiliary battery"),
-                ofChildren(
-                    Component.text("Increases power storage by ", HEColorScheme.Companion.HE_MEDIUM_GRAY),
-                    PowerEntityDisplayModule.Companion.powerPrefix,
-                    Component.text(50000, NamedTextColor.GREEN)
-                )
-            )
-        )
+				CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50,
+				ItemModKeys.POWER_CAPACITY_50,
+				"tool/modification/power_capacity_50",
+				Component.text("Medium Auxiliary battery"),
+				ofChildren(
+					Component.text("Increases power storage by ", HEColorScheme.Companion.HE_MEDIUM_GRAY),
+					PowerEntityDisplayModule.Companion.powerPrefix,
+					Component.text(50000, NamedTextColor.GREEN)
+				)
+			)
+		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT,
-                ItemModKeys.AUTO_REPLANT,
-                "tool/modification/auto_replant",
-                Component.text("Auto Replant Modifier"),
-                Component.text("Automatically plants back harvested crops and cut trees", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT,
+				ItemModKeys.AUTO_REPLANT,
+				"tool/modification/auto_replant",
+				Component.text("Auto Replant Modifier"),
+				Component.text("Automatically plants back harvested crops and cut trees", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST,
-                ItemModKeys.AUTO_COMPOST,
-                "tool/modification/auto_compost",
-                Component.text("Auto Compost Modifier"),
-                Component.text("Sends applicable drops through a composter, turning them into bonemeal.", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST,
+				ItemModKeys.AUTO_COMPOST,
+				"tool/modification/auto_compost",
+				Component.text("Auto Compost Modifier"),
+				Component.text("Sends applicable drops through a composter, turning them into bonemeal.", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_3, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_RANGE_3,
-                ItemModKeys.AOE_3,
-                "tool/modification/drill_aoe_3",
-                Component.text("Range Addon +3"),
-                Component.text("Expands the working area by 3 blocks", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_RANGE_3,
+				ItemModKeys.AOE_3,
+				"tool/modification/drill_aoe_3",
+				Component.text("Range Addon +3"),
+				Component.text("Expands the working area by 3 blocks", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR,
-                ItemModKeys.EXTENDED_BAR,
-                "tool/modification/extended_bar",
-                Component.text("Extended Chainsaw Bar"),
-                Component.text("Allows a chainsaw to cut down larger trees", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR,
+				ItemModKeys.EXTENDED_BAR,
+				"tool/modification/extended_bar",
+				Component.text("Extended Chainsaw Bar"),
+				Component.text("Allows a chainsaw to cut down larger trees", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER,
-                ItemModKeys.FERTILIZER_DISPENSER,
-                "tool/modification/fertilizer_dispenser",
-                Component.text("Fertilizer Sprayer"),
-                Component.text("Applies bonemeal to crops in the effected area, if available in the user's inventory", NamedTextColor.GRAY)
-            )
+				CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER,
+				ItemModKeys.FERTILIZER_DISPENSER,
+				"tool/modification/fertilizer_dispenser",
+				Component.text("Fertilizer Sprayer"),
+				Component.text("Applies bonemeal to crops in the effected area, if available in the user's inventory", NamedTextColor.GRAY)
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_COLLECTOR, ModificationItem(
-                CustomItemKeys.TOOL_MODIFICATION_COLLECTOR,
-                ItemModKeys.COLLECTOR,
+				CustomItemKeys.TOOL_MODIFICATION_COLLECTOR,
+				ItemModKeys.COLLECTOR,
 				"tool/modification/collector",
 				Component.text("Collector Modifier"),
 				Component.text("Sends dropped items directly to your inventory if there is room.", NamedTextColor.GRAY)
-            )
+			)
 		)
 	}
 
@@ -882,7 +887,44 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.SIRIUS, displayName = Component.text("Sirius"), model = "planet/sirius")
 		unStackable(key = CustomItemKeys.PLANET_SELECTOR, displayName = Component.text("PLANET_SELECTOR"), model = "planet/planet_selector")
 	}
-
+	private fun registerCombatStims() {
+		register(
+			CustomItemKeys.HEALTH_STIM, ConsumableItem(
+				key = CustomItemKeys.HEALTH_STIM,
+				displayName = ofChildren(Component.text("Health ", NamedTextColor.RED), Component.text("Stim", NamedTextColor.WHITE)),
+				itemModel = "consumable/health_stim",
+				stackSize = 1,
+				consumeSeconds = 0.1F,
+				consumeCooldown = 10,
+				lore = Component.text("A stim created to provide relief to injuries sustained.", NamedTextColor.RED, ITALIC).wrap(200),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::healthStim,
+			)
+		)
+		register(
+			CustomItemKeys.STRENGTH_STIM, ConsumableItem(
+				key = CustomItemKeys.STRENGTH_STIM,
+				displayName = ofChildren(Component.text("Strength ", NamedTextColor.GOLD), Component.text("Stim", NamedTextColor.WHITE)),
+				itemModel = "consumable/strength_stim",
+				stackSize = 1,
+				consumeSeconds = 0.1F,
+				consumeCooldown = 10,
+				lore = Component.text("A stim created to provide a attack buff.", NamedTextColor.RED, ITALIC).wrap(200),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::strengthStim,
+			)
+		)
+		register(
+			CustomItemKeys.RESISTANCE_STIM, ConsumableItem(
+				key = CustomItemKeys.RESISTANCE_STIM,
+				displayName = ofChildren(Component.text("Resistance ", NamedTextColor.AQUA), Component.text("Stim", NamedTextColor.WHITE)),
+				itemModel = "consumable/resistance_stim",
+				stackSize = 1,
+				consumeSeconds = 0.1F,
+				consumeCooldown = 10,
+				lore = Component.text("A stim created to provide a resistance buff.", NamedTextColor.DARK_AQUA, ITALIC).wrap(200),
+				balancingSupplier = ConfigurationFiles.pvpBalancing().consumables::resistanceStim,
+			)
+		)
+	}
 	private fun registerFood() {
 		register(
 			CustomItemKeys.HORIZON_FRIED_EGG, FoodItem(
@@ -964,8 +1006,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 15,
 				saturation = 14.4f,
 				lore = Component.text("A sandwich-class food item composed of stacks of meat patties, lettuce, tomatoes, " +
-							"and cheese, with sliced bread completing the outer layers. The juicy beef patty is complemented " +
-							"by the crunch of the vegetables. And thanks to the bun, your fingers remain clean!", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"and cheese, with sliced bread completing the outer layers. The juicy beef patty is complemented " +
+					"by the crunch of the vegetables. And thanks to the bun, your fingers remain clean!", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -977,7 +1019,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 1.8f,
 				lore = Component.text("Pork sausage, cured via fermentation. The first person to make salami must have been " +
-							"extremely desperate if they were willing to eat spoiled meat.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"extremely desperate if they were willing to eat spoiled meat.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -989,7 +1031,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 4,
 				saturation = 2.8f,
 				lore = Component.text("A flavored flatbread covered with cheese, tomato paste and meat. This one needs to be " +
-							"cooked before becoming palatable.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"cooked before becoming palatable.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1001,8 +1043,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 12,
 				saturation = 12f,
 				lore = Component.text("A flavored flatbread covered with cheese, tomato paste and meat. Stringy, gooey cheese mingles " +
-							"with flavorful pepperoni sausage to create a flavorful concoction, and the crust offers " +
-							"the perfect balance between fluffiness and crunch.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"with flavorful pepperoni sausage to create a flavorful concoction, and the crust offers " +
+					"the perfect balance between fluffiness and crunch.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		unStackable(key = CustomItemKeys.ICE_CREAM_MIXTURE, model = "food/ice_cream_mixture", displayName = Component.text("Ice Cream Mixture"))
@@ -1015,8 +1057,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 6,
 				saturation = 6f,
 				lore = Component.text("A frozen dessert made from a mixture of milk, sugar, and other flavors. Eating such a " +
-							"sweet treat on Isik would probably improve the overall experience of visiting such a hellish planet, " +
-							"if you could even keep it frozen for long enough.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"sweet treat on Isik would probably improve the overall experience of visiting such a hellish planet, " +
+					"if you could even keep it frozen for long enough.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1028,8 +1070,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 3f,
 				lore = Component.text("A frozen dessert that was compressed and dried. The dried chunks expand and release " +
-							"the familiar, sweet flavor of its hydrated cousin upon consumption. The lack of water in its " +
-							"composition makes this a convenient treat to pack.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"the familiar, sweet flavor of its hydrated cousin upon consumption. The lack of water in its " +
+					"composition makes this a convenient treat to pack.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1041,8 +1083,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 4,
 				saturation = 4.8f,
 				lore = Component.text("A compressed mixture of starch fibers and flesh. Stale yet somewhat pungent, but " +
-							"you won't be complaining about its flavor when this is the only consumable available on a " +
-							"months-long starship voyage.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"you won't be complaining about its flavor when this is the only consumable available on a " +
+					"months-long starship voyage.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1054,7 +1096,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 3.6f,
 				lore = Component.text("A compressed mixture of starch fibers and plant material. It goes down rough from " +
-							"all the leaves scratching your esophagus.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"all the leaves scratching your esophagus.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			)
 		)
 		register(
@@ -1079,7 +1121,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 3,
 				saturation = 2.4f,
 				lore = Component.text("A skewer of chopped mushroom and other fungi. An earthy, chewy texture accompanies every " +
-							"piece yanked off of the stick.", NamedTextColor.GRAY, ITALIC).wrap(200),
+					"piece yanked off of the stick.", NamedTextColor.GRAY, ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.STICK)
 			}
@@ -1093,10 +1135,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 				hunger = 4,
 				saturation = 6.4f,
 				lore = Component.text("A liquid dish formed primarily from pureed tomato. Warm, creamy and savory, this " +
-							"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
+					"soup will warm even the coldest of pilots on Krio.", NamedTextColor.GRAY, TextDecoration.ITALIC).wrap(200),
 			) { event, _, _ ->
 				event.replacement = ItemStack(Material.BOWL)
-            }
+			}
 		)
 	}
 
