@@ -1180,7 +1180,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 0.65,
 			shieldRegenMultiplier = 0.85,
-			cruiseSpeedMultiplier = 1.305,
+			cruiseSpeedMultiplier = 1.25,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
