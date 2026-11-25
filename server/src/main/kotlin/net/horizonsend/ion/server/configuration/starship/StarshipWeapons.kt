@@ -912,8 +912,8 @@ data class AssaultTurretBalancing(
 	@Serializable
 	data class AssaultTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 117.5,
-		override var explosionPower: Float = 4.5f,
+		override var speed: Double = 107.5,
+		override var explosionPower: Float = 5.0f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
