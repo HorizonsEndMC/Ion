@@ -1195,7 +1195,11 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 3000),
-				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
+				PhaserBalancing(
+					fireRestrictions = FireRestrictions(canFire = true),
+					maxPerShot = 2,
+					firePowerConsumption = 12500,
+					projectile = PhaserBalancing.PhaserProjectileBalancing(starshipShieldDamageMultiplier = 50.0)),
 				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 2500),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),

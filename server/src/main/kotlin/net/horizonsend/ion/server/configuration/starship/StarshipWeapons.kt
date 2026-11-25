@@ -438,7 +438,7 @@ data class PhaserBalancing(
 		override var range: Double = 140.0,
 		override var speed: Double = 1000.0,
 		override var explosionPower: Float = 2f,
-		override var starshipShieldDamageMultiplier: Double = 52.5,
+		override var starshipShieldDamageMultiplier: Double = 55.0,
 		override var areaShieldDamageMultiplier: Double = 5.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
