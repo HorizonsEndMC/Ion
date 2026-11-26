@@ -7,7 +7,7 @@ plugins {
 	kotlin("plugin.serialization")
 
 	id("com.gradleup.shadow")
-	id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+	id("io.papermc.paperweight.userdev") version "2.0.0-beta.24"
 }
 
 repositories {
@@ -52,22 +52,22 @@ dependencies {
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.11.6")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("fr.skytasul:guardianbeam:2.4.6")
+	implementation("fr.skytasul:guardianbeam:2.4.8")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 
-	val scoreboardLibraryVersion = "2.7.0"
+	val scoreboardLibraryVersion = "2.8.3"
 	implementation("net.megavex:scoreboard-library-extra-kotlin:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 
-    implementation("org.jgrapht:jgrapht-core:1.5.2")
+    implementation("org.jgrapht:jgrapht-core:1.5.3")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.5.0")
 
 	implementation(platform("com.intellectualsites.bom:bom-newest:1.52"))
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.15.0")
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.15.0") { isTransitive = false }
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.16.3") { isTransitive = false }
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
