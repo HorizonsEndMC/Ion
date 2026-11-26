@@ -199,7 +199,7 @@ object BazaarGUIs {
 				if (item == null) return@mapNotNull null
 				ItemReference(player.inventory as CraftInventory, index)
 			} },
-			fulfillmentFunction = { fulfillmentAmount -> Bazaars.fulfillOrder(player, player.inventory, orderId, fulfillmentAmount) }
+			fulfillmentFunction = { fulfillmentAmount, consumed -> Bazaars.fulfillOrder(player, player.inventory, orderId, fulfillmentAmount, consumed) }
 		).openGui(previous)
 	}
 
@@ -223,7 +223,7 @@ object BazaarGUIs {
 				viewer = player,
 				item = orderId,
 				availableItemProvider = { references },
-				fulfillmentFunction = { limit -> Bazaars.bulkFulfillOrder(player, orderId, references, limit) }
+				fulfillmentFunction = { limit, consumed -> Bazaars.bulkFulfillOrder(player, orderId, references, limit, consumed) }
 			).openGui(previous)
 		}
 	}

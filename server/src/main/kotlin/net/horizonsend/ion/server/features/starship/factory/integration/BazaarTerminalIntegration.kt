@@ -16,8 +16,10 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.factory.BazaarReference
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component
@@ -35,6 +37,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.`in`
 import org.litote.kmongo.nin
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -98,78 +101,99 @@ class BazaarTerminalIntegration(
 		transaction = mutableMapOf()
 	}
 
-	override fun commitTransaction(task: ShipFactoryPrintTask): List<BlockKey> {
-		val transaction = this.transaction ?: return listOf()
-		if (transaction.isEmpty()) return listOf()
+	override fun commitTransaction(task: ShipFactoryPrintTask): CompletableFuture<List<BlockKey>> {
+		val transaction = this.transaction ?: return CompletableFuture.completedFuture(listOf())
+		if (transaction.isEmpty()) return CompletableFuture.completedFuture(listOf())
 
 		val failures = mutableListOf<BlockKey>()
+		var sequence = CompletableFuture.completedFuture(Unit)
 
 		for ((referenceId, amountMap) in transaction) {
 			val printPrice = amountMap.keys.sumOf { ShipFactoryMaterialCosts.getPrice(task.blockMap[it]!!) }
 			val count = amountMap.values.sum()
+			val blockKeys = amountMap.keys.toList()
 
-			kotlin.runCatching {
-				val document = BazaarItem.findById(referenceId) ?: return@runCatching null
-				val remote = !Regions.get<RegionTerritory>(document.cityTerritory).contains(task.entity.location)
-
-				val purchaseFutureResult = Bazaars.tryBuyFromSellOrder(task.player, document, count, remote) { itemStack, amount, cost, priceMult ->
-					{
-						task.consumedCredits += cost
-						bazaarConsumedCredits += cost
-
-						val maxStackSize = itemStack.maxStackSize
-						val fullStacks = amount / maxStackSize
-						val remainder = amount % maxStackSize
-
-						val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
-
-						var fullMessage = template(
-							text("Bought $quantityMessage ({2}) of {3} for {4}", GREEN),
-							fullStacks,
-							remainder,
-							amount,
-							itemStack.displayNameComponent,
-							cost.toCreditComponent(),
-						)
-
-						if (priceMult > 1) {
-							val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
-							fullMessage = ofChildren(fullMessage, space(), priceMultiplicationMessage)
+			sequence = sequence.thenCompose {
+				val purchaseComplete = CompletableFuture<Unit>()
+				Tasks.async {
+					try {
+						val document = BazaarItem.findById(referenceId)
+						if (document == null) {
+							failures.addAll(blockKeys)
+							purchaseComplete.complete(Unit)
+							return@async
 						}
 
-						// Once it is sucessful, count it as consumed credits.
-						task.consumedCredits += printPrice
+						Tasks.sync {
+							try {
+								val remote = !Regions.get<RegionTerritory>(document.cityTerritory).contains(task.entity.location)
+								val purchase = Bazaars.tryBuyFromSellOrder(task.player, document, count, remote) { itemStack, amount, cost, priceMult ->
+									{
+										val maxStackSize = itemStack.maxStackSize
+										val fullStacks = amount / maxStackSize
+										val remainder = amount % maxStackSize
 
-						bazaarPurchaseMessages.add(fullMessage)
-						InputResult.InputSuccess
+										val quantityMessage = if (maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
+
+										var fullMessage = template(
+											text("Bought $quantityMessage ({2}) of {3} for {4}", GREEN),
+											fullStacks,
+											remainder,
+											amount,
+											itemStack.displayNameComponent,
+											cost.toCreditComponent(),
+										)
+
+										if (priceMult > 1) {
+											val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
+											fullMessage = ofChildren(fullMessage, space(), priceMultiplicationMessage)
+										}
+
+										task.consumedCredits += cost
+										bazaarConsumedCredits += cost
+										task.consumedCredits += printPrice
+										bazaarPurchaseMessages.add(fullMessage)
+										InputResult.InputSuccess
+									}
+								}
+
+								purchase.withResult { result ->
+									try {
+										if (!result.isSuccess()) {
+											val reason = result.getReason() ?: return@withResult
+											failures.addAll(blockKeys)
+											val reference = getBazaarReference(referenceId)
+											bazaarPurchaseMessages.add(
+												ofChildren(
+													template(text("Could not buy {0} of {1}: ", RED), count, reference.string),
+													reason.join(separator = space())
+												)
+											)
+										}
+									} catch (exception: Throwable) {
+										IonServer.slF4JLogger.error("Failed to process Bazaar purchase result for ship factory", exception)
+										failures.addAll(blockKeys)
+									} finally {
+										purchaseComplete.complete(Unit)
+									}
+								}
+							} catch (exception: Throwable) {
+								IonServer.slF4JLogger.error("Failed to start Bazaar purchase for ship factory", exception)
+								failures.addAll(blockKeys)
+								purchaseComplete.complete(Unit)
+							}
+						}
+					} catch (exception: Throwable) {
+						IonServer.slF4JLogger.error("Failed to load Bazaar listing $referenceId for ship factory", exception)
+						failures.addAll(blockKeys)
+						purchaseComplete.complete(Unit)
 					}
-				}.get()
-
-				purchaseFutureResult.withResult { result ->
-					if (result.isSuccess()) return@withResult // Condition already handled
-
-					val reason = result.getReason() ?: return@withResult
-
-					failures.addAll(amountMap.keys)
-
-					val reference = getBazaarReference(referenceId)
-
-					bazaarPurchaseMessages.add(
-						ofChildren(
-							template(
-								text("Could not buy {0} of {1}: ", RED),
-								count,
-								reference.string,
-							), reason.join(separator = space())
-						)
-					)
 				}
-			}.onFailure {
-				it.printStackTrace()
+				purchaseComplete
 			}
 		}
 
-		return failures
+		return sequence.thenApply { failures.toList() }
 	}
 
 
