@@ -50,7 +50,7 @@ dependencies {
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.11.6")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.12.2")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("fr.skytasul:guardianbeam:2.4.8")
 	implementation("club.minnced:discord-webhooks:0.8.4")
@@ -59,14 +59,14 @@ dependencies {
 	implementation("net.megavex:scoreboard-library-extra-kotlin:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
-	implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
+	//implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 
     implementation("org.jgrapht:jgrapht-core:1.5.3")
-	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
+	implementation("dev.vankka:mcdiscordreserializer:4.4.0")
 	implementation("org.apache.commons:commons-collections4:4.5.0")
 
-	implementation(platform("com.intellectualsites.bom:bom-newest:1.52"))
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.15.0")
+	implementation(platform("com.intellectualsites.bom:bom-newest:1.56"))
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.16.3")
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.16.3") { isTransitive = false }
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")

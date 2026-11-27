@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.gui
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
@@ -23,7 +24,8 @@ fun Player.manageRolesGUI(commandName: String, roleItems: List<GuiItem>) {
 
 	// top bar buttons
 	gui.addPane(
-		staticPane(0, 0, 9, 1)
+		Slot.fromXY(0, 0),
+		staticPane(9, 1)
 			.withItem(
 				guiButton(Material.WRITABLE_BOOK) {
 					createRoleMenu(commandName)
@@ -39,7 +41,7 @@ fun Player.manageRolesGUI(commandName: String, roleItems: List<GuiItem>) {
 	)
 
 	// list
-	gui.addPane(outlinePane(0, 1, 9, 3).withItems(roleItems))
+	gui.addPane(Slot.fromXY(0, 1), outlinePane(9, 3).withItems(roleItems))
 
 	gui.show(this)
 }
@@ -89,7 +91,8 @@ fun editRoleGUI(
 	val gui = ChestGui(1, "Edit Role $roleColor$roleName")
 
 	gui.addPane(
-		outlinePane(0, 0, 8, 1).apply
+		Slot.fromXY(0, 0),
+		outlinePane(8, 1).apply
 		{
 			addItem(backButton("$commandName manage"))
 
@@ -146,7 +149,8 @@ fun editRoleGUI(
 
 	// Delete Button, separate pane to be on the right
 	gui.addPane(
-		staticPane(8, 0, 1, 1).withItem(
+		Slot.fromXY(8,0),
+		staticPane(1, 1).withItem(
 			guiButton(Material.BUCKET) {
 				val playerClicker = playerClicker
 				playerClicker.openConfirmMenu("Delete role $roleName?", {
@@ -173,7 +177,8 @@ fun <P : Enum<P>> editRolePermissionGUI(
 
 	val backCommand = "$commandName edit $roleName"
 	gui.addPane(
-		outlinePane(0, 0, 9, gui.rows)
+		Slot.fromXY(0, 0),
+		outlinePane(9, gui.rows)
 			.withItem(backButton(backCommand))
 			.withItems(
 				pValues.map {
@@ -201,7 +206,8 @@ fun Player.memberRoleGUI(commandName: String, playerName: String, playerRoles: S
 	val gui = ChestGui(1 + (allRoles.size + 1) / 9, "Manage $playerName's roles")
 
 	gui.addPane(
-		outlinePane(0, 0, 9, gui.rows)
+		Slot.fromXY(0, 0),
+		outlinePane(9, gui.rows)
 			.withItem(backButton("$commandName members"))
 			.withItems(
 				allRoles.map {
