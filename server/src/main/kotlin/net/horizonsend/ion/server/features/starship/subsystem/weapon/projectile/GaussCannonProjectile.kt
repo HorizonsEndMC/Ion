@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.configuration.starship.GaussCannonBalancing
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSettingOrThrow
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsMainMenuGui
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
@@ -40,6 +41,8 @@ class GaussCannonProjectile(
 
 
 		toPlayersInRadius(location,512.0) { player ->
+			if (player.isNPC) return@toPlayersInRadius
+
 			val setting = player.getEnumSettingOrThrow<SettingsMainMenuGui.Companion.ParticleSettings>(PlayerSettings::gaussCannons)
 
 			if(setting == SettingsMainMenuGui.Companion.ParticleSettings.ALL_PARTICLES) {
