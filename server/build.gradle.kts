@@ -65,7 +65,7 @@ dependencies {
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.5.0")
 
-	implementation(platform("com.intellectualsites.bom:bom-newest:1.52"))
+	implementation(platform("com.intellectualsites.bom:bom-newest:1.56"))
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.16.3")
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.16.3") { isTransitive = false }
 
