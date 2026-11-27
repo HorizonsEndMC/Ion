@@ -59,7 +59,7 @@ dependencies {
 	implementation("net.megavex:scoreboard-library-extra-kotlin:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
-	implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
+	//implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 
     implementation("org.jgrapht:jgrapht-core:1.5.3")
 	implementation("dev.vankka:mcdiscordreserializer:4.4.0")

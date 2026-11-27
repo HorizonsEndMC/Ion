@@ -22,6 +22,7 @@ dependencies {
 
 	compileOnly("net.md-5:bungeecord-chat:1.21-R0.4")
 	compileOnly("net.luckperms:api:5.5")
+	compileOnly("org.checkerframework:checker-qual:3.49.0")
 
 	compileOnly("com.gitlab.ruany:LiteBansAPI:0.6.1")
 

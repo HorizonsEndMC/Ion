@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -40,9 +41,9 @@ fun GuiItem.lore(vararg lines: String): GuiItem {
 	return this
 }
 
-fun staticPane(x: Int, y: Int, length: Int, height: Int) = StaticPane(x, y, length, height)
+fun staticPane(length: Int, height: Int) = StaticPane(length, height)
 
-fun outlinePane(x: Int, y: Int, length: Int, height: Int) = OutlinePane(x, y, length, height)
+fun outlinePane(length: Int, height: Int) = OutlinePane(length, height)
 
 fun StaticPane.withItem(item: GuiItem, x: Int, z: Int): StaticPane {
 	addItem(item, x, z); return this
@@ -102,8 +103,8 @@ fun skullItem(itemName: String, uuid: UUID, skinData: String): ItemStack =
 
 fun gui(rows: Int, title: String) = ChestGui(rows, color(title))
 
-fun ChestGui.withPane(pane: Pane): ChestGui {
-	addPane(pane); return this
+fun ChestGui.withPane(slot: Slot, pane: Pane): ChestGui {
+	addPane(slot, pane); return this
 }
 
 val InventoryClickEvent.playerClicker: Player get() = whoClicked as Player
