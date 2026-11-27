@@ -50,7 +50,7 @@ dependencies {
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.11.6")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.12.2")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("fr.skytasul:guardianbeam:2.4.8")
 	implementation("club.minnced:discord-webhooks:0.8.4")
