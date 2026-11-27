@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSett
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsMainMenuGui
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.AutocannonMultiblock
-import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
