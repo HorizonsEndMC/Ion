@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.inventory.ResultContainer
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftInventory
+import java.util.concurrent.CompletableFuture
 
 class AutoMasonIntegration(
 	taskEntity: ShipFactoryEntity,
@@ -59,12 +60,12 @@ class AutoMasonIntegration(
 		transaction = mutableMapOf()
 	}
 
-	override fun commitTransaction(task: ShipFactoryPrintTask): List<BlockKey> {
-		val transaction = this.transaction ?: return listOf()
+	override fun commitTransaction(task: ShipFactoryPrintTask): CompletableFuture<List<BlockKey>> {
+		val transaction = this.transaction ?: return CompletableFuture.completedFuture(listOf())
 
 		val fails = mutableListOf<BlockKey>()
 
-		val recipeEnviornment = recipeEnviornment ?: return transaction.flatMap { it.value.keys }
+		val recipeEnviornment = recipeEnviornment ?: return CompletableFuture.completedFuture(transaction.flatMap { it.value.keys })
 
 		for ((material, positions) in transaction) {
 			val recipesForMaterial = recipes[material]
@@ -88,7 +89,7 @@ class AutoMasonIntegration(
 			}
 		}
 
-		return fails
+		return CompletableFuture.completedFuture(fails)
 	}
 
 	override fun canAddTransaction(printItem: PrintItem, printPosition: BlockKey, requiredAmount: Int): Boolean {

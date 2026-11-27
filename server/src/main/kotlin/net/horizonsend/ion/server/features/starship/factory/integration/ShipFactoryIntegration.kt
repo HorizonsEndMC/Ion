@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFacto
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import java.util.concurrent.CompletableFuture
 
 abstract class ShipFactoryIntegration<T : MultiblockEntity>(val taskEntity: ShipFactoryEntity, val integratedEntity: T) {
 	/**
@@ -30,7 +31,7 @@ abstract class ShipFactoryIntegration<T : MultiblockEntity>(val taskEntity: Ship
 	/**
 	 * Returns all block keys that failed the transaction
 	 **/
-	abstract fun commitTransaction(task: ShipFactoryPrintTask): List<BlockKey>
+	abstract fun commitTransaction(task: ShipFactoryPrintTask): CompletableFuture<List<BlockKey>>
 
 	abstract fun canAddTransaction(printItem: PrintItem, printPosition: BlockKey, requiredAmount: Int): Boolean
 }

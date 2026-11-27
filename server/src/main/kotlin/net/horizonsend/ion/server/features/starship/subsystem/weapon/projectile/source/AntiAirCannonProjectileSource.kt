@@ -22,5 +22,5 @@ class AntiAirCannonProjectileSource(val shooter: Player) : ProjectileSource() {
 		return shooter.world
 	}
 
-	override fun audiences(): Iterable<Audience?> = listOf(shooter)
+	override fun audiences(): Iterable<Audience> = listOf(shooter)
 }
