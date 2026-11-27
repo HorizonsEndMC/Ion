@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.orders.browse
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
@@ -37,29 +38,50 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.ItemProvider
+import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import java.text.SimpleDateFormat
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Consumer
 import kotlin.properties.Delegates
 
 class BuyOrderFulfillmentMenu(
 	viewer: Player,
 	val item: Oid<BazaarOrder>,
 	private val availableItemProvider: () -> Collection<ItemReference>,
-	val fulfillmentFunction: (Int) -> PotentiallyFutureResult,
+	val fulfillmentFunction: (Int, Consumer<Int>) -> PotentiallyFutureResult,
 ) : InvUIWindowWrapper(viewer, async = true) {
 	private var fulfillmentAmount = 0
 	private var remainingAmount = 0
 	private var availableAmount = 0
+	private var orderGone = false
+	private var orderGoneMessageSent = false
+	private val lastConsumed = AtomicInteger()
 
 	private lateinit var itemStack: ItemStack
+	private lateinit var owner: SLPlayerId
+	private lateinit var ownerName: String
+	private lateinit var orderCityName: String
+	private var pricePerItem by Delegates.notNull<Double>()
 	private var requestedQuantity by Delegates.notNull<Int>()
 
 	private var itemMissing: Boolean = false
 
 	override fun firstTimeSetup() {
-		val props = BazaarOrder.findPropsById(item, BazaarOrder::itemString, BazaarOrder::requestedQuantity, BazaarOrder::fulfilledQuantity)
+		val props = BazaarOrder.findPropsById(
+			item,
+			BazaarOrder::itemString,
+			BazaarOrder::requestedQuantity,
+			BazaarOrder::fulfilledQuantity,
+			BazaarOrder::player,
+			BazaarOrder::cityTerritory,
+			BazaarOrder::pricePerItem,
+		)
 
 		if (props == null) {
 			itemMissing = true
@@ -67,35 +89,45 @@ class BuyOrderFulfillmentMenu(
 		}
 
 		requestedQuantity = props[BazaarOrder::requestedQuantity]
+		owner = props[BazaarOrder::player]
+		ownerName = SLPlayer.getName(owner) ?: run {
+			itemMissing = true
+			return
+		}
+		orderCityName = Bazaars.cityName(Regions[props[BazaarOrder::cityTerritory]])
+		pricePerItem = props[BazaarOrder::pricePerItem]
 
 		remainingAmount = requestedQuantity - props[BazaarOrder::fulfilledQuantity]
 
 		val itemString = props[BazaarOrder::itemString]
 		itemStack = fromItemString(itemString)
 
-		calculateAvailableMaterials(itemStack, remainingAmount)
+		Tasks.getSyncBlocking { calculateAvailableMaterials(itemStack) }
+		fulfillmentAmount = minOf(availableAmount, remainingAmount).coerceAtLeast(0)
+		if (remainingAmount <= 0) updateCompletedButtonFeedback()
 	}
 
 	override fun buildWindow(): Window? {
 		if (itemMissing) return null
 
-		val props = BazaarOrder.findPropsById(item, BazaarOrder::player, BazaarOrder::cityTerritory) ?: return null
-
-		val owner = props[BazaarOrder::player]
-		val name = SLPlayer.getName(owner) ?: return null
-
-		val playerHeadItem = getHeadItem(owner.uuid, name, { it.updateDisplayName(text(name)).updateLore(listOf(text("$name issued this order"))) }) {}
-
-		val territory = props[BazaarOrder::cityTerritory]
+		val playerHeadItem = getHeadItem(owner.uuid, ownerName, { it.updateDisplayName(text(ownerName)).updateLore(listOf(text("$ownerName issued this order"))) }) {}
 		val creationDate = item.id.date
 		val dateFormat = SimpleDateFormat("d MMMM, yyyy")
 
-		val orderItem = itemStack.clone()
-			.updateDisplayName(template(text("Order for {0} {1}"), requestedQuantity, itemStack.displayNameComponent))
-			.updateLore(listOf(
-				template(text("{0} has been fulfilled. {1} remain unfulfilled.", HE_MEDIUM_GRAY), requestedQuantity, remainingAmount),
-				template(text("At {0} on {1}", HE_MEDIUM_GRAY), Bazaars.cityName(Regions[territory]), dateFormat.format(creationDate))
-			))
+		val orderItem = object : AbstractItem() {
+			val provider = ItemProvider {
+				itemStack.clone()
+					.updateDisplayName(template(text("Order for {0} {1}"), requestedQuantity, itemStack.displayNameComponent))
+					.updateLore(listOf(
+						template(text("{0} has been fulfilled. {1} remain unfulfilled.", HE_MEDIUM_GRAY), requestedQuantity - remainingAmount, remainingAmount),
+						template(text("At {0} on {1}", HE_MEDIUM_GRAY), orderCityName, dateFormat.format(creationDate))
+					))
+			}
+
+			override fun getItemProvider(): ItemProvider = provider
+
+			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
+		}.tracked()
 
 		val gui = Gui.normal()
 			.setStructure(
@@ -116,6 +148,7 @@ class BuyOrderFulfillmentMenu(
 	}
 
 	override fun buildTitle(): Component {
+		val completed = orderGone || remainingAmount <= 0
 		val background = GuiText("")
 			.addBorder(GuiBorder.regular(
 				color = HE_LIGHT_ORANGE,
@@ -139,51 +172,86 @@ class BuyOrderFulfillmentMenu(
 			.add(text("Fulfill Amount:"), line = 4, verticalShift = 4)
 			.build()
 
-		val props = BazaarOrder.findPropsById(item, BazaarOrder::player, BazaarOrder::itemString, BazaarOrder::pricePerItem)!!
-
-		val owner = props[BazaarOrder::player]
-		val orderProfit = props[BazaarOrder::pricePerItem]
-		val orderItemString = props[BazaarOrder::itemString]
-		val item = fromItemString(orderItemString)
-
-		val potentialProfit = getMenuTitleName((orderProfit * fulfillmentAmount).toCreditComponent())
+		val potentialProfit = getMenuTitleName((if (completed) 0.0 else pricePerItem * fulfillmentAmount).toCreditComponent())
 
 		val information = GuiText("")
-			.add(template(text("Order from {0}"), paramColor = null, SLPlayer.getName(owner)), line = 0, horizontalShift = 18)
-			.add(template(text("For {0} {1}"), paramColor = null, remainingAmount, getMenuTitleName(item.displayNameComponent)), line = 1, horizontalShift = 18)
+			.add(template(text("Order from {0}"), paramColor = null, ownerName), line = 0, horizontalShift = 18)
+			.add(template(text("For {0} {1}"), paramColor = null, remainingAmount, getMenuTitleName(itemStack.displayNameComponent)), line = 1, horizontalShift = 18)
 			.add(template(text("Potential Profit: {0}"), potentialProfit), line = 2, verticalShift = 5, horizontalShift = 18)
-			.add(getMenuTitleName(text(fulfillmentAmount).itemName), line = 4, verticalShift = 4, horizontalShift = 77)
-			.build()
 
-		return ofChildren(background, information)
+		if (completed) information.add(text("Order completed", RED), line = 3, horizontalShift = 18)
+
+		information.add(getMenuTitleName(text(fulfillmentAmount).itemName), line = 4, verticalShift = 4, horizontalShift = 77)
+
+		return ofChildren(background, information.build())
 	}
 
 	private val confirmButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Confirm"))) { _, _ -> confirmFulfillment() }
 
 	private fun confirmFulfillment() {
-		val asyncResult = fulfillmentFunction.invoke(fulfillmentAmount)
+		if (orderGone || remainingAmount <= 0) {
+			confirmButton.updateWith(completedFailure())
+			return
+		}
+
+		lastConsumed.set(0)
+		val asyncResult = fulfillmentFunction.invoke(fulfillmentAmount, Consumer { lastConsumed.set(it) })
 
 		asyncResult.withResult { result ->
 			confirmButton.updateWith(result)
 			result.sendReason(viewer)
 
-			if (result.isSuccess()) {
-				remainingAmount -= fulfillmentAmount
-				refreshTitle()
+			val consumed = lastConsumed.getAndSet(0)
+			if (consumed > 0) {
+				Tasks.sync {
+					remainingAmount = (remainingAmount - consumed).coerceAtLeast(0)
+					refreshAll()
+				}
 			}
+
+			reconcile()
 		}
 	}
 
-	private fun calculateAvailableMaterials(itemStack: ItemStack, orderQuantity: Int) = Tasks.sync {
+	private fun calculateAvailableMaterials(itemStack: ItemStack) {
 		val availableAmolunt = availableItemProvider.invoke()
 			.mapNotNull { it.get() }
 			.filter { it.isSimilar(itemStack) }
 			.sumOf { it.amount }
 
 		this.availableAmount = availableAmolunt
-		fulfillmentAmount = minOf(availableAmount, orderQuantity)
+	}
 
-		refreshTitle()
+	private fun reconcile() {
+		Tasks.async {
+			val props = BazaarOrder.findPropsById(item, BazaarOrder::requestedQuantity, BazaarOrder::fulfilledQuantity)
+			val newRequestedQuantity = props?.get(BazaarOrder::requestedQuantity)
+			val newRemainingAmount = props?.let {
+				it[BazaarOrder::requestedQuantity] - it[BazaarOrder::fulfilledQuantity]
+			} ?: 0
+
+			Tasks.sync {
+				if (newRequestedQuantity != null) requestedQuantity = newRequestedQuantity
+				remainingAmount = newRemainingAmount
+				orderGone = props == null
+				calculateAvailableMaterials(itemStack)
+				fulfillmentAmount = minOf(fulfillmentAmount, availableAmount, remainingAmount).coerceAtLeast(0)
+				if (orderGone && !orderGoneMessageSent) {
+					viewer.sendMessage(text("This buy order no longer exists; it is marked completed.", RED))
+					orderGoneMessageSent = true
+				}
+				if (orderGone || remainingAmount <= 0) updateCompletedButtonFeedback()
+				refreshAll()
+			}
+		}
+	}
+
+	private fun completedFailure() = InputResult.FailureReason(listOf(text("This order is completed and cannot be fulfilled.", RED)))
+
+	private fun updateCompletedButtonFeedback() {
+		val result = completedFailure()
+		confirmButton.updateWith(result)
+		setQuantityButton.updateWith(result)
 	}
 
 	private val setQuantityButton = FeedbackLike.withHandler(
@@ -192,21 +260,29 @@ class BuyOrderFulfillmentMenu(
 		clickHandler = { _, _ -> setQuantity() }
 	)
 
-	private fun setQuantity(): Unit = viewer.openInputMenu(
-		prompt = text("Select Fulfillment Limit"),
-		description = text("1 through $remainingAmount"),
-		backButtonHandler = { openGui() },
-		inputValidator = RangeIntegerValidator(1..remainingAmount),
-		handler = { _, result ->
-			fulfillmentAmount = result.result
-			setQuantityButton.updateWith(
-				InputResult.SuccessReason(
-				listOf(template(text("Set fulfillment limit to {0}", GREEN), fulfillmentAmount))
-			))
-
-			refreshAll()
-
-			this@BuyOrderFulfillmentMenu.openGui()
+	private fun setQuantity() {
+		if (orderGone || remainingAmount <= 0) {
+			setQuantityButton.updateWith(completedFailure())
+			return
 		}
-	)
+
+		viewer.openInputMenu(
+			prompt = text("Select Fulfillment Limit"),
+			description = text("1 through $remainingAmount"),
+			backButtonHandler = { openGui() },
+			inputValidator = RangeIntegerValidator(1..remainingAmount),
+			handler = { _, result ->
+				fulfillmentAmount = minOf(result.result, availableAmount, remainingAmount).coerceAtLeast(0)
+				setQuantityButton.updateWith(
+					InputResult.SuccessReason(
+						listOf(template(text("Set fulfillment limit to {0}", GREEN), fulfillmentAmount))
+					)
+				)
+
+				refreshAll()
+
+				this@BuyOrderFulfillmentMenu.openGui()
+			}
+		)
+	}
 }

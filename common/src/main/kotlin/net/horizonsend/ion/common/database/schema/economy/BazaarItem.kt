@@ -1,5 +1,8 @@
 package net.horizonsend.ion.common.database.schema.economy
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.ReturnDocument
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
@@ -16,6 +19,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.updateOneById
+import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import java.time.Instant
 import java.util.Date
 
@@ -64,19 +68,54 @@ data class BazaarItem(
 			return combine(update, org.litote.kmongo.setValue(BazaarItem::lastUpdated, date))
 		}
 
-		fun addStock(itemId: Oid<BazaarItem>, amount: Int): Unit = trx { sess ->
+		fun addStock(itemId: Oid<BazaarItem>, amount: Int): Boolean = trx { sess ->
 			require(amount >= 0)
-			col.updateOneById(sess, itemId, alsoUpdateTime(inc(BazaarItem::stock, amount)))
+			col.updateOneById(sess, itemId, alsoUpdateTime(inc(BazaarItem::stock, amount))).matchedCount == 1L
 		}
 
 		fun hasStock(itemId: Oid<BazaarItem>, amount: Int): Boolean = matches(itemId, BazaarItem::stock gte amount)
 
-		fun removeStock(itemId: Oid<BazaarItem>, amount: Int): Unit = trx { sess ->
+		fun removeStock(itemId: Oid<BazaarItem>, amount: Int): Boolean = trx { sess ->
 			require(amount >= 0)
-			require(matches(sess, itemId, BazaarItem::stock gte amount)) {
-				"Bazaar item $itemId does not have enough in stock to remove $amount"
-			}
-			col.updateOneById(sess, itemId, alsoUpdateTime(inc(BazaarItem::stock, -amount)))
+			col.updateOne(
+				sess,
+				Filters.and(idFilterQuery(itemId), BazaarItem::stock gte amount),
+				alsoUpdateTime(inc(BazaarItem::stock, -amount))
+			).matchedCount == 1L
+		}
+
+		fun purchase(itemId: Oid<BazaarItem>, amount: Int, price: Double, sellerCredit: Double): Boolean = trx { sess ->
+			require(amount >= 0)
+			require(sellerCredit >= 0.0)
+			col.updateOne(
+				sess,
+				Filters.and(
+					idFilterQuery(itemId),
+					BazaarItem::stock gte amount,
+					BazaarItem::price eq price
+				),
+				alsoUpdateTime(combine(
+					inc(BazaarItem::stock, -amount),
+					inc(BazaarItem::balance, sellerCredit)
+				))
+			).matchedCount == 1L
+		}
+
+		fun reversePurchase(itemId: Oid<BazaarItem>, amount: Int, sellerCredit: Double): Boolean = trx { sess ->
+			require(amount >= 0)
+			require(sellerCredit >= 0.0)
+			col.updateOneById(
+				sess,
+				itemId,
+				alsoUpdateTime(combine(
+					inc(BazaarItem::stock, amount),
+					inc(BazaarItem::balance, -sellerCredit)
+				))
+			).matchedCount == 1L
+		}
+
+		fun deleteIfEmpty(itemId: Oid<BazaarItem>): Boolean = trx { sess ->
+			col.deleteOne(sess, Filters.and(idFilterQuery(itemId), Filters.eq("stock", 0))).deletedCount == 1L
 		}
 
 		fun delete(itemId: Oid<BazaarItem>) = trx { sess ->
@@ -102,9 +141,15 @@ data class BazaarItem(
 		}
 
 		fun collectMoney(seller: SLPlayerId): Double = trx { sess ->
-			val total = col.find(sess, BazaarItem::seller eq seller).sumByDouble { it.balance }
-			col.updateMany(sess, BazaarItem::seller eq seller, org.litote.kmongo.setValue(BazaarItem::balance, 0.0))
-			return@trx total
+			val listingIds = col.find(sess, BazaarItem::seller eq seller).map { it._id }.toList()
+			listingIds.sumOf { listingId ->
+				col.findOneAndUpdate(
+					sess,
+					Filters.and(idFilterQuery(listingId), BazaarItem::seller eq seller),
+					org.litote.kmongo.setValue(BazaarItem::balance, 0.0),
+					FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE)
+				)?.balance ?: 0.0
+			}
 		}
 	}
 }

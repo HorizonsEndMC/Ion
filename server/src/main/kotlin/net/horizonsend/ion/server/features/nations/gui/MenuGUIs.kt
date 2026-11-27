@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.gui
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
@@ -25,7 +26,8 @@ fun Player.openConfirmMenu(
 	if (cancelLore != null) cancelButton.lore(cancelLore)
 	gui(1, title)
 		.withPane(
-			staticPane(0, 0, 9, 1)
+			Slot.fromXY(0, 0),
+			staticPane(9, 1)
 				.withItem(confirmButton, 3, 0)
 				.withItem(cancelButton, 5, 0)
 		)
@@ -37,19 +39,20 @@ fun Player.openPaginatedMenu(title: String, items: List<GuiItem>, titleItems: Li
 
 	val rows = min(items.size / 9 + 1, 5)
 	val gui = gui(rows + 1, title)
-	val rootPane = PaginatedPane(0, 0, 9, gui.rows)
+	val rootPane = PaginatedPane(9, gui.rows)
 	val pages = (items.size / 49) + 1
 	for (page in 0 until pages) {
 		val startIndex = page * 49
 
 		rootPane.addPane(
 			page,
-			outlinePane(3, 0, 6, 1).apply {
+			Slot.fromXY(3, 0),
+			outlinePane(6, 1).apply {
 				titleItems.forEach { addItem(it) }
 			}
 		)
 
-		val topBar = staticPane(0, 0, 3, 1)
+		val topBar = staticPane(3, 1)
 
 		topBar.addItem(guiButton(item(Material.WHITE_STAINED_GLASS_PANE)).name("Page ${page + 1}/$pages"), 1, 0)
 		if (pages > 0) {
@@ -74,12 +77,12 @@ fun Player.openPaginatedMenu(title: String, items: List<GuiItem>, titleItems: Li
 			}
 		}
 
-		rootPane.addPane(page, topBar)
+		rootPane.addPane(page, Slot.fromXY(0, 0), topBar)
 
 		val pageItems = items.filterIndexed { index, _ -> index >= startIndex && index < startIndex + 49 }
-		val contents = outlinePane(0, 1, 9, rows)
+		val contents = outlinePane(9, rows)
 		pageItems.forEach(contents::addItem)
-		rootPane.addPane(page, contents)
+		rootPane.addPane(page, Slot.fromXY(0, 1), contents)
 	}
-	gui.withPane(rootPane).show(this)
+	gui.withPane(Slot.fromXY(0, 0), rootPane).show(this)
 }

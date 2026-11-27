@@ -53,7 +53,7 @@ sealed class FleetMember : ForwardingAudience {
 			return shipRef.hashCode()
 		}
 
-		override fun audiences(): Iterable<Audience?> {
+		override fun audiences(): Iterable<Audience> {
 			return listOf()
 		}
 

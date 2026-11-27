@@ -1,11 +1,15 @@
 package net.horizonsend.ion.common.database.schema.economy
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.ReturnDocument
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.trx
+import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.combine
 import org.litote.kmongo.deleteOneById
@@ -14,7 +18,8 @@ import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.push
 import org.litote.kmongo.setValue
-import org.litote.kmongo.updateOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import java.time.Instant
 import java.util.Date
 
@@ -71,6 +76,10 @@ class BazaarOrder(
 			col.deleteOneById(session, orderId)
 		}
 
+		fun deleteIfEmpty(orderId: Oid<BazaarOrder>): BazaarOrder? = trx { sess ->
+			col.findOneAndDelete(sess, Filters.and(idFilterQuery(orderId), Filters.eq("stock", 0)))
+		}
+
 		private fun alsoUpdateTime(update: Bson): Bson {
 			val date = Date.from(Instant.now())
 			return combine(update, setValue(BazaarOrder::lastUpdated, date))
@@ -86,27 +95,43 @@ class BazaarOrder(
 		 * Fulfills the amount of stock to the order
 		 * Returns the profit
 		 **/
-		fun fulfillStock(orderId: Oid<BazaarOrder>, fulfiller: SLPlayerId, amount: Int): Double = trx { sess ->
-			val order = BazaarOrder.findById(sess, orderId) ?: return@trx 0.0
+		fun fulfillStock(orderId: Oid<BazaarOrder>, fulfiller: SLPlayerId, amount: Int, pricePerItem: Double): Double? = trx { sess ->
+			require(amount >= 0)
 
-			val profit = amount * order.pricePerItem
+			val filter = Filters.and(
+				idFilterQuery(orderId),
+				BazaarOrder::pricePerItem eq pricePerItem,
+				Filters.expr(Document("\$lte", listOf(
+					Document("\$add", listOf("\$fulfilledQuantity", amount)),
+					"\$requestedQuantity"
+				)))
+			)
+			val profit = amount * pricePerItem
+			if (col.findOneAndUpdate(
+				sess,
+				filter,
+				alsoUpdateTime(combine(
+					inc(BazaarOrder::fulfilledQuantity, amount),
+					inc(BazaarOrder::stock, amount),
+					inc(BazaarOrder::balance, -profit),
+					push(BazaarOrder::fulfillments, fulfiller to amount)
+				)),
+				FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE)
+			) == null) return@trx null
 
-			BazaarOrder.updateById(orderId, alsoUpdateTime(combine(
-				inc(BazaarOrder::fulfilledQuantity, amount),
-				inc(BazaarOrder::stock, amount),
-				inc(BazaarOrder::balance, -profit),
-				push(BazaarOrder::fulfillments, fulfiller to amount)
-			)))
-
-			return@trx profit
+			profit
 		}
 
 		/**
 		 * Fulfills the amount of stock to the order
 		 **/
-		fun collectItemBalance(orderId: Oid<BazaarOrder>, amount: Int) = trx { sess ->
+		fun collectItemBalance(orderId: Oid<BazaarOrder>, amount: Int): Boolean = trx { sess ->
 			require(amount >= 0)
-			BazaarOrder.col.updateOneById(sess, orderId, alsoUpdateTime(inc(BazaarOrder::stock, -amount)))
+			col.updateOne(
+				sess,
+				Filters.and(idFilterQuery(orderId), BazaarOrder::stock gte amount),
+				alsoUpdateTime(inc(BazaarOrder::stock, -amount))
+			).matchedCount == 1L
 		}
 	}
 }
