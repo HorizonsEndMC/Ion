@@ -33,7 +33,11 @@ object HelpCommand : SLCommand() {
 
 		val author: Component = text("Horizon's End", NamedTextColor.WHITE).decorate(TextDecoration.BOLD)
 
-		fun book(player: Player) = player.openBook(Book.book(title, author, *pages))
+		fun book(player: Player) {
+			val builder = Book.builder().title(title).author(author)
+			pages.forEach { builder.addPage(it) }
+			player.openBook(builder.build())
+		}
 
 		fun send(sender: CommandSender, page: Int) {
 			sender.sendMessage(formatPaginatedMenu(

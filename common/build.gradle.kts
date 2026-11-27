@@ -22,6 +22,7 @@ dependencies {
 
 	compileOnly("net.md-5:bungeecord-chat:1.21-R0.4")
 	compileOnly("net.luckperms:api:5.5")
+	compileOnly("org.checkerframework:checker-qual:3.49.0")
 
 	compileOnly("com.gitlab.ruany:LiteBansAPI:0.6.1")
 
@@ -33,7 +34,7 @@ dependencies {
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
 	api("org.litote.kmongo:kmongo:5.5.1")
-	api("com.fasterxml.jackson.core:jackson-databind:2.20.0")
+	api("com.fasterxml.jackson.core:jackson-databind:2.23.0")
 
 	api("redis.clients:jedis:6.2.0")
 }
