@@ -40,8 +40,6 @@ class GaussCannonProjectile(
 
 
 		toPlayersInRadius(location,512.0) { player ->
-			if (player.isNPC) return@toPlayersInRadius
-
 			val setting = player.getEnumSetting<SettingsMainMenuGui.Companion.ParticleSettings>(PlayerSettings::gaussCannons)
 				?: return@toPlayersInRadius
 
