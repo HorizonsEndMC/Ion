@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSettingOrThrow
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsMainMenuGui
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.AutocannonMultiblock
@@ -44,9 +44,10 @@ class AutocannonProjectile(
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		toPlayersInRadius(location,512.0) { player ->
-			if (player.isNPC) return@toPlayersInRadius
+			val setting = player.getEnumSetting<SettingsMainMenuGui.Companion.ParticleSettings>(PlayerSettings::autoCannons)
+				?: return@toPlayersInRadius
 
-			when (player.getEnumSettingOrThrow<SettingsMainMenuGui.Companion.ParticleSettings>(PlayerSettings::autoCannons)) {
+			when (setting) {
 				SettingsMainMenuGui.Companion.ParticleSettings.ALL_PARTICLES ->	player.spawnPlayerSpecificParticle(x, y, z, force)
 				SettingsMainMenuGui.Companion.ParticleSettings.HALF_PARTICLES -> when(shotIndex) {
 					1-> player.spawnPlayerSpecificParticle(x, y, z, force)
