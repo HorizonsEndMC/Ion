@@ -365,6 +365,7 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "ggg", "gbg", "ggg", CraftingBookCategory.BUILDING, 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
 		shapedMaterial("deepslate_gold_ore", DEEPSLATE_GOLD_ORE, "gbg", "bgb", "gbg", CraftingBookCategory.BUILDING, 'g' to RAW_GOLD, 'b' to Material.DEEPSLATE)
 		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", CraftingBookCategory.MISC, 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
+		shapedMaterial("axolotl_spawn_egg", Material.AXOLOTL_SPAWN_EGG, "kkk", "awa", "mmm", CraftingBookCategory.MISC, 'k' to Material.KELP, 'a' to Material.AZALEA, 'w' to Material.WATER_BUCKET, 'm' to MOSS_BLOCK)
 		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", CraftingBookCategory.BUILDING, 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
 		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), CraftingBookCategory.BUILDING, Material.OAK_SAPLING, Material.BONE)
 		shapeless("pale_moss", ItemStack(Material.PALE_MOSS_BLOCK), CraftingBookCategory.BUILDING, MOSS_BLOCK, Material.PALE_OAK_LEAVES)
