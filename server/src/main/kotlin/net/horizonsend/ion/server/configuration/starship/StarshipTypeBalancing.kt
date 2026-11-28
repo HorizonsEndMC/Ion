@@ -1174,7 +1174,7 @@ data class NewStarshipBalancing(
 			interdictionRange = 850,
 			contactsRange = 700,
 			dynmapVisibility = false,
-			warmupTime = 10,
+			warmupTime = 12,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -1195,7 +1195,11 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 3000),
-				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
+				PhaserBalancing(
+					fireRestrictions = FireRestrictions(canFire = true),
+					maxPerShot = 2,
+					firePowerConsumption = 12500,
+					projectile = PhaserBalancing.PhaserProjectileBalancing(starshipShieldDamageMultiplier = 50.0)),
 				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 2500),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
@@ -1233,7 +1237,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 0.62,
 			shieldRegenMultiplier = 0.8,
-			cruiseSpeedMultiplier = 0.80,
+			cruiseSpeedMultiplier = 0.90,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1332,9 +1336,9 @@ data class NewStarshipBalancing(
 			warmupTime = 15,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
-			cruiseSpeedMultiplier = 0.80,
+			cruiseSpeedMultiplier = 0.925,
 			hyperspaceRangeMultiplier = 1.9,
-			shieldPowerMultiplier = 1.25,
+			shieldPowerMultiplier = 1.325,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1462,7 +1466,6 @@ data class NewStarshipBalancing(
 			)
 		),
 		val logisticsCruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
-			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1536,7 +1539,6 @@ data class NewStarshipBalancing(
 			)
 		),
 		val missileCruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
-			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1250,
@@ -1544,7 +1546,7 @@ data class NewStarshipBalancing(
 			jumpStrength = 3.0,
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
-			cruiseSpeedMultiplier = 0.88,
+			cruiseSpeedMultiplier = 0.90,
 			shieldPowerMultiplier = 0.95,
 			shieldRegenMultiplier = 0.8,
 			weaponOverrides = listOf(
@@ -1648,11 +1650,10 @@ data class NewStarshipBalancing(
 			)
 		),
 		val lancerBattlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
-			directControlSpeedMultiplier = 1.15,
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 1500,
-			warmupTime = 30,
+			warmupTime = 42,
 			jumpStrength = 6.0,
 			wellStrength = 3.0,
 			hyperspaceRangeMultiplier = 2.5,

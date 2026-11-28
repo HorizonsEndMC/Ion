@@ -258,8 +258,8 @@ data class HeavyNeutralizerBalancing(
 
 	@Serializable
 	data class HeavyNeutralizerProjectileBalancing(
-		override var range: Double = 215.0,
-		override var speed: Double = 65.0,
+		override var range: Double = 220.0,
+		override var speed: Double = 68.0,
 		override var explosionPower: Float = 10f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 2.0,
@@ -267,7 +267,7 @@ data class HeavyNeutralizerBalancing(
 		override var particleThickness: Double = 1.0,
 		override var maxDegrees: Double = 145.0,
 		override var detonationRange: Double = 2.25,
-		override var turnRate: Double = 0.67,
+		override var turnRate: Double = 0.68,
 		override var acceleration: Double = 10.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.neutralizer.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
@@ -912,8 +912,8 @@ data class AssaultTurretBalancing(
 	@Serializable
 	data class AssaultTurretProjectileBalancing(
 		override var range: Double = 500.0,
-		override var speed: Double = 105.0,
-		override var explosionPower: Float = 4.5f,
+		override var speed: Double = 107.5,
+		override var explosionPower: Float = 5.0f,
 		override var starshipShieldDamageMultiplier: Double = 6.0,
 		override var areaShieldDamageMultiplier: Double = 1.0,
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
@@ -1040,7 +1040,7 @@ data class IonTurretBalancing(
 	@Serializable
 	data class IonTurretProjectileBalancing(
 		override var range: Double = 400.0,
-		override var speed: Double = 77.5,
+		override var speed: Double = 80.0,
 		override var explosionPower: Float = 3f,
 		override var starshipShieldDamageMultiplier: Double = 3.7,
 		override var areaShieldDamageMultiplier: Double = 100.0,
