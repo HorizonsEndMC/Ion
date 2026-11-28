@@ -30,7 +30,7 @@ dependencies {
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 	implementation("net.dv8tion:JDA:5.6.1")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.26.1")
-	implementation("dev.vankka:mcdiscordreserializer:4.4.0")
+	implementation("dev.vankka:mcdiscordreserializer:5.0.0")
 }
 
 tasks.build { dependsOn("shadowJar") }
