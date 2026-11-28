@@ -16,7 +16,7 @@ dependencies {
 	compileOnly("net.kyori:adventure-api:5.2.0")
 	compileOnly("net.kyori:adventure-text-logger-slf4j:5.2.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.26.1")
-	compileOnly("net.kyori:adventure-text-serializer-plain:4.26.1")
+	compileOnly("net.kyori:adventure-text-serializer-plain:5.2.0")
 	compileOnly("net.kyori:adventure-text-serializer-gson:4.26.1")
 	compileOnly("net.kyori:adventure-text-serializer-legacy:4.26.1")
 
