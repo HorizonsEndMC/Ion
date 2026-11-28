@@ -29,7 +29,7 @@ dependencies {
 	// Included Dependencies
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 	implementation("net.dv8tion:JDA:6.7.0")
-	implementation("net.kyori:adventure-text-logger-slf4j:4.26.1")
+	implementation("net.kyori:adventure-text-logger-slf4j:5.2.0")
 	implementation("dev.vankka:mcdiscordreserializer:5.0.0")
 }
 
