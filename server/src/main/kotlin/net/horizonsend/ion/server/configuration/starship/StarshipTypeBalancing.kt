@@ -1168,19 +1168,19 @@ data class NewStarshipBalancing(
 			)
 		),
 		val blackOpsFrigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
-			directControlSpeedMultiplier = 1.25,
+			directControlSpeedMultiplier = 1.225,
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 850,
-			contactsRange = 700,
+			interdictionRange = 700,
+			contactsRange = 1250,
 			dynmapVisibility = false,
 			warmupTime = 10,
 			jumpStrength = 2.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
-			shieldPowerMultiplier = 0.65,
-			shieldRegenMultiplier = 0.85,
-			cruiseSpeedMultiplier = 1.45,
+			shieldPowerMultiplier = 0.6,
+			shieldRegenMultiplier = 0.8,
+			cruiseSpeedMultiplier = 1.32,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MediumReactorSubsystem::class.java,
@@ -1194,19 +1194,32 @@ data class NewStarshipBalancing(
 				)),
 			weaponOverrides = listOf(
 				NeutralizerBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2),
-				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 3000),
+				HeavyTurretBalancing(
+					fireRestrictions = FireRestrictions(
+						canFire = true,
+						incompatibleMultiblocks = listOf(
+							IncompatibleSubsystemInfo(
+								AutocannonWeaponSubsystem::class.java,
+								"Black Ops Frigates cannot have both Heavy Turrets and Autocannons!"
+							)
+						)
+					)
+				),
 				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 2, firePowerConsumption = 12500),
-				AutocannonBalancing(fireRestrictions = FireRestrictions(canFire = true), maxPerShot = 3, firePowerConsumption = 2500),
+				AutocannonBalancing(
+					fireRestrictions = FireRestrictions(
+						canFire = true,
+						incompatibleMultiblocks = listOf(
+							IncompatibleSubsystemInfo(
+								HeavyTurretWeaponSubsystem::class.java,
+								"Black Ops Frigates cannot have both Heavy Turrets and Autocannons!"
+							)
+						)
+					),
+					maxPerShot = 2
+				),
 				AdvancedProbeBalancing(fireRestrictions = FireRestrictions(canFire = true))
 				),
-			incompatibleWeaponSets = listOf(
-				IncompatibleWeaponSetInfo(
-					listOf(
-						HeavyTurretWeaponSubsystem::class.java,
-						AutocannonWeaponSubsystem::class.java
-					)
-				)
-			),
 			forbiddenMultiblocks = listOf(
 				IncompatibleSubsystemInfo(
 					JumpBeaconSubsystem::class.java,
