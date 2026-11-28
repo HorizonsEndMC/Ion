@@ -22,7 +22,7 @@ dependencies {
 
 	compileOnly("net.md-5:bungeecord-chat:1.21-R0.4")
 	compileOnly("net.luckperms:api:5.5")
-	compileOnly("org.checkerframework:checker-qual:3.49.0")
+	compileOnly("org.checkerframework:checker-qual:3.55.1")
 
 	compileOnly("com.gitlab.ruany:LiteBansAPI:0.6.1")
 
@@ -30,7 +30,7 @@ dependencies {
 	api(kotlin("stdlib"))
 
 	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0")
-	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
 	api("org.litote.kmongo:kmongo:5.5.1")
