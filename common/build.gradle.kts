@@ -33,7 +33,7 @@ dependencies {
 	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
-	api("org.litote.kmongo:kmongo:5.5.1")
+	api("org.litote.kmongo:kmongo:5.12.0")
 	api("com.fasterxml.jackson.core:jackson-databind:2.23.0")
 
 	api("redis.clients:jedis:6.2.0")
