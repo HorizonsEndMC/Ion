@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -38,6 +39,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -45,7 +47,8 @@ class PowerArmorItem(
 	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
-	val slot: EquipmentSlot
+	val slot: EquipmentSlot,
+	val balancingsupplier: Supplier<PVPBalancingConfiguration.Armor.ArmorBalancing>
 ) : CustomItem(
 	key,
 	displayName,
