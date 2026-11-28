@@ -80,7 +80,7 @@ tasks.named<KotlinJvmCompile>("compileKotlin") {
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
-kotlin.jvmToolchain(21)
+kotlin.jvmToolchain(25)
 
 tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false

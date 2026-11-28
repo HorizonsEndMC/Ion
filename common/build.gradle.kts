@@ -39,4 +39,4 @@ dependencies {
 	api("redis.clients:jedis:6.2.0")
 }
 
-kotlin.jvmToolchain(21)
+kotlin.jvmToolchain(25)

@@ -42,7 +42,7 @@ tasks.named<KotlinJvmCompile>("compileKotlin") {
 	}
 }
 
-kotlin.jvmToolchain(21)
+kotlin.jvmToolchain(25)
 
 tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false

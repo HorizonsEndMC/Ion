@@ -105,7 +105,7 @@ object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to pla
 			messageEmbed(
 				title = "Player: $player",
 				fields = fields,
-				thumbnail = MessageEmbed.Thumbnail("https://minotar.net/avatar/$player", null, 16, 16),
+				thumbnail = MessageEmbed.Thumbnail("https://minotar.net/avatar/$player", null, 16, 16, null, null, null, 0),
 				color = cachedNation?.color ?: Integer.parseInt("ffffff", 16)
 			)
 		)
