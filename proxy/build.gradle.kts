@@ -21,8 +21,8 @@ dependencies {
 	implementation(project(":common"))
 
 	// Platform
-	compileOnly("com.velocitypowered:velocity-api:3.5.1")
-	kapt("com.velocitypowered:velocity-api:3.5.1")
+	compileOnly("com.velocitypowered:velocity-api:4.3.1")
+	kapt("com.velocitypowered:velocity-api:4.3.1")
 
 	compileOnly("net.luckperms:api:5.5")
 
